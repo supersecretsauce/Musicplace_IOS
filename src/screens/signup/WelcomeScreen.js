@@ -51,7 +51,8 @@ const styles = StyleSheet.create({
   },
   signUp: {
     color: 'white',
-    // fontFamily: 'Inter_500Medium',
+    fontFamily: 'Inter-Thin',
+    fontWeight: '500',
     fontSize: 40,
   },
   musicplaceContainer: {

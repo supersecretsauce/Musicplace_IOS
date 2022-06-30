@@ -1,6 +1,5 @@
 import React from 'react';
-import {Node} from 'react';
-import {StyleSheet, Text} from 'react-native';
+// import {Node} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import WelcomeScreen from './src/screens/signup/WelcomeScreen';
@@ -19,5 +18,3 @@ export default function App() {
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({});
