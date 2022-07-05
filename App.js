@@ -5,7 +5,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import WelcomeScreen from './src/screens/signup/WelcomeScreen';
 import PhoneNumberScreen from './src/screens/signup/PhoneNumberScreen';
 import {Context} from './src/context/Context';
-import {useState} from 'react-native';
+import {useState} from 'react';
 
 const Stack = createNativeStackNavigator();
 

@@ -108,7 +108,10 @@ const PhoneNumber = ({navigation}) => {
       /> */}
       <TouchableWithoutFeedback onPress={goBack}>
         <View style={styles.touchContainer}>
-          <Image source={require('../../assets/img/ChevronLeft.jpg')} />
+          <Image
+            style={styles.chevron}
+            source={require('../../assets/img/ChevronLeft.jpg')}
+          />
         </View>
       </TouchableWithoutFeedback>
       <View style={styles.textContainer}>
@@ -162,18 +165,18 @@ const styles = StyleSheet.create({
   },
   enter: {
     color: 'white',
-    fontFamily: 'Inter_500Medium',
+    fontFamily: 'Inter-Medium',
     fontSize: 30,
   },
   number: {
     color: 'white',
-    fontFamily: 'Inter_700Bold',
+    fontFamily: 'Inter-Bold',
     fontSize: 45,
     marginTop: '3%',
   },
   getStarted: {
     color: 'white',
-    fontFamily: 'Inter_500Medium',
+    fontFamily: 'Inter-Medium',
     fontSize: 30,
     marginTop: '3%',
   },
