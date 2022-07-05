@@ -10,12 +10,7 @@ import {
 } from 'react-native';
 import React from 'react';
 import {useState, useContext} from 'react';
-import {
-  getAuth,
-  onAuthStateChanged,
-  PhoneAuthProvider,
-  signInWithCredential,
-} from 'firebase/auth';
+import {getAuth, PhoneAuthProvider} from 'firebase/auth';
 import {app, db} from '../../../firebase';
 import {Context} from '../../context/Context';
 
@@ -90,13 +85,13 @@ const PhoneNumber = ({navigation}) => {
       const phoneProvider = new PhoneAuthProvider(auth);
       const verificationId = await phoneProvider.verifyPhoneNumber(
         firebaseNumberFormat,
-        recaptchaVerifier.current,
       );
       setVerificationId(verificationId);
+      // console.log(verificationId);
+      navigation.navigate('EnterCodeScreen');
     } catch (err) {
       console.log(err);
     }
-    navigation.navigate('EnterCodeScreen');
   };
 
   return (
@@ -122,14 +117,18 @@ const PhoneNumber = ({navigation}) => {
       <View style={styles.inputContainer}>
         <View style={styles.rectangle}>
           <Text style={styles.areaCode}>US +1</Text>
-          <Image source={require('../../assets/img/VerticalLine.jpg')} />
+          <Image
+            style={styles.verticalLine}
+            source={require('../../assets/img/VerticalLine.jpg')}
+          />
           <TextInput
             keyboardType="numeric"
             style={styles.inputText}
             value={inputValue}
             onChangeText={text => handleInput(text)}
             placeholder="(123)-456-7890"
-            placeholderTextColor="grey"></TextInput>
+            placeholderTextColor="grey"
+          />
         </View>
       </View>
       <View style={styles.nextBtnContainer}>
@@ -205,7 +204,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 14,
     width: '68%',
-    fontFamily: 'Inter_500Medium',
+    fontFamily: 'Inter-Medium',
     alignSelf: 'center',
   },
   nextBtnContainer: {
@@ -221,7 +220,7 @@ const styles = StyleSheet.create({
   },
   nextText: {
     color: 'white',
-    fontFamily: 'Inter_700Bold',
+    fontFamily: 'Inter-Bold',
     fontSize: 20,
     textAlign: 'center',
     opacity: 0.5,
@@ -237,7 +236,7 @@ const styles = StyleSheet.create({
 
   nextTextDone: {
     color: 'white',
-    fontFamily: 'Inter_700Bold',
+    fontFamily: 'Inter-Bold',
     fontSize: 20,
     textAlign: 'center',
   },
