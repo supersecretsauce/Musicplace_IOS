@@ -10,20 +10,14 @@ import {
 } from 'react-native';
 import React from 'react';
 import {useState, useContext} from 'react';
-import {getAuth, PhoneAuthProvider} from 'firebase/auth';
-import {app, db} from '../../../firebase';
 import {Context} from '../../context/Context';
-
-const auth = getAuth();
-app;
-db;
+import auth from '@react-native-firebase/auth';
 
 const PhoneNumber = ({navigation}) => {
   const [inputValue, setInputValue] = useState('');
   const [showSubmitDone, setShowSubmitDone] = useState(false);
   const [firebaseNumberFormat, setFirebaseNumberFormat] = useState('');
   const {verificationId, setVerificationId} = useContext(Context);
-  const recaptchaVerifier = React.useRef(null);
 
   const goBack = () => {
     navigation.navigate('WelcomeScreen');
@@ -80,19 +74,12 @@ const PhoneNumber = ({navigation}) => {
     }
   };
 
-  let nextBtnPress = async () => {
-    try {
-      const phoneProvider = new PhoneAuthProvider(auth);
-      const verificationId = await phoneProvider.verifyPhoneNumber(
-        firebaseNumberFormat,
-      );
-      setVerificationId(verificationId);
-      // console.log(verificationId);
-      navigation.navigate('EnterCodeScreen');
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  async function signInWithPhoneNumber() {
+    const confirmation = await auth().signInWithPhoneNumber(
+      firebaseNumberFormat,
+    );
+    console.log(confirmation.confirm);
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -133,7 +120,7 @@ const PhoneNumber = ({navigation}) => {
       </View>
       <View style={styles.nextBtnContainer}>
         <TouchableOpacity
-          onPress={nextBtnPress}
+          onPress={signInWithPhoneNumber}
           style={showSubmitDone ? styles.nextBtnDone : styles.nextBtn}>
           <Text style={showSubmitDone ? styles.nextTextDone : styles.nextText}>
             Next
