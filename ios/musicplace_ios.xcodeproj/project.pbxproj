@@ -21,8 +21,7 @@
 		9D46F8F4E551488B80B922C1 /* Inter-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2E6E7A785B2A4D3A9F92AA35 /* Inter-ExtraBold.ttf */; };
 		A4769D43FC02472490872B83 /* Inter-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 05FF9C4D9A6C4BFBB3061863 /* Inter-Thin.ttf */; };
 		B6F9AE0A472C4BF98E56DC7E /* Inter-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2C9B1781683E4193870E14C6 /* Inter-Regular.ttf */; };
-		CC8EA20A287774EF00E32BCB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CC8EA209287774EF00E32BCB /* GoogleService-Info.plist */; };
-		CC8EA20B287774EF00E32BCB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CC8EA209287774EF00E32BCB /* GoogleService-Info.plist */; };
+		CC8B4DF828778D85005FE1B9 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CC8B4DF728778D85005FE1B9 /* GoogleService-Info.plist */; };
 		D74631C1448240E8B294857C /* Inter-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 918F868EB3CA420AA1394667 /* Inter-SemiBold.ttf */; };
 		E637ECDCCED9485BAF0F1D84 /* Inter-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3D5E0B536CAD420EB0F53944 /* Inter-Light.ttf */; };
 /* End PBXBuildFile section */
@@ -63,7 +62,7 @@
 		89C6BE57DB24E9ADA2F236DE /* Pods-musicplace_ios-musicplace_iosTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-musicplace_ios-musicplace_iosTests.release.xcconfig"; path = "Target Support Files/Pods-musicplace_ios-musicplace_iosTests/Pods-musicplace_ios-musicplace_iosTests.release.xcconfig"; sourceTree = "<group>"; };
 		918F868EB3CA420AA1394667 /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-SemiBold.ttf"; path = "../src/assets/fonts/Inter-SemiBold.ttf"; sourceTree = "<group>"; };
 		A26B799B4352DA93CA55EA31 /* Pods_musicplace_ios_musicplace_iosTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_musicplace_ios_musicplace_iosTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		CC8EA209287774EF00E32BCB /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		CC8B4DF728778D85005FE1B9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -153,7 +152,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				CC8EA209287774EF00E32BCB /* GoogleService-Info.plist */,
+				CC8B4DF728778D85005FE1B9 /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* musicplace_ios */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* musicplace_iosTests */,
@@ -273,7 +272,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CC8EA20B287774EF00E32BCB /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -287,10 +285,10 @@
 				6013502A5FDD4542B75CBBB3 /* Inter-Bold.ttf in Resources */,
 				9D46F8F4E551488B80B922C1 /* Inter-ExtraBold.ttf in Resources */,
 				55086197ACC64500A367BCF8 /* Inter-ExtraLight.ttf in Resources */,
+				CC8B4DF828778D85005FE1B9 /* GoogleService-Info.plist in Resources */,
 				E637ECDCCED9485BAF0F1D84 /* Inter-Light.ttf in Resources */,
 				52D604539A194A888458C9D9 /* Inter-Medium.ttf in Resources */,
 				B6F9AE0A472C4BF98E56DC7E /* Inter-Regular.ttf in Resources */,
-				CC8EA20A287774EF00E32BCB /* GoogleService-Info.plist in Resources */,
 				D74631C1448240E8B294857C /* Inter-SemiBold.ttf in Resources */,
 				A4769D43FC02472490872B83 /* Inter-Thin.ttf in Resources */,
 			);
