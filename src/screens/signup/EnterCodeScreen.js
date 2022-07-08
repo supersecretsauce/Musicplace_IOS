@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,21 +11,13 @@ import {
 } from 'react-native';
 import {useState, useContext} from 'react';
 import {Context} from '../../context/Context';
-import {getAuth, PhoneAuthProvider, signInWithCredential} from 'firebase/auth';
-import {app, db} from '../../../firebase';
-import React from 'react';
 import {setDoc, doc} from 'firebase/firestore';
-
-const auth = getAuth();
-app;
-db;
 
 const EnterCodeScreen = ({navigation}) => {
   const [inputValue, setInputValue] = useState();
   const [showEnterDone, setShowEnterDone] = useState(false);
-  const {verificationId, setVerificationId} = useContext(Context);
   const [verificationCode, setVerificationCode] = useState();
-  const {userData, setUserData} = useContext(Context);
+  const {confirm} = useContext(Context);
 
   const goBack = () => {
     navigation.navigate('PhoneNumberScreen');
@@ -36,7 +29,9 @@ const EnterCodeScreen = ({navigation}) => {
   };
 
   const formatCode = text => {
-    if (!text) return text;
+    if (!text) {
+      return text;
+    }
     const code = text.replace(/[^\d]/g, '');
     const codeLength = code.length;
     if (codeLength <= 5) {
@@ -50,26 +45,12 @@ const EnterCodeScreen = ({navigation}) => {
   };
 
   let enterCode = async () => {
-    navigation.navigate('CreateUsernameScreen');
-
     try {
-      setVerificationId(verificationId);
-      const credential = PhoneAuthProvider.credential(
-        verificationId,
-        verificationCode,
-      );
-      let data;
-      await signInWithCredential(auth, credential).then(userData => {
-        data = userData.user;
-        setUserData(data);
-        setDoc(doc(db, 'users', data.uid), {
-          phoneNumber: data.phoneNumber,
-          createdAt: data.metadata.creationTime,
-          lastLoginAt: data.metadata.lastSignInTime,
-        });
-      });
-    } catch (err) {
-      console.log(err);
+      await confirm.confirm(verificationCode);
+      navigation.navigate('CreateUsernameScreen');
+    } catch (error) {
+      console.log('Invalid code.');
+      return;
     }
   };
 

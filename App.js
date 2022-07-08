@@ -12,17 +12,16 @@ import {useState} from 'react';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [verificationId, setVerificationId] = useState('');
-  const [userData, setUserData] = useState(null);
+  // const [verificationId, setVerificationId] = useState('');
+  // const [userData, setUserData] = useState(null);
+  const [confirm, setConfirm] = useState(null);
 
   return (
     <NavigationContainer>
       <Context.Provider
         value={{
-          verificationId,
-          setVerificationId,
-          userData,
-          setUserData,
+          confirm,
+          setConfirm,
         }}>
         <Stack.Navigator
           screenOptions={{

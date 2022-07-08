@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,7 +9,6 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import React from 'react';
 import {useState, useContext} from 'react';
 import {Context} from '../../context/Context';
 import auth from '@react-native-firebase/auth';
@@ -17,7 +17,7 @@ const PhoneNumber = ({navigation}) => {
   const [inputValue, setInputValue] = useState('');
   const [showSubmitDone, setShowSubmitDone] = useState(false);
   const [firebaseNumberFormat, setFirebaseNumberFormat] = useState('');
-  const {verificationId, setVerificationId} = useContext(Context);
+  const {setConfirm} = useContext(Context);
 
   const goBack = () => {
     navigation.navigate('WelcomeScreen');
@@ -75,10 +75,15 @@ const PhoneNumber = ({navigation}) => {
   };
 
   async function signInWithPhoneNumber() {
-    const confirmation = await auth().signInWithPhoneNumber(
-      firebaseNumberFormat,
-    );
-    console.log(confirmation.confirm);
+    try {
+      const confirmation = await auth().signInWithPhoneNumber(
+        firebaseNumberFormat,
+      );
+      setConfirm(confirmation);
+      navigation.navigate('EnterCodeScreen');
+    } catch (error) {
+      return signInWithPhoneNumber;
+    }
   }
 
   return (

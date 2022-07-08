@@ -1,3 +1,4 @@
+import React, {useState, useContext} from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,9 +11,6 @@ import {
 } from 'react-native';
 import Color from '../../assets/utilities/Colors';
 import {Context} from '../../context/Context';
-import {setDoc, doc} from 'firebase/firestore';
-import {db} from '../../../firebase';
-import React, {useState, useContext} from 'react';
 
 const CreateUsernameScreen = ({navigation}) => {
   const [username, setUsername] = useState('');
