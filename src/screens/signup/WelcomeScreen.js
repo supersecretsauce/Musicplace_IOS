@@ -1,5 +1,5 @@
-import {StyleSheet, Text, View, SafeAreaView, Image} from 'react-native';
 import React from 'react';
+import {StyleSheet, Text, View, SafeAreaView, Image} from 'react-native';
 import {TouchableOpacity} from 'react-native';
 import Color from '../../assets/utilities/Colors';
 
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
   },
   signUp: {
     color: 'white',
-    fontFamily: 'Inter-Thin',
+    fontFamily: 'Inter-Black',
     fontWeight: '500',
     fontSize: 40,
   },
@@ -62,12 +62,13 @@ const styles = StyleSheet.create({
   },
   signupFor: {
     color: 'white',
-    // fontFamily: 'Inter_500Medium',
+    fontFamily: 'Inter-Medium',
     fontSize: 40,
   },
   musicplace: {
     color: 'white',
-    // fontFamily: 'Inter_700Bold',
+    fontFamily: 'Inter-Bold',
+    fontWeight: '600',
     fontSize: 45,
   },
   captionContainer: {
@@ -80,6 +81,7 @@ const styles = StyleSheet.create({
     marginLeft: 7,
     color: 'white',
     fontSize: 16,
+    fontFamily: 'Inter-Regular',
   },
   signUpBtn: {
     backgroundColor: Color.red,
@@ -91,14 +93,14 @@ const styles = StyleSheet.create({
   },
   signUpText: {
     color: 'white',
-    // fontFamily: 'Inter_700Bold',
+    fontFamily: 'Inter-Bold',
     fontSize: 20,
     textAlign: 'center',
   },
   login: {
     color: Color.red,
     marginTop: 24,
-    // fontFamily: 'Inter_700Bold',
+    fontFamily: 'Inter-Bold',
     textAlign: 'center',
     fontSize: 16,
   },
@@ -109,6 +111,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginLeft: 37,
     fontSize: 12,
+    fontFamily: 'Inter-Regular',
   },
   highlight: {
     color: 'white',
