@@ -11,10 +11,8 @@ import {
 } from 'react-native';
 import {useState, useContext} from 'react';
 import {Context} from '../../context/Context';
-import {setDoc, doc} from 'firebase/firestore';
 
 const EnterCodeScreen = ({navigation}) => {
-  const [inputValue, setInputValue] = useState();
   const [showEnterDone, setShowEnterDone] = useState(false);
   const [verificationCode, setVerificationCode] = useState();
   const {confirm} = useContext(Context);
@@ -77,7 +75,8 @@ const EnterCodeScreen = ({navigation}) => {
             placeholder="123456"
             placeholderTextColor="grey"
             value={verificationCode}
-            onChangeText={text => handleInput(text)}></TextInput>
+            onChangeText={text => handleInput(text)}
+          />
         </View>
       </View>
       <View style={styles.nextBtnContainer}>

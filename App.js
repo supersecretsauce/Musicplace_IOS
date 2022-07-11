@@ -6,15 +6,16 @@ import WelcomeScreen from './src/screens/signup/WelcomeScreen';
 import PhoneNumberScreen from './src/screens/signup/PhoneNumberScreen';
 import EnterCodeScreen from './src/screens/signup/EnterCodeScreen';
 import CreateUsernameScreen from './src/screens/signup/CreateUsernameScreen';
+import ConnectSpotifyScreen from './src/screens/signup/ConnectSpotifyScreen';
 import {Context} from './src/context/Context';
 import {useState} from 'react';
+import {firebase} from '@react-native-firebase/firestore';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  // const [verificationId, setVerificationId] = useState('');
-  // const [userData, setUserData] = useState(null);
   const [confirm, setConfirm] = useState(null);
+  const user = firebase.auth().currentUser;
 
   return (
     <NavigationContainer>
@@ -22,6 +23,7 @@ export default function App() {
         value={{
           confirm,
           setConfirm,
+          user,
         }}>
         <Stack.Navigator
           screenOptions={{
@@ -36,6 +38,10 @@ export default function App() {
           <Stack.Screen
             name="CreateUsernameScreen"
             component={CreateUsernameScreen}
+          />
+          <Stack.Screen
+            name="ConnectSpotifyScreen"
+            component={ConnectSpotifyScreen}
           />
         </Stack.Navigator>
       </Context.Provider>

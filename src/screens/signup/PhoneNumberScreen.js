@@ -79,6 +79,7 @@ const PhoneNumber = ({navigation}) => {
       const confirmation = await auth().signInWithPhoneNumber(
         firebaseNumberFormat,
       );
+
       setConfirm(confirmation);
       navigation.navigate('EnterCodeScreen');
     } catch (error) {
