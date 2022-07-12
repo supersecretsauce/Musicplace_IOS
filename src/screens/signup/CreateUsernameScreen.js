@@ -51,14 +51,17 @@ const CreateUsernameScreen = ({navigation}) => {
 
   const createUsername = async () => {
     try {
-      firestore().collection('usernames').doc(username).set({
-        UID: user.uid,
-      });
-
-      firestore().collection('users').doc(user.uid).set({
+      await firestore().collection('users').doc(user.uid).set({
         phoneNumber: user.phoneNumber,
         createdAt: user.metadata.creationTime,
         lastSignIn: user.metadata.lastSignInTime,
+      });
+    } catch (error) {
+      return;
+    }
+    try {
+      await firestore().collection('usernames').doc(username).set({
+        UID: user.uid,
       });
     } catch (error) {
       setTakenUsername(true);

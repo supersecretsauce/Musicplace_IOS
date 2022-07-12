@@ -10,8 +10,12 @@ import {
 import Color from '../../assets/utilities/Colors';
 import React from 'react';
 import {authorize} from 'react-native-app-auth';
+import {useContext} from 'react';
+import {Context} from '../../context/Context';
 
 const ConnectSpotifyScreen = ({navigation}) => {
+  const {setAccountCreated} = useContext(Context);
+
   const goBack = () => {
     navigation.navigate('CreateUsernameScreen');
   };
@@ -27,9 +31,9 @@ const ConnectSpotifyScreen = ({navigation}) => {
     },
   };
 
-  const doSomeShit = async () => {
+  const connectSpotify = async () => {
     const authState = await authorize(config);
-    console.log(authState);
+    setAccountCreated(true);
   };
 
   return (
@@ -50,7 +54,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
         </Text>
       </View>
       <View style={styles.spotifyBtnContainer}>
-        <TouchableOpacity onPress={doSomeShit} style={styles.spotifyBtn}>
+        <TouchableOpacity onPress={connectSpotify} style={styles.spotifyBtn}>
           <Text style={styles.spotifyText}>Connect with Spotify</Text>
         </TouchableOpacity>
       </View>
