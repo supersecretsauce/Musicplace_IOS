@@ -9,11 +9,29 @@ import {
 } from 'react-native';
 import Color from '../../assets/utilities/Colors';
 import React from 'react';
+import {authorize} from 'react-native-app-auth';
 
 const ConnectSpotifyScreen = ({navigation}) => {
   const goBack = () => {
     navigation.navigate('CreateUsernameScreen');
   };
+
+  const config = {
+    clientId: '501638f5cfb04abfb61d039e370c5d99', // available on the app page
+    clientSecret: '8ecf0fe55ab44fcdaec13b54afd19955', // click "show client secret" to see this
+    redirectUrl: 'musicplace-ios:/musicplace-ios-login', // the redirect you defined after creating the app
+    scopes: ['user-read-email', 'playlist-modify-public', 'user-read-private'], // the scopes you need to access
+    serviceConfiguration: {
+      authorizationEndpoint: 'https://accounts.spotify.com/authorize',
+      tokenEndpoint: 'https://accounts.spotify.com/api/token',
+    },
+  };
+
+  const doSomeShit = async () => {
+    const authState = await authorize(config);
+    console.log(authState);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <TouchableWithoutFeedback onPress={goBack}>
@@ -32,7 +50,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
         </Text>
       </View>
       <View style={styles.spotifyBtnContainer}>
-        <TouchableOpacity style={styles.spotifyBtn}>
+        <TouchableOpacity onPress={doSomeShit} style={styles.spotifyBtn}>
           <Text style={styles.spotifyText}>Connect with Spotify</Text>
         </TouchableOpacity>
       </View>

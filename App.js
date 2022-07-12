@@ -7,6 +7,7 @@ import PhoneNumberScreen from './src/screens/signup/PhoneNumberScreen';
 import EnterCodeScreen from './src/screens/signup/EnterCodeScreen';
 import CreateUsernameScreen from './src/screens/signup/CreateUsernameScreen';
 import ConnectSpotifyScreen from './src/screens/signup/ConnectSpotifyScreen';
+
 import {Context} from './src/context/Context';
 import {useState} from 'react';
 import {firebase} from '@react-native-firebase/firestore';
