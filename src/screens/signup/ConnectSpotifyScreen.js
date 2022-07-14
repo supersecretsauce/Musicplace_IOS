@@ -12,9 +12,10 @@ import React from 'react';
 import {authorize} from 'react-native-app-auth';
 import {useContext} from 'react';
 import {Context} from '../../context/Context';
+import firestore from '@react-native-firebase/firestore';
 
 const ConnectSpotifyScreen = ({navigation}) => {
-  const {setAccountCreated} = useContext(Context);
+  const {userInfo} = useContext(Context);
 
   const goBack = () => {
     navigation.navigate('CreateUsernameScreen');
@@ -33,7 +34,33 @@ const ConnectSpotifyScreen = ({navigation}) => {
 
   const connectSpotify = async () => {
     const authState = await authorize(config);
-    setAccountCreated(true);
+    try {
+      await firestore().collection('users').doc(userInfo.uid).set({
+        phoneNumber: userInfo.phoneNumber,
+        createdAt: userInfo.metadata.creationTime,
+        lastSignIn: userInfo.metadata.lastSignInTime,
+        connectedWithSpotify: 'yes',
+        spotifyAccessToken: authState.accessToken,
+        spotifyAccessTokenExpirationDate: authState.accessTokenExpirationDate,
+        spotifyRefreshToken: authState.refreshToken,
+        spotifyTokenType: authState.tokenType,
+      });
+    } catch (error) {
+      return;
+    }
+  };
+
+  const maybeLater = async () => {
+    try {
+      await firestore().collection('users').doc(userInfo.uid).set({
+        phoneNumber: userInfo.phoneNumber,
+        createdAt: userInfo.metadata.creationTime,
+        lastSignIn: userInfo.metadata.lastSignInTime,
+        connectedWithSpotify: 'no',
+      });
+    } catch (error) {
+      return;
+    }
   };
 
   return (
@@ -59,7 +86,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
         </TouchableOpacity>
       </View>
       <View style={styles.laterBtnContainer}>
-        <TouchableOpacity style={styles.laterBtn}>
+        <TouchableOpacity onPress={maybeLater} style={styles.laterBtn}>
           <Text style={styles.laterText}>Maybe Later</Text>
         </TouchableOpacity>
       </View>

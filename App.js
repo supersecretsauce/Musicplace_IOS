@@ -8,16 +8,32 @@ import CreateUsernameScreen from './src/screens/signup/CreateUsernameScreen';
 import ConnectSpotifyScreen from './src/screens/signup/ConnectSpotifyScreen';
 import HomeScreen from './src/screens/home/HomeScreen';
 import {Context} from './src/context/Context';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {firebase} from '@react-native-firebase/firestore';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import auth from '@react-native-firebase/auth';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
   const [confirm, setConfirm] = useState(null);
-  const user = firebase.auth().currentUser;
+  const userInfo = firebase.auth().currentUser;
   const [accountCreated, setAccountCreated] = useState(false);
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState();
+
+  // Handle user state changes
+  function onAuthStateChanged(user) {
+    setUser(user);
+    if (initializing) {
+      setInitializing(false);
+    }
+  }
+
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
 
   return (
     <NavigationContainer>
@@ -25,7 +41,7 @@ export default function App() {
         value={{
           confirm,
           setConfirm,
-          user,
+          userInfo,
           setAccountCreated,
         }}>
         {accountCreated ? (

@@ -12,13 +12,12 @@ import {
 import Color from '../../assets/utilities/Colors';
 import {Context} from '../../context/Context';
 import firestore from '@react-native-firebase/firestore';
-import {firebase} from '@react-native-firebase/firestore';
 
 const CreateUsernameScreen = ({navigation}) => {
   const [username, setUsername] = useState('');
   const [submitDone, setSubmitDone] = useState(false);
   const [takenUsername, setTakenUsername] = useState(false);
-  const user = firebase.auth().currentUser;
+  const {userInfo} = useContext(Context);
 
   const goBack = () => {
     navigation.navigate('EnterCodeScreen');
@@ -51,17 +50,8 @@ const CreateUsernameScreen = ({navigation}) => {
 
   const createUsername = async () => {
     try {
-      await firestore().collection('users').doc(user.uid).set({
-        phoneNumber: user.phoneNumber,
-        createdAt: user.metadata.creationTime,
-        lastSignIn: user.metadata.lastSignInTime,
-      });
-    } catch (error) {
-      return;
-    }
-    try {
       await firestore().collection('usernames').doc(username).set({
-        UID: user.uid,
+        UID: userInfo.uid,
       });
     } catch (error) {
       setTakenUsername(true);
