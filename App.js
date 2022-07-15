@@ -9,30 +9,30 @@ import ConnectSpotifyScreen from './src/screens/signup/ConnectSpotifyScreen';
 import HomeScreen from './src/screens/home/HomeScreen';
 import {Context} from './src/context/Context';
 import {useState, useEffect} from 'react';
-import {firebase} from '@react-native-firebase/firestore';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import auth from '@react-native-firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
   const [confirm, setConfirm] = useState(null);
-  const userInfo = firebase.auth().currentUser;
-  const [accountCreated, setAccountCreated] = useState(false);
-  const [initializing, setInitializing] = useState(true);
-  const [user, setUser] = useState();
-
-  // Handle user state changes
-  function onAuthStateChanged(user) {
-    setUser(user);
-    if (initializing) {
-      setInitializing(false);
-    }
-  }
+  const [userLogin, setUserLogin] = useState(false);
 
   useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return subscriber; // unsubscribe on unmount
+    const checkUserLogin = async () => {
+      try {
+        const value = await AsyncStorage.getItem('user');
+        if (value === null) {
+          console.log('false');
+        } else {
+          setUserLogin(true);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    checkUserLogin();
   }, []);
 
   return (
@@ -41,10 +41,9 @@ export default function App() {
         value={{
           confirm,
           setConfirm,
-          userInfo,
-          setAccountCreated,
+          setUserLogin,
         }}>
-        {accountCreated ? (
+        {userLogin ? (
           <Tab.Navigator
             screenOptions={{
               headerShown: false,

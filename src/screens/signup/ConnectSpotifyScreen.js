@@ -8,14 +8,16 @@ import {
   Image,
 } from 'react-native';
 import Color from '../../assets/utilities/Colors';
-import React from 'react';
-import {authorize} from 'react-native-app-auth';
-import {useContext} from 'react';
+import React, {useContext} from 'react';
 import {Context} from '../../context/Context';
+import {authorize} from 'react-native-app-auth';
 import firestore from '@react-native-firebase/firestore';
+import {firebase} from '@react-native-firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ConnectSpotifyScreen = ({navigation}) => {
-  const {userInfo} = useContext(Context);
+  const userInfo = firebase.auth().currentUser;
+  const {setUserLogin} = useContext(Context);
 
   const goBack = () => {
     navigation.navigate('CreateUsernameScreen');
@@ -48,6 +50,12 @@ const ConnectSpotifyScreen = ({navigation}) => {
     } catch (error) {
       return;
     }
+    try {
+      await AsyncStorage.setItem('user', 'true');
+    } catch (e) {
+      console.log(e);
+    }
+    setUserLogin(true);
   };
 
   const maybeLater = async () => {
@@ -61,6 +69,12 @@ const ConnectSpotifyScreen = ({navigation}) => {
     } catch (error) {
       return;
     }
+    try {
+      await AsyncStorage.setItem('user', 'true');
+    } catch (e) {
+      console.log(e);
+    }
+    setUserLogin(true);
   };
 
   return (

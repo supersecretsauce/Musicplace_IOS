@@ -1,11 +1,18 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, SafeAreaView} from 'react-native';
 import React from 'react';
+import auth from '@react-native-firebase/auth';
 
 const HomeScreen = () => {
+  const signOut = async () => {
+    auth()
+      .signOut()
+      .then(() => console.log('User signed out!'));
+  };
+
   return (
-    <View>
-      <Text>HomeScreen</Text>
-    </View>
+    <SafeAreaView>
+      <Text onPress={signOut}>HomeScreen</Text>
+    </SafeAreaView>
   );
 };
 

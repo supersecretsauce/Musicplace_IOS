@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -10,14 +10,14 @@ import {
   Image,
 } from 'react-native';
 import Color from '../../assets/utilities/Colors';
-import {Context} from '../../context/Context';
 import firestore from '@react-native-firebase/firestore';
+import {firebase} from '@react-native-firebase/firestore';
 
 const CreateUsernameScreen = ({navigation}) => {
   const [username, setUsername] = useState('');
   const [submitDone, setSubmitDone] = useState(false);
   const [takenUsername, setTakenUsername] = useState(false);
-  const {userInfo} = useContext(Context);
+  const userInfo = firebase.auth().currentUser;
 
   const goBack = () => {
     navigation.navigate('EnterCodeScreen');
