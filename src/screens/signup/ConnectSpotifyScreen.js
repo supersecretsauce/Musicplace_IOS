@@ -8,10 +8,17 @@ import {
   Image,
 } from 'react-native';
 import Color from '../../assets/utilities/Colors';
-import React from 'react';
+import React, {useContext} from 'react';
+import {Context} from '../../context/Context';
 import {authorize} from 'react-native-app-auth';
+import firestore from '@react-native-firebase/firestore';
+import {firebase} from '@react-native-firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const ConnectSpotifyScreen = ({navigation}) => {
+  const userInfo = firebase.auth().currentUser;
+  const {setUserLogin} = useContext(Context);
+
   const goBack = () => {
     navigation.navigate('CreateUsernameScreen');
   };
@@ -27,9 +34,47 @@ const ConnectSpotifyScreen = ({navigation}) => {
     },
   };
 
-  const doSomeShit = async () => {
+  const connectSpotify = async () => {
     const authState = await authorize(config);
-    console.log(authState);
+    try {
+      await firestore().collection('users').doc(userInfo.uid).set({
+        phoneNumber: userInfo.phoneNumber,
+        createdAt: userInfo.metadata.creationTime,
+        lastSignIn: userInfo.metadata.lastSignInTime,
+        connectedWithSpotify: 'yes',
+        spotifyAccessToken: authState.accessToken,
+        spotifyAccessTokenExpirationDate: authState.accessTokenExpirationDate,
+        spotifyRefreshToken: authState.refreshToken,
+        spotifyTokenType: authState.tokenType,
+      });
+    } catch (error) {
+      return;
+    }
+    try {
+      await AsyncStorage.setItem('user', 'true');
+    } catch (e) {
+      console.log(e);
+    }
+    setUserLogin(true);
+  };
+
+  const maybeLater = async () => {
+    try {
+      await firestore().collection('users').doc(userInfo.uid).set({
+        phoneNumber: userInfo.phoneNumber,
+        createdAt: userInfo.metadata.creationTime,
+        lastSignIn: userInfo.metadata.lastSignInTime,
+        connectedWithSpotify: 'no',
+      });
+    } catch (error) {
+      return;
+    }
+    try {
+      await AsyncStorage.setItem('user', 'true');
+    } catch (e) {
+      console.log(e);
+    }
+    setUserLogin(true);
   };
 
   return (
@@ -50,12 +95,12 @@ const ConnectSpotifyScreen = ({navigation}) => {
         </Text>
       </View>
       <View style={styles.spotifyBtnContainer}>
-        <TouchableOpacity onPress={doSomeShit} style={styles.spotifyBtn}>
+        <TouchableOpacity onPress={connectSpotify} style={styles.spotifyBtn}>
           <Text style={styles.spotifyText}>Connect with Spotify</Text>
         </TouchableOpacity>
       </View>
       <View style={styles.laterBtnContainer}>
-        <TouchableOpacity style={styles.laterBtn}>
+        <TouchableOpacity onPress={maybeLater} style={styles.laterBtn}>
           <Text style={styles.laterText}>Maybe Later</Text>
         </TouchableOpacity>
       </View>

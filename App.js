@@ -1,5 +1,4 @@
 import React from 'react';
-// import {Node} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import WelcomeScreen from './src/screens/signup/WelcomeScreen';
@@ -7,16 +6,34 @@ import PhoneNumberScreen from './src/screens/signup/PhoneNumberScreen';
 import EnterCodeScreen from './src/screens/signup/EnterCodeScreen';
 import CreateUsernameScreen from './src/screens/signup/CreateUsernameScreen';
 import ConnectSpotifyScreen from './src/screens/signup/ConnectSpotifyScreen';
-
+import HomeScreen from './src/screens/home/HomeScreen';
 import {Context} from './src/context/Context';
-import {useState} from 'react';
-import {firebase} from '@react-native-firebase/firestore';
-
-const Stack = createNativeStackNavigator();
+import {useState, useEffect} from 'react';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function App() {
+  const Stack = createNativeStackNavigator();
+  const Tab = createBottomTabNavigator();
   const [confirm, setConfirm] = useState(null);
-  const user = firebase.auth().currentUser;
+  const [userLogin, setUserLogin] = useState(false);
+
+  useEffect(() => {
+    const checkUserLogin = async () => {
+      try {
+        const value = await AsyncStorage.getItem('user');
+        if (value === null) {
+          console.log('false');
+        } else {
+          setUserLogin(true);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    checkUserLogin();
+  }, []);
 
   return (
     <NavigationContainer>
@@ -24,27 +41,36 @@ export default function App() {
         value={{
           confirm,
           setConfirm,
-          user,
+          setUserLogin,
         }}>
-        <Stack.Navigator
-          screenOptions={{
-            headerShown: false,
-          }}>
-          <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
-          <Stack.Screen
-            name="PhoneNumberScreen"
-            component={PhoneNumberScreen}
-          />
-          <Stack.Screen name="EnterCodeScreen" component={EnterCodeScreen} />
-          <Stack.Screen
-            name="CreateUsernameScreen"
-            component={CreateUsernameScreen}
-          />
-          <Stack.Screen
-            name="ConnectSpotifyScreen"
-            component={ConnectSpotifyScreen}
-          />
-        </Stack.Navigator>
+        {userLogin ? (
+          <Tab.Navigator
+            screenOptions={{
+              headerShown: false,
+            }}>
+            <Tab.Screen name="HomeScreen" component={HomeScreen} />
+          </Tab.Navigator>
+        ) : (
+          <Stack.Navigator
+            screenOptions={{
+              headerShown: false,
+            }}>
+            <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
+            <Stack.Screen
+              name="PhoneNumberScreen"
+              component={PhoneNumberScreen}
+            />
+            <Stack.Screen name="EnterCodeScreen" component={EnterCodeScreen} />
+            <Stack.Screen
+              name="CreateUsernameScreen"
+              component={CreateUsernameScreen}
+            />
+            <Stack.Screen
+              name="ConnectSpotifyScreen"
+              component={ConnectSpotifyScreen}
+            />
+          </Stack.Navigator>
+        )}
       </Context.Provider>
     </NavigationContainer>
   );
