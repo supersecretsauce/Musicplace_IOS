@@ -10,11 +10,14 @@ import firestore from '@react-native-firebase/firestore';
 import {firebase} from '@react-native-firebase/firestore';
 import Colors from '../../assets/utilities/Colors';
 import {authorize} from 'react-native-app-auth';
+import axios from 'axios';
 
 const PostASongScreen = () => {
   const userInfo = firebase.auth().currentUser;
   const [spotifyConnected, setSpotifyConnected] = useState();
   const [troll, setTroll] = useState(false);
+  const spotifyTrackURL = 'https://api.spotify.com/v1/me/tracks';
+  const [accessToken, setAccessToken] = useState();
 
   const config = {
     clientId: '501638f5cfb04abfb61d039e370c5d99', // available on the app page
@@ -27,6 +30,21 @@ const PostASongScreen = () => {
     },
   };
 
+  const getSpotifyLibrary = () => {
+    axios
+      .get(spotifyTrackURL, {
+        headers: {
+          Authorization: 'Bearer ' + accessToken,
+        },
+      })
+      .then(response => {
+        console.log(response.data);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
   useEffect(() => {
     const subscriber = firestore()
       .collection('users')
@@ -37,6 +55,7 @@ const PostASongScreen = () => {
         }
         if (documentSnapshot.data().connectedWithSpotify === true) {
           setSpotifyConnected(true);
+          setAccessToken(documentSnapshot.data().spotifyAccessToken);
         }
       });
 
@@ -68,7 +87,9 @@ const PostASongScreen = () => {
       {spotifyConnected ? (
         <SafeAreaView style={styles.container}>
           <TouchableOpacity>
-            <Text style={styles.test}>Test</Text>
+            <Text onPress={getSpotifyLibrary} style={styles.test}>
+              Test
+            </Text>
           </TouchableOpacity>
         </SafeAreaView>
       ) : (
