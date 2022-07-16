@@ -12,6 +12,7 @@ import {useState, useEffect} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {StyleSheet} from 'react-native';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -53,17 +54,32 @@ export default function App() {
                 if (route.name === 'Home') {
                   iconName = focused ? 'home-sharp' : 'home-outline';
                 } else if (route.name === 'Discover') {
-                  iconName = focused ? 'radio-sharp' : 'radio-outline';
+                  iconName = focused ? 'ear-sharp' : 'ear-outline';
+                } else if (route.name === 'Post') {
+                  iconName = focused ? 'add-sharp' : 'add-outline';
+                } else if (route.name === 'Activity') {
+                  iconName = focused
+                    ? 'notifications-sharp'
+                    : 'notifications-outline';
+                } else if (route.name === 'Profile') {
+                  iconName = focused ? 'person-sharp' : 'person-outline';
                 }
 
                 // You can return any component that you like here!
                 return <Ionicons name={iconName} size={size} color={color} />;
               },
-              tabBarActiveTintColor: 'tomato',
-              tabBarInactiveTintColor: 'gray',
+              tabBarActiveTintColor: 'white',
+              tabBarInactiveTintColor: 'grey',
+              tabBarInactiveBackgroundColor: 'black',
+              tabBarActiveBackgroundColor: 'black',
+              headerShown: false,
+              tabBarStyle: {backgroundColor: 'black'},
             })}>
             <Tab.Screen name="Home" component={HomeScreen} />
             <Tab.Screen name="Discover" component={HomeScreen} />
+            <Tab.Screen name="Post" component={HomeScreen} />
+            <Tab.Screen name="Activity" component={HomeScreen} />
+            <Tab.Screen name="Profile" component={HomeScreen} />
           </Tab.Navigator>
         ) : (
           <Stack.Navigator
@@ -90,3 +106,8 @@ export default function App() {
     </NavigationContainer>
   );
 }
+const styles = StyleSheet.create({
+  navBar: {
+    backgroundColor: 'black',
+  },
+});

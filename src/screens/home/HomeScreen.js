@@ -3,19 +3,14 @@ import React from 'react';
 import auth from '@react-native-firebase/auth';
 
 const HomeScreen = () => {
-  const signOut = async () => {
-    auth()
-      .signOut()
-      .then(() => console.log('User signed out!'));
-  };
-
-  return (
-    <SafeAreaView>
-      <Text onPress={signOut}>HomeScreen</Text>
-    </SafeAreaView>
-  );
+  return <SafeAreaView style={styles.container}></SafeAreaView>;
 };
 
 export default HomeScreen;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'black',
+  },
+});
