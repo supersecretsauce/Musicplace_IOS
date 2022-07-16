@@ -7,6 +7,7 @@ import EnterCodeScreen from './src/screens/signup/EnterCodeScreen';
 import CreateUsernameScreen from './src/screens/signup/CreateUsernameScreen';
 import ConnectSpotifyScreen from './src/screens/signup/ConnectSpotifyScreen';
 import HomeScreen from './src/screens/home/HomeScreen';
+import PostASongScreen from './src/screens/post/PostASongScreen';
 import {Context} from './src/context/Context';
 import {useState, useEffect} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -20,12 +21,13 @@ export default function App() {
   const [confirm, setConfirm] = useState(null);
   const [userLogin, setUserLogin] = useState(false);
 
+  // AsyncStorage.clear();
   useEffect(() => {
     const checkUserLogin = async () => {
       try {
         const value = await AsyncStorage.getItem('user');
         if (value === null) {
-          console.log('false');
+          return;
         } else {
           setUserLogin(true);
         }
@@ -77,7 +79,7 @@ export default function App() {
             })}>
             <Tab.Screen name="Home" component={HomeScreen} />
             <Tab.Screen name="Discover" component={HomeScreen} />
-            <Tab.Screen name="Post" component={HomeScreen} />
+            <Tab.Screen name="Post" component={PostASongScreen} />
             <Tab.Screen name="Activity" component={HomeScreen} />
             <Tab.Screen name="Profile" component={HomeScreen} />
           </Tab.Navigator>

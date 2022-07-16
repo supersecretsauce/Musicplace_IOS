@@ -27,7 +27,12 @@ const ConnectSpotifyScreen = ({navigation}) => {
     clientId: '501638f5cfb04abfb61d039e370c5d99', // available on the app page
     clientSecret: '8ecf0fe55ab44fcdaec13b54afd19955', // click "show client secret" to see this
     redirectUrl: 'musicplace-ios:/musicplace-ios-login', // the redirect you defined after creating the app
-    scopes: ['user-read-email', 'playlist-modify-public', 'user-read-private'], // the scopes you need to access
+    scopes: [
+      'user-read-email',
+      'playlist-modify-public',
+      'user-read-private',
+      'user-library-read',
+    ], // the scopes you need to access
     serviceConfiguration: {
       authorizationEndpoint: 'https://accounts.spotify.com/authorize',
       tokenEndpoint: 'https://accounts.spotify.com/api/token',
@@ -41,7 +46,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
         phoneNumber: userInfo.phoneNumber,
         createdAt: userInfo.metadata.creationTime,
         lastSignIn: userInfo.metadata.lastSignInTime,
-        connectedWithSpotify: 'yes',
+        connectedWithSpotify: true,
         spotifyAccessToken: authState.accessToken,
         spotifyAccessTokenExpirationDate: authState.accessTokenExpirationDate,
         spotifyRefreshToken: authState.refreshToken,
@@ -64,7 +69,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
         phoneNumber: userInfo.phoneNumber,
         createdAt: userInfo.metadata.creationTime,
         lastSignIn: userInfo.metadata.lastSignInTime,
-        connectedWithSpotify: 'no',
+        connectedWithSpotify: false,
       });
     } catch (error) {
       return;
