@@ -11,6 +11,7 @@ import {Context} from './src/context/Context';
 import {useState, useEffect} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -45,10 +46,24 @@ export default function App() {
         }}>
         {userLogin ? (
           <Tab.Navigator
-            screenOptions={{
-              headerShown: false,
-            }}>
-            <Tab.Screen name="HomeScreen" component={HomeScreen} />
+            screenOptions={({route}) => ({
+              tabBarIcon: ({focused, color, size}) => {
+                let iconName;
+
+                if (route.name === 'Home') {
+                  iconName = focused ? 'home-sharp' : 'home-outline';
+                } else if (route.name === 'Discover') {
+                  iconName = focused ? 'radio-sharp' : 'radio-outline';
+                }
+
+                // You can return any component that you like here!
+                return <Ionicons name={iconName} size={size} color={color} />;
+              },
+              tabBarActiveTintColor: 'tomato',
+              tabBarInactiveTintColor: 'gray',
+            })}>
+            <Tab.Screen name="Home" component={HomeScreen} />
+            <Tab.Screen name="Discover" component={HomeScreen} />
           </Tab.Navigator>
         ) : (
           <Stack.Navigator
