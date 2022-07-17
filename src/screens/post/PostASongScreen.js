@@ -11,13 +11,16 @@ import {firebase} from '@react-native-firebase/firestore';
 import Colors from '../../assets/utilities/Colors';
 import {authorize} from 'react-native-app-auth';
 import axios from 'axios';
+import {Buffer} from 'buffer';
 
 const PostASongScreen = () => {
   const userInfo = firebase.auth().currentUser;
   const [spotifyConnected, setSpotifyConnected] = useState();
   const [troll, setTroll] = useState(false);
-  const spotifyTrackURL = 'https://api.spotify.com/v1/me/tracks';
   const [accessToken, setAccessToken] = useState();
+  const [refreshToken, setRefreshToken] = useState();
+  const spotifyTrackURL = 'https://api.spotify.com/v1/me/tracks';
+  const spotifyRefreshURL = 'https://accounts.spotify.com/api/token';
 
   const config = {
     clientId: '501638f5cfb04abfb61d039e370c5d99', // available on the app page
@@ -44,6 +47,30 @@ const PostASongScreen = () => {
         console.log(error);
       });
   };
+  console.log(refreshToken);
+  const getRefreshToken = async () => {
+    axios
+      .post(spotifyRefreshURL, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization:
+            'Basic ' +
+            Buffer.from(config.clientId + ':' + config.clientSecret).toString(
+              'base64',
+            ),
+        },
+        data: {
+          grant_type: 'refresh_token',
+          refresh_token: refreshToken,
+        },
+      })
+      .then(response => {
+        console.log(response);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
 
   useEffect(() => {
     const subscriber = firestore()
@@ -56,6 +83,7 @@ const PostASongScreen = () => {
         if (documentSnapshot.data().connectedWithSpotify === true) {
           setSpotifyConnected(true);
           setAccessToken(documentSnapshot.data().spotifyAccessToken);
+          setRefreshToken(documentSnapshot.data().spotifyRefreshToken);
         }
       });
 
@@ -89,6 +117,11 @@ const PostASongScreen = () => {
           <TouchableOpacity>
             <Text onPress={getSpotifyLibrary} style={styles.test}>
               Test
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <Text onPress={getRefreshToken} style={styles.test}>
+              refresh
             </Text>
           </TouchableOpacity>
         </SafeAreaView>
