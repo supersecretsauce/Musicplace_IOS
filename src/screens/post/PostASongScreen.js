@@ -12,6 +12,7 @@ import Colors from '../../assets/utilities/Colors';
 import {authorize} from 'react-native-app-auth';
 import axios from 'axios';
 import {Buffer} from 'buffer';
+const qs = require('qs');
 
 const PostASongScreen = () => {
   const userInfo = firebase.auth().currentUser;
@@ -47,17 +48,14 @@ const PostASongScreen = () => {
         console.log(error);
       });
   };
-  console.log(refreshToken);
   const getRefreshToken = async () => {
+    const data = qs.stringify({ grant_type: 'refresh_token', refresh_token: refreshToken });
+    console.log(Buffer.from(config.clientId + ':' + config.clientSecret).toString('base64'));
     axios
-      .post(spotifyRefreshURL, {
+      .post(spotifyRefreshURL, data, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization:
-            'Basic ' +
-            Buffer.from(config.clientId + ':' + config.clientSecret).toString(
-              'base64',
-            ),
+          'Authorization': 'Basic ' + Buffer.from(config.clientId + ':' + config.clientSecret).toString('base64')
         },
         data: {
           grant_type: 'refresh_token',

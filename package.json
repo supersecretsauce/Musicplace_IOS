@@ -19,6 +19,7 @@
     "@react-navigation/native-stack": "^6.6.2",
     "axios": "^0.27.2",
     "firebase": "^9.8.4",
+    "qs": "^6.11.0",
     "react": "18.0.0",
     "react-native": "0.69.1",
     "react-native-app-auth": "^6.4.3",
