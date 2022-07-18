@@ -34,49 +34,6 @@ const PostASongScreen = () => {
     },
   };
 
-  const getSpotifyLibrary = () => {
-    axios
-      .get(spotifyTrackURL, {
-        headers: {
-          Authorization: 'Bearer ' + accessToken,
-        },
-      })
-      .then(response => {
-        console.log(response.data);
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  };
-  const getRefreshToken = async () => {
-    const data = qs.stringify({
-      grant_type: 'refresh_token',
-      refresh_token: refreshToken,
-    });
-    console.log(
-      Buffer.from(config.clientId + ':' + config.clientSecret).toString(
-        'base64',
-      ),
-    );
-    axios
-      .post(spotifyRefreshURL, data, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization:
-            'Basic ' +
-            Buffer.from(config.clientId + ':' + config.clientSecret).toString(
-              'base64',
-            ),
-        },
-      })
-      .then(response => {
-        console.log(response.data.access_token);
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  };
-
   useEffect(() => {
     const subscriber = firestore()
       .collection('users')
@@ -95,6 +52,55 @@ const PostASongScreen = () => {
     // Stop listening for updates when no longer required
     return () => subscriber();
   }, [userInfo.uid]);
+
+  useEffect(() => {
+    const getSpotifyLibrary = () => {
+      axios
+        .get(spotifyTrackURL, {
+          headers: {
+            Authorization: 'Bearer ' + accessToken,
+          },
+        })
+        .then(response => {
+          console.log(response.data);
+        })
+        .catch(error => {
+          console.log(error);
+          if (error.response.status === '401') {
+            const data = qs.stringify({
+              grant_type: 'refresh_token',
+              refresh_token: refreshToken,
+            });
+            axios
+              .post(spotifyRefreshURL, data, {
+                headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                  Authorization:
+                    'Basic ' +
+                    Buffer.from(
+                      config.clientId + ':' + config.clientSecret,
+                    ).toString('base64'),
+                },
+              })
+              .then(response => {
+                console.log(response.data.access_token);
+                firestore().collection('users').doc(userInfo.uid).set({
+                  spotifyAccessToken: response.data.access_token,
+                  // spotifyAccessTokenExpirationDate:
+                  //   authState.accessTokenExpirationDate,
+                  // spotifyRefreshToken: authState.refreshToken,
+                });
+                setAccessToken(response.data.access_token);
+                getSpotifyLibrary();
+              })
+              .catch(errormsg => {
+                console.log(errormsg);
+              });
+          }
+        });
+    };
+    getSpotifyLibrary();
+  });
 
   const connectSpotify = async () => {
     const authState = await authorize(config);
@@ -120,14 +126,10 @@ const PostASongScreen = () => {
       {spotifyConnected ? (
         <SafeAreaView style={styles.container}>
           <TouchableOpacity>
-            <Text onPress={getSpotifyLibrary} style={styles.test}>
-              Test
-            </Text>
+            <Text style={styles.test}>Test</Text>
           </TouchableOpacity>
           <TouchableOpacity>
-            <Text onPress={getRefreshToken} style={styles.test}>
-              refresh
-            </Text>
+            <Text style={styles.test}>refresh</Text>
           </TouchableOpacity>
         </SafeAreaView>
       ) : (
