@@ -49,17 +49,28 @@ const PostASongScreen = () => {
       });
   };
   const getRefreshToken = async () => {
-    const data = qs.stringify({ grant_type: 'refresh_token', refresh_token: refreshToken });
-    console.log(Buffer.from(config.clientId + ':' + config.clientSecret).toString('base64'));
+    const data = qs.stringify({
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken,
+    });
+    console.log(
+      Buffer.from(config.clientId + ':' + config.clientSecret).toString(
+        'base64',
+      ),
+    );
     axios
       .post(spotifyRefreshURL, data, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': 'Basic ' + Buffer.from(config.clientId + ':' + config.clientSecret).toString('base64')
-        }
+          Authorization:
+            'Basic ' +
+            Buffer.from(config.clientId + ':' + config.clientSecret).toString(
+              'base64',
+            ),
+        },
       })
       .then(response => {
-        console.log(response.data.accessToken);
+        console.log(response.data.access_token);
       })
       .catch(error => {
         console.log(error);
