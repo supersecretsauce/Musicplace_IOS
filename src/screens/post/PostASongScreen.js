@@ -56,14 +56,10 @@ const PostASongScreen = () => {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
           'Authorization': 'Basic ' + Buffer.from(config.clientId + ':' + config.clientSecret).toString('base64')
-        },
-        data: {
-          grant_type: 'refresh_token',
-          refresh_token: refreshToken,
-        },
+        }
       })
       .then(response => {
-        console.log(response);
+        console.log(response.data.accessToken);
       })
       .catch(error => {
         console.log(error);
