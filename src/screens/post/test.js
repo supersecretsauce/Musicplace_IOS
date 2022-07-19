@@ -22,14 +22,8 @@ const TestScreen = () => {
   const spotifyUserInfoURL = 'https://api.spotify.com/v1/me';
   const spotifyTrackURL = 'https://api.spotify.com/v1/me/tracks';
   const spotifyRefreshURL = 'https://accounts.spotify.com/api/token';
-  const spotifyUserPlaylistURL = 'https://api.spotify.com/v1/me/playlists';
-  const spotifyPlaylistItemsURL =
-    'https://api.spotify.com/v1/playlists/playlist_id/tracks';
   const [accessToken, setAccessToken] = useState('');
   const [refreshToken, setRefreshToken] = useState('');
-  const [spotifyID, setSpotifyID] = useState('');
-  const [playlistIDs, setPlaylistIDs] = useState();
-  const [uniquePlaylist, setUniquePlaylist] = useState('');
 
   const config = {
     clientId: '501638f5cfb04abfb61d039e370c5d99', // available on the app page
@@ -66,39 +60,35 @@ const TestScreen = () => {
     checkForSpotifyConnection();
   }, []);
 
-  // get new refresh tokens
-  useEffect(() => {
-    const getRefreshToken = async () => {
-      const data = qs.stringify({
-        grant_type: 'refresh_token',
-        refresh_token: refreshToken,
+  const getRefreshToken = async () => {
+    const data = qs.stringify({
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken,
+    });
+    axios
+      .post(spotifyRefreshURL, data, {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization:
+            'Basic ' +
+            Buffer.from(config.clientId + ':' + config.clientSecret).toString(
+              'base64',
+            ),
+        },
+      })
+      .then(response => {
+        console.log(response.data.access_token);
+        setAccessToken(response.data.access_token);
+        setRefreshToken(response.data.refresh_token);
+      })
+      .catch(error => {
+        console.log(error);
       });
-      axios
-        .post(spotifyRefreshURL, data, {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            Authorization:
-              'Basic ' +
-              Buffer.from(config.clientId + ':' + config.clientSecret).toString(
-                'base64',
-              ),
-          },
-        })
-        .then(response => {
-          console.log(response.data.access_token);
-          setAccessToken(response.data.access_token);
-          setRefreshToken(response.data.refresh_token);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    };
-    getRefreshToken();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  };
 
   // get user info from Spotify
-  useEffect(() => {
+
+  const getUserData = () => {
     if (accessToken) {
       axios
         .get(spotifyUserInfoURL, {
@@ -109,61 +99,30 @@ const TestScreen = () => {
         })
         .then(response => {
           console.log(response.data);
-          setSpotifyID(response.data.id);
         })
         .catch(error => {
           console.log(error);
         });
     }
-  }, [accessToken]);
+  };
 
-  // get a user's playlists
-  useEffect(() => {
-    if (spotifyID) {
-      axios
-        .get(spotifyUserPlaylistURL, {
-          headers: {
-            Authorization: 'Bearer ' + accessToken,
-            'Content-Type': 'application/json',
-          },
-        })
-        .then(response => {
-          setPlaylistIDs(response.data.items.map(playlistID => playlistID.id));
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    }
-  }, [spotifyID, accessToken]);
-
-  // return playlist IDs in a new array
-  useEffect(() => {
-    if (playlistIDs) {
-      setUniquePlaylist(
-        playlistIDs.map(playlistID => {
-          axios
-            .get(`https://api.spotify.com/v1/playlists/${playlistID}/tracks`, {
-              headers: {
-                Authorization: 'Bearer ' + accessToken,
-                'Content-Type': 'application/json',
-              },
-            })
-            .then(response => {
-              console.log(response.data);
-            })
-            .catch(error => {
-              console.log(error);
-            });
-        }),
-      );
-    }
-  }, [playlistIDs, accessToken]);
-
-  useEffect(() => {
-    if (uniquePlaylist) {
-      console.log(uniquePlaylist);
-    }
-  }, [uniquePlaylist]);
+  //   get top tracks or get new access token and THEN get tracks
+  // useEffect(() => {
+  //   if (accessToken) {
+  //     axios
+  //       .get(spotifyTrackURL, {
+  //         headers: {
+  //           Authorization: 'Bearer ' + accessToken,
+  //         },
+  //       })
+  //       .then(response => {
+  //         console.log(response.data);
+  //       })
+  //       .catch(error => {
+  //         console.log(error);
+  //       });
+  //   }
+  // }, [accessToken]);
 
   const connectSpotify = async () => {
     const authState = await authorize(config);
@@ -197,10 +156,14 @@ const TestScreen = () => {
       {spotifyConnected ? (
         <SafeAreaView style={styles.container}>
           <TouchableOpacity>
-            <Text style={styles.test}>Test</Text>
+            <Text onPress={getUserData} style={styles.test}>
+              Test
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity>
-            <Text style={styles.test}>refresh</Text>
+            <Text onPress={getRefreshToken} style={styles.test}>
+              refresh
+            </Text>
           </TouchableOpacity>
         </SafeAreaView>
       ) : (
