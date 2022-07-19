@@ -68,34 +68,37 @@ const TestScreen = () => {
 
   // get new refresh tokens
   useEffect(() => {
-    const getRefreshToken = async () => {
-      const data = qs.stringify({
-        grant_type: 'refresh_token',
-        refresh_token: refreshToken,
-      });
-      axios
-        .post(spotifyRefreshURL, data, {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            Authorization:
-              'Basic ' +
-              Buffer.from(config.clientId + ':' + config.clientSecret).toString(
-                'base64',
-              ),
-          },
-        })
-        .then(response => {
-          console.log(response.data.access_token);
-          setAccessToken(response.data.access_token);
-          setRefreshToken(response.data.refresh_token);
-        })
-        .catch(error => {
-          console.log(error);
+    if (refreshToken) {
+      const getRefreshToken = async () => {
+        const data = qs.stringify({
+          grant_type: 'refresh_token',
+          refresh_token: refreshToken,
         });
-    };
-    getRefreshToken();
+        await axios
+          .post(spotifyRefreshURL, data, {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              Authorization:
+                'Basic ' +
+                Buffer.from(
+                  config.clientId + ':' + config.clientSecret,
+                ).toString('base64'),
+            },
+          })
+          .then(response => {
+            console.log(response.data.access_token);
+            setAccessToken(response.data.access_token);
+            setRefreshToken(response.data.refresh_token);
+          })
+          .catch(error => {
+            console.log(error);
+            console.log('bad token?');
+          });
+      };
+      getRefreshToken();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [refreshToken]);
 
   // get user info from Spotify
   useEffect(() => {
