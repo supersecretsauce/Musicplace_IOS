@@ -57,6 +57,9 @@ const ConnectSpotifyScreen = ({navigation}) => {
     }
     try {
       await AsyncStorage.setItem('user', 'true');
+      await AsyncStorage.setItem('hasSpotify', 'true');
+      await AsyncStorage.setItem('spotAccessToken', authState.accessToken);
+      await AsyncStorage.setItem('spotRefreshToken', authState.refreshToken);
     } catch (e) {
       console.log(e);
     }
@@ -76,6 +79,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
     }
     try {
       await AsyncStorage.setItem('user', 'true');
+      await AsyncStorage.setItem('hasSpotify', 'false');
     } catch (e) {
       console.log(e);
     }

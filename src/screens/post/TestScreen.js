@@ -15,7 +15,7 @@ import {Buffer} from 'buffer';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const qs = require('qs');
 
-const PostASongScreen = () => {
+const TestScreen = () => {
   const userInfo = firebase.auth().currentUser;
   const [spotifyConnected, setSpotifyConnected] = useState();
   const [troll, setTroll] = useState(false);
@@ -34,46 +34,30 @@ const PostASongScreen = () => {
       tokenEndpoint: 'https://accounts.spotify.com/api/token',
     },
   };
-  // set access and refresh tokens from firebase
-  // useEffect(() => {
-  //   const subscriber = firestore()
-  //     .collection('users')
-  //     .doc(userInfo.uid)
-  //     .onSnapshot(documentSnapshot => {
-  //       setAccessToken(documentSnapshot.data().spotifyAccessToken);
-  //       setRefreshToken(documentSnapshot.data().spotifyRefreshToken);
-  //     });
-  //   return () => subscriber();
-  // }, [accessToken, refreshToken]);
 
-  // check if user has spotify connected to display proper screens
+  //   check if user has spotify connected to display proper screens
   useEffect(() => {
-    const checkUserLogin = async () => {
-      try {
-        const value = await AsyncStorage.getItem('hasSpotify');
-        if (value === 'false') {
-          setSpotifyConnected(false);
-        } else {
-          setSpotifyConnected(true);
-        }
-      } catch (e) {
-        console.log(e);
-        console.log('cant check async storage');
+    const checkForSpotifyConnection = async () => {
+      const spotifyBoolean = await AsyncStorage.getItem('hasSpotify');
+      const localRefresh = await AsyncStorage.getItem('spotRefreshToken');
+      const localAccess = await AsyncStorage.getItem('spotAccessToken');
+
+      if (spotifyBoolean === 'false') {
+        setSpotifyConnected(false);
+        console.log('not connected');
+      } else {
+        setSpotifyConnected(true);
+        setAccessToken(localAccess);
+        setRefreshToken(localRefresh);
       }
     };
-
-    checkUserLogin();
+    checkForSpotifyConnection();
   }, []);
 
   //get top tracks or get new access token and THEN get tracks
   useEffect(() => {
-    const getSpotifyLibrary = async () => {
-      const asyncRefresh = await AsyncStorage.getItem('spotRefreshToken');
-      const asyncAccess = await AsyncStorage.getItem('spotAccessToken');
-      setAccessToken(asyncAccess);
-      setRefreshToken(asyncRefresh);
-      console.log(accessToken);
-      await axios
+    if (accessToken) {
+      axios
         .get(spotifyTrackURL, {
           headers: {
             Authorization: 'Bearer ' + accessToken,
@@ -81,49 +65,12 @@ const PostASongScreen = () => {
         })
         .then(response => {
           console.log(response.data);
-          return;
         })
         .catch(error => {
           console.log(error);
-          console.log('getting tracks failed');
-          if (error.request.status === 401) {
-            const data = qs.stringify({
-              grant_type: 'refresh_token',
-              refresh_token: refreshToken,
-            });
-            axios
-              .post(spotifyRefreshURL, data, {
-                headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded',
-                  Authorization:
-                    'Basic ' +
-                    Buffer.from(
-                      config.clientId + ':' + config.clientSecret,
-                    ).toString('base64'),
-                },
-              })
-              .then(response => {
-                console.log(response.data.access_token);
-                console.log('worked');
-                firestore().collection('users').doc(userInfo.uid).set({
-                  spotifyAccessToken: response.data.access_token,
-                  // spotifyAccessTokenExpirationDate:
-                  //   authState.accessTokenExpirationDate,
-                  // spotifyRefreshToken: authState.refreshToken,
-                });
-                setAccessToken(response.data.access_token);
-                getSpotifyLibrary();
-              })
-              .catch(errormsg => {
-                console.log(errormsg);
-                console.log('new token failed');
-              });
-          }
         });
-    };
-    getSpotifyLibrary();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    }
+  }, [accessToken]);
 
   const connectSpotify = async () => {
     const authState = await authorize(config);
@@ -155,11 +102,7 @@ const PostASongScreen = () => {
       {spotifyConnected ? (
         <SafeAreaView style={styles.container}>
           <TouchableOpacity>
-            <Text
-              // onPress={testFunction}
-              style={styles.test}>
-              Test
-            </Text>
+            <Text style={styles.test}>Test</Text>
           </TouchableOpacity>
           <TouchableOpacity>
             <Text style={styles.test}>refresh</Text>
@@ -196,7 +139,7 @@ const PostASongScreen = () => {
   );
 };
 
-export default PostASongScreen;
+export default TestScreen;
 
 const styles = StyleSheet.create({
   container: {
