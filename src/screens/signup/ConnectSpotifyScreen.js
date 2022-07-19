@@ -25,7 +25,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
 
   const config = {
     clientId: '501638f5cfb04abfb61d039e370c5d99', // available on the app page
-    clientSecret: '8ecf0fe55ab44fcdaec13b54afd19955', // click "show client secret" to see this
+    clientSecret: '16f92a6d7e9a4180b29af25bf012e6fe', // click "show client secret" to see this
     redirectUrl: 'musicplace-ios:/musicplace-ios-login', // the redirect you defined after creating the app
     scopes: [
       'user-read-email',
