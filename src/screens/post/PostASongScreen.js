@@ -137,31 +137,63 @@ const TestScreen = () => {
   }, [spotifyID, accessToken]);
 
   // return playlist IDs in a new array
+  // useEffect(() => {
+  //   if (playlistIDs) {
+  //     setUniquePlaylist(
+  //       playlistIDs.map(playlistID => {
+  //         axios
+  //           .get(`https://api.spotify.com/v1/playlists/${playlistID}/tracks`, {
+  //             headers: {
+  //               Authorization: 'Bearer ' + accessToken,
+  //               'Content-Type': 'application/json',
+  //             },
+  //           })
+  //           .then(response => {
+  //             console.log(response.data.items);
+  //           })
+  //           .catch(error => {
+  //             console.log(error);
+  //           });
+  //       }),
+  //     );
+  //   }
+  // }, [playlistIDs, accessToken]);
+
+  // useEffect(()=> {
+  //   const userPlaylistArrays = await promise
+  // })
+
   useEffect(() => {
     if (playlistIDs) {
-      setUniquePlaylist(
-        playlistIDs.map(playlistID => {
-          axios
-            .get(`https://api.spotify.com/v1/playlists/${playlistID}/tracks`, {
-              headers: {
-                Authorization: 'Bearer ' + accessToken,
-                'Content-Type': 'application/json',
-              },
-            })
-            .then(response => {
-              console.log(response.data);
-            })
-            .catch(error => {
+      const returnManyArrays = async () => {
+        const userPlaylistArrays = await Promise.all(
+          playlistIDs.map(async playlistID => {
+            try {
+              const response = await axios.get(
+                `https://api.spotify.com/v1/playlists/${playlistID}/tracks`,
+                {
+                  headers: {
+                    Authorization: 'Bearer ' + accessToken,
+                    'Content-Type': 'application/json',
+                  },
+                },
+              );
+              return response.data.items;
+            } catch (error) {
               console.log(error);
-            });
-        }),
-      );
+            }
+          }),
+        );
+        setUniquePlaylist(userPlaylistArrays);
+      };
+      returnManyArrays();
     }
-  }, [playlistIDs, accessToken]);
+  }, [accessToken, playlistIDs]);
 
   useEffect(() => {
     if (uniquePlaylist) {
       console.log(uniquePlaylist);
+      console.log('should be one array with many arrays above');
     }
   }, [uniquePlaylist]);
 
