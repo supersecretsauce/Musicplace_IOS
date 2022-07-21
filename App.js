@@ -21,6 +21,7 @@ export default function App() {
   const Tab = createBottomTabNavigator();
   const [confirm, setConfirm] = useState(null);
   const [userLogin, setUserLogin] = useState(false);
+  const [refreshToken, setRefreshToken] = useState('');
 
   // AsyncStorage.clear();
   useEffect(() => {
@@ -47,6 +48,8 @@ export default function App() {
           confirm,
           setConfirm,
           setUserLogin,
+          refreshToken,
+          setRefreshToken,
         }}>
         {userLogin ? (
           <Tab.Navigator

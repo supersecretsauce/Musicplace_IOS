@@ -25,7 +25,7 @@ const TestScreen = () => {
   const [accessToken, setAccessToken] = useState('');
   const [refreshToken, setRefreshToken] = useState('');
 
-  const config = {
+  const spotConfig = {
     clientId: '501638f5cfb04abfb61d039e370c5d99', // available on the app page
     clientSecret: '16f92a6d7e9a4180b29af25bf012e6fe', // click "show client secret" to see this
     redirectUrl: 'musicplace-ios:/musicplace-ios-login', // the redirect you defined after creating the app
@@ -60,95 +60,81 @@ const TestScreen = () => {
     checkForSpotifyConnection();
   }, []);
 
-  const getRefreshToken = async () => {
-    const data = qs.stringify({
-      grant_type: 'refresh_token',
-      refresh_token: refreshToken,
-    });
-    axios
-      .post(spotifyRefreshURL, data, {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          Authorization:
-            'Basic ' +
-            Buffer.from(config.clientId + ':' + config.clientSecret).toString(
-              'base64',
-            ),
-        },
-      })
-      .then(response => {
-        console.log(response.data.access_token);
-        setAccessToken(response.data.access_token);
-        setRefreshToken(response.data.refresh_token);
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  };
+  // interceptors
 
-  // get user info from Spotify
+  const authFetch = axios.create({
+    baseURL: 'https://api.spotify.com/v1/',
+    headers: {
+      Authorization: 'Bearer ' + accessToken,
+      'Content-Type': 'application/json',
+    },
+  });
 
-  const getUserData = () => {
-    if (accessToken) {
-      axios
-        .get(spotifyUserInfoURL, {
-          headers: {
-            Authorization: 'Bearer ' + accessToken,
-            'Content-Type': 'application/json',
-          },
-        })
-        .then(response => {
-          console.log(response.data);
-        })
-        .catch(error => {
-          console.log(error);
+  // Add a request interceptor
+  authFetch.interceptors.request.use(
+    function (config) {
+      // Do something before request is sent
+      console.log('request sent');
+      return config;
+    },
+    function (error) {
+      // Do something with request error
+      console.log('request error');
+      return Promise.reject(error);
+    },
+  );
+
+  // Add a response interceptor
+  authFetch.interceptors.response.use(
+    function (response) {
+      // Any status code that lie within the range of 2xx cause this function to trigger
+      // Do something with response data
+      console.log('got response');
+      return response;
+    },
+    function (error) {
+      // Any status codes that falls outside the range of 2xx cause this function to trigger
+      // Do something with response error
+      console.log('response error');
+      if (error.response.status === 401) {
+        const data = qs.stringify({
+          grant_type: 'refresh_token',
+          refresh_token: refreshToken,
         });
-    }
-  };
+        axios
+          .post(spotifyRefreshURL, data, {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              Authorization:
+                'Basic ' +
+                Buffer.from(
+                  spotConfig.clientId + ':' + spotConfig.clientSecret,
+                ).toString('base64'),
+            },
+          })
+          .then(response => {
+            console.log(response.data.access_token);
+            setAccessToken(response.data.access_token);
+            setRefreshToken(response.data.refresh_token);
+          })
+          .catch(e => {
+            console.log(e);
+            console.log('bad token?');
+          });
+      }
+      // getRefreshToken();
 
-  //   get top tracks or get new access token and THEN get tracks
-  // useEffect(() => {
-  //   if (accessToken) {
-  //     axios
-  //       .get(spotifyTrackURL, {
-  //         headers: {
-  //           Authorization: 'Bearer ' + accessToken,
-  //         },
-  //       })
-  //       .then(response => {
-  //         console.log(response.data);
-  //       })
-  //       .catch(error => {
-  //         console.log(error);
-  //       });
-  //   }
-  // }, [accessToken]);
+      return Promise.reject(error);
+    },
+  );
 
-  const connectSpotify = async () => {
-    const authState = await authorize(config);
-    console.log(authState.accessToken);
-    console.log('access token');
-    await AsyncStorage.setItem('hasSpotify', 'true');
-    setSpotifyConnected(true);
-    setAccessToken(authState.accessToken);
-    setRefreshToken(authState.refreshToken);
-    await AsyncStorage.setItem('spotAccessToken', authState.accessToken);
-    await AsyncStorage.setItem('spotRefreshToken', authState.refreshToken);
+  const FetchData = async () => {
     try {
-      await firestore().collection('users').doc(userInfo.uid).set({
-        connectedWithSpotify: true,
-        spotifyAccessToken: authState.accessToken,
-        spotifyAccessTokenExpirationDate: authState.accessTokenExpirationDate,
-        spotifyRefreshToken: authState.refreshToken,
-        spotifyTokenType: authState.tokenType,
-      });
+      const resp = await authFetch.get('/me');
+      console.log(resp);
     } catch (error) {
-      return;
+      console.log(error);
     }
-  };
-
-  const trollFunction = () => {
-    setTroll(!troll);
   };
 
   return (
@@ -156,12 +142,10 @@ const TestScreen = () => {
       {spotifyConnected ? (
         <SafeAreaView style={styles.container}>
           <TouchableOpacity>
-            <Text onPress={getUserData} style={styles.test}>
-              Test
-            </Text>
+            <Text style={styles.test}>Test</Text>
           </TouchableOpacity>
           <TouchableOpacity>
-            <Text onPress={getRefreshToken} style={styles.test}>
+            <Text onPress={FetchData} style={styles.test}>
               refresh
             </Text>
           </TouchableOpacity>
@@ -180,14 +164,12 @@ const TestScreen = () => {
             )}
           </View>
           <View style={styles.spotifyBtnContainer}>
-            <TouchableOpacity
-              onPress={connectSpotify}
-              style={styles.spotifyBtn}>
+            <TouchableOpacity style={styles.spotifyBtn}>
               <Text style={styles.spotifyTextBtn}>Connect with Spotify</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.laterBtnContainer}>
-            <TouchableOpacity onPress={trollFunction} style={styles.laterBtn}>
+            <TouchableOpacity style={styles.laterBtn}>
               <Text style={styles.laterText}>I have Apple Music</Text>
             </TouchableOpacity>
           </View>
