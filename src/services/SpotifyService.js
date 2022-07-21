@@ -35,7 +35,6 @@ export const authFetch = (
 
   axiosInstance.interceptors.response.use(
     function (response) {
-      console.log('got response');
       return response;
     },
     function (error) {
@@ -71,13 +70,3 @@ export const authFetch = (
   );
   return axiosInstance;
 };
-
-//   const FetchData = async () => {
-//     try {
-//       const resp = await authFetch.get('/me');
-//       console.log(resp);
-//     } catch (error) {
-//       console.log(error);
-//     }
-//   };
-// };

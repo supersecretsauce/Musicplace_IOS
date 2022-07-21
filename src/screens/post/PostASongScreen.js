@@ -1,9 +1,25 @@
+const spotConfig = {
+  clientId: '501638f5cfb04abfb61d039e370c5d99', // available on the app page
+  clientSecret: '16f92a6d7e9a4180b29af25bf012e6fe', // click "show client secret" to see this
+  redirectUrl: 'musicplace-ios:/musicplace-ios-login', // the redirect you defined after creating the app
+  scopes: [
+    'user-read-email',
+    'playlist-modify-public',
+    'user-read-private',
+    'user-library-read',
+  ], // the scopes you need to access
+  serviceConfiguration: {
+    authorizationEndpoint: 'https://accounts.spotify.com/authorize',
+    tokenEndpoint: 'https://accounts.spotify.com/api/token',
+  },
+};
 import {
   StyleSheet,
   Text,
   View,
   SafeAreaView,
   TouchableOpacity,
+  TextInput,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
@@ -13,6 +29,8 @@ import {authorize} from 'react-native-app-auth';
 import axios from 'axios';
 import {authFetch} from '../../services/SpotifyService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Color from '../../assets/utilities/Colors';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const TestScreen = () => {
   const userInfo = firebase.auth().currentUser;
@@ -27,6 +45,7 @@ const TestScreen = () => {
   const [accessToken, setAccessToken] = useState('');
   const [refreshToken, setRefreshToken] = useState('');
   const [spotifyID, setSpotifyID] = useState('');
+  const [userPlaylistInfo, setUserPlaylistInfo] = useState();
   const [playlistIDs, setPlaylistIDs] = useState();
   const [uniquePlaylist, setUniquePlaylist] = useState('');
 
@@ -55,10 +74,11 @@ const TestScreen = () => {
       authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
         .get('me')
         .then(response => {
-          console.log(response);
+          setSpotifyID(response.data.id);
         });
     }
-  }, [accessToken, refreshToken]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accessToken]);
 
   // get a user's playlists
   useEffect(() => {
@@ -72,6 +92,7 @@ const TestScreen = () => {
         })
         .then(response => {
           setPlaylistIDs(response.data.items.map(playlistID => playlistID.id));
+          setUserPlaylistInfo(response.data.items);
         })
         .catch(error => {
           console.log(error);
@@ -141,7 +162,7 @@ const TestScreen = () => {
   }, [uniquePlaylist]);
 
   const connectSpotify = async () => {
-    const authState = await authorize(config);
+    const authState = await authorize(spotConfig);
     console.log(authState.accessToken);
     console.log('access token');
     await AsyncStorage.setItem('hasSpotify', 'true');
@@ -170,14 +191,23 @@ const TestScreen = () => {
   return (
     <>
       {spotifyConnected ? (
-        <SafeAreaView style={styles.container}>
-          <TouchableOpacity>
-            <Text style={styles.test}>Test</Text>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={styles.test}>refresh</Text>
-          </TouchableOpacity>
-        </SafeAreaView>
+        <View style={styles.container}>
+          <View style={styles.searchBackground}>
+            <View>
+              <Text style={styles.search}>Search</Text>
+            </View>
+            <View style={styles.inputSearchContainer}>
+              <View style={styles.inputSearchBox}>
+                <Ionicons name="search-sharp" color="white" />
+                <TextInput
+                  style={styles.inputSearch}
+                  placeholderTextColor="white"
+                  placeholder="Search by song, album, or artist"
+                />
+              </View>
+            </View>
+          </View>
+        </View>
       ) : (
         <SafeAreaView style={styles.noSpotifyContainer}>
           <View style={styles.noSpotTextContainer}>
@@ -212,10 +242,57 @@ const TestScreen = () => {
 export default TestScreen;
 
 const styles = StyleSheet.create({
+  // connected
   container: {
     flex: 1,
     backgroundColor: 'black',
   },
+  searchBackground: {
+    backgroundColor: Color.lightBlack,
+    height: '25%',
+  },
+  search: {
+    color: 'white',
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 30,
+    marginTop: '18%',
+    marginLeft: '4%',
+  },
+
+  inputSearchContainer: {
+    alignItems: 'center',
+    marginTop: '5%',
+  },
+
+  inputSearchBox: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    backgroundColor: Color.darkGrey,
+    height: '50%',
+    width: '93%',
+    borderRadius: 6,
+    padding: 10,
+  },
+
+  inputSearch: {
+    marginLeft: 5,
+    fontFamily: 'Inter-Medium',
+    fontSize: 12,
+    color: 'white',
+  },
+
+  // inputSearch: {
+  //   backgroundColor: Color.darkGrey,
+  //   height: '50%',
+  //   width: '93%',
+  //   justifyContent: 'center',
+  //   padding: 10,
+  //   borderRadius: 6,
+  //   fontSize: 12,
+  //   fontFamily: 'Inter-Medium',
+  // },
+
+  // not connected
   test: {
     color: 'white',
   },
