@@ -107,10 +107,9 @@ const CreateUsernameScreen = ({navigation}) => {
       </View>
       <View style={styles.nextBtnContainer}>
         <TouchableOpacity
+          onPress={createUsername}
           style={submitDone ? styles.nextBtnDone : styles.nextBtn}>
-          <Text
-            onPress={createUsername}
-            style={submitDone ? styles.nextTextDone : styles.nextText}>
+          <Text style={submitDone ? styles.nextTextDone : styles.nextText}>
             Next
           </Text>
         </TouchableOpacity>

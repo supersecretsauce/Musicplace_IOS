@@ -7,25 +7,29 @@ import EnterCodeScreen from './src/screens/signup/EnterCodeScreen';
 import CreateUsernameScreen from './src/screens/signup/CreateUsernameScreen';
 import ConnectSpotifyScreen from './src/screens/signup/ConnectSpotifyScreen';
 import HomeScreen from './src/screens/home/HomeScreen';
+import PostASongScreen from './src/screens/post/PostASongScreen';
+import test from './src/screens/post/test';
 import {Context} from './src/context/Context';
 import {useState, useEffect} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import {StyleSheet} from 'react-native';
+import {StyleSheet, StatusBar} from 'react-native';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
   const [confirm, setConfirm] = useState(null);
   const [userLogin, setUserLogin] = useState(false);
+  const [refreshToken, setRefreshToken] = useState('');
 
+  // AsyncStorage.clear();
   useEffect(() => {
     const checkUserLogin = async () => {
       try {
         const value = await AsyncStorage.getItem('user');
         if (value === null) {
-          console.log('false');
+          return;
         } else {
           setUserLogin(true);
         }
@@ -44,6 +48,8 @@ export default function App() {
           confirm,
           setConfirm,
           setUserLogin,
+          refreshToken,
+          setRefreshToken,
         }}>
         {userLogin ? (
           <Tab.Navigator
@@ -76,8 +82,8 @@ export default function App() {
               tabBarStyle: {backgroundColor: 'black'},
             })}>
             <Tab.Screen name="Home" component={HomeScreen} />
-            <Tab.Screen name="Discover" component={HomeScreen} />
-            <Tab.Screen name="Post" component={HomeScreen} />
+            <Tab.Screen name="Discover" component={test} />
+            <Tab.Screen name="Post" component={PostASongScreen} />
             <Tab.Screen name="Activity" component={HomeScreen} />
             <Tab.Screen name="Profile" component={HomeScreen} />
           </Tab.Navigator>
