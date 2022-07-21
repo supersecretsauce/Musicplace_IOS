@@ -11,9 +11,8 @@ import {firebase} from '@react-native-firebase/firestore';
 import Colors from '../../assets/utilities/Colors';
 import {authorize} from 'react-native-app-auth';
 import axios from 'axios';
-import {Buffer} from 'buffer';
+import {authFetch} from '../../services/SpotifyService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const qs = require('qs');
 
 const TestScreen = () => {
   const userInfo = firebase.auth().currentUser;
@@ -30,22 +29,6 @@ const TestScreen = () => {
   const [spotifyID, setSpotifyID] = useState('');
   const [playlistIDs, setPlaylistIDs] = useState();
   const [uniquePlaylist, setUniquePlaylist] = useState('');
-
-  const config = {
-    clientId: '501638f5cfb04abfb61d039e370c5d99', // available on the app page
-    clientSecret: '16f92a6d7e9a4180b29af25bf012e6fe', // click "show client secret" to see this
-    redirectUrl: 'musicplace-ios:/musicplace-ios-login', // the redirect you defined after creating the app
-    scopes: [
-      'user-read-email',
-      'playlist-modify-public',
-      'user-read-private',
-      'user-library-read',
-    ], // the scopes you need to access
-    serviceConfiguration: {
-      authorizationEndpoint: 'https://accounts.spotify.com/authorize',
-      tokenEndpoint: 'https://accounts.spotify.com/api/token',
-    },
-  };
 
   // check if user has spotify connected to display proper screens
   useEffect(() => {
@@ -66,59 +49,16 @@ const TestScreen = () => {
     checkForSpotifyConnection();
   }, []);
 
-  // get new refresh tokens
-  useEffect(() => {
-    if (refreshToken) {
-      const getRefreshToken = async () => {
-        const data = qs.stringify({
-          grant_type: 'refresh_token',
-          refresh_token: refreshToken,
-        });
-        await axios
-          .post(spotifyRefreshURL, data, {
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded',
-              Authorization:
-                'Basic ' +
-                Buffer.from(
-                  config.clientId + ':' + config.clientSecret,
-                ).toString('base64'),
-            },
-          })
-          .then(response => {
-            console.log(response.data.access_token);
-            setAccessToken(response.data.access_token);
-            setRefreshToken(response.data.refresh_token);
-          })
-          .catch(error => {
-            console.log(error);
-            console.log('bad token?');
-          });
-      };
-      getRefreshToken();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [refreshToken]);
-
   // get user info from Spotify
   useEffect(() => {
     if (accessToken) {
-      axios
-        .get(spotifyUserInfoURL, {
-          headers: {
-            Authorization: 'Bearer ' + accessToken,
-            'Content-Type': 'application/json',
-          },
-        })
+      authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
+        .get('me')
         .then(response => {
-          console.log(response.data);
-          setSpotifyID(response.data.id);
-        })
-        .catch(error => {
-          console.log(error);
+          console.log(response);
         });
     }
-  }, [accessToken]);
+  }, [accessToken, refreshToken]);
 
   // get a user's playlists
   useEffect(() => {

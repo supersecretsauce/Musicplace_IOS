@@ -52,7 +52,7 @@ const TestScreen = () => {
         refreshToken,
         setAccessToken,
         setRefreshToken,
-      ).get('/me');
+      ).get('me');
       console.log(resp);
     } catch (error) {
       console.log(error);
