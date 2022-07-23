@@ -18,7 +18,6 @@ import {Buffer} from 'buffer';
 const qs = require('qs');
 
 // axios instance
-
 export const authFetch = (
   accessToken,
   refreshToken,
@@ -32,14 +31,15 @@ export const authFetch = (
       'Content-Type': 'application/json',
     },
   });
-
   axiosInstance.interceptors.response.use(
     function (response) {
       return response;
     },
     function (error) {
+      console.log(error);
       console.log('response error');
-      if (error.response.status === 401) {
+      if (error.response.status === 401 && refreshToken) {
+        console.log('attempting');
         const data = qs.stringify({
           grant_type: 'refresh_token',
           refresh_token: refreshToken,
@@ -63,6 +63,7 @@ export const authFetch = (
           .catch(e => {
             console.log(e);
             console.log('bad token?');
+            return error;
           });
       }
       return Promise.reject(error);

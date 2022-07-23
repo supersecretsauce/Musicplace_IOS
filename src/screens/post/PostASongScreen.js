@@ -31,6 +31,7 @@ import {authFetch} from '../../services/SpotifyService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Color from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import SpotifyPlaylists from '../../components/SpotifyPlaylists';
 
 const TestScreen = () => {
   const userInfo = firebase.auth().currentUser;
@@ -75,6 +76,10 @@ const TestScreen = () => {
         .get('me')
         .then(response => {
           setSpotifyID(response.data.id);
+        })
+        .catch(error => {
+          console.log(error);
+          return error;
         });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -99,33 +104,6 @@ const TestScreen = () => {
         });
     }
   }, [spotifyID, accessToken]);
-
-  // return playlist IDs in a new array
-  // useEffect(() => {
-  //   if (playlistIDs) {
-  //     setUniquePlaylist(
-  //       playlistIDs.map(playlistID => {
-  //         axios
-  //           .get(`https://api.spotify.com/v1/playlists/${playlistID}/tracks`, {
-  //             headers: {
-  //               Authorization: 'Bearer ' + accessToken,
-  //               'Content-Type': 'application/json',
-  //             },
-  //           })
-  //           .then(response => {
-  //             console.log(response.data.items);
-  //           })
-  //           .catch(error => {
-  //             console.log(error);
-  //           });
-  //       }),
-  //     );
-  //   }
-  // }, [playlistIDs, accessToken]);
-
-  // useEffect(()=> {
-  //   const userPlaylistArrays = await promise
-  // })
 
   useEffect(() => {
     if (playlistIDs) {
@@ -157,9 +135,10 @@ const TestScreen = () => {
   useEffect(() => {
     if (uniquePlaylist) {
       console.log(uniquePlaylist);
+      console.log(userPlaylistInfo);
       console.log('should be one array with many arrays above');
     }
-  }, [uniquePlaylist]);
+  }, [uniquePlaylist, userPlaylistInfo]);
 
   const connectSpotify = async () => {
     const authState = await authorize(spotConfig);
@@ -207,6 +186,7 @@ const TestScreen = () => {
               </View>
             </View>
           </View>
+          <SpotifyPlaylists playlists={userPlaylistInfo} />
         </View>
       ) : (
         <SafeAreaView style={styles.noSpotifyContainer}>
