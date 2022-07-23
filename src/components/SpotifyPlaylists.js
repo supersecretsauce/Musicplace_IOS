@@ -1,13 +1,8 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  ScrollView,
-  FlatList,
-} from 'react-native';
+import {StyleSheet, Text, View, Image, FlatList} from 'react-native';
 import React from 'react';
+import Colors from '../assets/utilities/Colors';
 import {useEffect, useState} from 'react';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const SpotifyPlaylists = props => {
   const playlists = props.playlists;
@@ -32,12 +27,6 @@ const SpotifyPlaylists = props => {
     }
   }, [cleanPlaylists, playlists]);
 
-  //   useEffect(() => {
-  //     if (cleanPlaylistInfo) {
-  //       console.log(cleanPlaylistInfo);
-  //     }
-  //   }, [cleanPlaylistInfo]);
-
   return (
     <View>
       {eligiblePlaylistArray ? (
@@ -54,19 +43,24 @@ const SpotifyPlaylists = props => {
                       uri: item.images[0]?.url,
                     }}
                   />
-                  <Text style={styles.text}>{item.name}</Text>
+                  <Text style={styles.playlistName}>
+                    {item.name.slice(0, 19)}
+                  </Text>
+                  <View style={styles.lengthContainer}>
+                    <Text style={styles.playlist}>Playlist</Text>
+                    <Ionicons
+                      style={styles.dot}
+                      name="ellipse"
+                      color={Colors.greyOut}
+                      size={3}
+                    />
+                    <Text style={styles.playlistLength}>
+                      {item.tracks.total} songs
+                    </Text>
+                  </View>
                 </View>
               )}
             />
-            {/* {cleanPlaylistInfo.map(playlist => {
-              return (
-                <>
-                  <View key={playlist.id}>
-                    <Text style={styles.text}>{playlist.name}</Text>
-                  </View>
-                </>
-              );
-            })} */}
           </View>
         </>
       ) : null}
@@ -77,19 +71,42 @@ const SpotifyPlaylists = props => {
 export default SpotifyPlaylists;
 
 const styles = StyleSheet.create({
-  text: {
-    color: 'white',
-  },
   scrollContainer: {
     justifyContent: 'center',
     alignItems: 'center',
   },
   photoContainer: {
-    padding: 19,
+    padding: 16,
     marginTop: '5%',
   },
   playlistPhotos: {
     height: 160,
     width: 160,
+  },
+  playlistName: {
+    color: 'white',
+    fontFamily: 'Inter-Medium',
+    fontSize: 14,
+    marginTop: '6%',
+  },
+  lengthContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    marginTop: '2%',
+  },
+  playlist: {
+    color: Colors.greyOut,
+    fontFamily: 'Inter-Regular',
+    fontSize: 12,
+  },
+  dot: {
+    marginLeft: '2%',
+  },
+  playlistLength: {
+    color: Colors.greyOut,
+    marginLeft: '2%',
+    fontFamily: 'Inter-Regular',
+    fontSize: 12,
   },
 });
