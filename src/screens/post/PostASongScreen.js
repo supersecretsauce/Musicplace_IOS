@@ -207,8 +207,8 @@ const TestScreen = () => {
               <Text style={styles.navIcon}>Artists</Text>
             </View>
           </View>
-          {/* <SpotifyPlaylists playlists={userPlaylistInfo} /> */}
-          <SpotifyLikedSongs likedSongsProp={likedSongs} />
+          <SpotifyPlaylists playlists={userPlaylistInfo} />
+          {/* <SpotifyLikedSongs likedSongsProp={likedSongs} /> */}
         </View>
       ) : (
         <SafeAreaView style={styles.noSpotifyContainer}>

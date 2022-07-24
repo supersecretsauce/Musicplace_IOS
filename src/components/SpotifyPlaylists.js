@@ -45,8 +45,8 @@ const SpotifyPlaylists = props => {
                       uri: item.images[0]?.url,
                     }}
                   />
-                  <Text style={styles.playlistName}>
-                    {item.name.slice(0, 19)}
+                  <Text numberOfLines={1} style={styles.playlistName}>
+                    {item.name}
                   </Text>
                   <View style={styles.lengthContainer}>
                     <Text style={styles.playlist}>Playlist</Text>
@@ -90,6 +90,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Medium',
     fontSize: 14,
     marginTop: '6%',
+    maxWidth: 160,
   },
   lengthContainer: {
     flexDirection: 'row',
