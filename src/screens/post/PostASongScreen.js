@@ -172,7 +172,7 @@ const TestScreen = () => {
       {spotifyConnected ? (
         <View style={styles.container}>
           <View style={styles.searchBackground}>
-            <Text style={styles.search}>Search</Text>
+            <Text style={styles.postASong}>Post a song</Text>
             <View style={styles.inputSearchContainer}>
               <View style={styles.inputSearchBox}>
                 <Ionicons name="search-sharp" color="white" />
@@ -233,9 +233,9 @@ const styles = StyleSheet.create({
   },
   searchBackground: {
     backgroundColor: Color.lightBlack,
-    height: '31%',
+    height: '31.5%',
   },
-  search: {
+  postASong: {
     color: 'white',
     fontFamily: 'Inter-SemiBold',
     fontSize: 30,

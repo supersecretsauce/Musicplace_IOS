@@ -33,6 +33,8 @@ const SpotifyPlaylists = props => {
         <>
           <View style={styles.scrollContainer}>
             <FlatList
+              contentContainerStyle={{paddingBottom: 260}}
+              style={{width: '100%', height: '100%'}}
               numColumns={2}
               data={cleanPlaylistInfo}
               renderItem={({item, index}) => (
