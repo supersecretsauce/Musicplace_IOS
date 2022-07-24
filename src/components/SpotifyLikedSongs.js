@@ -22,7 +22,6 @@ const SpotifyLikedSongs = props => {
               style={{width: '100%', height: '100%'}}
               data={likedSongsArray}
               renderItem={({item, index}) => {
-                console.log(item);
                 return (
                   <View style={styles.songContainer} key={index}>
                     <Image

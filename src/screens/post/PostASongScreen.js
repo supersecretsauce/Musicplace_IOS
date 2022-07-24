@@ -195,10 +195,18 @@ const TestScreen = () => {
               </View>
             </View>
             <View style={styles.navContainer}>
-              <TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setLikedSongsUI(true);
+                  setPlaylistUI(false);
+                }}>
                 <Text style={styles.navIcon}>Liked Songs</Text>
               </TouchableOpacity>
-              <TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setLikedSongsUI(false);
+                  setPlaylistUI(true);
+                }}>
                 <Text style={styles.navIcon}>Playlists</Text>
               </TouchableOpacity>
               <TouchableOpacity>
@@ -209,8 +217,8 @@ const TestScreen = () => {
               </TouchableOpacity>
             </View>
           </View>
-          {/* <SpotifyLikedSongs likedSongsProp={likedSongs} /> */}
-          <SpotifyPlaylists playlists={userPlaylistInfo} />
+          {likedSongsUI && <SpotifyLikedSongs likedSongsProp={likedSongs} />}
+          {playlistUI && <SpotifyPlaylists playlists={userPlaylistInfo} />}
         </View>
       ) : (
         <SafeAreaView style={styles.noSpotifyContainer}>

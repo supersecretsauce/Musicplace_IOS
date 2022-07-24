@@ -1,4 +1,11 @@
-import {StyleSheet, Text, View, Image, FlatList} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  FlatList,
+  TouchableOpacity,
+} from 'react-native';
 import React from 'react';
 import Colors from '../assets/utilities/Colors';
 import {useEffect, useState} from 'react';
@@ -39,27 +46,29 @@ const SpotifyPlaylists = props => {
               data={cleanPlaylistInfo}
               renderItem={({item, index}) => (
                 <View style={styles.photoContainer} key={index}>
-                  <Image
-                    style={styles.playlistPhotos}
-                    source={{
-                      uri: item.images[0]?.url,
-                    }}
-                  />
-                  <Text numberOfLines={1} style={styles.playlistName}>
-                    {item.name}
-                  </Text>
-                  <View style={styles.lengthContainer}>
-                    <Text style={styles.playlist}>Playlist</Text>
-                    <Ionicons
-                      style={styles.dot}
-                      name="ellipse"
-                      color={Colors.greyOut}
-                      size={3}
+                  <TouchableOpacity>
+                    <Image
+                      style={styles.playlistPhotos}
+                      source={{
+                        uri: item.images[0]?.url,
+                      }}
                     />
-                    <Text style={styles.playlistLength}>
-                      {item.tracks.total} songs
+                    <Text numberOfLines={1} style={styles.playlistName}>
+                      {item.name}
                     </Text>
-                  </View>
+                    <View style={styles.lengthContainer}>
+                      <Text style={styles.playlist}>Playlist</Text>
+                      <Ionicons
+                        style={styles.dot}
+                        name="ellipse"
+                        color={Colors.greyOut}
+                        size={3}
+                      />
+                      <Text style={styles.playlistLength}>
+                        {item.tracks.total} songs
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
                 </View>
               )}
             />
