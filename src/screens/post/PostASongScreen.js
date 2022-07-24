@@ -32,6 +32,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Color from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SpotifyPlaylists from '../../components/SpotifyPlaylists';
+import SpotifyLikedSongs from '../../components/SpotifyLikedSongs';
 
 const TestScreen = () => {
   const userInfo = firebase.auth().currentUser;
@@ -49,6 +50,7 @@ const TestScreen = () => {
   const [userPlaylistInfo, setUserPlaylistInfo] = useState();
   const [playlistIDs, setPlaylistIDs] = useState();
   const [uniquePlaylist, setUniquePlaylist] = useState('');
+  const [likedSongs, setLikedSongs] = useState();
 
   // check if user has spotify connected to display proper screens
   useEffect(() => {
@@ -84,6 +86,21 @@ const TestScreen = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken]);
+
+  // get a user's liked songs
+  useEffect(() => {
+    if (accessToken) {
+      authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
+        .get('me/tracks?limit=50')
+        .then(response => {
+          setLikedSongs(response.data.items);
+        })
+        .catch(error => {
+          console.log(error);
+          return error;
+        });
+    }
+  }, [accessToken, refreshToken]);
 
   // get a user's playlists
   useEffect(() => {
@@ -132,13 +149,13 @@ const TestScreen = () => {
     }
   }, [accessToken, playlistIDs]);
 
-  useEffect(() => {
-    if (uniquePlaylist) {
-      console.log(uniquePlaylist);
-      console.log(userPlaylistInfo);
-      console.log('should be one array with many arrays above');
-    }
-  }, [uniquePlaylist, userPlaylistInfo]);
+  // useEffect(() => {
+  //   if (uniquePlaylist) {
+  //     console.log(uniquePlaylist);
+  //     console.log(userPlaylistInfo);
+  //     console.log('should be one array with many arrays above');
+  //   }
+  // }, [uniquePlaylist, userPlaylistInfo]);
 
   const connectSpotify = async () => {
     const authState = await authorize(spotConfig);
@@ -190,7 +207,8 @@ const TestScreen = () => {
               <Text style={styles.navIcon}>Artists</Text>
             </View>
           </View>
-          <SpotifyPlaylists playlists={userPlaylistInfo} />
+          {/* <SpotifyPlaylists playlists={userPlaylistInfo} /> */}
+          <SpotifyLikedSongs likedSongsProp={likedSongs} />
         </View>
       ) : (
         <SafeAreaView style={styles.noSpotifyContainer}>
