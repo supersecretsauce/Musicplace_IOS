@@ -5,7 +5,6 @@ import Colors from '../assets/utilities/Colors';
 const SpotifyLikedSongs = props => {
   const likedSongs = props.likedSongsProp;
   const [likedSongsArray, setLikedSongsArray] = useState(null);
-  console.log(likedSongs);
 
   useEffect(() => {
     if (likedSongs) {
@@ -13,11 +12,6 @@ const SpotifyLikedSongs = props => {
     }
   }, [likedSongs]);
 
-  //   useEffect(() => {
-  //     if (likedSongsArray) {
-  //       console.log(likedSongsArray.map(song => song.track.artists[1].name));
-  //     }
-  //   }, [likedSongsArray]);
   return (
     <View>
       {likedSongsArray ? (

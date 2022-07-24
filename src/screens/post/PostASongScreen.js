@@ -51,6 +51,8 @@ const TestScreen = () => {
   const [playlistIDs, setPlaylistIDs] = useState();
   const [uniquePlaylist, setUniquePlaylist] = useState('');
   const [likedSongs, setLikedSongs] = useState();
+  const [likedSongsUI, setLikedSongsUI] = useState(true);
+  const [playlistUI, setPlaylistUI] = useState(false);
 
   // check if user has spotify connected to display proper screens
   useEffect(() => {
@@ -149,14 +151,6 @@ const TestScreen = () => {
     }
   }, [accessToken, playlistIDs]);
 
-  // useEffect(() => {
-  //   if (uniquePlaylist) {
-  //     console.log(uniquePlaylist);
-  //     console.log(userPlaylistInfo);
-  //     console.log('should be one array with many arrays above');
-  //   }
-  // }, [uniquePlaylist, userPlaylistInfo]);
-
   const connectSpotify = async () => {
     const authState = await authorize(spotConfig);
     console.log(authState.accessToken);
@@ -201,14 +195,22 @@ const TestScreen = () => {
               </View>
             </View>
             <View style={styles.navContainer}>
-              <Text style={styles.navIcon}>Liked Songs</Text>
-              <Text style={styles.navIcon}>Playlists</Text>
-              <Text style={styles.navIcon}>Albums</Text>
-              <Text style={styles.navIcon}>Artists</Text>
+              <TouchableOpacity>
+                <Text style={styles.navIcon}>Liked Songs</Text>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <Text style={styles.navIcon}>Playlists</Text>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <Text style={styles.navIcon}>Albums</Text>
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <Text style={styles.navIcon}>Artists</Text>
+              </TouchableOpacity>
             </View>
           </View>
-          <SpotifyPlaylists playlists={userPlaylistInfo} />
           {/* <SpotifyLikedSongs likedSongsProp={likedSongs} /> */}
+          <SpotifyPlaylists playlists={userPlaylistInfo} />
         </View>
       ) : (
         <SafeAreaView style={styles.noSpotifyContainer}>
@@ -278,6 +280,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Medium',
     fontSize: 12,
     color: 'white',
+    width: '100%',
+    height: '100%',
   },
   navContainer: {
     marginTop: '5%',
