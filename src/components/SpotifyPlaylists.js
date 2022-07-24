@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   },
   photoContainer: {
     padding: 16,
-    marginTop: '5%',
+    marginTop: '1%',
   },
   playlistPhotos: {
     height: 160,

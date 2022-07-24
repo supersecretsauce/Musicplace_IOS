@@ -38,7 +38,7 @@ export const authFetch = (
     function (error) {
       console.log(error);
       console.log('response error');
-      if (error.response.status === 401 && refreshToken) {
+      if (error.response.status === 401) {
         console.log('attempting');
         const data = qs.stringify({
           grant_type: 'refresh_token',
