@@ -31,6 +31,7 @@ import {authFetch} from '../../services/SpotifyService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Color from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import SpotifyPlaylists from '../../components/SpotifyPlaylists';
 
 const TestScreen = () => {
   const userInfo = firebase.auth().currentUser;
@@ -75,6 +76,10 @@ const TestScreen = () => {
         .get('me')
         .then(response => {
           setSpotifyID(response.data.id);
+        })
+        .catch(error => {
+          console.log(error);
+          return error;
         });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -99,33 +104,6 @@ const TestScreen = () => {
         });
     }
   }, [spotifyID, accessToken]);
-
-  // return playlist IDs in a new array
-  // useEffect(() => {
-  //   if (playlistIDs) {
-  //     setUniquePlaylist(
-  //       playlistIDs.map(playlistID => {
-  //         axios
-  //           .get(`https://api.spotify.com/v1/playlists/${playlistID}/tracks`, {
-  //             headers: {
-  //               Authorization: 'Bearer ' + accessToken,
-  //               'Content-Type': 'application/json',
-  //             },
-  //           })
-  //           .then(response => {
-  //             console.log(response.data.items);
-  //           })
-  //           .catch(error => {
-  //             console.log(error);
-  //           });
-  //       }),
-  //     );
-  //   }
-  // }, [playlistIDs, accessToken]);
-
-  // useEffect(()=> {
-  //   const userPlaylistArrays = await promise
-  // })
 
   useEffect(() => {
     if (playlistIDs) {
@@ -157,9 +135,10 @@ const TestScreen = () => {
   useEffect(() => {
     if (uniquePlaylist) {
       console.log(uniquePlaylist);
+      console.log(userPlaylistInfo);
       console.log('should be one array with many arrays above');
     }
-  }, [uniquePlaylist]);
+  }, [uniquePlaylist, userPlaylistInfo]);
 
   const connectSpotify = async () => {
     const authState = await authorize(spotConfig);
@@ -193,9 +172,7 @@ const TestScreen = () => {
       {spotifyConnected ? (
         <View style={styles.container}>
           <View style={styles.searchBackground}>
-            <View>
-              <Text style={styles.search}>Search</Text>
-            </View>
+            <Text style={styles.postASong}>Post a song</Text>
             <View style={styles.inputSearchContainer}>
               <View style={styles.inputSearchBox}>
                 <Ionicons name="search-sharp" color="white" />
@@ -206,7 +183,14 @@ const TestScreen = () => {
                 />
               </View>
             </View>
+            <View style={styles.navContainer}>
+              <Text style={styles.navIcon}>Liked Songs</Text>
+              <Text style={styles.navIcon}>Playlists</Text>
+              <Text style={styles.navIcon}>Albums</Text>
+              <Text style={styles.navIcon}>Artists</Text>
+            </View>
           </View>
+          <SpotifyPlaylists playlists={userPlaylistInfo} />
         </View>
       ) : (
         <SafeAreaView style={styles.noSpotifyContainer}>
@@ -249,56 +233,56 @@ const styles = StyleSheet.create({
   },
   searchBackground: {
     backgroundColor: Color.lightBlack,
-    height: '25%',
+    height: '31.5%',
   },
-  search: {
+  postASong: {
     color: 'white',
     fontFamily: 'Inter-SemiBold',
     fontSize: 30,
     marginTop: '18%',
     marginLeft: '4%',
   },
-
   inputSearchContainer: {
     alignItems: 'center',
     marginTop: '5%',
   },
-
   inputSearchBox: {
     alignItems: 'center',
     flexDirection: 'row',
     backgroundColor: Color.darkGrey,
-    height: '50%',
+    height: 45,
     width: '93%',
     borderRadius: 6,
     padding: 10,
   },
-
   inputSearch: {
     marginLeft: 5,
     fontFamily: 'Inter-Medium',
     fontSize: 12,
     color: 'white',
   },
-
-  // inputSearch: {
-  //   backgroundColor: Color.darkGrey,
-  //   height: '50%',
-  //   width: '93%',
-  //   justifyContent: 'center',
-  //   padding: 10,
-  //   borderRadius: 6,
-  //   fontSize: 12,
-  //   fontFamily: 'Inter-Medium',
-  // },
+  navContainer: {
+    marginTop: '5%',
+    marginLeft: '4%',
+    marginRight: '4%',
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+  },
+  navIcon: {
+    color: 'white',
+    borderColor: Color.darkGrey,
+    borderStyle: 'solid',
+    borderRadius: 12,
+    borderWidth: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    fontFamily: 'Inter-Regular',
+    fontSize: 12,
+  },
 
   // not connected
-  test: {
-    color: 'white',
-  },
   noSpotifyContainer: {
     backgroundColor: 'black',
-    flex: 1,
   },
   noSpotTextContainer: {
     marginTop: '30%',
