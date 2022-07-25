@@ -33,6 +33,7 @@ import Color from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SpotifyPlaylists from '../../components/SpotifyPlaylists';
 import SpotifyLikedSongs from '../../components/SpotifyLikedSongs';
+import SpotifyAlbums from '../../components/SpotifyAlbums';
 
 const TestScreen = () => {
   const userInfo = firebase.auth().currentUser;
@@ -51,8 +52,10 @@ const TestScreen = () => {
   const [playlistIDs, setPlaylistIDs] = useState();
   const [uniquePlaylist, setUniquePlaylist] = useState('');
   const [likedSongs, setLikedSongs] = useState();
+  const [savedAlbums, setSavedAlbums] = useState();
   const [likedSongsUI, setLikedSongsUI] = useState(true);
   const [playlistUI, setPlaylistUI] = useState(false);
+  const [albumUI, setAlbumUI] = useState(false);
 
   // check if user has spotify connected to display proper screens
   useEffect(() => {
@@ -123,6 +126,21 @@ const TestScreen = () => {
         });
     }
   }, [spotifyID, accessToken]);
+
+  //get a user's saved albums
+  useEffect(() => {
+    if (accessToken) {
+      authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
+        .get('me/albums?limit=50')
+        .then(response => {
+          setSavedAlbums(response.data.items);
+        })
+        .catch(error => {
+          console.log(error);
+          return error;
+        });
+    }
+  }, [accessToken, refreshToken]);
 
   useEffect(() => {
     if (playlistIDs) {
@@ -199,18 +217,33 @@ const TestScreen = () => {
                 onPress={() => {
                   setLikedSongsUI(true);
                   setPlaylistUI(false);
+                  setAlbumUI(false);
                 }}>
-                <Text style={styles.navIcon}>Liked Songs</Text>
+                <Text
+                  style={likedSongsUI ? styles.navIconActive : styles.navIcon}>
+                  Liked Songs
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
                   setLikedSongsUI(false);
                   setPlaylistUI(true);
+                  setAlbumUI(false);
                 }}>
-                <Text style={styles.navIcon}>Playlists</Text>
+                <Text
+                  style={playlistUI ? styles.navIconActive : styles.navIcon}>
+                  Playlists
+                </Text>
               </TouchableOpacity>
-              <TouchableOpacity>
-                <Text style={styles.navIcon}>Albums</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setLikedSongsUI(false);
+                  setPlaylistUI(false);
+                  setAlbumUI(true);
+                }}>
+                <Text style={albumUI ? styles.navIconActive : styles.navIcon}>
+                  Albums
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity>
                 <Text style={styles.navIcon}>Artists</Text>
@@ -221,6 +254,12 @@ const TestScreen = () => {
           {playlistUI && (
             <SpotifyPlaylists
               playlists={userPlaylistInfo}
+              accessTokenProp={accessToken}
+            />
+          )}
+          {albumUI && (
+            <SpotifyAlbums
+              savedAlbumsProp={savedAlbums}
               accessTokenProp={accessToken}
             />
           )}
@@ -315,9 +354,22 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
 
+  navIconActive: {
+    color: 'white',
+    borderColor: 'white',
+    borderStyle: 'solid',
+    borderRadius: 12,
+    borderWidth: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    fontFamily: 'Inter-Regular',
+    fontSize: 12,
+  },
+
   // not connected
   noSpotifyContainer: {
     backgroundColor: 'black',
+    flex: 1,
   },
   noSpotTextContainer: {
     marginTop: '30%',

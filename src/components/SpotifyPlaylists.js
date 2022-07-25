@@ -68,108 +68,105 @@ const SpotifyPlaylists = props => {
     <>
       {eligiblePlaylistArray ? (
         <>
-          <View style={styles.scrollContainer}>
-            {showPlaylist ? (
-              <>
-                <View>
-                  <FlatList
-                    contentContainerStyle={{paddingBottom: 260}}
-                    style={{width: '100%', height: '100%'}}
-                    data={playlistTracks}
-                    renderItem={({item, index}) => {
-                      return (
-                        <TouchableOpacity>
-                          <View style={styles.songContainer} key={index}>
-                            <Image
-                              style={styles.songPhoto}
-                              source={{
-                                uri: item.track.album.images[0].url,
-                              }}
-                            />
-                            <View style={styles.songInfoContainer}>
-                              <View style={styles.trackNameContainer}>
-                                <Text
-                                  numberOfLines={1}
-                                  style={styles.trackName}>
-                                  {item.track.name}
-                                </Text>
-                              </View>
-                              <View style={styles.artistContainer}>
-                                <Text
-                                  numberOfLines={1}
-                                  style={styles.artistText}>
-                                  {item.track.artists
-                                    .map(artist => {
-                                      return artist.name;
-                                    })
-                                    .join(', ')}
-                                </Text>
-                                <Ionicons
-                                  style={styles.smallDot}
-                                  name="ellipse"
-                                  color={Colors.greyOut}
-                                  size={3}
-                                />
-                                <Text
-                                  numberOfLines={1}
-                                  style={styles.albumText}>
-                                  {item.track.album.name}
-                                </Text>
-                              </View>
+          {showPlaylist ? (
+            <>
+              <View style={styles.trackScrollContainer}>
+                <FlatList
+                  contentContainerStyle={{paddingBottom: 20}}
+                  style={{width: '100%', height: '100%'}}
+                  data={playlistTracks}
+                  renderItem={({item, index}) => {
+                    return (
+                      <TouchableOpacity>
+                        <View style={styles.songContainer} key={index}>
+                          <Image
+                            style={styles.songPhoto}
+                            source={{
+                              uri: item.track.album.images[0].url,
+                            }}
+                          />
+                          <View style={styles.songInfoContainer}>
+                            <View style={styles.trackNameContainer}>
+                              <Text numberOfLines={1} style={styles.trackName}>
+                                {item.track.name}
+                              </Text>
                             </View>
-                            <Ionicons
-                              style={styles.circleClick}
-                              name="chevron-forward"
-                              color={Colors.greyOut}
-                              size={25}
-                            />
+                            <View style={styles.artistContainer}>
+                              <Text numberOfLines={1} style={styles.artistText}>
+                                {item.track.artists
+                                  .map(artist => {
+                                    return artist.name;
+                                  })
+                                  .join(', ')}
+                              </Text>
+                              <Ionicons
+                                style={styles.smallDot}
+                                name="ellipse"
+                                color={Colors.greyOut}
+                                size={3}
+                              />
+                              <Text numberOfLines={1} style={styles.albumText}>
+                                {item.track.album.name}
+                              </Text>
+                            </View>
                           </View>
-                        </TouchableOpacity>
-                      );
-                    }}
-                  />
-                </View>
-              </>
-            ) : (
-              <FlatList
-                contentContainerStyle={{paddingBottom: 260}}
-                style={{width: '100%', height: '100%'}}
-                numColumns={2}
-                data={cleanPlaylistInfo}
-                renderItem={({item, index}) => (
-                  <View style={styles.photoContainer} key={index}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setShowPlaylist(true);
-                        setPlaylistID(item.id);
-                      }}>
-                      <Image
-                        style={styles.playlistPhotos}
-                        source={{
-                          uri: item.images[0]?.url,
-                        }}
+                          <Ionicons
+                            style={styles.circleClick}
+                            name="chevron-forward"
+                            color={Colors.greyOut}
+                            size={25}
+                          />
+                        </View>
+                      </TouchableOpacity>
+                    );
+                  }}
+                />
+                <TouchableOpacity
+                  onPress={() => setShowPlaylist(false)}
+                  style={styles.backBtn}>
+                  <Text style={styles.back}>Back</Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          ) : (
+            <FlatList
+              contentContainerStyle={{paddingBottom: 15}}
+              style={{width: '100%', height: '100%'}}
+              numColumns={2}
+              data={cleanPlaylistInfo}
+              renderItem={({item, index}) => (
+                <View style={styles.photoContainer} key={index}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setShowPlaylist(true);
+                      setPlaylistID(item.id);
+                    }}>
+                    <Image
+                      style={styles.playlistPhotos}
+                      source={{
+                        uri: item.images[0]?.url,
+                      }}
+                    />
+                    <Text numberOfLines={1} style={styles.playlistName}>
+                      {item.name}
+                    </Text>
+                    <View style={styles.lengthContainer}>
+                      <Text style={styles.playlist}>Playlist</Text>
+                      <Ionicons
+                        style={styles.dot}
+                        name="ellipse"
+                        color={Colors.greyOut}
+                        size={3}
                       />
-                      <Text numberOfLines={1} style={styles.playlistName}>
-                        {item.name}
+                      <Text style={styles.playlistLength}>
+                        {item.tracks.total} songs
                       </Text>
-                      <View style={styles.lengthContainer}>
-                        <Text style={styles.playlist}>Playlist</Text>
-                        <Ionicons
-                          style={styles.dot}
-                          name="ellipse"
-                          color={Colors.greyOut}
-                          size={3}
-                        />
-                        <Text style={styles.playlistLength}>
-                          {item.tracks.total} songs
-                        </Text>
-                      </View>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              />
-            )}
-          </View>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              )}
+            />
+          )}
         </>
       ) : null}
     </>
@@ -220,6 +217,10 @@ const styles = StyleSheet.create({
   },
 
   // show tracks
+
+  trackScrollContainer: {
+    flex: 1,
+  },
   songContainer: {
     marginTop: '5%',
     flexDirection: 'row',
@@ -265,5 +266,22 @@ const styles = StyleSheet.create({
   circleClick: {
     position: 'absolute',
     marginLeft: '87%',
+  },
+
+  backBtn: {
+    backgroundColor: Colors.red,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'absolute',
+    marginTop: 450,
+    marginLeft: '4%',
+    paddingHorizontal: 30,
+    paddingVertical: 10,
+    borderRadius: 9,
+  },
+  back: {
+    color: 'white',
+    fontFamily: 'Inter-Bold',
+    fontSize: 16,
   },
 });
