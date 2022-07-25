@@ -10,12 +10,17 @@ import React from 'react';
 import Colors from '../assets/utilities/Colors';
 import {useEffect, useState} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import axios from 'axios';
 
 const SpotifyPlaylists = props => {
   const playlists = props.playlists;
+  const accessToken = props.accessTokenProp;
   const [cleanPlaylists, setCleanPlaylists] = useState(null);
   const [cleanPlaylistInfo, setCleanPlaylistInfo] = useState(null);
   const [eligiblePlaylistArray, setEligiblePlaylistArray] = useState(null);
+  const [showPlaylist, setShowPlaylist] = useState(false);
+  const [playlistTracks, setPlaylistTracks] = useState();
+  const [playlistID, setPlaylistID] = useState();
 
   useEffect(() => {
     if (playlists) {
@@ -34,48 +39,140 @@ const SpotifyPlaylists = props => {
     }
   }, [cleanPlaylists, playlists]);
 
+  useEffect(() => {
+    if (showPlaylist && playlistID) {
+      const axiosPlaylistFetch = async () => {
+        try {
+          // eslint-disable-next-line no-undef
+          const response = await axios.get(
+            `https://api.spotify.com/v1/playlists/${playlistID}/tracks`,
+            {
+              headers: {
+                Authorization: 'Bearer ' + accessToken,
+                'Content-Type': 'application/json',
+              },
+            },
+          );
+          console.log(response.data.items);
+          console.log('album tracks above');
+          setPlaylistTracks(response.data.items);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      axiosPlaylistFetch();
+    }
+  }, [accessToken, playlistID, showPlaylist]);
+
   return (
-    <View>
+    <>
       {eligiblePlaylistArray ? (
         <>
           <View style={styles.scrollContainer}>
-            <FlatList
-              contentContainerStyle={{paddingBottom: 260}}
-              style={{width: '100%', height: '100%'}}
-              numColumns={2}
-              data={cleanPlaylistInfo}
-              renderItem={({item, index}) => (
-                <View style={styles.photoContainer} key={index}>
-                  <TouchableOpacity>
-                    <Image
-                      style={styles.playlistPhotos}
-                      source={{
-                        uri: item.images[0]?.url,
-                      }}
-                    />
-                    <Text numberOfLines={1} style={styles.playlistName}>
-                      {item.name}
-                    </Text>
-                    <View style={styles.lengthContainer}>
-                      <Text style={styles.playlist}>Playlist</Text>
-                      <Ionicons
-                        style={styles.dot}
-                        name="ellipse"
-                        color={Colors.greyOut}
-                        size={3}
-                      />
-                      <Text style={styles.playlistLength}>
-                        {item.tracks.total} songs
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
+            {showPlaylist ? (
+              <>
+                <View>
+                  <FlatList
+                    contentContainerStyle={{paddingBottom: 260}}
+                    style={{width: '100%', height: '100%'}}
+                    data={playlistTracks}
+                    renderItem={({item, index}) => {
+                      return (
+                        <TouchableOpacity>
+                          <View style={styles.songContainer} key={index}>
+                            <Image
+                              style={styles.songPhoto}
+                              source={{
+                                uri: item.track.album.images[0].url,
+                              }}
+                            />
+                            <View style={styles.songInfoContainer}>
+                              <View style={styles.trackNameContainer}>
+                                <Text
+                                  numberOfLines={1}
+                                  style={styles.trackName}>
+                                  {item.track.name}
+                                </Text>
+                              </View>
+                              <View style={styles.artistContainer}>
+                                <Text
+                                  numberOfLines={1}
+                                  style={styles.artistText}>
+                                  {item.track.artists
+                                    .map(artist => {
+                                      return artist.name;
+                                    })
+                                    .join(', ')}
+                                </Text>
+                                <Ionicons
+                                  style={styles.smallDot}
+                                  name="ellipse"
+                                  color={Colors.greyOut}
+                                  size={3}
+                                />
+                                <Text
+                                  numberOfLines={1}
+                                  style={styles.albumText}>
+                                  {item.track.album.name}
+                                </Text>
+                              </View>
+                            </View>
+                            <Ionicons
+                              style={styles.circleClick}
+                              name="chevron-forward"
+                              color={Colors.greyOut}
+                              size={25}
+                            />
+                          </View>
+                        </TouchableOpacity>
+                      );
+                    }}
+                  />
                 </View>
-              )}
-            />
+              </>
+            ) : (
+              <FlatList
+                contentContainerStyle={{paddingBottom: 260}}
+                style={{width: '100%', height: '100%'}}
+                numColumns={2}
+                data={cleanPlaylistInfo}
+                renderItem={({item, index}) => (
+                  <View style={styles.photoContainer} key={index}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setShowPlaylist(true);
+                        setPlaylistID(item.id);
+                      }}>
+                      <Image
+                        style={styles.playlistPhotos}
+                        source={{
+                          uri: item.images[0]?.url,
+                        }}
+                      />
+                      <Text numberOfLines={1} style={styles.playlistName}>
+                        {item.name}
+                      </Text>
+                      <View style={styles.lengthContainer}>
+                        <Text style={styles.playlist}>Playlist</Text>
+                        <Ionicons
+                          style={styles.dot}
+                          name="ellipse"
+                          color={Colors.greyOut}
+                          size={3}
+                        />
+                        <Text style={styles.playlistLength}>
+                          {item.tracks.total} songs
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              />
+            )}
           </View>
         </>
       ) : null}
-    </View>
+    </>
   );
 };
 
@@ -120,5 +217,53 @@ const styles = StyleSheet.create({
     marginLeft: '2%',
     fontFamily: 'Inter-Regular',
     fontSize: 12,
+  },
+
+  // show tracks
+  songContainer: {
+    marginTop: '5%',
+    flexDirection: 'row',
+    marginLeft: '4%',
+    alignItems: 'center',
+  },
+  songPhoto: {
+    height: 50,
+    width: 50,
+  },
+  songInfoContainer: {
+    marginLeft: 10,
+  },
+  trackNameContainer: {
+    marginBottom: 5,
+  },
+  trackName: {
+    fontFamily: 'Inter-Medium',
+    fontSize: 16,
+    color: 'white',
+    width: 240,
+  },
+  artistContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  artistText: {
+    color: Colors.greyOut,
+    fontFamily: 'Inter-Medium',
+    fontSize: 13,
+    maxWidth: 120,
+  },
+  smallDot: {
+    marginLeft: 5,
+  },
+  albumText: {
+    color: Colors.greyOut,
+    fontFamily: 'Inter-Medium',
+    fontSize: 13,
+    marginLeft: 5,
+    width: 100,
+  },
+  circleClick: {
+    position: 'absolute',
+    marginLeft: '87%',
   },
 });

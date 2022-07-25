@@ -218,7 +218,12 @@ const TestScreen = () => {
             </View>
           </View>
           {likedSongsUI && <SpotifyLikedSongs likedSongsProp={likedSongs} />}
-          {playlistUI && <SpotifyPlaylists playlists={userPlaylistInfo} />}
+          {playlistUI && (
+            <SpotifyPlaylists
+              playlists={userPlaylistInfo}
+              accessTokenProp={accessToken}
+            />
+          )}
         </View>
       ) : (
         <SafeAreaView style={styles.noSpotifyContainer}>
