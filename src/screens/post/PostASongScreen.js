@@ -7,6 +7,7 @@ const spotConfig = {
     'playlist-modify-public',
     'user-read-private',
     'user-library-read',
+    'user-follow-read',
   ], // the scopes you need to access
   serviceConfiguration: {
     authorizationEndpoint: 'https://accounts.spotify.com/authorize',
@@ -34,28 +35,25 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import SpotifyPlaylists from '../../components/SpotifyPlaylists';
 import SpotifyLikedSongs from '../../components/SpotifyLikedSongs';
 import SpotifyAlbums from '../../components/SpotifyAlbums';
+import SpotifyArtists from '../../components/SpotifyArtists';
 
 const TestScreen = () => {
   const userInfo = firebase.auth().currentUser;
   const [spotifyConnected, setSpotifyConnected] = useState();
   const [troll, setTroll] = useState(false);
-  const spotifyUserInfoURL = 'https://api.spotify.com/v1/me';
-  const spotifyTrackURL = 'https://api.spotify.com/v1/me/tracks';
-  const spotifyRefreshURL = 'https://accounts.spotify.com/api/token';
   const spotifyUserPlaylistURL = 'https://api.spotify.com/v1/me/playlists';
-  const spotifyPlaylistItemsURL =
-    'https://api.spotify.com/v1/playlists/playlist_id/tracks';
   const [accessToken, setAccessToken] = useState('');
   const [refreshToken, setRefreshToken] = useState('');
   const [spotifyID, setSpotifyID] = useState('');
   const [userPlaylistInfo, setUserPlaylistInfo] = useState();
   const [playlistIDs, setPlaylistIDs] = useState();
-  const [uniquePlaylist, setUniquePlaylist] = useState('');
   const [likedSongs, setLikedSongs] = useState();
   const [savedAlbums, setSavedAlbums] = useState();
+  const [userFollowing, setUserFollowing] = useState();
   const [likedSongsUI, setLikedSongsUI] = useState(true);
   const [playlistUI, setPlaylistUI] = useState(false);
   const [albumUI, setAlbumUI] = useState(false);
+  const [artistUI, setArtistUI] = useState(false);
 
   // check if user has spotify connected to display proper screens
   useEffect(() => {
@@ -142,37 +140,23 @@ const TestScreen = () => {
     }
   }, [accessToken, refreshToken]);
 
+  //get the artists a user is following
   useEffect(() => {
-    if (playlistIDs) {
-      const returnManyArrays = async () => {
-        const userPlaylistArrays = await Promise.all(
-          playlistIDs.map(async playlistID => {
-            try {
-              const response = await axios.get(
-                `https://api.spotify.com/v1/playlists/${playlistID}/tracks`,
-                {
-                  headers: {
-                    Authorization: 'Bearer ' + accessToken,
-                    'Content-Type': 'application/json',
-                  },
-                },
-              );
-              return response.data.items;
-            } catch (error) {
-              console.log(error);
-            }
-          }),
-        );
-        setUniquePlaylist(userPlaylistArrays);
-      };
-      returnManyArrays();
+    if (accessToken) {
+      authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
+        .get('me/following?type=artist&limit=50')
+        .then(response => {
+          setUserFollowing(response.data.artists.items);
+        })
+        .catch(error => {
+          console.log(error);
+          return error;
+        });
     }
-  }, [accessToken, playlistIDs]);
+  }, [accessToken, refreshToken]);
 
   const connectSpotify = async () => {
     const authState = await authorize(spotConfig);
-    console.log(authState.accessToken);
-    console.log('access token');
     await AsyncStorage.setItem('hasSpotify', 'true');
     setSpotifyConnected(true);
     setAccessToken(authState.accessToken);
@@ -218,6 +202,7 @@ const TestScreen = () => {
                   setLikedSongsUI(true);
                   setPlaylistUI(false);
                   setAlbumUI(false);
+                  setArtistUI(false);
                 }}>
                 <Text
                   style={likedSongsUI ? styles.navIconActive : styles.navIcon}>
@@ -229,6 +214,7 @@ const TestScreen = () => {
                   setLikedSongsUI(false);
                   setPlaylistUI(true);
                   setAlbumUI(false);
+                  setArtistUI(false);
                 }}>
                 <Text
                   style={playlistUI ? styles.navIconActive : styles.navIcon}>
@@ -240,13 +226,22 @@ const TestScreen = () => {
                   setLikedSongsUI(false);
                   setPlaylistUI(false);
                   setAlbumUI(true);
+                  setArtistUI(false);
                 }}>
                 <Text style={albumUI ? styles.navIconActive : styles.navIcon}>
                   Albums
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity>
-                <Text style={styles.navIcon}>Artists</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setLikedSongsUI(false);
+                  setPlaylistUI(false);
+                  setAlbumUI(false);
+                  setArtistUI(true);
+                }}>
+                <Text style={artistUI ? styles.navIconActive : styles.navIcon}>
+                  Following
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -260,6 +255,12 @@ const TestScreen = () => {
           {albumUI && (
             <SpotifyAlbums
               savedAlbumsProp={savedAlbums}
+              accessTokenProp={accessToken}
+            />
+          )}
+          {artistUI && (
+            <SpotifyArtists
+              userFollowingProp={userFollowing}
               accessTokenProp={accessToken}
             />
           )}
