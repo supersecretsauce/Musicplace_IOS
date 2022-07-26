@@ -12,6 +12,7 @@ import Colors from '../assets/utilities/Colors';
 
 const SpotifyLikedSongs = props => {
   const likedSongs = props.likedSongsProp;
+  const navigation = props.navigationProp;
   const [likedSongsArray, setLikedSongsArray] = useState(null);
 
   useEffect(() => {
@@ -31,7 +32,12 @@ const SpotifyLikedSongs = props => {
               data={likedSongsArray}
               renderItem={({item, index}) => {
                 return (
-                  <TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      navigation.navigate('CompletePostScreen', {
+                        song: item.track,
+                      });
+                    }}>
                     <View style={styles.songContainer} key={index}>
                       <Image
                         style={styles.songPhoto}

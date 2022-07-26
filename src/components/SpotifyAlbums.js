@@ -14,6 +14,7 @@ import axios from 'axios';
 const SpotifyAlbums = props => {
   const albums = props.savedAlbumsProp;
   const accessToken = props.accessTokenProp;
+  const navigation = props.navigationProp;
   const [showAlbum, setShowAlbum] = useState(false);
   const [albumID, setAlbumID] = useState();
   const [albumTracks, setAlbumTracks] = useState();
@@ -66,7 +67,13 @@ const SpotifyAlbums = props => {
             data={albumTracks}
             renderItem={({item, index}) => {
               return (
-                <TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate('CompletePostScreen', {
+                      song: item,
+                      songPhoto: albumPhoto,
+                    });
+                  }}>
                   <View style={styles.songContainer} key={index}>
                     <Image
                       style={styles.songPhoto}
