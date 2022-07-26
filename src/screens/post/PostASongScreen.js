@@ -7,6 +7,7 @@ const spotConfig = {
     'playlist-modify-public',
     'user-read-private',
     'user-library-read',
+    'user-follow-read',
   ], // the scopes you need to access
   serviceConfiguration: {
     authorizationEndpoint: 'https://accounts.spotify.com/authorize',
@@ -32,23 +33,27 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Color from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SpotifyPlaylists from '../../components/SpotifyPlaylists';
+import SpotifyLikedSongs from '../../components/SpotifyLikedSongs';
+import SpotifyAlbums from '../../components/SpotifyAlbums';
+import SpotifyArtists from '../../components/SpotifyArtists';
 
 const TestScreen = () => {
   const userInfo = firebase.auth().currentUser;
   const [spotifyConnected, setSpotifyConnected] = useState();
   const [troll, setTroll] = useState(false);
-  const spotifyUserInfoURL = 'https://api.spotify.com/v1/me';
-  const spotifyTrackURL = 'https://api.spotify.com/v1/me/tracks';
-  const spotifyRefreshURL = 'https://accounts.spotify.com/api/token';
   const spotifyUserPlaylistURL = 'https://api.spotify.com/v1/me/playlists';
-  const spotifyPlaylistItemsURL =
-    'https://api.spotify.com/v1/playlists/playlist_id/tracks';
   const [accessToken, setAccessToken] = useState('');
   const [refreshToken, setRefreshToken] = useState('');
   const [spotifyID, setSpotifyID] = useState('');
   const [userPlaylistInfo, setUserPlaylistInfo] = useState();
   const [playlistIDs, setPlaylistIDs] = useState();
-  const [uniquePlaylist, setUniquePlaylist] = useState('');
+  const [likedSongs, setLikedSongs] = useState();
+  const [savedAlbums, setSavedAlbums] = useState();
+  const [userFollowing, setUserFollowing] = useState();
+  const [likedSongsUI, setLikedSongsUI] = useState(true);
+  const [playlistUI, setPlaylistUI] = useState(false);
+  const [albumUI, setAlbumUI] = useState(false);
+  const [artistUI, setArtistUI] = useState(false);
 
   // check if user has spotify connected to display proper screens
   useEffect(() => {
@@ -85,6 +90,21 @@ const TestScreen = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken]);
 
+  // get a user's liked songs
+  useEffect(() => {
+    if (accessToken) {
+      authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
+        .get('me/tracks?limit=50')
+        .then(response => {
+          setLikedSongs(response.data.items);
+        })
+        .catch(error => {
+          console.log(error);
+          return error;
+        });
+    }
+  }, [accessToken, refreshToken]);
+
   // get a user's playlists
   useEffect(() => {
     if (spotifyID) {
@@ -105,45 +125,38 @@ const TestScreen = () => {
     }
   }, [spotifyID, accessToken]);
 
+  //get a user's saved albums
   useEffect(() => {
-    if (playlistIDs) {
-      const returnManyArrays = async () => {
-        const userPlaylistArrays = await Promise.all(
-          playlistIDs.map(async playlistID => {
-            try {
-              const response = await axios.get(
-                `https://api.spotify.com/v1/playlists/${playlistID}/tracks`,
-                {
-                  headers: {
-                    Authorization: 'Bearer ' + accessToken,
-                    'Content-Type': 'application/json',
-                  },
-                },
-              );
-              return response.data.items;
-            } catch (error) {
-              console.log(error);
-            }
-          }),
-        );
-        setUniquePlaylist(userPlaylistArrays);
-      };
-      returnManyArrays();
+    if (accessToken) {
+      authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
+        .get('me/albums?limit=50')
+        .then(response => {
+          setSavedAlbums(response.data.items);
+        })
+        .catch(error => {
+          console.log(error);
+          return error;
+        });
     }
-  }, [accessToken, playlistIDs]);
+  }, [accessToken, refreshToken]);
 
+  //get the artists a user is following
   useEffect(() => {
-    if (uniquePlaylist) {
-      console.log(uniquePlaylist);
-      console.log(userPlaylistInfo);
-      console.log('should be one array with many arrays above');
+    if (accessToken) {
+      authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
+        .get('me/following?type=artist&limit=50')
+        .then(response => {
+          setUserFollowing(response.data.artists.items);
+        })
+        .catch(error => {
+          console.log(error);
+          return error;
+        });
     }
-  }, [uniquePlaylist, userPlaylistInfo]);
+  }, [accessToken, refreshToken]);
 
   const connectSpotify = async () => {
     const authState = await authorize(spotConfig);
-    console.log(authState.accessToken);
-    console.log('access token');
     await AsyncStorage.setItem('hasSpotify', 'true');
     setSpotifyConnected(true);
     setAccessToken(authState.accessToken);
@@ -184,13 +197,73 @@ const TestScreen = () => {
               </View>
             </View>
             <View style={styles.navContainer}>
-              <Text style={styles.navIcon}>Liked Songs</Text>
-              <Text style={styles.navIcon}>Playlists</Text>
-              <Text style={styles.navIcon}>Albums</Text>
-              <Text style={styles.navIcon}>Artists</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setLikedSongsUI(true);
+                  setPlaylistUI(false);
+                  setAlbumUI(false);
+                  setArtistUI(false);
+                }}>
+                <Text
+                  style={likedSongsUI ? styles.navIconActive : styles.navIcon}>
+                  Liked Songs
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setLikedSongsUI(false);
+                  setPlaylistUI(true);
+                  setAlbumUI(false);
+                  setArtistUI(false);
+                }}>
+                <Text
+                  style={playlistUI ? styles.navIconActive : styles.navIcon}>
+                  Playlists
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setLikedSongsUI(false);
+                  setPlaylistUI(false);
+                  setAlbumUI(true);
+                  setArtistUI(false);
+                }}>
+                <Text style={albumUI ? styles.navIconActive : styles.navIcon}>
+                  Albums
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setLikedSongsUI(false);
+                  setPlaylistUI(false);
+                  setAlbumUI(false);
+                  setArtistUI(true);
+                }}>
+                <Text style={artistUI ? styles.navIconActive : styles.navIcon}>
+                  Following
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
-          <SpotifyPlaylists playlists={userPlaylistInfo} />
+          {likedSongsUI && <SpotifyLikedSongs likedSongsProp={likedSongs} />}
+          {playlistUI && (
+            <SpotifyPlaylists
+              playlists={userPlaylistInfo}
+              accessTokenProp={accessToken}
+            />
+          )}
+          {albumUI && (
+            <SpotifyAlbums
+              savedAlbumsProp={savedAlbums}
+              accessTokenProp={accessToken}
+            />
+          )}
+          {artistUI && (
+            <SpotifyArtists
+              userFollowingProp={userFollowing}
+              accessTokenProp={accessToken}
+            />
+          )}
         </View>
       ) : (
         <SafeAreaView style={styles.noSpotifyContainer}>
@@ -260,6 +333,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Medium',
     fontSize: 12,
     color: 'white',
+    width: '100%',
+    height: '100%',
   },
   navContainer: {
     marginTop: '5%',
@@ -280,9 +355,22 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
 
+  navIconActive: {
+    color: 'white',
+    borderColor: 'white',
+    borderStyle: 'solid',
+    borderRadius: 12,
+    borderWidth: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    fontFamily: 'Inter-Regular',
+    fontSize: 12,
+  },
+
   // not connected
   noSpotifyContainer: {
     backgroundColor: 'black',
+    flex: 1,
   },
   noSpotTextContainer: {
     marginTop: '30%',
