@@ -38,7 +38,6 @@ const SpotifyArtists = props => {
           );
 
           setArtistTracks(response.data.tracks);
-          console.log(response.tracks);
         } catch (error) {
           console.log(error);
         }
@@ -92,6 +91,11 @@ const SpotifyArtists = props => {
               );
             }}
           />
+          <TouchableOpacity
+            onPress={() => setShowArtist(false)}
+            style={styles.backBtn}>
+            <Text style={styles.back}>Back</Text>
+          </TouchableOpacity>
         </>
       ) : (
         <FlatList
