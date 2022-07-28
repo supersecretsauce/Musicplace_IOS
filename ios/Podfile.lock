@@ -1041,6 +1041,11 @@ PODS:
   - RNScreens (3.14.1):
     - React-Core
     - React-RCTImage
+  - RNSound (0.11.2):
+    - React-Core
+    - RNSound/Core (= 0.11.2)
+  - RNSound/Core (0.11.2):
+    - React-Core
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -1084,6 +1089,7 @@ DEPENDENCIES:
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
   - RNScreens (from `../node_modules/react-native-screens`)
+  - RNSound (from `../node_modules/react-native-sound`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -1185,6 +1191,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/firestore"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNSound:
+    :path: "../node_modules/react-native-sound"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -1246,6 +1254,7 @@ SPEC CHECKSUMS:
   RNFBAuth: dca6dec4a91cc3aa5c9cf8df7c97cc61d0395245
   RNFBFirestore: 18d05f1de3cf0e83c5499563b61a6762dd0406c0
   RNScreens: aa9a97835afbbdc18a4757870b2b59b7d9fae16a
+  RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
   Yoga: 7ab6e3ee4ce47d7b789d1cb520163833e515f452
 
 PODFILE CHECKSUM: 3aa86c459b2b358bb2360305e045886ef990c31d

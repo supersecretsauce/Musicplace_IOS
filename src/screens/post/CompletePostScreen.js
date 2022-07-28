@@ -10,9 +10,10 @@ import {
   Switch,
   Keyboard,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useMemo} from 'react';
 import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Sound from 'react-native-sound';
 
 const DismissKeyboard = ({children}) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -24,11 +25,34 @@ const CompletePostScreen = ({route, navigation}) => {
   const {song, songPhoto, albumName} = route.params;
   const [songIMG, setSongIMG] = useState();
   const [value, setValue] = useState(false);
+  const [trackPlaying, setTrackPlaying] = useState(false);
   useEffect(() => {
     if (songPhoto) {
       setSongIMG(songPhoto);
     }
   }, [songPhoto]);
+
+  const track = useMemo(
+    () => new Sound(song.preview_url, null),
+    [song.preview_url],
+  );
+
+  const playPreview = () => {
+    if (trackPlaying === false) {
+      track.play(success => {
+        if (success) {
+          console.log('done');
+          setTrackPlaying(false);
+        } else {
+          console.log('playback failed due to audio decoding errors');
+        }
+      });
+      setTrackPlaying(true);
+    } else {
+      track.pause();
+      setTrackPlaying(false);
+    }
+  };
 
   return (
     <>
@@ -39,7 +63,10 @@ const CompletePostScreen = ({route, navigation}) => {
               <View style={styles.postContainer}>
                 <View style={styles.topContainer}>
                   <Ionicons
-                    onPress={() => navigation.navigate('PostASongScreen')}
+                    onPress={() => {
+                      track.pause();
+                      navigation.navigate('PostASongScreen');
+                    }}
                     style={styles.chevron}
                     name="chevron-back"
                     color="white"
@@ -71,7 +98,9 @@ const CompletePostScreen = ({route, navigation}) => {
                       {albumName}
                     </Text>
                   </View>
-                  <TouchableOpacity style={styles.previewBtn}>
+                  <TouchableOpacity
+                    style={styles.previewBtn}
+                    onPress={playPreview}>
                     <Ionicons
                       // style={styles.chevron}
                       name="play-circle"
@@ -151,7 +180,10 @@ const CompletePostScreen = ({route, navigation}) => {
             <View style={styles.postContainer}>
               <View style={styles.topContainer}>
                 <Ionicons
-                  onPress={() => navigation.navigate('PostASongScreen')}
+                  onPress={() => {
+                    navigation.navigate('PostASongScreen');
+                    track.pause();
+                  }}
                   style={styles.chevron}
                   name="chevron-back"
                   color="white"
@@ -183,7 +215,9 @@ const CompletePostScreen = ({route, navigation}) => {
                     {song.album.name}
                   </Text>
                 </View>
-                <TouchableOpacity style={styles.previewBtn}>
+                <TouchableOpacity
+                  onPress={playPreview}
+                  style={styles.previewBtn}>
                   <Ionicons
                     // style={styles.chevron}
                     name="play-circle"
