@@ -103,7 +103,7 @@ const SpotifyArtists = props => {
         </>
       ) : (
         <FlatList
-          contentContainerStyle={{paddingBottom: 250}}
+          contentContainerStyle={{paddingBottom: 20}}
           style={{width: '100%', height: '100%'}}
           numColumns={2}
           data={artists}
