@@ -20,6 +20,7 @@ const SpotifyAlbums = props => {
   const [albumTracks, setAlbumTracks] = useState();
   const [albumPhoto, setAlbumPhoto] = useState();
   const [idFilter, setIdFilter] = useState();
+  const [albumName, setAlbumName] = useState();
 
   useEffect(() => {
     if (albums && showAlbum && albumID) {
@@ -72,6 +73,7 @@ const SpotifyAlbums = props => {
                     navigation.navigate('CompletePostScreen', {
                       song: item,
                       songPhoto: albumPhoto,
+                      albumName: albumName,
                     });
                   }}>
                   <View style={styles.songContainer} key={index}>
@@ -127,6 +129,7 @@ const SpotifyAlbums = props => {
                   onPress={() => {
                     setShowAlbum(true);
                     setAlbumID(item.album.id);
+                    setAlbumName(item.album.name);
                   }}>
                   <Image
                     style={styles.albumPhotos}
