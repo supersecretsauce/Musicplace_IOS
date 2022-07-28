@@ -8,10 +8,17 @@ import {
   Image,
   TextInput,
   Switch,
+  Keyboard,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+
+const DismissKeyboard = ({children}) => (
+  <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+    {children}
+  </TouchableWithoutFeedback>
+);
 
 const CompletePostScreen = ({route, navigation}) => {
   const {song, songPhoto} = route.params;
@@ -29,114 +36,116 @@ const CompletePostScreen = ({route, navigation}) => {
       {songIMG ? (
         <></>
       ) : (
-        <View style={styles.container}>
-          <View style={styles.postContainer}>
-            <View style={styles.topContainer}>
-              <Ionicons
-                onPress={() => navigation.navigate('PostASongScreen')}
-                style={styles.chevron}
-                name="chevron-back"
-                color="white"
-                size={50}
-              />
-              <Text style={styles.post}>Post</Text>
-            </View>
-          </View>
-          <View style={styles.trackContainer}>
-            <Image
-              style={styles.songIMG}
-              source={{
-                uri: song.album.images[0].url,
-              }}
-            />
-            <View style={styles.songInfoContainer}>
-              <Text numberOfLines={1} style={styles.songName}>
-                {song.name}
-              </Text>
-              <View numberOfLines={1} style={styles.artistContainer}>
-                <Text style={styles.byText}>by </Text>
-                <Text numberOfLines={1} style={styles.artists}>
-                  {song.artists.map(artist => artist.name).join(', ')}
-                </Text>
-              </View>
-              <View numberOfLines={1} style={styles.albumContainer}>
-                <Text style={styles.byText}>from </Text>
-                <Text numberOfLines={1} style={styles.albumName}>
-                  {song.album.name}
-                </Text>
-              </View>
-              <TouchableOpacity style={styles.previewBtn}>
+        <DismissKeyboard>
+          <View style={styles.container}>
+            <View style={styles.postContainer}>
+              <View style={styles.topContainer}>
                 <Ionicons
-                  // style={styles.chevron}
-                  name="play-circle"
+                  onPress={() => navigation.navigate('PostASongScreen')}
+                  style={styles.chevron}
+                  name="chevron-back"
                   color="white"
-                  size={18}
+                  size={50}
                 />
-                <Text style={styles.previewText}>Preview</Text>
+                <Text style={styles.post}>Post</Text>
+              </View>
+            </View>
+            <View style={styles.trackContainer}>
+              <Image
+                style={styles.songIMG}
+                source={{
+                  uri: song.album.images[0].url,
+                }}
+              />
+              <View style={styles.songInfoContainer}>
+                <Text numberOfLines={1} style={styles.songName}>
+                  {song.name}
+                </Text>
+                <View numberOfLines={1} style={styles.artistContainer}>
+                  <Text style={styles.byText}>by </Text>
+                  <Text numberOfLines={1} style={styles.artists}>
+                    {song.artists.map(artist => artist.name).join(', ')}
+                  </Text>
+                </View>
+                <View numberOfLines={1} style={styles.albumContainer}>
+                  <Text style={styles.byText}>from </Text>
+                  <Text numberOfLines={1} style={styles.albumName}>
+                    {song.album.name}
+                  </Text>
+                </View>
+                <TouchableOpacity style={styles.previewBtn}>
+                  <Ionicons
+                    // style={styles.chevron}
+                    name="play-circle"
+                    color="white"
+                    size={18}
+                  />
+                  <Text style={styles.previewText}>Preview</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View style={styles.captionContainer}>
+              <TextInput
+                // eslint-disable-next-line react-native/no-inline-styles
+                style={{
+                  fontFamily: 'Inter-Regular',
+                  fontSize: value ? 16 : 16,
+                  color: value ? 'white' : 'white',
+                }}
+                maxLength={162}
+                multiline
+                autoCapitalize="none"
+                keyboardType="default"
+                placeholder="Caption ideas include things like: where you were you first heard this song, the people you play this with...idk that's all we got. "
+                placeholderTextColor="grey"
+                value={value}
+              />
+            </View>
+            <View style={styles.shareToContainer}>
+              <Text style={styles.shareTo}>Automatically share to</Text>
+              <View style={styles.socialRowContainer}>
+                <View style={styles.socialLeftContainer}>
+                  <Ionicons
+                    style={styles.socialIcon}
+                    name="chatbubble"
+                    color="#53D769"
+                    size={24}
+                  />
+                  <Text style={styles.socials}>iMessage</Text>
+                </View>
+                <Switch style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}} />
+              </View>
+              <View style={styles.socialRowContainer}>
+                <View style={styles.socialLeftContainer}>
+                  <Ionicons
+                    style={styles.socialIcon}
+                    name="logo-twitter"
+                    color="#1D9BF0"
+                    size={24}
+                  />
+                  <Text style={styles.socials}>Twitter</Text>
+                </View>
+                <Switch style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}} />
+              </View>
+              <View style={styles.socialRowContainer}>
+                <View style={styles.socialLeftContainer}>
+                  <Ionicons
+                    style={styles.socialIcon}
+                    name="logo-snapchat"
+                    color="#FFFC00"
+                    size={24}
+                  />
+                  <Text style={styles.socials}>Snapchat</Text>
+                </View>
+                <Switch style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}} />
+              </View>
+              <TouchableOpacity style={styles.postBtn}>
+                <Ionicons name="earth" color="white" size={24} />
+                <Text style={styles.postBtnText}>Post</Text>
               </TouchableOpacity>
             </View>
           </View>
-          <View style={styles.captionContainer}>
-            <TextInput
-              // eslint-disable-next-line react-native/no-inline-styles
-              style={{
-                fontFamily: 'Inter-Regular',
-                fontSize: value ? 16 : 16,
-                color: value ? 'white' : 'white',
-              }}
-              maxLength={162}
-              multiline
-              autoCapitalize="none"
-              keyboardType="default"
-              placeholder="Caption ideas include things like: where you were you first heard this song, the people you play this song with the most...idk we already ran out of ideas. "
-              placeholderTextColor="grey"
-              value={value}
-            />
-          </View>
-          <View style={styles.shareToContainer}>
-            <Text style={styles.shareTo}>Automatically share to</Text>
-            <View style={styles.socialRowContainer}>
-              <View style={styles.socialLeftContainer}>
-                <Ionicons
-                  style={styles.socialIcon}
-                  name="chatbubble"
-                  color="#53D769"
-                  size={24}
-                />
-                <Text style={styles.socials}>iMessage</Text>
-              </View>
-              <Switch style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}} />
-            </View>
-            <View style={styles.socialRowContainer}>
-              <View style={styles.socialLeftContainer}>
-                <Ionicons
-                  style={styles.socialIcon}
-                  name="logo-twitter"
-                  color="#1D9BF0"
-                  size={24}
-                />
-                <Text style={styles.socials}>Twitter</Text>
-              </View>
-              <Switch style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}} />
-            </View>
-            <View style={styles.socialRowContainer}>
-              <View style={styles.socialLeftContainer}>
-                <Ionicons
-                  style={styles.socialIcon}
-                  name="logo-snapchat"
-                  color="#FFFC00"
-                  size={24}
-                />
-                <Text style={styles.socials}>Snapchat</Text>
-              </View>
-              <Switch style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}} />
-            </View>
-            <TouchableOpacity style={styles.postBtn}>
-              <Ionicons name="earth" color="white" size={24} />
-              <Text style={styles.postBtnText}>Post</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
+        </DismissKeyboard>
       )}
     </>
   );
@@ -174,6 +183,7 @@ const styles = StyleSheet.create({
     marginTop: '10%',
     flexDirection: 'row',
     justifyContent: 'center',
+    maxWidth: '60%',
     // alignItems: 'center',
   },
   songIMG: {
@@ -239,8 +249,11 @@ const styles = StyleSheet.create({
   },
   captionContainer: {
     marginTop: '9%',
-    width: 360,
+    maxWidth: '90%',
     height: '10.79%',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    textAlign: 'left',
   },
   caption: {
     padding: 0,
@@ -250,9 +263,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   shareToContainer: {
-    marginTop: '10%',
+    marginTop: '5%',
     justifyContent: 'flex-start',
-    width: 360,
+    width: '90%',
   },
   shareTo: {
     color: 'white',
@@ -290,9 +303,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: Colors.red,
     borderRadius: 9,
-    marginTop: '52%',
-    width: 360,
-    height: 50,
+    marginTop: '55%',
+    width: '100%',
+    height: '30%',
   },
   postBtnText: {
     color: 'white',
