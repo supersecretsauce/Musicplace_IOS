@@ -17,13 +17,12 @@ const SpotifyArtists = props => {
   const [artistTracks, setArtistTracks] = useState();
   const artists = props.userFollowingProp;
   const accessToken = props.accessTokenProp;
+  const navigation = props.navigationProp;
   const numFormat = new Intl.NumberFormat('en');
   //   console.log(artists);
 
   useEffect(() => {
     if (artistID && showArtist) {
-      console.log(artistID);
-      console.log(accessToken);
       const axiosArtistTracksFetch = async () => {
         try {
           // eslint-disable-next-line no-undef
@@ -56,7 +55,12 @@ const SpotifyArtists = props => {
             data={artistTracks}
             renderItem={({item, index}) => {
               return (
-                <TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate('CompletePostScreen', {
+                      song: item,
+                    });
+                  }}>
                   <View style={styles.songContainer} key={index}>
                     <Image
                       style={styles.songPhoto}
@@ -99,7 +103,7 @@ const SpotifyArtists = props => {
         </>
       ) : (
         <FlatList
-          contentContainerStyle={{paddingBottom: 250}}
+          contentContainerStyle={{paddingBottom: 20}}
           style={{width: '100%', height: '100%'}}
           numColumns={2}
           data={artists}

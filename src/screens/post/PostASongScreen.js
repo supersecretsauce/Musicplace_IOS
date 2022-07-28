@@ -37,7 +37,7 @@ import SpotifyLikedSongs from '../../components/SpotifyLikedSongs';
 import SpotifyAlbums from '../../components/SpotifyAlbums';
 import SpotifyArtists from '../../components/SpotifyArtists';
 
-const TestScreen = () => {
+const TestScreen = ({navigation}) => {
   const userInfo = firebase.auth().currentUser;
   const [spotifyConnected, setSpotifyConnected] = useState();
   const [troll, setTroll] = useState(false);
@@ -245,23 +245,31 @@ const TestScreen = () => {
               </TouchableOpacity>
             </View>
           </View>
-          {likedSongsUI && <SpotifyLikedSongs likedSongsProp={likedSongs} />}
+          {likedSongsUI && (
+            <SpotifyLikedSongs
+              likedSongsProp={likedSongs}
+              navigationProp={navigation}
+            />
+          )}
           {playlistUI && (
             <SpotifyPlaylists
               playlists={userPlaylistInfo}
               accessTokenProp={accessToken}
+              navigationProp={navigation}
             />
           )}
           {albumUI && (
             <SpotifyAlbums
               savedAlbumsProp={savedAlbums}
               accessTokenProp={accessToken}
+              navigationProp={navigation}
             />
           )}
           {artistUI && (
             <SpotifyArtists
               userFollowingProp={userFollowing}
               accessTokenProp={accessToken}
+              navigationProp={navigation}
             />
           )}
         </View>

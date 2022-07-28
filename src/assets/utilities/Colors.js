@@ -4,6 +4,7 @@ const Colors = {
   spotify: '#1DB954',
   lightBlack: '#161616',
   darkGrey: '#3A3A3A',
+  greyBtn: '#898989',
 };
 
 export default Colors;

@@ -15,6 +15,7 @@ import axios from 'axios';
 const SpotifyPlaylists = props => {
   const playlists = props.playlists;
   const accessToken = props.accessTokenProp;
+  const navigation = props.navigationProp;
   const [cleanPlaylists, setCleanPlaylists] = useState(null);
   const [cleanPlaylistInfo, setCleanPlaylistInfo] = useState(null);
   const [eligiblePlaylistArray, setEligiblePlaylistArray] = useState(null);
@@ -53,8 +54,6 @@ const SpotifyPlaylists = props => {
               },
             },
           );
-          console.log(response.data.items);
-          console.log('album tracks above');
           setPlaylistTracks(response.data.items);
         } catch (error) {
           console.log(error);
@@ -77,7 +76,12 @@ const SpotifyPlaylists = props => {
                   data={playlistTracks}
                   renderItem={({item, index}) => {
                     return (
-                      <TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          navigation.navigate('CompletePostScreen', {
+                            song: item.track,
+                          });
+                        }}>
                         <View style={styles.songContainer} key={index}>
                           <Image
                             style={styles.songPhoto}
