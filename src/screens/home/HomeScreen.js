@@ -10,6 +10,7 @@ import {
 import React, {useState} from 'react';
 import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Spotify from '../../assets/img/spotify.svg';
 const HomeScreen = () => {
   const windowSize = Dimensions.get('screen');
   const {width, height} = windowSize;
@@ -61,6 +62,7 @@ const HomeScreen = () => {
             style={styles.spotifyButton}
             source={require('../../assets/img/spotify-icon.svg')}
           /> */}
+          <Spotify style={{height: 25, width: 25}} />
         </View>
       </View>
     </SafeAreaView>
