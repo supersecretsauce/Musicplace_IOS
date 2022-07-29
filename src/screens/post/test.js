@@ -55,7 +55,7 @@ const HomeScreen = () => {
               resizeMode="cover"
               style={styles.coverArt}
               source={{
-                uri: 'https://i.scdn.co/image/ab67616d0000b273f41c94f8b2ba32c8823813a6',
+                uri: 'https://i.scdn.co/image/ab67616d0000b27368968350c2550e36d96344ee',
               }}
             />
             <View style={styles.middleContainer}>
