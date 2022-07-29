@@ -1,340 +1,224 @@
-const spotConfig = {
-  clientId: '501638f5cfb04abfb61d039e370c5d99', // available on the app page
-  clientSecret: '16f92a6d7e9a4180b29af25bf012e6fe', // click "show client secret" to see this
-  redirectUrl: 'musicplace-ios:/musicplace-ios-login', // the redirect you defined after creating the app
-  scopes: [
-    'user-read-email',
-    'playlist-modify-public',
-    'user-read-private',
-    'user-library-read',
-  ], // the scopes you need to access
-  serviceConfiguration: {
-    authorizationEndpoint: 'https://accounts.spotify.com/authorize',
-    tokenEndpoint: 'https://accounts.spotify.com/api/token',
-  },
-};
 import {
   StyleSheet,
   Text,
-  View,
   SafeAreaView,
+  View,
+  Image,
   TouchableOpacity,
-  TextInput,
+  FlatList,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import firestore from '@react-native-firebase/firestore';
-import {firebase} from '@react-native-firebase/firestore';
+import React, {useState, useEffect} from 'react';
 import Colors from '../../assets/utilities/Colors';
-import {authorize} from 'react-native-app-auth';
-import axios from 'axios';
-import {authFetch} from '../../services/SpotifyService';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Color from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Testing from '../../components/testing';
+import Spotify from '../../assets/img/spotify.svg';
+import firestore from '@react-native-firebase/firestore';
 
-const TestScreen = () => {
-  const userInfo = firebase.auth().currentUser;
-  const [spotifyConnected, setSpotifyConnected] = useState();
-  const [troll, setTroll] = useState(false);
-  const spotifyUserInfoURL = 'https://api.spotify.com/v1/me';
-  const spotifyTrackURL = 'https://api.spotify.com/v1/me/tracks';
-  const spotifyRefreshURL = 'https://accounts.spotify.com/api/token';
-  const spotifyUserPlaylistURL = 'https://api.spotify.com/v1/me/playlists';
-  const spotifyPlaylistItemsURL =
-    'https://api.spotify.com/v1/playlists/playlist_id/tracks';
-  const [accessToken, setAccessToken] = useState('');
-  const [refreshToken, setRefreshToken] = useState('');
-  const [spotifyID, setSpotifyID] = useState('');
-  const [userPlaylistInfo, setUserPlaylistInfo] = useState();
-  const [playlistIDs, setPlaylistIDs] = useState();
-  const [uniquePlaylist, setUniquePlaylist] = useState('');
+const HomeScreen = () => {
+  const [forYouTrue, setForYouTrue] = useState(true);
+  const [like, setLike] = useState(false);
+  const [feed, setFeed] = useState();
 
-  // check if user has spotify connected to display proper screens
   useEffect(() => {
-    const checkForSpotifyConnection = async () => {
-      const spotifyBoolean = await AsyncStorage.getItem('hasSpotify');
-      const localRefresh = await AsyncStorage.getItem('spotRefreshToken');
-      const localAccess = await AsyncStorage.getItem('spotAccessToken');
-
-      if (spotifyBoolean === 'false') {
-        setSpotifyConnected(false);
-        console.log('not connected');
-      } else if (spotifyBoolean === 'true') {
-        setSpotifyConnected(true);
-        setAccessToken(localAccess);
-        setRefreshToken(localRefresh);
+    const fetchFeed = async () => {
+      const feedData = await firestore().collection('posts').get();
+      // .then(console.log(feedData))
+      // .then(setFeed(feedData));
+      if (feedData) {
+        setFeed(feedData.docs);
       }
     };
-    checkForSpotifyConnection();
+    fetchFeed();
   }, []);
 
-  // get user info from Spotify
-  useEffect(() => {
-    if (accessToken) {
-      authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
-        .get('me')
-        .then(response => {
-          setSpotifyID(response.data.id);
-        })
-        .catch(error => {
-          console.log(error);
-          return error;
-        });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accessToken]);
-
-  // get a user's playlists
-  useEffect(() => {
-    if (spotifyID) {
-      axios
-        .get(spotifyUserPlaylistURL, {
-          headers: {
-            Authorization: 'Bearer ' + accessToken,
-            'Content-Type': 'application/json',
-          },
-        })
-        .then(response => {
-          setPlaylistIDs(response.data.items.map(playlistID => playlistID.id));
-          setUserPlaylistInfo(response.data.items);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    }
-  }, [spotifyID, accessToken]);
-
-  useEffect(() => {
-    if (playlistIDs) {
-      const returnManyArrays = async () => {
-        const userPlaylistArrays = await Promise.all(
-          playlistIDs.map(async playlistID => {
-            try {
-              const response = await axios.get(
-                `https://api.spotify.com/v1/playlists/${playlistID}/tracks`,
-                {
-                  headers: {
-                    Authorization: 'Bearer ' + accessToken,
-                    'Content-Type': 'application/json',
-                  },
-                },
-              );
-              return response.data.items;
-            } catch (error) {
-              console.log(error);
-            }
-          }),
-        );
-        setUniquePlaylist(userPlaylistArrays);
-      };
-      returnManyArrays();
-    }
-  }, [accessToken, playlistIDs]);
-
-  useEffect(() => {
-    if (uniquePlaylist) {
-      console.log(uniquePlaylist);
-      console.log(userPlaylistInfo);
-      console.log('should be one array with many arrays above');
-    }
-  }, [uniquePlaylist, userPlaylistInfo]);
-
-  const connectSpotify = async () => {
-    const authState = await authorize(spotConfig);
-    console.log(authState.accessToken);
-    console.log('access token');
-    await AsyncStorage.setItem('hasSpotify', 'true');
-    setSpotifyConnected(true);
-    setAccessToken(authState.accessToken);
-    setRefreshToken(authState.refreshToken);
-    await AsyncStorage.setItem('spotAccessToken', authState.accessToken);
-    await AsyncStorage.setItem('spotRefreshToken', authState.refreshToken);
-    try {
-      await firestore().collection('users').doc(userInfo.uid).set({
-        connectedWithSpotify: true,
-        spotifyAccessToken: authState.accessToken,
-        spotifyAccessTokenExpirationDate: authState.accessTokenExpirationDate,
-        spotifyRefreshToken: authState.refreshToken,
-        spotifyTokenType: authState.tokenType,
-      });
-    } catch (error) {
-      return;
-    }
-  };
-
-  const trollFunction = () => {
-    setTroll(!troll);
+  const focusHandler = () => {
+    setForYouTrue(!forYouTrue);
   };
 
   return (
     <>
-      {spotifyConnected ? (
-        <View style={styles.container}>
-          <View style={styles.searchBackground}>
-            <View>
-              <Text style={styles.search}>Search</Text>
+      {feed ? (
+        <>
+          <SafeAreaView style={styles.container}>
+            <View style={styles.topContainer}>
+              <Text
+                onPress={focusHandler}
+                style={forYouTrue ? styles.unFocus : styles.Focus}>
+                Following
+              </Text>
+              <Text
+                onPress={focusHandler}
+                style={forYouTrue ? styles.Focus : styles.unFocus}>
+                For You
+              </Text>
             </View>
-            <View style={styles.inputSearchContainer}>
-              <View style={styles.inputSearchBox}>
-                <Ionicons name="search-sharp" color="white" />
-                <TextInput
-                  style={styles.inputSearch}
-                  placeholderTextColor="white"
-                  placeholder="Search by song, album, or artist"
-                />
+            <Image
+              resizeMode="cover"
+              style={styles.coverArt}
+              source={{
+                uri: 'https://i.scdn.co/image/ab67616d0000b273f41c94f8b2ba32c8823813a6',
+              }}
+            />
+            <View style={styles.middleContainer}>
+              <View style={styles.trackInfoContainer}>
+                <Text style={styles.trackName}>Beachside</Text>
+                <Text style={styles.artistName}>Relyae</Text>
+                <Text style={styles.albumName}>Album</Text>
+              </View>
+              <View style={styles.interactContainer}>
+                <View style={styles.likesContainer}>
+                  <TouchableOpacity onPress={() => setLike(!like)}>
+                    <Ionicons
+                      style={styles.socialIcon}
+                      name={like ? 'heart' : 'heart-outline'}
+                      color={like ? '#1DB954' : 'grey'}
+                      size={24}
+                    />
+                  </TouchableOpacity>
+                  <Text style={styles.likeCount}>likes</Text>
+                </View>
+                <TouchableOpacity>
+                  <Spotify height={24} width={24} />
+                </TouchableOpacity>
               </View>
             </View>
-          </View>
-          <Testing playlists={userPlaylistInfo} />
-        </View>
+            <View style={styles.commentContainerBackground}>
+              <View style={styles.drawer} />
+              <View style={styles.commentContainer}>
+                <View style={styles.userContainer}>
+                  <Spotify height={15} width={15} />
+                  <Text style={styles.username}>username</Text>
+                </View>
+                <View style={styles.commentTextContainer}>
+                  <Text style={styles.comment}>
+                    One of the hardest songs of the year no doubt my lord it’s
+                    so so good.{' '}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </SafeAreaView>
+        </>
       ) : (
-        <SafeAreaView style={styles.noSpotifyContainer}>
-          <View style={styles.noSpotTextContainer}>
-            <Text style={styles.connectText}>Connect with</Text>
-            <Text style={styles.spotifyText}>Spotify</Text>
-            {troll ? (
-              <Text style={styles.spotifyBlurb}>Damn thats sucks lmaooooo</Text>
-            ) : (
-              <Text style={styles.spotifyBlurb}>
-                Connect with Spotify to post a song.
-              </Text>
-            )}
-          </View>
-          <View style={styles.spotifyBtnContainer}>
-            <TouchableOpacity
-              onPress={connectSpotify}
-              style={styles.spotifyBtn}>
-              <Text style={styles.spotifyTextBtn}>Connect with Spotify</Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.laterBtnContainer}>
-            <TouchableOpacity onPress={trollFunction} style={styles.laterBtn}>
-              <Text style={styles.laterText}>I have Apple Music</Text>
-            </TouchableOpacity>
-          </View>
-        </SafeAreaView>
+        <></>
       )}
     </>
   );
 };
 
-export default TestScreen;
+export default HomeScreen;
 
 const styles = StyleSheet.create({
-  // connected
   container: {
     flex: 1,
     backgroundColor: 'black',
-  },
-  searchBackground: {
-    backgroundColor: Color.lightBlack,
-    height: '25%',
-  },
-  search: {
-    color: 'white',
-    fontFamily: 'Inter-SemiBold',
-    fontSize: 30,
-    marginTop: '18%',
-    marginLeft: '4%',
-  },
-
-  inputSearchContainer: {
     alignItems: 'center',
-    marginTop: '5%',
   },
-
-  inputSearchBox: {
-    alignItems: 'center',
+  topContainer: {
     flexDirection: 'row',
-    backgroundColor: Color.darkGrey,
-    height: '50%',
-    width: '93%',
-    borderRadius: 6,
-    padding: 10,
+    justifyContent: 'center',
   },
-
-  inputSearch: {
-    marginLeft: 5,
+  unFocus: {
+    color: Colors.greyOut,
     fontFamily: 'Inter-Medium',
-    fontSize: 12,
+    fontSize: 16,
+    marginHorizontal: '5%',
+  },
+  Focus: {
     color: 'white',
-  },
-
-  // inputSearch: {
-  //   backgroundColor: Color.darkGrey,
-  //   height: '50%',
-  //   width: '93%',
-  //   justifyContent: 'center',
-  //   padding: 10,
-  //   borderRadius: 6,
-  //   fontSize: 12,
-  //   fontFamily: 'Inter-Medium',
-  // },
-
-  // not connected
-  test: {
-    color: 'white',
-  },
-  noSpotifyContainer: {
-    backgroundColor: 'black',
-    flex: 1,
-  },
-  noSpotTextContainer: {
-    marginTop: '30%',
-    marginLeft: '10%',
-  },
-  connectText: {
-    fontFamily: 'Inter-Medium',
-    color: 'white',
-    fontSize: 40,
-  },
-  spotifyText: {
     fontFamily: 'Inter-Bold',
+    fontSize: 16,
+    marginHorizontal: '5%',
+  },
+
+  coverArt: {
+    marginTop: '5%',
+    marginBottom: '3%',
+    height: '45%',
+    width: '90%',
+  },
+  middleContainer: {
+    width: '90%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    height: '11.5%',
+  },
+  trackInfoContainer: {
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  trackName: {
     color: 'white',
-    fontSize: 50,
+    fontFamily: 'Inter-bold',
+    fontSize: 24,
+  },
+  artistName: {
+    color: 'white',
+    fontFamily: 'Inter-regular',
+    fontSize: 16,
+  },
+  bottomRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  albumName: {
+    color: 'white',
+    fontFamily: 'Inter-regular',
+    fontSize: 16,
+  },
+
+  interactContainer: {
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  likesContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  socialIcon: {
+    marginRight: 2,
+  },
+  likeCount: {
+    color: 'white',
+    fontFamily: 'inter-regular',
+  },
+  spotifyButton: {
+    height: 50,
+    width: 50,
+  },
+
+  //comments
+  commentContainerBackground: {
+    backgroundColor: '#101010',
+    width: '100%',
+    marginTop: '3%',
+    borderTopEndRadius: 20,
+    borderTopStartRadius: 20,
+  },
+  drawer: {
+    borderBottomColor: 'white',
+    borderWidth: 2,
+    borderRadius: 10,
+    width: 50,
+    alignSelf: 'center',
     marginTop: '3%',
   },
-  spotifyBlurb: {
-    fontFamily: 'Inter-Medium',
+  commentContainer: {
+    marginTop: '1%',
+    marginLeft: '5%',
+    width: '90%',
+    height: '100%',
+  },
+  userContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  username: {
     color: Colors.greyOut,
-    fontSize: 14,
-    marginTop: '5%',
+    fontFamily: 'Inter-Medium',
+    marginLeft: 5,
   },
-  spotifyBtnContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: '15%',
-  },
-  spotifyBtn: {
-    backgroundColor: Colors.spotify,
-    borderRadius: 5,
-    paddingVertical: 10,
-    marginTop: '5%',
-    width: 317,
-  },
-  spotifyTextBtn: {
+  comment: {
+    marginTop: '3%',
     color: 'white',
-    fontFamily: 'Inter-Bold',
-    fontSize: 20,
-    textAlign: 'center',
-  },
-  laterBtnContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  laterBtn: {
-    backgroundColor: 'rgba(255, 8, 0, 0.5)',
-    borderRadius: 5,
-    paddingVertical: 10,
-    marginTop: '5%',
-    width: 317,
-  },
-  laterText: {
-    color: 'white',
-    fontFamily: 'Inter-Bold',
-    fontSize: 20,
-    textAlign: 'center',
-    opacity: 0.5,
   },
 });
