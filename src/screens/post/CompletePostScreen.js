@@ -105,7 +105,7 @@ const CompletePostScreen = ({route, navigation}) => {
             durationInMs: song.duration_ms,
             href: song.href,
             trackNumber: song.track_number,
-            songPhoto: song.album.images[0],
+            songPhoto: song.album.images[0].url,
           })
           .then(() => {
             console.log('song added!');

@@ -18,6 +18,10 @@ const HomeScreen = () => {
   const [forYouTrue, setForYouTrue] = useState(true);
   const [feed, setFeed] = useState();
   const [like, setLike] = useState(false);
+  const sizing = Dimensions.get('screen');
+  const screenWidth = sizing.width;
+  const screenHeight = sizing.width;
+  console.log(screenHeight);
 
   const focusHandler = () => {
     setForYouTrue(!forYouTrue);
@@ -54,17 +58,21 @@ const HomeScreen = () => {
               </Text>
             </View>
             <FlatList
-              style={styles.flatListContainer}
+              style={{width: screenWidth, alignSelf: 'center'}}
               data={feed}
+              numColumns={1}
+              horizontal="true"
+              snapToAlignment="center"
+              alignItems="center"
               renderItem={({item, index}) => {
                 return (
                   <View key={index}>
                     <View style={styles.coverArtContainer}>
                       <Image
                         style={styles.coverArt}
-                        resizeMode="contain"
+                        // resizeMode="contain"
                         source={{
-                          uri: item._data.songPhoto,
+                          uri: item._data.songPhoto.url,
                         }}
                       />
                     </View>
@@ -158,19 +166,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginHorizontal: '5%',
   },
-  flatListContainer: {
-    height: '100%',
-    width: '100%',
-  },
+  // flatListContainer: {
+  //   height: '100%',
+  //   width: '100%',
+  // },
   coverArtContainer: {
     width: '100%',
     justifyContent: 'center',
     marginTop: '5%',
+    alignSelf: 'center',
   },
   coverArt: {
     marginBottom: '3%',
-    height: 350,
-    width: '90%',
+    height: 300,
+    width: 300,
     alignSelf: 'center',
   },
   middleContainer: {
@@ -179,6 +188,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignSelf: 'center',
     height: '4.5%',
+    backgroundColor: 'red',
   },
   trackInfoContainer: {
     alignItems: 'flex-start',
