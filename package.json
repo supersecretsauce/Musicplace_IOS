@@ -29,6 +29,7 @@
     "react-native-sound": "^0.11.2",
     "react-native-svg": "^12.4.3",
     "react-native-svg-transformer": "^1.0.0",
+    "react-native-swiper": "^1.6.0",
     "react-native-vector-icons": "^9.2.0"
   },
   "devDependencies": {
