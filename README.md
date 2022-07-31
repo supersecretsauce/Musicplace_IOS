@@ -8,4 +8,6 @@ pod install
 
 cd ../
 
+npm start
+
 npm run ios
