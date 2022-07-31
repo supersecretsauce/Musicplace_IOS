@@ -1,5 +1,9 @@
 import React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import {
+  NavigationContainer,
+  useNavigationState,
+  useRoute,
+} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import WelcomeScreen from './src/screens/signup/WelcomeScreen';
 import PhoneNumberScreen from './src/screens/signup/PhoneNumberScreen';
@@ -22,8 +26,10 @@ export default function App() {
   const [confirm, setConfirm] = useState(null);
   const [userLogin, setUserLogin] = useState(false);
   const [refreshToken, setRefreshToken] = useState('');
-
+  const [currentTrack, setCurrentTrack] = useState();
+  const [homeScreenFocus, setHomeScreenFocus] = useState();
   // AsyncStorage.clear();
+
   useEffect(() => {
     const checkUserLogin = async () => {
       try {
@@ -41,6 +47,17 @@ export default function App() {
     checkUserLogin();
   }, []);
 
+  useEffect(() => {
+    if (currentTrack) {
+      if (homeScreenFocus === false) {
+        currentTrack.pause();
+      }
+      if (homeScreenFocus === true) {
+        currentTrack.play();
+      }
+    }
+  }, [currentTrack, homeScreenFocus]);
+
   return (
     <NavigationContainer>
       <Context.Provider
@@ -50,6 +67,10 @@ export default function App() {
           setUserLogin,
           refreshToken,
           setRefreshToken,
+          currentTrack,
+          setCurrentTrack,
+          homeScreenFocus,
+          setHomeScreenFocus,
         }}>
         {userLogin ? (
           <Tab.Navigator
@@ -84,8 +105,8 @@ export default function App() {
             <Tab.Screen name="Home" component={HomeScreen} />
             <Tab.Screen name="Discover" component={test} />
             <Tab.Screen name="Post" component={PostStackScreen} />
-            <Tab.Screen name="Activity" component={HomeScreen} />
-            <Tab.Screen name="Profile" component={HomeScreen} />
+            <Tab.Screen name="Activity" component={test} />
+            <Tab.Screen name="Profile" component={test} />
           </Tab.Navigator>
         ) : (
           <Stack.Navigator

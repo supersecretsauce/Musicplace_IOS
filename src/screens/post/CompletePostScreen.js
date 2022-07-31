@@ -2,7 +2,6 @@ import {
   StyleSheet,
   Text,
   View,
-  SafeAreaView,
   TouchableWithoutFeedback,
   TouchableOpacity,
   Image,
@@ -14,6 +13,7 @@ import React, {useEffect, useState, useMemo} from 'react';
 import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Sound from 'react-native-sound';
+import firestore from '@react-native-firebase/firestore';
 
 const DismissKeyboard = ({children}) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -24,8 +24,10 @@ const DismissKeyboard = ({children}) => (
 const CompletePostScreen = ({route, navigation}) => {
   const {song, songPhoto, albumName} = route.params;
   const [songIMG, setSongIMG] = useState();
-  const [value, setValue] = useState(false);
+  const [value] = useState(false);
   const [trackPlaying, setTrackPlaying] = useState(false);
+  const [caption, setCaption] = useState();
+
   useEffect(() => {
     if (songPhoto) {
       setSongIMG(songPhoto);
@@ -38,6 +40,7 @@ const CompletePostScreen = ({route, navigation}) => {
   );
 
   const playPreview = () => {
+    console.log(track);
     if (trackPlaying === false) {
       track.play(success => {
         if (success) {
@@ -51,6 +54,67 @@ const CompletePostScreen = ({route, navigation}) => {
     } else {
       track.pause();
       setTrackPlaying(false);
+    }
+  };
+
+  const handleCaption = text => {
+    setCaption(text);
+  };
+
+  const postSong = async () => {
+    if (songPhoto) {
+      try {
+        await firestore()
+          .collection('posts')
+          .doc(song.id)
+          .set({
+            songName: song.name,
+            caption: caption,
+            albumName: albumName,
+            artistName: song.artists.map(artist => artist.name),
+            artistID: song.artists.map(artist => artist.id),
+            availableMarkets: song.available_markets,
+            previewURL: song.preview_url,
+            isExplicit: song.explicit,
+            durationInMs: song.duration_ms,
+            href: song.href,
+            trackNumber: song.track_number,
+            songPhoto: songPhoto,
+          })
+          .then(() => {
+            console.log('song added!');
+          });
+      } catch (error) {
+        console.log(error);
+        return;
+      }
+    } else {
+      try {
+        await firestore()
+          .collection('posts')
+          .doc(song.id)
+          .set({
+            songName: song.name,
+            caption: caption,
+            albumName: song.album.name,
+            artistName: song.artists.map(artist => artist.name),
+            artistID: song.artists.map(artist => artist.id),
+            availableMarkets: song.available_markets,
+            popularity: song.popularity,
+            previewURL: song.preview_url,
+            isExplicit: song.explicit,
+            durationInMs: song.duration_ms,
+            href: song.href,
+            trackNumber: song.track_number,
+            songPhoto: song.album.images[0].url,
+          })
+          .then(() => {
+            console.log('song added!');
+          });
+      } catch (error) {
+        console.log(error);
+        return;
+      }
     }
   };
 
@@ -126,6 +190,7 @@ const CompletePostScreen = ({route, navigation}) => {
                   placeholder="Caption ideas include things like: where you were you first heard this song, the people you play this with...idk that's all we got. "
                   placeholderTextColor="grey"
                   value={value}
+                  onChangeText={text => handleCaption(text)}
                 />
               </View>
               <View style={styles.shareToContainer}>
@@ -166,7 +231,7 @@ const CompletePostScreen = ({route, navigation}) => {
                   </View>
                   <Switch style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}} />
                 </View>
-                <TouchableOpacity style={styles.postBtn}>
+                <TouchableOpacity onPress={postSong} style={styles.postBtn}>
                   <Ionicons name="earth" color="white" size={24} />
                   <Text style={styles.postBtnText}>Post</Text>
                 </TouchableOpacity>
@@ -243,6 +308,7 @@ const CompletePostScreen = ({route, navigation}) => {
                 placeholder="Caption ideas include things like: where you were you first heard this song, the people you play this with...idk that's all we got. "
                 placeholderTextColor="grey"
                 value={value}
+                onChangeText={text => handleCaption(text)}
               />
             </View>
             <View style={styles.shareToContainer}>
@@ -283,7 +349,7 @@ const CompletePostScreen = ({route, navigation}) => {
                 </View>
                 <Switch style={{transform: [{scaleX: 0.8}, {scaleY: 0.8}]}} />
               </View>
-              <TouchableOpacity style={styles.postBtn}>
+              <TouchableOpacity onPress={postSong} style={styles.postBtn}>
                 <Ionicons name="earth" color="white" size={24} />
                 <Text style={styles.postBtnText}>Post</Text>
               </TouchableOpacity>
@@ -322,13 +388,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Semibold',
     fontSize: 28,
   },
-
   trackContainer: {
     marginTop: '10%',
     flexDirection: 'row',
     justifyContent: 'center',
     maxWidth: '60%',
-    // alignItems: 'center',
   },
   songIMG: {
     height: 165,
@@ -340,7 +404,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginLeft: '3%',
     width: 165,
-    // backgroundColor: 'red',
   },
   songName: {
     color: 'white',
@@ -380,7 +443,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.greyBtn,
     borderRadius: 9,
     paddingVertical: 4,
-    // paddingHorizontal: '100%',
     alignSelf: 'center',
     justifyContent: 'center',
     width: 165,
@@ -398,13 +460,18 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
     textAlign: 'left',
+    alignSelf: 'flex-start',
+    marginLeft: '5.2%',
   },
   caption: {
     padding: 0,
     color: 'white',
     fontFamily: 'Inter-Regular',
-    // maxHeight: 300,
     fontSize: 16,
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    textAlign: 'left',
+    alignSelf: 'flex-start',
   },
   shareToContainer: {
     marginTop: '5%',
