@@ -23,6 +23,10 @@ const HomeScreenTest = () => {
   const [like, setLike] = useState(false);
   const [postPreviewURL, setPostPreviewURL] = useState();
   const [songIndex, setSongIndex] = useState(0);
+  const [currentTrack, setCurrentTrack] = useState();
+  const [songLoaded, setSongLoaded] = useState(false);
+  const [trackPlaying, setTrackPlaying] = useState(true);
+  const [loopValue, setLoopValue] = useState();
 
   const focusHandler = () => {
     setForYouTrue(!forYouTrue);
@@ -47,18 +51,54 @@ const HomeScreenTest = () => {
 
   useEffect(() => {
     if (postPreviewURL) {
-      let track = new Sound(postPreviewURL, null, error => {
-        //   Play the sound with an onEnd callback
-        track.play(success => {
-          if (success) {
-            console.log('successfully finished playing');
-          } else {
-            console.log('playback failed due to audio decoding errors');
+      console.log(postPreviewURL);
+
+      setCurrentTrack(
+        new Sound(postPreviewURL, null, error => {
+          if (error) {
+            console.log('failed to load the sound', error);
+            return;
           }
-        });
-      });
+          // loaded successfully
+          console.log('loaded');
+          setSongLoaded(postPreviewURL);
+        }),
+      );
+    } else {
+      setCurrentTrack(null);
     }
   }, [postPreviewURL]);
+
+  useEffect(() => {
+    if (currentTrack && songLoaded) {
+      currentTrack.play(success => {
+        if (success) {
+          console.log('successfully finished playing');
+          setLoopValue(Math.random());
+        } else {
+          console.log('playback failed due to audio decoding errors');
+        }
+      });
+    }
+  }, [currentTrack, songLoaded, loopValue]);
+
+  const pauseHandler = () => {
+    if (trackPlaying === false) {
+      currentTrack.play(success => {
+        if (success) {
+          console.log('done');
+          setTrackPlaying(false);
+          setLoopValue(Math.random());
+        } else {
+          console.log('playback failed due to audio decoding errors');
+        }
+      });
+      setTrackPlaying(true);
+    } else {
+      currentTrack.pause();
+      setTrackPlaying(false);
+    }
+  };
 
   return (
     <>
@@ -82,7 +122,11 @@ const HomeScreenTest = () => {
               showsButtons={false}
               index={0}
               loadMinimal={true}
-              onIndexChanged={index => setSongIndex(index)}
+              onIndexChanged={index => {
+                setSongIndex(index);
+                setTrackPlaying(true);
+                currentTrack.pause();
+              }}
               style={styles.swiper}
               showsPagination={false}>
               {feed.map(post => {
@@ -90,15 +134,26 @@ const HomeScreenTest = () => {
                   <View
                     key={post._data.previewURL}
                     style={styles.postContainer}>
-                    <Image
-                      style={styles.coverArt}
-                      source={{
-                        uri: post._data.songPhoto,
-                      }}
-                    />
+                    <TouchableOpacity
+                      onPress={pauseHandler}
+                      style={{
+                        width: '100%',
+                        alignSelf: 'center',
+                        alignItems: 'center',
+                      }}>
+                      <Image
+                        style={styles.coverArt}
+                        source={{
+                          uri: post._data.songPhoto,
+                        }}
+                      />
+                    </TouchableOpacity>
                     <View style={styles.middleContainer}>
                       <View style={styles.trackInfoContainer}>
-                        <Text numberOfLines={1} style={styles.trackName}>
+                        <Text
+                          //   onPress={playTest}
+                          numberOfLines={1}
+                          style={styles.trackName}>
                           {post._data.songName}
                         </Text>
                         <View style={styles.trackInfoBottom}>

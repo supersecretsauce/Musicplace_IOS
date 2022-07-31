@@ -40,6 +40,7 @@ const CompletePostScreen = ({route, navigation}) => {
   );
 
   const playPreview = () => {
+    console.log(track);
     if (trackPlaying === false) {
       track.play(success => {
         if (success) {
