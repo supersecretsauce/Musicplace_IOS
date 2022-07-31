@@ -5,17 +5,16 @@ import {
   SafeAreaView,
   Image,
   TouchableOpacity,
-  Dimensions,
-  FlatList,
-  Linking,
 } from 'react-native';
-import React, {useState, useEffect, useMemo} from 'react';
+import React, {useState, useEffect, useContext, useCallback} from 'react';
 import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Spotify from '../../assets/img/spotify.svg';
 import firestore from '@react-native-firebase/firestore';
 import Swiper from 'react-native-swiper';
 import Sound from 'react-native-sound';
+import {Context} from '../../context/Context';
+import {useFocusEffect} from '@react-navigation/native';
 
 const HomeScreen = () => {
   const [feed, setFeed] = useState();
@@ -23,14 +22,22 @@ const HomeScreen = () => {
   const [like, setLike] = useState(false);
   const [postPreviewURL, setPostPreviewURL] = useState();
   const [songIndex, setSongIndex] = useState(0);
-  const [currentTrack, setCurrentTrack] = useState();
   const [songLoaded, setSongLoaded] = useState(false);
   const [trackPlaying, setTrackPlaying] = useState(true);
   const [loopValue, setLoopValue] = useState();
+  const {currentTrack, setCurrentTrack, setHomeScreenFocus} =
+    useContext(Context);
 
   const focusHandler = () => {
     setForYouTrue(!forYouTrue);
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      setHomeScreenFocus(true);
+      return () => setHomeScreenFocus(false);
+    }, [setHomeScreenFocus]),
+  );
 
   useEffect(() => {
     const fetchFeed = async () => {
@@ -67,6 +74,7 @@ const HomeScreen = () => {
     } else {
       setCurrentTrack(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postPreviewURL]);
 
   useEffect(() => {
@@ -184,12 +192,12 @@ const HomeScreen = () => {
                               size={24}
                             />
                           </TouchableOpacity>
-                          <Text style={styles.likeCount}>likes</Text>
+                          <Text style={styles.likeCount}>10.7k</Text>
                         </View>
                       </View>
                     </View>
                     <View style={styles.commentContainerBackground}>
-                      <View style={styles.drawer} />
+                      <View style={styles.drawer} onDrag />
                       <View style={styles.commentContainer}>
                         <View style={styles.userContainer}>
                           <Spotify height={15} width={15} />
@@ -309,11 +317,10 @@ const styles = StyleSheet.create({
 
   //comments
   commentContainerBackground: {
-    backgroundColor: '#101010',
-    width: '100%',
-
-    borderTopEndRadius: 20,
-    borderTopStartRadius: 20,
+    backgroundColor: '#1F1F1F',
+    width: '95%',
+    borderTopEndRadius: 30,
+    borderTopStartRadius: 30,
   },
   drawer: {
     borderBottomColor: 'white',

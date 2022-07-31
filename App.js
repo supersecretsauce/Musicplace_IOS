@@ -1,5 +1,9 @@
 import React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import {
+  NavigationContainer,
+  useNavigationState,
+  useRoute,
+} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import WelcomeScreen from './src/screens/signup/WelcomeScreen';
 import PhoneNumberScreen from './src/screens/signup/PhoneNumberScreen';
@@ -9,7 +13,6 @@ import ConnectSpotifyScreen from './src/screens/signup/ConnectSpotifyScreen';
 import HomeScreen from './src/screens/home/HomeScreen';
 import PostStackScreen from './src/routes/PostStackScreen';
 import test from './src/screens/post/test';
-import HomeScreenTest from './src/screens/home/HomeScreen';
 import {Context} from './src/context/Context';
 import {useState, useEffect} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -23,8 +26,10 @@ export default function App() {
   const [confirm, setConfirm] = useState(null);
   const [userLogin, setUserLogin] = useState(false);
   const [refreshToken, setRefreshToken] = useState('');
-
+  const [currentTrack, setCurrentTrack] = useState();
+  const [homeScreenFocus, setHomeScreenFocus] = useState();
   // AsyncStorage.clear();
+
   useEffect(() => {
     const checkUserLogin = async () => {
       try {
@@ -42,6 +47,17 @@ export default function App() {
     checkUserLogin();
   }, []);
 
+  useEffect(() => {
+    if (currentTrack) {
+      if (homeScreenFocus === false) {
+        currentTrack.pause();
+      }
+      if (homeScreenFocus === true) {
+        currentTrack.play();
+      }
+    }
+  }, [currentTrack, homeScreenFocus]);
+
   return (
     <NavigationContainer>
       <Context.Provider
@@ -51,6 +67,10 @@ export default function App() {
           setUserLogin,
           refreshToken,
           setRefreshToken,
+          currentTrack,
+          setCurrentTrack,
+          homeScreenFocus,
+          setHomeScreenFocus,
         }}>
         {userLogin ? (
           <Tab.Navigator

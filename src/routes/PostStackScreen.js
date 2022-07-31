@@ -1,8 +1,9 @@
 import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React, {useContext, useEffect} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import PostASongScreen from '../screens/post/PostASongScreen';
 import CompletePostScreen from '../screens/post/CompletePostScreen';
+import {Context} from '../context/Context';
 
 const PostStackScreen = () => {
   const PostStack = createNativeStackNavigator();
