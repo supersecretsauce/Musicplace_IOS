@@ -140,8 +140,4 @@ export default function App() {
     </GestureHandlerRootView>
   );
 }
-const styles = StyleSheet.create({
-  navBar: {
-    backgroundColor: 'black',
-  },
-});
+const styles = StyleSheet.create({});

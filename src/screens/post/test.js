@@ -12,12 +12,17 @@ import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Spotify from '../../assets/img/spotify.svg';
 import firestore from '@react-native-firebase/firestore';
+import {Gesture, GestureDetector} from 'react-native-gesture-handler';
+import Animated from 'react-native-reanimated';
 
 const HomeScreen = () => {
   const [forYouTrue, setForYouTrue] = useState(true);
   const [like, setLike] = useState(false);
   const [feed, setFeed] = useState();
-
+  const gesture = Gesture.Pan().onUpdate(event => {
+    // translateY.value = event.translationY;
+    console.log(event.translationY);
+  });
   useEffect(() => {
     const fetchFeed = async () => {
       const feedData = await firestore().collection('posts').get();
@@ -81,21 +86,23 @@ const HomeScreen = () => {
                 </TouchableOpacity>
               </View>
             </View>
-            <View style={styles.commentContainerBackground}>
-              <View style={styles.drawer} />
-              <View style={styles.commentContainer}>
-                <View style={styles.userContainer}>
-                  <Spotify height={15} width={15} />
-                  <Text style={styles.username}>username</Text>
+            <GestureDetector gesture={gesture}>
+              <Animated.View style={styles.commentContainerBackground}>
+                <View style={styles.drawer} />
+                <View style={styles.commentContainer}>
+                  <View style={styles.userContainer}>
+                    <Spotify height={15} width={15} />
+                    <Text style={styles.username}>username</Text>
+                  </View>
+                  <View style={styles.commentTextContainer}>
+                    <Text style={styles.comment}>
+                      One of the hardest songs of the year no doubt my lord it’s
+                      so so good.{' '}
+                    </Text>
+                  </View>
                 </View>
-                <View style={styles.commentTextContainer}>
-                  <Text style={styles.comment}>
-                    One of the hardest songs of the year no doubt my lord it’s
-                    so so good.{' '}
-                  </Text>
-                </View>
-              </View>
-            </View>
+              </Animated.View>
+            </GestureDetector>
           </SafeAreaView>
         </>
       ) : (
