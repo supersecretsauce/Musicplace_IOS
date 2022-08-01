@@ -15,6 +15,7 @@ import Swiper from 'react-native-swiper';
 import Sound from 'react-native-sound';
 import {Context} from '../../context/Context';
 import {useFocusEffect} from '@react-navigation/native';
+import BottomSheet from '../../components/BottomSheet';
 
 const HomeScreen = () => {
   const [feed, setFeed] = useState();
@@ -139,7 +140,7 @@ const HomeScreen = () => {
               showsPagination={false}>
               {feed.map(post => {
                 return (
-                  <View
+                  <SafeAreaView
                     key={post._data.previewURL}
                     style={styles.postContainer}>
                     <TouchableOpacity
@@ -196,21 +197,8 @@ const HomeScreen = () => {
                         </View>
                       </View>
                     </View>
-                    <View style={styles.commentContainerBackground}>
-                      <View style={styles.drawer} onDrag />
-                      <View style={styles.commentContainer}>
-                        <View style={styles.userContainer}>
-                          <Spotify height={15} width={15} />
-                          <Text style={styles.username}>username</Text>
-                        </View>
-                        <View style={styles.commentTextContainer}>
-                          <Text style={styles.comment}>
-                            {post._data.caption}
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
+                    <BottomSheet captionProps={post._data.caption} />
+                  </SafeAreaView>
                 );
               })}
             </Swiper>
@@ -263,8 +251,7 @@ const styles = StyleSheet.create({
     marginVertical: '5%',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    // backgroundColor: 'red',
-    height: '4.75%',
+    height: '11%',
   },
   trackInfoContainer: {
     alignItems: 'flex-start',
@@ -313,40 +300,5 @@ const styles = StyleSheet.create({
   likeCount: {
     color: 'white',
     fontFamily: 'inter-regular',
-  },
-
-  //comments
-  commentContainerBackground: {
-    backgroundColor: '#1F1F1F',
-    width: '95%',
-    borderTopEndRadius: 30,
-    borderTopStartRadius: 30,
-  },
-  drawer: {
-    borderBottomColor: 'white',
-    borderWidth: 2,
-    borderRadius: 10,
-    width: 50,
-    alignSelf: 'center',
-    marginTop: '3%',
-  },
-  commentContainer: {
-    marginTop: '1%',
-    marginLeft: '5%',
-    width: '90%',
-    height: '100%',
-  },
-  userContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  username: {
-    color: Colors.greyOut,
-    fontFamily: 'Inter-Medium',
-    marginLeft: 5,
-  },
-  comment: {
-    marginTop: '3%',
-    color: 'white',
   },
 });
