@@ -70,27 +70,27 @@ const HomeScreen = () => {
     }, [setHomeScreenFocus]),
   );
 
+  // update this to run less often?
   useEffect(() => {
     const fetchFeed = async () => {
       const feedData = await firestore().collection('posts').get();
       if (feedData) {
-        console.log(feedData._docs);
         setFeed(feedData._docs);
       }
     };
     fetchFeed();
   }, []);
 
+  //set the song preview url based on index of feed
   useEffect(() => {
     if (feed) {
-      setPostPreviewURL(feed[songIndex]._data.previewURL);
+      setPostPreviewURL(feed[songIndex]._data.previewUrl);
     }
   }, [feed, songIndex]);
 
+  //set the sound of the current track
   useEffect(() => {
     if (postPreviewURL) {
-      console.log(postPreviewURL);
-
       setCurrentTrack(
         new Sound(postPreviewURL, null, error => {
           if (error) {
@@ -106,6 +106,7 @@ const HomeScreen = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postPreviewURL]);
 
+  //autoplay the track and keep playing when finished
   useEffect(() => {
     if (currentTrack && songLoaded) {
       currentTrack.play(success => {
@@ -135,6 +136,8 @@ const HomeScreen = () => {
       setTrackPlaying(false);
     }
   };
+
+  //show notification when liking and unliking song
   const showToast = () => {
     if (like) {
       Toast.show({
@@ -203,9 +206,7 @@ const HomeScreen = () => {
               showsPagination={false}>
               {feed.map(post => {
                 return (
-                  <SafeAreaView
-                    key={post._data.previewURL}
-                    style={styles.postContainer}>
+                  <SafeAreaView key={post.id} style={styles.postContainer}>
                     <TouchableOpacity
                       onPress={pauseHandler}
                       style={{
@@ -227,7 +228,9 @@ const HomeScreen = () => {
                         </Text>
                         <View style={styles.trackInfoBottom}>
                           <Text numberOfLines={1} style={styles.artistName}>
-                            {post._data.artistName.join(', ')}
+                            {Object.values(post._data.artists)
+                              .map(artist => artist)
+                              .join(', ')}
                           </Text>
                           <Ionicons
                             style={styles.smallDot}
