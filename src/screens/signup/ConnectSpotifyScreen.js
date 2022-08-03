@@ -34,6 +34,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
       'user-library-read',
       'user-follow-read',
       'user-library-modify',
+      'user-top-read',
     ], // the scopes you need to access
     serviceConfiguration: {
       authorizationEndpoint: 'https://accounts.spotify.com/authorize',
