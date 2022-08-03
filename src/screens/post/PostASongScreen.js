@@ -22,7 +22,8 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
+import {Context} from '../../context/Context';
 import firestore from '@react-native-firebase/firestore';
 import {firebase} from '@react-native-firebase/firestore';
 import Colors from '../../assets/utilities/Colors';
@@ -42,8 +43,6 @@ const TestScreen = ({navigation}) => {
   const [spotifyConnected, setSpotifyConnected] = useState();
   const [troll, setTroll] = useState(false);
   const spotifyUserPlaylistURL = 'https://api.spotify.com/v1/me/playlists';
-  const [accessToken, setAccessToken] = useState('');
-  const [refreshToken, setRefreshToken] = useState('');
   const [spotifyID, setSpotifyID] = useState('');
   const [userPlaylistInfo, setUserPlaylistInfo] = useState();
   const [playlistIDs, setPlaylistIDs] = useState();
@@ -54,6 +53,8 @@ const TestScreen = ({navigation}) => {
   const [playlistUI, setPlaylistUI] = useState(false);
   const [albumUI, setAlbumUI] = useState(false);
   const [artistUI, setArtistUI] = useState(false);
+  const {accessToken, setAccessToken, refreshToken, setRefreshToken} =
+    useContext(Context);
 
   // check if user has spotify connected to display proper screens
   useEffect(() => {
@@ -72,7 +73,7 @@ const TestScreen = ({navigation}) => {
       }
     };
     checkForSpotifyConnection();
-  }, []);
+  }, [setAccessToken, setRefreshToken]);
 
   // get user info from Spotify
   useEffect(() => {
@@ -103,7 +104,7 @@ const TestScreen = ({navigation}) => {
           return error;
         });
     }
-  }, [accessToken, refreshToken]);
+  }, [accessToken, refreshToken, setAccessToken, setRefreshToken]);
 
   // get a user's playlists
   useEffect(() => {
@@ -153,7 +154,7 @@ const TestScreen = ({navigation}) => {
           return error;
         });
     }
-  }, [accessToken, refreshToken]);
+  }, [accessToken, refreshToken, setAccessToken, setRefreshToken]);
 
   const connectSpotify = async () => {
     const authState = await authorize(spotConfig);
