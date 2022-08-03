@@ -16,18 +16,48 @@ import Sound from 'react-native-sound';
 import {Context} from '../../context/Context';
 import {useFocusEffect} from '@react-navigation/native';
 import BottomSheet from '../../components/BottomSheet';
+import Toast from 'react-native-toast-message';
+import {authFetch} from '../../services/SpotifyService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HomeScreen = () => {
   const [feed, setFeed] = useState();
   const [forYouTrue, setForYouTrue] = useState(true);
   const [like, setLike] = useState(false);
+  const [likeFiller, setLikeFiller] = useState(false);
   const [postPreviewURL, setPostPreviewURL] = useState();
   const [songIndex, setSongIndex] = useState(0);
   const [songLoaded, setSongLoaded] = useState(false);
   const [trackPlaying, setTrackPlaying] = useState(true);
   const [loopValue, setLoopValue] = useState();
-  const {currentTrack, setCurrentTrack, setHomeScreenFocus} =
-    useContext(Context);
+  const [songID, setSongID] = useState();
+  const {
+    currentTrack,
+    setCurrentTrack,
+    setHomeScreenFocus,
+    accessToken,
+    refreshToken,
+    setAccessToken,
+    setRefreshToken,
+  } = useContext(Context);
+
+  // check if user has spotify connected to display proper screens
+  useEffect(() => {
+    const checkForSpotifyConnection = async () => {
+      const spotifyBoolean = await AsyncStorage.getItem('hasSpotify');
+      const localRefresh = await AsyncStorage.getItem('spotRefreshToken');
+      const localAccess = await AsyncStorage.getItem('spotAccessToken');
+
+      if (spotifyBoolean === 'false') {
+        console.log('not connected');
+      } else if (spotifyBoolean === 'true') {
+        setAccessToken(localAccess);
+        setRefreshToken(localRefresh);
+        console.log(accessToken);
+      }
+    };
+    checkForSpotifyConnection();
+  }, [accessToken, setAccessToken, setRefreshToken]);
 
   const focusHandler = () => {
     setForYouTrue(!forYouTrue);
@@ -67,8 +97,6 @@ const HomeScreen = () => {
             console.log('failed to load the sound', error);
             return;
           }
-          // loaded successfully
-          console.log('loaded');
           setSongLoaded(postPreviewURL);
         }),
       );
@@ -95,7 +123,6 @@ const HomeScreen = () => {
     if (trackPlaying === false) {
       currentTrack.play(success => {
         if (success) {
-          console.log('done');
           setTrackPlaying(false);
           setLoopValue(Math.random());
         } else {
@@ -106,6 +133,41 @@ const HomeScreen = () => {
     } else {
       currentTrack.pause();
       setTrackPlaying(false);
+    }
+  };
+  const showToast = () => {
+    if (like) {
+      Toast.show({
+        type: 'success',
+        text1: 'Removed from liked songs',
+        text2: 'Well that was quick.',
+        visibilityTime: 2000,
+      });
+      authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
+        .delete(`/me/tracks?ids=${songID}`)
+        .then(response => {
+          console.log(response);
+        })
+        .catch(error => {
+          console.log(error);
+          return error;
+        });
+    } else if (!like && songID) {
+      Toast.show({
+        type: 'success',
+        text1: 'Added to liked songs',
+        text2: "Don't believe us? Check your spotify library.",
+        visibilityTime: 2000,
+      });
+      authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
+        .put(`/me/tracks?ids=${songID}`)
+        .then(response => {
+          console.log(response);
+        })
+        .catch(error => {
+          console.log(error);
+          return error;
+        });
     }
   };
 
@@ -135,6 +197,7 @@ const HomeScreen = () => {
                 setSongIndex(index);
                 setTrackPlaying(true);
                 currentTrack.pause();
+                setSongID(feed[index].id);
               }}
               style={styles.swiper}
               showsPagination={false}>
@@ -159,10 +222,7 @@ const HomeScreen = () => {
                     </TouchableOpacity>
                     <View style={styles.middleContainer}>
                       <View style={styles.trackInfoContainer}>
-                        <Text
-                          //   onPress={playTest}
-                          numberOfLines={1}
-                          style={styles.trackName}>
+                        <Text numberOfLines={1} style={styles.trackName}>
                           {post._data.songName}
                         </Text>
                         <View style={styles.trackInfoBottom}>
@@ -185,11 +245,16 @@ const HomeScreen = () => {
                           <Spotify height={24} width={24} />
                         </TouchableOpacity>
                         <View style={styles.likesContainer}>
-                          <TouchableOpacity onPress={() => setLike(!like)}>
+                          <TouchableOpacity
+                            onPress={() => {
+                              setLike(!like);
+                              setLikeFiller(!likeFiller);
+                              showToast();
+                            }}>
                             <Ionicons
                               style={styles.socialIcon}
-                              name={like ? 'heart' : 'heart-outline'}
-                              color={like ? '#1DB954' : 'grey'}
+                              name={likeFiller ? 'heart' : 'heart-outline'}
+                              color={likeFiller ? '#1DB954' : 'grey'}
                               size={24}
                             />
                           </TouchableOpacity>
@@ -300,5 +365,40 @@ const styles = StyleSheet.create({
   likeCount: {
     color: 'white',
     fontFamily: 'inter-regular',
+  },
+  addedSong: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderRadius: 6,
+    top: '99%',
+    zIndex: 1,
+    alignSelf: 'center',
+  },
+  addedSongText: {
+    color: 'black',
+    fontFamily: 'Inter-Regular',
+    fontSize: 12,
+  },
+
+  addedSongFade: {
+    position: 'absolute',
+    backgroundColor: 'clear',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderRadius: 6,
+    top: '99%',
+    zIndex: 0,
+    alignSelf: 'center',
+  },
+  addedSongTextFade: {
+    color: 'black',
+    fontFamily: 'Inter-Regular',
+    fontSize: 12,
   },
 });

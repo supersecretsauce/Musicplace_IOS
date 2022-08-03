@@ -20,6 +20,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {StyleSheet, StatusBar} from 'react-native';
+import Toast from 'react-native-toast-message';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -29,6 +30,7 @@ export default function App() {
   const [refreshToken, setRefreshToken] = useState('');
   const [currentTrack, setCurrentTrack] = useState();
   const [homeScreenFocus, setHomeScreenFocus] = useState();
+  const [accessToken, setAccessToken] = useState('');
   // AsyncStorage.clear();
 
   useEffect(() => {
@@ -74,6 +76,8 @@ export default function App() {
             setCurrentTrack,
             homeScreenFocus,
             setHomeScreenFocus,
+            accessToken,
+            setAccessToken,
           }}>
           {userLogin ? (
             <Tab.Navigator
@@ -135,6 +139,7 @@ export default function App() {
               />
             </Stack.Navigator>
           )}
+          <Toast />
         </Context.Provider>
       </NavigationContainer>
     </GestureHandlerRootView>

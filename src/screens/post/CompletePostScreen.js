@@ -61,6 +61,8 @@ const CompletePostScreen = ({route, navigation}) => {
     setCaption(text);
   };
 
+  console.log(song.id);
+
   const postSong = async () => {
     if (songPhoto) {
       try {
@@ -94,6 +96,7 @@ const CompletePostScreen = ({route, navigation}) => {
           .collection('posts')
           .doc(song.id)
           .set({
+            songID: song.id,
             songName: song.name,
             caption: caption,
             albumName: song.album.name,
