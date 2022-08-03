@@ -21,6 +21,8 @@ const HomeScreen = () => {
   const [feed, setFeed] = useState();
   const [forYouTrue, setForYouTrue] = useState(true);
   const [like, setLike] = useState(false);
+  const [likeFiller, setLikeFiller] = useState(false);
+  const [fade, setFade] = useState(false);
   const [postPreviewURL, setPostPreviewURL] = useState();
   const [songIndex, setSongIndex] = useState(0);
   const [songLoaded, setSongLoaded] = useState(false);
@@ -78,18 +80,18 @@ const HomeScreen = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postPreviewURL]);
 
-  useEffect(() => {
-    if (currentTrack && songLoaded) {
-      currentTrack.play(success => {
-        if (success) {
-          console.log('successfully finished playing');
-          setLoopValue(Math.random());
-        } else {
-          console.log('playback failed due to audio decoding errors');
-        }
-      });
-    }
-  }, [currentTrack, songLoaded, loopValue]);
+  // useEffect(() => {
+  //   if (currentTrack && songLoaded) {
+  //     currentTrack.play(success => {
+  //       if (success) {
+  //         console.log('successfully finished playing');
+  //         setLoopValue(Math.random());
+  //       } else {
+  //         console.log('playback failed due to audio decoding errors');
+  //       }
+  //     });
+  //   }
+  // }, [currentTrack, songLoaded, loopValue]);
 
   const pauseHandler = () => {
     if (trackPlaying === false) {
@@ -109,11 +111,52 @@ const HomeScreen = () => {
     }
   };
 
+  useEffect(() => {
+    if (like) {
+      // setTimeout(setFade(true), 2000);
+      setTimeout(() => setLike(false), 2000);
+      console.log('like true');
+    } else {
+      setTimeout(() => setLike(false), 2000);
+    }
+  }, [like]);
+
+  useEffect(() => {
+    if (fade) {
+      setFade(false);
+      setLike(true);
+      console.log('hey');
+    }
+  }, [fade]);
+
   return (
     <>
       {feed ? (
         <>
           <SafeAreaView style={styles.container}>
+            {like ? (
+              <>
+                <View style={fade ? styles.addedSongFade : styles.addedSong}>
+                  <Text
+                    style={
+                      fade ? styles.addedSongTextFade : styles.addedSongText
+                    }>
+                    {like ? 'Added to liked songs' : 'Removed from liked songs'}
+                  </Text>
+                </View>
+              </>
+            ) : (
+              <>
+                <View style={fade ? styles.addedSongFade : styles.addedSong}>
+                  <Text
+                    style={
+                      fade ? styles.addedSongTextFade : styles.addedSongText
+                    }>
+                    Removed from liked songs
+                  </Text>
+                </View>
+              </>
+            )}
             <View style={styles.topContainer}>
               <Text
                 onPress={focusHandler}
@@ -185,11 +228,15 @@ const HomeScreen = () => {
                           <Spotify height={24} width={24} />
                         </TouchableOpacity>
                         <View style={styles.likesContainer}>
-                          <TouchableOpacity onPress={() => setLike(!like)}>
+                          <TouchableOpacity
+                            onPress={() => {
+                              setLike(!like);
+                              setLikeFiller(!likeFiller);
+                            }}>
                             <Ionicons
                               style={styles.socialIcon}
-                              name={like ? 'heart' : 'heart-outline'}
-                              color={like ? '#1DB954' : 'grey'}
+                              name={likeFiller ? 'heart' : 'heart-outline'}
+                              color={likeFiller ? '#1DB954' : 'grey'}
                               size={24}
                             />
                           </TouchableOpacity>
@@ -300,5 +347,40 @@ const styles = StyleSheet.create({
   likeCount: {
     color: 'white',
     fontFamily: 'inter-regular',
+  },
+  addedSong: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderRadius: 6,
+    top: '99%',
+    zIndex: 1,
+    alignSelf: 'center',
+  },
+  addedSongText: {
+    color: 'black',
+    fontFamily: 'Inter-Regular',
+    fontSize: 12,
+  },
+
+  addedSongFade: {
+    position: 'absolute',
+    backgroundColor: 'clear',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderRadius: 6,
+    top: '99%',
+    zIndex: 0,
+    alignSelf: 'center',
+  },
+  addedSongTextFade: {
+    color: 'black',
+    fontFamily: 'Inter-Regular',
+    fontSize: 12,
   },
 });
