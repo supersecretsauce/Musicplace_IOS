@@ -14,6 +14,7 @@ import ConnectSpotifyScreen from './src/screens/signup/ConnectSpotifyScreen';
 import HomeScreen from './src/screens/home/HomeScreen';
 import PostStackScreen from './src/routes/PostStackScreen';
 import test from './src/screens/post/test';
+import ProfileScreen from './src/screens/profile/ProfileScreen';
 import {Context} from './src/context/Context';
 import {useState, useEffect} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -113,7 +114,7 @@ export default function App() {
               <Tab.Screen name="Discover" component={test} />
               <Tab.Screen name="Post" component={PostStackScreen} />
               <Tab.Screen name="Activity" component={test} />
-              <Tab.Screen name="Profile" component={test} />
+              <Tab.Screen name="Profile" component={ProfileScreen} />
             </Tab.Navigator>
           ) : (
             <Stack.Navigator
