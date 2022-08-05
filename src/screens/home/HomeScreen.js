@@ -258,10 +258,9 @@ const HomeScreen = () => {
                               style={styles.socialIcon}
                               name={likeFiller ? 'heart' : 'heart-outline'}
                               color={likeFiller ? '#1DB954' : 'grey'}
-                              size={24}
+                              size={28}
                             />
                           </TouchableOpacity>
-                          <Text style={styles.likeCount}>10.7k</Text>
                         </View>
                       </View>
                     </View>
@@ -353,9 +352,10 @@ const styles = StyleSheet.create({
   interactContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
+    justifyContent: 'center',
   },
   spotifyButton: {
-    marginTop: '4%',
+    marginTop: '3%',
   },
   likesContainer: {
     justifyContent: 'center',
@@ -364,10 +364,6 @@ const styles = StyleSheet.create({
   },
   socialIcon: {
     marginRight: 2,
-  },
-  likeCount: {
-    color: 'white',
-    fontFamily: 'inter-regular',
   },
   addedSong: {
     position: 'absolute',

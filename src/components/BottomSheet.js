@@ -5,6 +5,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
+  runOnJS,
 } from 'react-native-reanimated';
 import Colors from '../assets/utilities/Colors';
 import Spotify from '../assets/img/spotify.svg';
@@ -42,6 +43,7 @@ const BottomSheet = props => {
       }
     });
   const rBottomSheetStyle = useAnimatedStyle(() => {
+    'worklet';
     return {
       transform: [{translateY: translateY.value}],
     };
@@ -58,7 +60,7 @@ const BottomSheet = props => {
             <Text style={styles.username}>username</Text>
           </View>
           <View style={styles.commentTextContainer}>
-            <Text style={styles.comment}>{caption}</Text>
+            {caption ? <Text style={styles.comment}>{caption}</Text> : <></>}
           </View>
         </View>
       </Animated.View>
