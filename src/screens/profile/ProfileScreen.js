@@ -1,9 +1,11 @@
 import {StyleSheet, Text, View, SafeAreaView, Image} from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Circle from '../../assets/img/circle.svg';
 import Colors from '../../assets/utilities/Colors';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 const ProfileScreen = () => {
+  const [postsTrue, setPostsTrue] = useState(true);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -36,6 +38,27 @@ const ProfileScreen = () => {
           <Text style={styles.numberText}>Likes</Text>
         </View>
       </View>
+      <View style={styles.sortContainer}>
+        <View style={styles.iconContainer}>
+          <Ionicons
+            onPress={() => setPostsTrue(true)}
+            name={'albums'}
+            color={postsTrue ? 'white' : 'grey'}
+            size={28}
+          />
+          <Ionicons
+            onPress={() => setPostsTrue(false)}
+            style={styles.likeIcon}
+            name={'heart'}
+            color={postsTrue ? 'grey' : 'white'}
+            size={28}
+          />
+        </View>
+        <TouchableOpacity style={styles.editProfileContainer}>
+          <Text style={styles.editProfileText}>Edit profile</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={styles.line} />
     </View>
   );
 };
@@ -116,5 +139,41 @@ const styles = StyleSheet.create({
   likesContainer: {
     marginLeft: '13%',
     alignItems: 'center',
+  },
+  sortContainer: {
+    flexDirection: 'row',
+    marginLeft: '6%',
+    marginTop: '10%',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  iconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  likeIcon: {
+    marginLeft: '16%',
+  },
+  editProfileContainer: {
+    borderColor: Colors.greyOut,
+    borderWidth: 0.5,
+    paddingVertical: 6,
+    paddingHorizontal: 24,
+    marginRight: '12%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 9,
+  },
+  editProfileText: {
+    color: 'white',
+    fontSize: 12,
+    fontFamily: 'Inter-Medium',
+  },
+  line: {
+    borderBottomColor: Colors.greyOut,
+    width: '90%',
+    borderWidth: 0.5,
+    alignSelf: 'center',
+    marginTop: '4%',
   },
 });
