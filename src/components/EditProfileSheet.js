@@ -110,7 +110,7 @@ export default EditProfileSheet;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'black',
+    backgroundColor: '#1C1C1C',
     position: 'absolute',
     width: '100%',
     height: '91.1%',

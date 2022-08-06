@@ -53,6 +53,8 @@ export default function App() {
     checkUserLogin();
   }, []);
 
+  useEffect(() => {});
+
   useEffect(() => {
     if (currentTrack) {
       if (homeScreenFocus === false) {

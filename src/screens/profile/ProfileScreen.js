@@ -8,6 +8,8 @@ import EditProfileSheet from '../../components/EditProfileSheet';
 import firestore from '@react-native-firebase/firestore';
 import {Context} from '../../context/Context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import UserPosts from '../../components/UserPosts';
+import ProfileSettings from '../../components/ProfileSettings';
 
 const ProfileScreen = ({navigation}) => {
   const [postsTrue, setPostsTrue] = useState(true);
@@ -15,6 +17,7 @@ const ProfileScreen = ({navigation}) => {
   const [userProfile, setUserProfile] = useState();
   const [username, setUsername] = useState();
   const [UID, setUID] = useState();
+  const [profileSettings, setProfileSettings] = useState(false);
 
   useEffect(() => {
     const checkforUID = async () => {
@@ -62,6 +65,7 @@ const ProfileScreen = ({navigation}) => {
           <View style={styles.container}>
             <View style={styles.header}>
               <Ionicons
+                onPress={() => setProfileSettings(!profileSettings)}
                 style={styles.menuIcon}
                 name={'menu'}
                 color={'white'}
@@ -113,6 +117,7 @@ const ProfileScreen = ({navigation}) => {
               </TouchableOpacity>
             </View>
             <View style={styles.line} />
+            <UserPosts />
             {editProfile && (
               <EditProfileSheet
                 displayNameProps={userProfile.name}
@@ -122,6 +127,7 @@ const ProfileScreen = ({navigation}) => {
                 editProfileProps={setEditProfile}
               />
             )}
+            {profileSettings && <ProfileSettings />}
           </View>
         </>
       ) : (

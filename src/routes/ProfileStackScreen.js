@@ -4,24 +4,24 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import ProfileScreen from '../screens/profile/ProfileScreen';
 const PostStackScreen = () => {
   const PostStack = createNativeStackNavigator();
-  const config = {
-    animation: 'spring',
-    config: {
-      stiffness: 1000,
-      damping: 500,
-      mass: 3,
-      overshootClamping: true,
-      restDisplacementThreshold: 0.01,
-      restSpeedThreshold: 0.01,
-    },
-  };
+  // const config = {
+  //   animation: 'spring',
+  //   config: {
+  //     stiffness: 1000,
+  //     damping: 500,
+  //     mass: 3,
+  //     overshootClamping: true,
+  //     restDisplacementThreshold: 0.01,
+  //     restSpeedThreshold: 0.01,
+  //   },
+  // };
 
   return (
     <PostStack.Navigator screenOptions={{headerShown: false}}>
       <PostStack.Screen name="ProfileScreen" component={ProfileScreen} />
       {/* <PostStack.Screen
-        name="EditProfileScreen"
-        component={EditProfileScreen}
+        name="ProfileSettingsScreen"
+        component={ProfileSettingsScreen}
         options={{
           gestureDirection: 'vertical',
           transitionSpec: {
