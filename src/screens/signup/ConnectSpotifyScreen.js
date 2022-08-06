@@ -14,10 +14,10 @@ import {authorize} from 'react-native-app-auth';
 import firestore from '@react-native-firebase/firestore';
 import {firebase} from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import Default from '../../assets/img/default.png';
 const ConnectSpotifyScreen = ({navigation}) => {
   const userInfo = firebase.auth().currentUser;
-  const {setUserLogin} = useContext(Context);
+  const {setUserLogin, username} = useContext(Context);
 
   const goBack = () => {
     navigation.navigate('CreateUsernameScreen');
@@ -54,6 +54,13 @@ const ConnectSpotifyScreen = ({navigation}) => {
         spotifyAccessTokenExpirationDate: authState.accessTokenExpirationDate,
         spotifyRefreshToken: authState.refreshToken,
         spotifyTokenType: authState.tokenType,
+        profilePicture: Default,
+        bio: null,
+        followers: 0,
+        following: 0,
+        likes: 0,
+        displayName: username,
+        header: null,
       });
     } catch (error) {
       return;
@@ -63,6 +70,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
       await AsyncStorage.setItem('hasSpotify', 'true');
       await AsyncStorage.setItem('spotAccessToken', authState.accessToken);
       await AsyncStorage.setItem('spotRefreshToken', authState.refreshToken);
+      await AsyncStorage.setItem('UID', userInfo.uid);
     } catch (e) {
       console.log(e);
     }

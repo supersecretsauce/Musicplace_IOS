@@ -14,7 +14,7 @@ import ConnectSpotifyScreen from './src/screens/signup/ConnectSpotifyScreen';
 import HomeScreen from './src/screens/home/HomeScreen';
 import PostStackScreen from './src/routes/PostStackScreen';
 import test from './src/screens/post/test';
-import ProfileScreen from './src/screens/profile/ProfileScreen';
+import ProfileStackScreen from './src/routes/ProfileStackScreen';
 import {Context} from './src/context/Context';
 import {useState, useEffect} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -32,6 +32,8 @@ export default function App() {
   const [currentTrack, setCurrentTrack] = useState();
   const [homeScreenFocus, setHomeScreenFocus] = useState();
   const [accessToken, setAccessToken] = useState('');
+  const [username, setUsername] = useState('');
+
   // AsyncStorage.clear();
 
   useEffect(() => {
@@ -79,6 +81,8 @@ export default function App() {
             setHomeScreenFocus,
             accessToken,
             setAccessToken,
+            username,
+            setUsername,
           }}>
           {userLogin ? (
             <Tab.Navigator
@@ -114,7 +118,7 @@ export default function App() {
               <Tab.Screen name="Discover" component={test} />
               <Tab.Screen name="Post" component={PostStackScreen} />
               <Tab.Screen name="Activity" component={test} />
-              <Tab.Screen name="Profile" component={ProfileScreen} />
+              <Tab.Screen name="Profile" component={ProfileStackScreen} />
             </Tab.Navigator>
           ) : (
             <Stack.Navigator

@@ -1,65 +1,135 @@
 import {StyleSheet, Text, View, SafeAreaView, Image} from 'react-native';
-import React, {useState} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Circle from '../../assets/img/circle.svg';
 import Colors from '../../assets/utilities/Colors';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-const ProfileScreen = () => {
+import EditProfileSheet from '../../components/EditProfileSheet';
+import firestore from '@react-native-firebase/firestore';
+import {Context} from '../../context/Context';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const ProfileScreen = ({navigation}) => {
   const [postsTrue, setPostsTrue] = useState(true);
+  const [editProfile, setEditProfile] = useState(false);
+  const [userProfile, setUserProfile] = useState();
+  const [username, setUsername] = useState();
+  const [UID, setUID] = useState();
+
+  useEffect(() => {
+    const checkforUID = async () => {
+      const userUID = await AsyncStorage.getItem('UID');
+      if (userUID) {
+        console.log(userUID);
+        setUID(userUID);
+      }
+    };
+    checkforUID();
+  }, []);
+
+  useEffect(() => {
+    if (UID) {
+      console.log(UID);
+      const fetchProfile = async () => {
+        firestore()
+          .collection('users')
+          .doc(UID)
+          .onSnapshot(documentSnapshot => {
+            console.log('User data: ', documentSnapshot.data());
+            setUserProfile(documentSnapshot.data());
+          });
+      };
+      fetchProfile();
+    }
+  }, [UID]);
+
+  useEffect(() => {
+    if (UID) {
+      firestore()
+        .collection('usernames')
+        .where('UID', '==', UID)
+        .get()
+        .then(querySnapshot => {
+          console.log(querySnapshot);
+          setUsername(querySnapshot);
+        });
+    }
+  }, [UID]);
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Ionicons
-          style={styles.menuIcon}
-          name={'menu'}
-          color={'white'}
-          size={36}
-        />
-      </View>
-      <Circle style={styles.profilePic} width={75} height={75} />
-      <View style={styles.profileLeft}>
-        <Text style={styles.name}>Maxwell</Text>
-        <Text style={styles.handle}>@maxmandia</Text>
-        <Text style={styles.bio}>
-          Co-founder @ musicplace and the world's largest micropenis{' '}
-        </Text>
-      </View>
-      <View style={styles.socialStatsContainer}>
-        <View style={styles.followersContainer}>
-          <Text style={styles.number}>333</Text>
-          <Text style={styles.numberText}>Followers</Text>
-        </View>
-        <View style={styles.followingContainer}>
-          <Text style={styles.number}>333</Text>
-          <Text style={styles.numberText}>Following</Text>
-        </View>
-        <View style={styles.likesContainer}>
-          <Text style={styles.likeNumber}>333</Text>
-          <Text style={styles.numberText}>Likes</Text>
-        </View>
-      </View>
-      <View style={styles.sortContainer}>
-        <View style={styles.iconContainer}>
-          <Ionicons
-            onPress={() => setPostsTrue(true)}
-            name={'albums'}
-            color={postsTrue ? 'white' : 'grey'}
-            size={28}
-          />
-          <Ionicons
-            onPress={() => setPostsTrue(false)}
-            style={styles.likeIcon}
-            name={'heart'}
-            color={postsTrue ? 'grey' : 'white'}
-            size={28}
-          />
-        </View>
-        <TouchableOpacity style={styles.editProfileContainer}>
-          <Text style={styles.editProfileText}>Edit profile</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.line} />
-    </View>
+    <>
+      {userProfile && username ? (
+        <>
+          <View style={styles.container}>
+            <View style={styles.header}>
+              <Ionicons
+                style={styles.menuIcon}
+                name={'menu'}
+                color={'white'}
+                size={36}
+              />
+            </View>
+            <Circle style={styles.profilePic} width={75} height={75} />
+            <View style={styles.profileLeft}>
+              <Text style={styles.name}>
+                {userProfile.displayName || username._docs[0].id}
+              </Text>
+              <Text style={styles.handle}>@{username._docs[0].id}</Text>
+              <Text style={styles.bio}>{userProfile.bio}</Text>
+            </View>
+            <View style={styles.socialStatsContainer}>
+              <View style={styles.followersContainer}>
+                <Text style={styles.number}>{userProfile.followers}</Text>
+                <Text style={styles.numberText}>Followers</Text>
+              </View>
+              <View style={styles.followingContainer}>
+                <Text style={styles.number}>{userProfile.following}</Text>
+                <Text style={styles.numberText}>Following</Text>
+              </View>
+              <View style={styles.likesContainer}>
+                <Text style={styles.likeNumber}>{userProfile.likes}</Text>
+                <Text style={styles.numberText}>Likes</Text>
+              </View>
+            </View>
+            <View style={styles.sortContainer}>
+              <View style={styles.iconContainer}>
+                <Ionicons
+                  onPress={() => setPostsTrue(true)}
+                  name={'albums'}
+                  color={postsTrue ? 'white' : 'grey'}
+                  size={28}
+                />
+                <Ionicons
+                  onPress={() => setPostsTrue(false)}
+                  style={styles.likeIcon}
+                  name={'heart'}
+                  color={postsTrue ? 'grey' : 'white'}
+                  size={28}
+                />
+              </View>
+              <TouchableOpacity
+                onPress={() => setEditProfile(!editProfile)}
+                style={styles.editProfileContainer}>
+                <Text style={styles.editProfileText}>Edit profile</Text>
+              </TouchableOpacity>
+            </View>
+            <View style={styles.line} />
+            {editProfile && (
+              <EditProfileSheet
+                displayNameProps={userProfile.name}
+                editProps={setEditProfile}
+                usernameProps={username}
+                userProfileProps={userProfile}
+                editProfileProps={setEditProfile}
+              />
+            )}
+          </View>
+        </>
+      ) : (
+        <>
+          <View style={styles.container} />
+        </>
+      )}
+    </>
   );
 };
 
