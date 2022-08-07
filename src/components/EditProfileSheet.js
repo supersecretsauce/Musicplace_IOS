@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableWithoutFeedback,
   Keyboard,
+  Image,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import Circle from '../assets/img/circle.svg';
@@ -13,6 +14,7 @@ import Colors from '../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import ImagePicker from 'react-native-image-crop-picker';
 
 const DismissKeyboard = ({children}) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -28,6 +30,25 @@ const EditProfileSheet = props => {
   const [displayName, setDisplayName] = useState('');
   const [bio, setBio] = useState('');
   const [UID, setUID] = useState('');
+  const [profilePic, setProfilePic] = useState();
+
+  const openLibrary = () => {
+    ImagePicker.openPicker({
+      width: 2000,
+      height: 2000,
+      cropping: true,
+      cropperCircleOverlay: true,
+      avoidEmptySpaceAroundImage: true,
+      mediaType: 'photo',
+    })
+      .then(image => {
+        console.log(image);
+        setProfilePic(image);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
 
   useEffect(() => {
     const checkforUID = async () => {
@@ -48,6 +69,7 @@ const EditProfileSheet = props => {
         .update({
           displayName: displayName,
           bio: bio,
+          profilePic: profilePic,
         })
         .then(() => {
           console.log('User updated!');
@@ -63,7 +85,24 @@ const EditProfileSheet = props => {
         </Text>
         <Text style={styles.editProfileText}>Edit Profile</Text>
         <View style={styles.header} />
-        <Circle style={styles.profilePic} width={75} height={75} />
+        {profilePic ? (
+          <View style={styles.profilePicContainer}>
+            <Image
+              style={styles.userProfilePic}
+              source={{uri: profilePic.path}}
+            />
+          </View>
+        ) : (
+          <TouchableOpacity
+            onPress={openLibrary}
+            style={styles.profilePicContainer}>
+            <Image
+              style={styles.userProfilePic}
+              source={require('../assets/img/circle.png')}
+            />
+          </TouchableOpacity>
+        )}
+
         <View style={styles.userInfoContainer}>
           <View style={styles.nameContainer}>
             <Text style={styles.name}>Name</Text>
@@ -140,7 +179,22 @@ const styles = StyleSheet.create({
   profilePic: {
     position: 'absolute',
     marginLeft: '5%',
-    marginTop: '33%',
+    marginTop: '35%',
+    height: 100,
+    width: 100,
+  },
+  profilePicContainer: {
+    position: 'absolute',
+    marginLeft: '5%',
+    marginTop: '45%',
+    height: 75,
+    width: 75,
+    borderRadius: 100,
+  },
+  userProfilePic: {
+    height: 100,
+    width: 100,
+    borderRadius: 100,
   },
   userInfoContainer: {
     marginLeft: '7%',
