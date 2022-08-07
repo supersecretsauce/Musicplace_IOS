@@ -95,6 +95,7 @@ const CreateUsernameScreen = ({navigation}) => {
       <View style={styles.inputContainer}>
         <View style={styles.rectangle}>
           <TextInput
+            maxLength={10}
             onKeyPress={backspace}
             keyboardType="default"
             style={styles.inputText}

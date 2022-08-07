@@ -127,7 +127,7 @@ const ProfileScreen = ({navigation}) => {
                 editProfileProps={setEditProfile}
               />
             )}
-            {profileSettings && <ProfileSettings />}
+            {profileSettings && <ProfileSettings UIDProps={UID} />}
           </View>
         </>
       ) : (

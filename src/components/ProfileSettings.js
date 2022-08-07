@@ -1,5 +1,5 @@
 import {StyleSheet, Text, View, Linking, TouchableOpacity} from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import Colors from '../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Spotify from '../assets/img/spotify.svg';
@@ -7,6 +7,8 @@ import Discord from '../assets/img/discord.svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {authorize} from 'react-native-app-auth';
 import auth from '@react-native-firebase/auth';
+import {Context} from '../context/Context';
+import firestore from '@react-native-firebase/firestore';
 
 const spotConfig = {
   clientId: '501638f5cfb04abfb61d039e370c5d99', // available on the app page
@@ -24,8 +26,10 @@ const spotConfig = {
     tokenEndpoint: 'https://accounts.spotify.com/api/token',
   },
 };
-const ProfileSettings = () => {
+const ProfileSettings = props => {
   const [spotifyConnected, setSpotifyConnected] = useState();
+  const {setUserLogin, username} = useContext(Context);
+  const UID = props.UIDProps;
 
   const IG = async () => {
     await Linking.openURL('instagram://user?username=musicplaceapp');
@@ -77,6 +81,26 @@ const ProfileSettings = () => {
       .signOut()
       .then(() => console.log('User signed out!'));
     AsyncStorage.clear();
+    setUserLogin(false);
+  };
+
+  const deleteAccount = () => {
+    firestore()
+      .collection('users')
+      .doc(UID)
+      .delete()
+      .then(() => {
+        console.log('User deleted!');
+      });
+    firestore()
+      .collection('usernames')
+      .doc(username)
+      .delete()
+      .then(() => {
+        console.log('User deleted!');
+      });
+    AsyncStorage.clear();
+    setUserLogin(false);
   };
 
   return (
@@ -107,7 +131,9 @@ const ProfileSettings = () => {
           <Ionicons name={'exit'} color={'white'} size={28} />
           <Text style={styles.socialText}>Logout</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.socialContainer}>
+        <TouchableOpacity
+          onPress={deleteAccount}
+          style={styles.socialContainer}>
           <Ionicons name={'remove-circle'} color={Colors.red} size={28} />
           <Text style={styles.socialText}>Delete account</Text>
         </TouchableOpacity>
