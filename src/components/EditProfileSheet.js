@@ -9,7 +9,6 @@ import {
   Image,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
-import Circle from '../assets/img/circle.svg';
 import Colors from '../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
@@ -28,11 +27,15 @@ const EditProfileSheet = props => {
   const username = props.usernameProps;
   const userProfile = props.userProfileProps;
   const setEditProfile = props.editProfileProps;
-  const setProfilePicURL = props.ProfilePicURLProps;
+  const setProfilePicURL = props.SetProfilePicURLProps;
+  const profilePicURL = props.ProfilePicURLProps;
   const UID = props.UIDProps;
+  const setHeaderURL = props.SetHeaderURLProps;
+  const headerURL = props.headerURLProps;
   const [displayName, setDisplayName] = useState('');
   const [bio, setBio] = useState('');
   const [profilePic, setProfilePic] = useState();
+  const [header, setHeader] = useState();
 
   const openLibrary = () => {
     ImagePicker.openPicker({
@@ -52,6 +55,23 @@ const EditProfileSheet = props => {
       });
   };
 
+  const openLibraryHeader = () => {
+    ImagePicker.openPicker({
+      width: 2000,
+      height: 2000,
+      cropping: true,
+      avoidEmptySpaceAroundImage: true,
+      mediaType: 'photo',
+    })
+      .then(image => {
+        console.log(image);
+        setHeader(image);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  };
+
   const saveChanges = () => {
     const uploadPhoto = async () => {
       const reference = storage().ref(UID + 'PFP');
@@ -65,13 +85,40 @@ const EditProfileSheet = props => {
         const getProfilePicURL = async () => {
           const url = await storage()
             .ref(UID + 'PFP')
-            .getDownloadURL();
+            .getDownloadURL()
+            .catch(error => {
+              console.log(error);
+            });
           console.log(url);
           setProfilePicURL(url);
         };
         getProfilePicURL();
       });
     };
+
+    const uploadHeader = async () => {
+      const reference = storage().ref(UID + 'HEADER');
+      const task = reference.putFile(header.path);
+      task.on('state_changed', taskSnapshot => {
+        console.log(
+          `${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`,
+        );
+      });
+      task.then(() => {
+        const getHeaderURL = async () => {
+          const url = await storage()
+            .ref(UID + 'HEADER')
+            .getDownloadURL()
+            .catch(error => {
+              console.log(error);
+            });
+          console.log(url);
+          setHeaderURL(url);
+        };
+        getHeaderURL();
+      });
+    };
+
     if (UID) {
       firestore()
         .collection('users')
@@ -85,8 +132,10 @@ const EditProfileSheet = props => {
         });
     }
     uploadPhoto();
+    uploadHeader();
     setEditProfile(false);
   };
+  console.log(profilePicURL);
   return (
     <DismissKeyboard>
       <View style={styles.container}>
@@ -94,13 +143,20 @@ const EditProfileSheet = props => {
           Cancel
         </Text>
         <Text style={styles.editProfileText}>Edit Profile</Text>
-        <View style={styles.header} />
+        {header ? (
+          <Image
+            onPress={openLibraryHeader}
+            style={styles.header}
+            source={{uri: header.path}}
+          />
+        ) : (
+          <TouchableOpacity
+            style={styles.header}
+            onPress={openLibraryHeader}></TouchableOpacity>
+        )}
         {profilePic ? (
           <View style={styles.profilePicContainer}>
-            <Image
-              style={styles.userProfilePic}
-              source={{uri: profilePic.path}}
-            />
+            <Image style={styles.userProfilePic} source={{uri: profilePic}} />
           </View>
         ) : (
           <TouchableOpacity
@@ -112,7 +168,24 @@ const EditProfileSheet = props => {
             />
           </TouchableOpacity>
         )}
-
+        <TouchableOpacity onPress={openLibrary} style={styles.addPFPContainer}>
+          <Ionicons
+            style={styles.addPFP}
+            name="add-circle"
+            color="white"
+            size={35}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={openLibraryHeader}
+          style={styles.addHeaderContainer}>
+          <Ionicons
+            style={styles.addHeader}
+            name="add-circle"
+            color="white"
+            size={35}
+          />
+        </TouchableOpacity>
         <View style={styles.userInfoContainer}>
           <View style={styles.nameContainer}>
             <Text style={styles.name}>Name</Text>
@@ -181,7 +254,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   header: {
-    backgroundColor: 'green',
+    backgroundColor: 'rgba(255, 8, 0, .25)',
     width: '100%',
     height: '22%',
     marginTop: '8%',
@@ -205,6 +278,17 @@ const styles = StyleSheet.create({
     height: 100,
     width: 100,
     borderRadius: 100,
+  },
+  addPFPContainer: {
+    position: 'absolute',
+    marginLeft: '22%',
+    marginTop: '64%',
+  },
+  addPFP: {},
+  addHeaderContainer: {
+    position: 'absolute',
+    marginLeft: '86%',
+    marginTop: '54%',
   },
   userInfoContainer: {
     marginLeft: '7%',

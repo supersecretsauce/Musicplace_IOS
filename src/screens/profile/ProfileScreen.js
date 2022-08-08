@@ -13,13 +13,13 @@ import ProfileSettings from '../../components/ProfileSettings';
 import storage from '@react-native-firebase/storage';
 
 const ProfileScreen = ({navigation}) => {
-  const [postsTrue, setPostsTrue] = useState(true);
   const [editProfile, setEditProfile] = useState(false);
   const [userProfile, setUserProfile] = useState();
   const [username, setUsername] = useState();
   const [UID, setUID] = useState();
   const [profileSettings, setProfileSettings] = useState(false);
   const [profilePicURL, setProfilePicURL] = useState();
+  const [headerURL, setHeaderURL] = useState();
 
   useEffect(() => {
     const checkforUID = async () => {
@@ -76,20 +76,40 @@ const ProfileScreen = ({navigation}) => {
     }
   }, [UID]);
 
+  useEffect(() => {
+    if (UID) {
+      const getHeaderURL = async () => {
+        const url = await storage()
+          .ref(UID + 'HEADER')
+          .getDownloadURL()
+          .catch(error => {
+            console.log(error);
+          });
+        setHeaderURL(url);
+      };
+      getHeaderURL();
+    }
+  }, [UID]);
+
   return (
     <>
       {userProfile && username ? (
         <>
           <View style={styles.container}>
-            <View style={styles.header}>
-              <Ionicons
-                onPress={() => setProfileSettings(!profileSettings)}
-                style={styles.menuIcon}
-                name={'menu'}
-                color={'white'}
-                size={36}
-              />
-            </View>
+            {headerURL ? (
+              <Image style={styles.header} source={{uri: headerURL}} />
+            ) : (
+              <View style={styles.header}>
+                <Ionicons
+                  onPress={() => setProfileSettings(!profileSettings)}
+                  style={styles.menuIcon}
+                  name={'menu'}
+                  color={'white'}
+                  size={36}
+                />
+              </View>
+            )}
+
             {profilePicURL ? (
               <View style={styles.profilePicURLContainer}>
                 <Image
@@ -116,26 +136,10 @@ const ProfileScreen = ({navigation}) => {
                 <Text style={styles.number}>{userProfile.following}</Text>
                 <Text style={styles.numberText}>Following</Text>
               </View>
-              <View style={styles.likesContainer}>
-                <Text style={styles.likeNumber}>{userProfile.likes}</Text>
-                <Text style={styles.numberText}>Likes</Text>
-              </View>
             </View>
             <View style={styles.sortContainer}>
               <View style={styles.iconContainer}>
-                <Ionicons
-                  onPress={() => setPostsTrue(true)}
-                  name={'albums'}
-                  color={postsTrue ? 'white' : 'grey'}
-                  size={28}
-                />
-                <Ionicons
-                  onPress={() => setPostsTrue(false)}
-                  style={styles.likeIcon}
-                  name={'heart'}
-                  color={postsTrue ? 'grey' : 'white'}
-                  size={28}
-                />
+                <Ionicons name={'albums'} color="white" size={28} />
               </View>
               <TouchableOpacity
                 onPress={() => setEditProfile(!editProfile)}
@@ -153,7 +157,10 @@ const ProfileScreen = ({navigation}) => {
                 userProfileProps={userProfile}
                 editProfileProps={setEditProfile}
                 UIDProps={UID}
-                ProfilePicURLProps={setProfilePicURL}
+                SetProfilePicURLProps={setProfilePicURL}
+                ProfilePicURLProps={profilePicURL}
+                SetHeaderURLProps={setHeaderURL}
+                headerURLProps={headerURL}
               />
             )}
             {profileSettings && <ProfileSettings UIDProps={UID} />}
@@ -176,7 +183,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
   },
   header: {
-    backgroundColor: 'black',
+    backgroundColor: 'rgba(255, 8, 0, .25)',
     width: '100%',
     height: '22%',
   },
@@ -226,7 +233,7 @@ const styles = StyleSheet.create({
   },
   socialStatsContainer: {
     position: 'absolute',
-    marginLeft: '42%',
+    marginLeft: '61%',
     marginTop: '48%',
     flexDirection: 'row',
   },
@@ -234,12 +241,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-SemiBold',
     color: 'white',
     fontSize: 16,
-  },
-  likeNumber: {
-    fontFamily: 'Inter-SemiBold',
-    color: 'white',
-    fontSize: 16,
-    marginBottom: '11%',
   },
   numberText: {
     fontFamily: 'Inter-SemiBold',
@@ -254,10 +255,6 @@ const styles = StyleSheet.create({
     marginLeft: '13%',
     alignItems: 'center',
   },
-  likesContainer: {
-    marginLeft: '13%',
-    alignItems: 'center',
-  },
   sortContainer: {
     flexDirection: 'row',
     marginLeft: '6%',
@@ -269,9 +266,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  likeIcon: {
-    marginLeft: '16%',
-  },
+
   editProfileContainer: {
     borderColor: Colors.greyOut,
     borderWidth: 0.5,
