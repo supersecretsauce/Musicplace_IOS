@@ -143,20 +143,25 @@ const EditProfileSheet = props => {
           Cancel
         </Text>
         <Text style={styles.editProfileText}>Edit Profile</Text>
-        {header ? (
+        {header || headerURL ? (
           <Image
             onPress={openLibraryHeader}
             style={styles.header}
-            source={{uri: header.path}}
+            // source={{uri: header.path || uri: headerURL}}
+            source={{uri: header?.path || headerURL}}
           />
         ) : (
+          // eslint-disable-next-line react/self-closing-comp
           <TouchableOpacity
             style={styles.header}
             onPress={openLibraryHeader}></TouchableOpacity>
         )}
-        {profilePic ? (
+        {profilePic || profilePicURL ? (
           <View style={styles.profilePicContainer}>
-            <Image style={styles.userProfilePic} source={{uri: profilePic}} />
+            <Image
+              style={styles.userProfilePic}
+              source={{uri: profilePic?.path || profilePicURL}}
+            />
           </View>
         ) : (
           <TouchableOpacity
