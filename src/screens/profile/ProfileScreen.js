@@ -148,7 +148,7 @@ const ProfileScreen = ({navigation}) => {
               </TouchableOpacity>
             </View>
             <View style={styles.line} />
-            <UserPosts />
+            <UserPosts UIDProps={UID} />
             {editProfile && (
               <EditProfileSheet
                 displayNameProps={userProfile.name}
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
   },
   profileLeft: {
     marginLeft: '6%',
-    marginTop: '14%',
+    marginTop: '15%',
   },
   name: {
     fontFamily: 'Inter-Bold',
@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
   sortContainer: {
     flexDirection: 'row',
     marginLeft: '6%',
-    marginTop: '10%',
+    marginTop: '8%',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
