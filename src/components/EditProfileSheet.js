@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1C1C1C',
     position: 'absolute',
     width: '100%',
-    height: '91.1%',
+    height: '87.5%',
     bottom: 0,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,

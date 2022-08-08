@@ -1,7 +1,13 @@
-import {StyleSheet, Text, View, Image} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  FlatList,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import {FlatList} from 'react-native-gesture-handler';
 import Colors from '../assets/utilities/Colors';
 const UserPosts = props => {
   const UID = props.UIDProps;
@@ -46,24 +52,26 @@ const UserPosts = props => {
                 renderItem={({item, index}) => {
                   return (
                     <View style={styles.postContainer} key={index}>
-                      <Image
-                        style={styles.songPhoto}
-                        source={{
-                          uri: item.songPhoto,
-                        }}
-                      />
-                      <Text numberOfLines={1} style={styles.songName}>
-                        {item.songName}
-                      </Text>
-                      <View>
-                        <Text numberOfLines={1} style={styles.artistName}>
-                          {item.artists
-                            ?.map(artist => {
-                              return artist;
-                            })
-                            .join(', ')}
+                      <TouchableOpacity>
+                        <Image
+                          style={styles.songPhoto}
+                          source={{
+                            uri: item.songPhoto,
+                          }}
+                        />
+                        <Text numberOfLines={1} style={styles.songName}>
+                          {item.songName}
                         </Text>
-                      </View>
+                        <View>
+                          <Text numberOfLines={1} style={styles.artistName}>
+                            {item.artists
+                              ?.map(artist => {
+                                return artist;
+                              })
+                              .join(', ')}
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
                     </View>
                   );
                 }}

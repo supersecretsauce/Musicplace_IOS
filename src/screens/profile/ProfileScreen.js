@@ -97,7 +97,16 @@ const ProfileScreen = ({navigation}) => {
         <>
           <View style={styles.container}>
             {headerURL ? (
-              <Image style={styles.header} source={{uri: headerURL}} />
+              <>
+                <Ionicons
+                  onPress={() => setProfileSettings(!profileSettings)}
+                  style={styles.menuIcon}
+                  name={'menu'}
+                  color={'white'}
+                  size={36}
+                />
+                <Image style={styles.header} source={{uri: headerURL}} />
+              </>
             ) : (
               <View style={styles.header}>
                 <Ionicons
@@ -188,8 +197,10 @@ const styles = StyleSheet.create({
     height: '22%',
   },
   menuIcon: {
+    position: 'absolute',
     marginLeft: '85%',
     marginTop: '15%',
+    zIndex: 1,
   },
   profilePic: {
     position: 'absolute',
