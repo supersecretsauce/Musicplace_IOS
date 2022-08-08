@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
+import {Context} from '../../context/Context';
 import {
   StyleSheet,
   Text,
@@ -14,10 +15,10 @@ import firestore from '@react-native-firebase/firestore';
 import {firebase} from '@react-native-firebase/firestore';
 
 const CreateUsernameScreen = ({navigation}) => {
-  const [username, setUsername] = useState('');
   const [submitDone, setSubmitDone] = useState(false);
   const [takenUsername, setTakenUsername] = useState(false);
   const userInfo = firebase.auth().currentUser;
+  const {username, setUsername} = useContext(Context);
 
   const goBack = () => {
     navigation.navigate('EnterCodeScreen');
@@ -94,6 +95,7 @@ const CreateUsernameScreen = ({navigation}) => {
       <View style={styles.inputContainer}>
         <View style={styles.rectangle}>
           <TextInput
+            maxLength={10}
             onKeyPress={backspace}
             keyboardType="default"
             style={styles.inputText}
