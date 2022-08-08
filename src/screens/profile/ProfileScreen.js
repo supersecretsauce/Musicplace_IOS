@@ -10,6 +10,7 @@ import {Context} from '../../context/Context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserPosts from '../../components/UserPosts';
 import ProfileSettings from '../../components/ProfileSettings';
+import storage from '@react-native-firebase/storage';
 
 const ProfileScreen = ({navigation}) => {
   const [postsTrue, setPostsTrue] = useState(true);
@@ -18,6 +19,7 @@ const ProfileScreen = ({navigation}) => {
   const [username, setUsername] = useState();
   const [UID, setUID] = useState();
   const [profileSettings, setProfileSettings] = useState(false);
+  const [profilePicURL, setProfilePicURL] = useState();
 
   useEffect(() => {
     const checkforUID = async () => {
@@ -58,6 +60,22 @@ const ProfileScreen = ({navigation}) => {
         });
     }
   }, [UID]);
+
+  useEffect(() => {
+    if (UID) {
+      const getProfilePicURL = async () => {
+        const url = await storage()
+          .ref(UID + 'PFP')
+          .getDownloadURL()
+          .catch(error => {
+            console.log(error);
+          });
+        setProfilePicURL(url);
+      };
+      getProfilePicURL();
+    }
+  }, [UID]);
+
   return (
     <>
       {userProfile && username ? (
@@ -72,7 +90,16 @@ const ProfileScreen = ({navigation}) => {
                 size={36}
               />
             </View>
-            <Circle style={styles.profilePic} width={75} height={75} />
+            {profilePicURL ? (
+              <View style={styles.profilePicURLContainer}>
+                <Image
+                  style={styles.profilePicURL}
+                  source={{uri: profilePicURL}}
+                />
+              </View>
+            ) : (
+              <Circle style={styles.profilePic} width={75} height={75} />
+            )}
             <View style={styles.profileLeft}>
               <Text style={styles.name}>
                 {userProfile.displayName || username._docs[0].id}
@@ -125,6 +152,8 @@ const ProfileScreen = ({navigation}) => {
                 usernameProps={username}
                 userProfileProps={userProfile}
                 editProfileProps={setEditProfile}
+                UIDProps={UID}
+                ProfilePicURLProps={setProfilePicURL}
               />
             )}
             {profileSettings && <ProfileSettings UIDProps={UID} />}
@@ -147,7 +176,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
   },
   header: {
-    backgroundColor: 'green',
+    backgroundColor: 'black',
     width: '100%',
     height: '22%',
   },
@@ -159,6 +188,19 @@ const styles = StyleSheet.create({
     position: 'absolute',
     marginLeft: '5%',
     marginTop: '24%',
+  },
+  profilePicURLContainer: {
+    position: 'absolute',
+    marginLeft: '5%',
+    marginTop: '30%',
+    height: 75,
+    width: 75,
+    borderRadius: 100,
+  },
+  profilePicURL: {
+    height: 100,
+    width: 100,
+    borderRadius: 100,
   },
   profileLeft: {
     marginLeft: '6%',

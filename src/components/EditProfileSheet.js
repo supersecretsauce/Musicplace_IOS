@@ -15,6 +15,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ImagePicker from 'react-native-image-crop-picker';
+import storage from '@react-native-firebase/storage';
 
 const DismissKeyboard = ({children}) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -27,9 +28,10 @@ const EditProfileSheet = props => {
   const username = props.usernameProps;
   const userProfile = props.userProfileProps;
   const setEditProfile = props.editProfileProps;
+  const setProfilePicURL = props.ProfilePicURLProps;
+  const UID = props.UIDProps;
   const [displayName, setDisplayName] = useState('');
   const [bio, setBio] = useState('');
-  const [UID, setUID] = useState('');
   const [profilePic, setProfilePic] = useState();
 
   const openLibrary = () => {
@@ -50,18 +52,26 @@ const EditProfileSheet = props => {
       });
   };
 
-  useEffect(() => {
-    const checkforUID = async () => {
-      const userUID = await AsyncStorage.getItem('UID');
-      if (userUID) {
-        console.log(userUID);
-        setUID(userUID);
-      }
-    };
-    checkforUID();
-  }, []);
-
   const saveChanges = () => {
+    const uploadPhoto = async () => {
+      const reference = storage().ref(UID + 'PFP');
+      const task = reference.putFile(profilePic.path);
+      task.on('state_changed', taskSnapshot => {
+        console.log(
+          `${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`,
+        );
+      });
+      task.then(() => {
+        const getProfilePicURL = async () => {
+          const url = await storage()
+            .ref(UID + 'PFP')
+            .getDownloadURL();
+          console.log(url);
+          setProfilePicURL(url);
+        };
+        getProfilePicURL();
+      });
+    };
     if (UID) {
       firestore()
         .collection('users')
@@ -69,12 +79,12 @@ const EditProfileSheet = props => {
         .update({
           displayName: displayName,
           bio: bio,
-          profilePic: profilePic,
         })
         .then(() => {
           console.log('User updated!');
         });
     }
+    uploadPhoto();
     setEditProfile(false);
   };
   return (
