@@ -3,113 +3,96 @@ import {
   Text,
   View,
   SafeAreaView,
-  Image,
   TouchableOpacity,
+  Image,
 } from 'react-native';
-import React, {useState, useEffect, useContext, useCallback} from 'react';
-import Colors from '../../assets/utilities/Colors';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import Spotify from '../../assets/img/spotify.svg';
 import firestore from '@react-native-firebase/firestore';
+import React, {useState, useEffect, useContext, useCallback} from 'react';
+import {useFocusEffect} from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import Swiper from 'react-native-swiper';
+import Spotify from '../../assets/img/spotify.svg';
+import {firebase} from '@react-native-firebase/firestore';
+import BottomSheet from '../../components/BottomSheet';
 import Sound from 'react-native-sound';
 import {Context} from '../../context/Context';
-import {useFocusEffect} from '@react-navigation/native';
-import BottomSheet from '../../components/BottomSheet';
-import Toast from 'react-native-toast-message';
-import {authFetch} from '../../services/SpotifyService';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const HomeScreen = () => {
-  const [feed, setFeed] = useState();
-  const [forYouTrue, setForYouTrue] = useState(true);
-  const [like, setLike] = useState(false);
+const ViewPostsScreen = ({route, navigation}) => {
+  const {userPosts} = route.params;
+  const [postIndex, setPostIndex] = useState(0);
+  const [postIDs, setPostIDs] = useState();
   const [likeFiller, setLikeFiller] = useState(false);
+  const [like, setLike] = useState(false);
+  const [firestoreQ, setFirestoreQ] = useState();
   const [postPreviewURL, setPostPreviewURL] = useState();
-  const [songIndex, setSongIndex] = useState(0);
+  const {currentPost, setCurrentPost, setProfileScreenFocus} =
+    useContext(Context);
   const [songLoaded, setSongLoaded] = useState(false);
-  const [trackPlaying, setTrackPlaying] = useState(true);
   const [loopValue, setLoopValue] = useState();
-  const [songID, setSongID] = useState();
-  const {
-    currentTrack,
-    setCurrentTrack,
-    setHomeScreenFocus,
-    accessToken,
-    refreshToken,
-    setAccessToken,
-    setRefreshToken,
-  } = useContext(Context);
+  const [trackPlaying, setTrackPlaying] = useState(true);
+  const [postID, setPostID] = useState();
 
-  // check if user has spotify connected to display proper screens
   useEffect(() => {
-    const checkForSpotifyConnection = async () => {
-      const spotifyBoolean = await AsyncStorage.getItem('hasSpotify');
-      const localRefresh = await AsyncStorage.getItem('spotRefreshToken');
-      const localAccess = await AsyncStorage.getItem('spotAccessToken');
-
-      if (spotifyBoolean === 'false') {
-        console.log('not connected');
-      } else if (spotifyBoolean === 'true') {
-        setAccessToken(localAccess);
-        setRefreshToken(localRefresh);
-        console.log(accessToken);
-      }
-    };
-    checkForSpotifyConnection();
-  }, [accessToken, setAccessToken, setRefreshToken]);
-
-  const focusHandler = () => {
-    setForYouTrue(!forYouTrue);
-  };
+    if (userPosts) {
+      console.log(userPosts);
+      setPostIDs(userPosts.map(post => post.id));
+    }
+  }, [postIndex, userPosts]);
 
   useFocusEffect(
     useCallback(() => {
-      setHomeScreenFocus(true);
-      return () => setHomeScreenFocus(false);
-    }, [setHomeScreenFocus]),
+      setProfileScreenFocus(true);
+      return () => setProfileScreenFocus(false);
+    }, [setProfileScreenFocus]),
   );
 
-  // update this to run less often?
+  // get the first 10 tracks
   useEffect(() => {
-    const fetchFeed = async () => {
-      const feedData = await firestore().collection('posts').get();
-      if (feedData) {
-        setFeed(feedData._docs);
-      }
-    };
-    fetchFeed();
-  }, []);
+    if (postIDs) {
+      firestore()
+        .collection('posts')
+        // Filter results
+        .where(
+          firebase.firestore.FieldPath.documentId(),
+          'in',
+          postIDs.slice(0, 10),
+        )
+        .get()
+        .then(querySnapshot => {
+          console.log(querySnapshot._docs);
+          setFirestoreQ(querySnapshot._docs);
+        });
+    }
+  }, [postIDs]);
 
   //set the song preview url based on index of feed
   useEffect(() => {
-    if (feed) {
-      setPostPreviewURL(feed[songIndex]._data.previewUrl);
+    if (firestoreQ) {
+      setPostPreviewURL(firestoreQ[postIndex]._data.previewUrl);
     }
-  }, [feed, songIndex]);
+  }, [firestoreQ, postIndex]);
 
   //set the sound of the current track
   useEffect(() => {
     if (postPreviewURL) {
-      setCurrentTrack(
+      setCurrentPost(
         new Sound(postPreviewURL, null, error => {
           if (error) {
             console.log('failed to load the sound', error);
             return;
           }
           setSongLoaded(postPreviewURL);
+          console.log('got sound');
         }),
       );
     } else {
-      setCurrentTrack(null);
+      setCurrentPost(null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postPreviewURL]);
 
   //autoplay the track and keep playing when finished
   useEffect(() => {
-    if (currentTrack && songLoaded) {
-      currentTrack.play(success => {
+    if (currentPost && songLoaded) {
+      currentPost.play(success => {
         if (success) {
           console.log('successfully finished playing');
           setLoopValue(Math.random());
@@ -118,11 +101,11 @@ const HomeScreen = () => {
         }
       });
     }
-  }, [currentTrack, songLoaded, loopValue]);
+  }, [currentPost, songLoaded, loopValue]);
 
   const pauseHandler = () => {
     if (trackPlaying === false) {
-      currentTrack.play(success => {
+      currentPost.play(success => {
         if (success) {
           setTrackPlaying(false);
           setLoopValue(Math.random());
@@ -132,78 +115,41 @@ const HomeScreen = () => {
       });
       setTrackPlaying(true);
     } else {
-      currentTrack.pause();
+      currentPost.pause();
       setTrackPlaying(false);
-    }
-  };
-
-  //show notification when liking and unliking song
-  const showToast = () => {
-    if (like) {
-      Toast.show({
-        type: 'success',
-        text1: 'Removed from liked songs',
-        text2: 'Well that was quick.',
-        visibilityTime: 2000,
-      });
-      authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
-        .delete(`/me/tracks?ids=${songID}`)
-        .then(response => {
-          console.log(response);
-        })
-        .catch(error => {
-          console.log(error);
-          return error;
-        });
-    } else if (!like && songID) {
-      Toast.show({
-        type: 'success',
-        text1: 'Added to liked songs',
-        text2: "Don't believe us? Check your spotify library.",
-        visibilityTime: 2000,
-      });
-      authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
-        .put(`/me/tracks?ids=${songID}`)
-        .then(response => {
-          console.log(response);
-        })
-        .catch(error => {
-          console.log(error);
-          return error;
-        });
     }
   };
 
   return (
     <>
-      {feed ? (
+      {firestoreQ ? (
         <>
           <SafeAreaView style={styles.container}>
-            <View style={styles.topContainer}>
-              <Text
-                onPress={focusHandler}
-                style={forYouTrue ? styles.unFocus : styles.Focus}>
-                Following
-              </Text>
-              <Text
-                onPress={focusHandler}
-                style={forYouTrue ? styles.Focus : styles.unFocus}>
-                For You
-              </Text>
-            </View>
+            {/* <View style={styles.chevronContainer}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('ProfileScreen')}>
+              <Ionicons
+                style={styles.chevron}
+                name="chevron-back"
+                color="white"
+                size={50}
+              />
+            </TouchableOpacity>
+          </View> */}
             <Swiper
               horizontal={true}
               showsButtons={false}
               index={0}
               loadMinimal={true}
+              loop={false}
               onIndexChanged={index => {
-                setSongIndex(index);
+                setPostIndex(index);
                 setTrackPlaying(true);
-                currentTrack.pause();
-                setSongID(feed[index].id);
+                currentPost.pause();
+                setPostID(firestoreQ[index].id);
               }}
               showsPagination={false}>
-              {feed.map(post => {
+              {firestoreQ.map(post => {
                 return (
                   <SafeAreaView key={post.id} style={styles.postContainer}>
                     <TouchableOpacity
@@ -251,7 +197,7 @@ const HomeScreen = () => {
                             onPress={() => {
                               setLike(!like);
                               setLikeFiller(!likeFiller);
-                              showToast();
+                              //   showToast();
                             }}>
                             <Ionicons
                               style={styles.socialIcon}
@@ -272,8 +218,8 @@ const HomeScreen = () => {
         </>
       ) : (
         <>
-          <SafeAreaView>
-            <Text>Nothing to see here</Text>
+          <SafeAreaView style={styles.container}>
+            <Text>nothing here</Text>
           </SafeAreaView>
         </>
       )}
@@ -281,29 +227,22 @@ const HomeScreen = () => {
   );
 };
 
-export default HomeScreen;
+export default ViewPostsScreen;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'black',
     flex: 1,
+    backgroundColor: 'black',
+    // alignItems: 'center',
   },
-  topContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  unFocus: {
-    color: Colors.greyOut,
-    fontFamily: 'Inter-Medium',
-    fontSize: 16,
-    marginHorizontal: '5%',
-  },
-  Focus: {
-    color: 'white',
-    fontFamily: 'Inter-Bold',
-    fontSize: 16,
-    marginHorizontal: '5%',
-  },
+
+  // chevronContainer: {
+  //   width: '90%',
+  //   marginTop: '2%',
+  // },
+  // swiper: {
+  //   width: '100%',
+  // },
   postContainer: {
     alignItems: 'center',
   },

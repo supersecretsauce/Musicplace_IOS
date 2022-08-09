@@ -31,8 +31,11 @@ export default function App() {
   const [refreshToken, setRefreshToken] = useState('');
   const [currentTrack, setCurrentTrack] = useState();
   const [homeScreenFocus, setHomeScreenFocus] = useState();
+  const [profileScreenFocus, setProfileScreenFocus] = useState();
+
   const [accessToken, setAccessToken] = useState('');
   const [username, setUsername] = useState('');
+  const [currentPost, setCurrentPost] = useState();
 
   // AsyncStorage.clear();
 
@@ -66,6 +69,17 @@ export default function App() {
     }
   }, [currentTrack, homeScreenFocus]);
 
+  useEffect(() => {
+    if (currentPost) {
+      if (profileScreenFocus === false) {
+        currentPost.pause();
+      }
+      if (profileScreenFocus === true) {
+        currentPost.play();
+      }
+    }
+  }, [currentPost, profileScreenFocus]);
+
   return (
     <GestureHandlerRootView style={{flex: 1}}>
       <NavigationContainer>
@@ -85,6 +99,10 @@ export default function App() {
             setAccessToken,
             username,
             setUsername,
+            currentPost,
+            setCurrentPost,
+            profileScreenFocus,
+            setProfileScreenFocus,
           }}>
           {userLogin ? (
             <Tab.Navigator

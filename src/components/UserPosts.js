@@ -11,7 +11,9 @@ import firestore from '@react-native-firebase/firestore';
 import Colors from '../assets/utilities/Colors';
 const UserPosts = props => {
   const UID = props.UIDProps;
+  const navigation = props.navigationProps;
   const [userPosts, setUserPosts] = useState([]);
+  const [songID, setSongID] = useState();
 
   useEffect(() => {
     if (UID) {
@@ -33,11 +35,7 @@ const UserPosts = props => {
       console.log(userPosts);
     }
   }, [userPosts]);
-  // console.log(
-  //   userPosts[0].artists.map(artist => {
-  //     return artist;
-  //   }),
-  // );
+
   return (
     <View style={styles.container}>
       <>
@@ -52,7 +50,14 @@ const UserPosts = props => {
                 renderItem={({item, index}) => {
                   return (
                     <View style={styles.postContainer} key={index}>
-                      <TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setSongID(item.id);
+                          navigation.navigate('ViewPostsScreen', {
+                            userPosts: userPosts,
+                            postIndex: index,
+                          });
+                        }}>
                         <Image
                           style={styles.songPhoto}
                           source={{
@@ -77,6 +82,7 @@ const UserPosts = props => {
                 }}
               />
             </View>
+            <View></View>
           </>
         ) : (
           <></>

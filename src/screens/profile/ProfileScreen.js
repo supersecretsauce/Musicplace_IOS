@@ -157,7 +157,7 @@ const ProfileScreen = ({navigation}) => {
               </TouchableOpacity>
             </View>
             <View style={styles.line} />
-            <UserPosts UIDProps={UID} />
+            <UserPosts navigationProps={navigation} UIDProps={UID} />
             {editProfile && (
               <EditProfileSheet
                 displayNameProps={userProfile.name}
