@@ -6,6 +6,7 @@ import {
   Image,
   TextInput,
   KeyboardAvoidingView,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
@@ -20,7 +21,6 @@ import Spotify from '../assets/img/spotify.svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
-
 const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 
 const BottomSheet = props => {
@@ -31,6 +31,9 @@ const BottomSheet = props => {
   const [UID, setUID] = useState();
   const [userProfile, setUserProfile] = useState();
   const [profilePicURL, setProfilePicURL] = useState();
+  const [inputTop, setInputTop] = useState(false);
+  console.log(inputTop);
+
   const gesture = Gesture.Pan()
 
     .onStart(() => {
@@ -96,30 +99,34 @@ const BottomSheet = props => {
       <GestureDetector gesture={gesture}>
         <Animated.View
           style={[styles.commentContainerBackground, rBottomSheetStyle]}>
-          <KeyboardAvoidingView behavior="padding">
-            <View style={styles.drawer} />
-            <View style={styles.captionContainer}>
-              <View style={styles.userContainer}>
-                <Spotify height={15} width={15} />
-                <Text style={styles.username}>username</Text>
-              </View>
-              <View style={styles.captionTextContainer}>
-                <Text style={styles.caption}>{caption}</Text>
-              </View>
+          <View style={styles.drawer} />
+          <View style={styles.captionContainer}>
+            <View style={styles.userContainer}>
+              <Spotify height={15} width={15} />
+              <Text style={styles.username}>username</Text>
             </View>
-            <View style={styles.addCommentContainer}>
-              <Image
-                style={styles.myProfilePic}
-                source={{uri: profilePicURL}}
-              />
-              <TextInput
-                style={styles.myCommentInput}
-                placeholder="Add comment..."
-                placeholderTextColor={Colors.greyOut}
-                autoCapitalize={'none'}
-              />
+            <View style={styles.captionTextContainer}>
+              <Text style={styles.caption}>{caption}</Text>
             </View>
-          </KeyboardAvoidingView>
+          </View>
+          <View
+            style={
+              inputTop
+                ? styles.addCommentContainerTop
+                : styles.addCommentContainer
+            }>
+            <Image style={styles.myProfilePic} source={{uri: profilePicURL}} />
+            <TextInput
+              onSubmitEditing={() => setInputTop(!inputTop)}
+              onEndEditing={() => setInputTop(false)}
+              onFocus={() => setInputTop(!inputTop)}
+              style={styles.myCommentInput}
+              placeholder="Add comment..."
+              placeholderTextColor={Colors.greyOut}
+              autoCapitalize={'none'}
+              keyboardAppearance="dark"
+            />
+          </View>
         </Animated.View>
       </GestureDetector>
     </>
@@ -175,24 +182,40 @@ const styles = StyleSheet.create({
     color: Colors.greyOut,
     fontSize: 14,
   },
+  addCommentContainerTop: {
+    position: 'absolute',
+    top: '20.2%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    paddingVertical: '5%',
+    backgroundColor: '#302F2F',
+    borderBottomColor: 'white',
+    // borderBottomWidth: 0.2,
+  },
   addCommentContainer: {
     position: 'absolute',
-    top: '52%',
+    top: '50.6%',
     flexDirection: 'row',
-    marginLeft: '5%',
     alignItems: 'center',
+    width: '100%',
+    paddingVertical: '5%',
+    backgroundColor: '#302F2F',
+    borderTopLeftRadius: 6,
+    borderTopRightRadius: 6,
   },
   myProfilePic: {
-    height: 33,
-    width: 33,
+    height: 35,
+    width: 35,
     borderRadius: 40,
+    marginLeft: '5%',
   },
   myCommentInput: {
-    backgroundColor: '#343434',
-    width: '83%',
-    marginLeft: '5%',
+    backgroundColor: '#1F1F1F',
+    width: '78%',
+    marginLeft: '3%',
     borderRadius: 6,
-    padding: 10,
+    padding: '2.75%',
     color: 'white',
     fontFamily: 'inter-regular',
     fontSize: 11,
