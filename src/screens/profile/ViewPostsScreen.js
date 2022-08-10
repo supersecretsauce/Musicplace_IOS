@@ -47,7 +47,7 @@ const ViewPostsScreen = ({route, navigation}) => {
 
   // get the first 10 tracks
   useEffect(() => {
-    if (postIDs && selectedPostIndex) {
+    if (postIDs) {
       console.log(postIDs);
       firestore()
         .collection('posts')
