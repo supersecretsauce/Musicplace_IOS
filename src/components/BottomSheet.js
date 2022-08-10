@@ -5,6 +5,7 @@ import {
   Dimensions,
   Image,
   TextInput,
+  KeyboardAvoidingView,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
@@ -18,6 +19,7 @@ import Colors from '../assets/utilities/Colors';
 import Spotify from '../assets/img/spotify.svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
 
 const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 
@@ -26,7 +28,9 @@ const BottomSheet = props => {
   const caption = props.captionProps;
   const translateY = useSharedValue(0);
   const context = useSharedValue({y: 0});
-
+  const [UID, setUID] = useState();
+  const [userProfile, setUserProfile] = useState();
+  const [profilePicURL, setProfilePicURL] = useState();
   const gesture = Gesture.Pan()
 
     .onStart(() => {
@@ -60,24 +64,62 @@ const BottomSheet = props => {
     };
   });
 
+  useEffect(() => {
+    const checkforUID = async () => {
+      const userUID = await AsyncStorage.getItem('UID');
+      if (userUID) {
+        console.log(userUID);
+        setUID(userUID);
+      }
+    };
+    checkforUID();
+  }, []);
+
+  useEffect(() => {
+    if (UID) {
+      const getProfilePicURL = async () => {
+        const url = await storage()
+          .ref(UID + 'PFP')
+          .getDownloadURL()
+          .catch(error => {
+            console.log(error);
+          });
+        setProfilePicURL(url);
+        console.log(url);
+      };
+      getProfilePicURL();
+    }
+  }, [UID]);
+
   return (
     <>
       <GestureDetector gesture={gesture}>
         <Animated.View
           style={[styles.commentContainerBackground, rBottomSheetStyle]}>
-          <View style={styles.drawer} />
-
-          <View style={styles.captionContainer}>
-            <View style={styles.userContainer}>
-              <Spotify height={15} width={15} />
-              <Text style={styles.username}>username</Text>
+          <KeyboardAvoidingView behavior="padding">
+            <View style={styles.drawer} />
+            <View style={styles.captionContainer}>
+              <View style={styles.userContainer}>
+                <Spotify height={15} width={15} />
+                <Text style={styles.username}>username</Text>
+              </View>
+              <View style={styles.captionTextContainer}>
+                <Text style={styles.caption}>{caption}</Text>
+              </View>
             </View>
-            <View style={styles.captionTextContainer}>
-              <Text style={styles.caption}>{caption}</Text>
+            <View style={styles.addCommentContainer}>
+              <Image
+                style={styles.myProfilePic}
+                source={{uri: profilePicURL}}
+              />
+              <TextInput
+                style={styles.myCommentInput}
+                placeholder="Add comment..."
+                placeholderTextColor={Colors.greyOut}
+                autoCapitalize={'none'}
+              />
             </View>
-          </View>
-
-          <></>
+          </KeyboardAvoidingView>
         </Animated.View>
       </GestureDetector>
     </>
@@ -132,5 +174,27 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Bold',
     color: Colors.greyOut,
     fontSize: 14,
+  },
+  addCommentContainer: {
+    position: 'absolute',
+    top: '52%',
+    flexDirection: 'row',
+    marginLeft: '5%',
+    alignItems: 'center',
+  },
+  myProfilePic: {
+    height: 33,
+    width: 33,
+    borderRadius: 40,
+  },
+  myCommentInput: {
+    backgroundColor: '#343434',
+    width: '83%',
+    marginLeft: '5%',
+    borderRadius: 6,
+    padding: 10,
+    color: 'white',
+    fontFamily: 'inter-regular',
+    fontSize: 11,
   },
 });
