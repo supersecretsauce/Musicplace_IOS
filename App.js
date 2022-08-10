@@ -13,7 +13,6 @@ import CreateUsernameScreen from './src/screens/signup/CreateUsernameScreen';
 import ConnectSpotifyScreen from './src/screens/signup/ConnectSpotifyScreen';
 import HomeScreen from './src/screens/home/HomeScreen';
 import PostStackScreen from './src/routes/PostStackScreen';
-import test from './src/screens/post/test';
 import ProfileStackScreen from './src/routes/ProfileStackScreen';
 import {Context} from './src/context/Context';
 import {useState, useEffect} from 'react';
@@ -22,6 +21,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {StyleSheet, StatusBar} from 'react-native';
 import Toast from 'react-native-toast-message';
+import ActivityStackScreen from './src/routes/ActivityStackScreen';
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -135,9 +135,9 @@ export default function App() {
                 tabBarStyle: {backgroundColor: 'black'},
               })}>
               <Tab.Screen name="Home" component={HomeScreen} />
-              <Tab.Screen name="Discover" component={test} />
+              <Tab.Screen name="Discover" component={ActivityStackScreen} />
               <Tab.Screen name="Post" component={PostStackScreen} />
-              <Tab.Screen name="Activity" component={test} />
+              <Tab.Screen name="Activity" component={ActivityStackScreen} />
               <Tab.Screen name="Profile" component={ProfileStackScreen} />
             </Tab.Navigator>
           ) : (

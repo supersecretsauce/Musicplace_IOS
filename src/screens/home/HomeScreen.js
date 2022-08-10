@@ -85,6 +85,7 @@ const HomeScreen = () => {
   useEffect(() => {
     if (feed) {
       setPostPreviewURL(feed[songIndex]._data.previewUrl);
+      console.log(feed);
     }
   }, [feed, songIndex]);
 
