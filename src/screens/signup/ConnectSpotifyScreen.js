@@ -14,6 +14,7 @@ import {authorize} from 'react-native-app-auth';
 import firestore from '@react-native-firebase/firestore';
 import {firebase} from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {merge} from 'qs/lib/utils';
 const ConnectSpotifyScreen = ({navigation}) => {
   const userInfo = firebase.auth().currentUser;
   const {setUserLogin, username} = useContext(Context);
@@ -44,23 +45,23 @@ const ConnectSpotifyScreen = ({navigation}) => {
   const connectSpotify = async () => {
     const authState = await authorize(config);
     try {
-      await firestore().collection('users').doc(userInfo.uid).set({
-        phoneNumber: userInfo.phoneNumber,
-        createdAt: userInfo.metadata.creationTime,
-        lastSignIn: userInfo.metadata.lastSignInTime,
-        connectedWithSpotify: true,
-        spotifyAccessToken: authState.accessToken,
-        spotifyAccessTokenExpirationDate: authState.accessTokenExpirationDate,
-        spotifyRefreshToken: authState.refreshToken,
-        spotifyTokenType: authState.tokenType,
-        profilePicture: null,
-        bio: null,
-        followers: 0,
-        following: 0,
-        likes: 0,
-        displayName: username,
-        header: null,
-      });
+      await firestore().collection('users').doc(userInfo.uid).set(
+        {
+          phoneNumber: userInfo.phoneNumber,
+          createdAt: userInfo.metadata.creationTime,
+          lastSignIn: userInfo.metadata.lastSignInTime,
+          connectedWithSpotify: true,
+          spotifyAccessToken: authState.accessToken,
+          spotifyAccessTokenExpirationDate: authState.accessTokenExpirationDate,
+          spotifyRefreshToken: authState.refreshToken,
+          spotifyTokenType: authState.tokenType,
+          bio: null,
+          followers: 0,
+          following: 0,
+          displayName: username,
+        },
+        {merge: true},
+      );
     } catch (error) {
       return;
     }

@@ -97,7 +97,16 @@ const ProfileScreen = ({navigation}) => {
         <>
           <View style={styles.container}>
             {headerURL ? (
-              <Image style={styles.header} source={{uri: headerURL}} />
+              <>
+                <Ionicons
+                  onPress={() => setProfileSettings(!profileSettings)}
+                  style={styles.menuIcon}
+                  name={'menu'}
+                  color={'white'}
+                  size={36}
+                />
+                <Image style={styles.header} source={{uri: headerURL}} />
+              </>
             ) : (
               <View style={styles.header}>
                 <Ionicons
@@ -148,7 +157,7 @@ const ProfileScreen = ({navigation}) => {
               </TouchableOpacity>
             </View>
             <View style={styles.line} />
-            <UserPosts />
+            <UserPosts navigationProps={navigation} UIDProps={UID} />
             {editProfile && (
               <EditProfileSheet
                 displayNameProps={userProfile.name}
@@ -188,8 +197,10 @@ const styles = StyleSheet.create({
     height: '22%',
   },
   menuIcon: {
+    position: 'absolute',
     marginLeft: '85%',
     marginTop: '15%',
+    zIndex: 1,
   },
   profilePic: {
     position: 'absolute',
@@ -211,7 +222,7 @@ const styles = StyleSheet.create({
   },
   profileLeft: {
     marginLeft: '6%',
-    marginTop: '14%',
+    marginTop: '15%',
   },
   name: {
     fontFamily: 'Inter-Bold',
@@ -258,7 +269,7 @@ const styles = StyleSheet.create({
   sortContainer: {
     flexDirection: 'row',
     marginLeft: '6%',
-    marginTop: '10%',
+    marginTop: '8%',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
