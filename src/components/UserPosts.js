@@ -55,7 +55,7 @@ const UserPosts = props => {
                           setSongID(item.id);
                           navigation.navigate('ViewPostsScreen', {
                             userPosts: userPosts,
-                            postIndex: index,
+                            selectedPostIndex: index,
                           });
                         }}>
                         <Image

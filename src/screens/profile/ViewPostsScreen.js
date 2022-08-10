@@ -17,7 +17,7 @@ import BottomSheet from '../../components/BottomSheet';
 import Sound from 'react-native-sound';
 import {Context} from '../../context/Context';
 const ViewPostsScreen = ({route, navigation}) => {
-  const {userPosts} = route.params;
+  const {userPosts, selectedPostIndex} = route.params;
   const [postIndex, setPostIndex] = useState(0);
   const [postIDs, setPostIDs] = useState();
   const [likeFiller, setLikeFiller] = useState(false);
@@ -47,14 +47,15 @@ const ViewPostsScreen = ({route, navigation}) => {
 
   // get the first 10 tracks
   useEffect(() => {
-    if (postIDs) {
+    if (postIDs && selectedPostIndex) {
+      console.log(postIDs);
       firestore()
         .collection('posts')
         // Filter results
         .where(
           firebase.firestore.FieldPath.documentId(),
           'in',
-          postIDs.slice(0, 10),
+          postIDs.slice(selectedPostIndex, selectedPostIndex + 1),
         )
         .get()
         .then(querySnapshot => {
@@ -62,7 +63,15 @@ const ViewPostsScreen = ({route, navigation}) => {
           setFirestoreQ(querySnapshot._docs);
         });
     }
-  }, [postIDs]);
+  }, [postIDs, selectedPostIndex]);
+
+  useEffect(() => {
+    if (postIDs && firestoreQ) {
+      firestoreQ.sort(function (a, b) {
+        console.log(postIDs.indexOf(a) - postIDs.indexOf(b));
+      });
+    }
+  }, [firestoreQ, postIDs]);
 
   //set the song preview url based on index of feed
   useEffect(() => {
@@ -87,7 +96,7 @@ const ViewPostsScreen = ({route, navigation}) => {
     } else {
       setCurrentPost(null);
     }
-  }, [postPreviewURL]);
+  }, [postPreviewURL, setCurrentPost]);
 
   //autoplay the track and keep playing when finished
   useEffect(() => {
@@ -125,17 +134,17 @@ const ViewPostsScreen = ({route, navigation}) => {
       {firestoreQ ? (
         <>
           <SafeAreaView style={styles.container}>
-            {/* <View style={styles.chevronContainer}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('ProfileScreen')}>
-              <Ionicons
-                style={styles.chevron}
-                name="chevron-back"
-                color="white"
-                size={50}
-              />
-            </TouchableOpacity>
-          </View> */}
+            <View style={styles.chevronContainer}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('ProfileScreen')}>
+                <Ionicons
+                  style={styles.chevron}
+                  name="chevron-back"
+                  color="white"
+                  size={50}
+                />
+              </TouchableOpacity>
+            </View>
             <Swiper
               horizontal={true}
               showsButtons={false}
