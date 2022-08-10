@@ -1,5 +1,12 @@
-import {StyleSheet, Text, View, Dimensions} from 'react-native';
-import React, {useState} from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  Image,
+  TextInput,
+} from 'react-native';
+import React, {useState, useEffect} from 'react';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
@@ -9,6 +16,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import Colors from '../assets/utilities/Colors';
 import Spotify from '../assets/img/spotify.svg';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import firestore from '@react-native-firebase/firestore';
 
 const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 
@@ -17,7 +26,9 @@ const BottomSheet = props => {
   const caption = props.captionProps;
   const translateY = useSharedValue(0);
   const context = useSharedValue({y: 0});
+
   const gesture = Gesture.Pan()
+
     .onStart(() => {
       context.value = {y: translateY.value};
     })
@@ -50,21 +61,26 @@ const BottomSheet = props => {
   });
 
   return (
-    <GestureDetector gesture={gesture}>
-      <Animated.View
-        style={[styles.commentContainerBackground, rBottomSheetStyle]}>
-        <View style={styles.drawer} />
-        <View style={styles.commentContainer}>
-          <View style={styles.userContainer}>
-            <Spotify height={15} width={15} />
-            <Text style={styles.username}>username</Text>
+    <>
+      <GestureDetector gesture={gesture}>
+        <Animated.View
+          style={[styles.commentContainerBackground, rBottomSheetStyle]}>
+          <View style={styles.drawer} />
+
+          <View style={styles.captionContainer}>
+            <View style={styles.userContainer}>
+              <Spotify height={15} width={15} />
+              <Text style={styles.username}>username</Text>
+            </View>
+            <View style={styles.captionTextContainer}>
+              <Text style={styles.caption}>{caption}</Text>
+            </View>
           </View>
-          <View style={styles.commentTextContainer}>
-            {caption ? <Text style={styles.comment}>{caption}</Text> : <></>}
-          </View>
-        </View>
-      </Animated.View>
-    </GestureDetector>
+
+          <></>
+        </Animated.View>
+      </GestureDetector>
+    </>
   );
 };
 
@@ -88,7 +104,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: '3%',
   },
-  commentContainer: {
+  captionContainer: {
     marginTop: '1%',
     marginLeft: '5%',
     width: '90%',
@@ -103,8 +119,18 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Medium',
     marginLeft: 5,
   },
-  comment: {
+  caption: {
     marginTop: '3%',
     color: 'white',
+  },
+  noCommentContainer: {
+    alignItems: 'center',
+    marginTop: '20%',
+    position: 'absolute',
+  },
+  noComments: {
+    fontFamily: 'Inter-Bold',
+    color: Colors.greyOut,
+    fontSize: 14,
   },
 });

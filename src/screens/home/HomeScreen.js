@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   Image,
   TouchableOpacity,
+  TextInput,
 } from 'react-native';
 import React, {useState, useEffect, useContext, useCallback} from 'react';
 import Colors from '../../assets/utilities/Colors';
@@ -19,7 +20,7 @@ import BottomSheet from '../../components/BottomSheet';
 import Toast from 'react-native-toast-message';
 import {authFetch} from '../../services/SpotifyService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import storage from '@react-native-firebase/storage';
 const HomeScreen = () => {
   const [feed, setFeed] = useState();
   const [forYouTrue, setForYouTrue] = useState(true);
@@ -31,6 +32,9 @@ const HomeScreen = () => {
   const [trackPlaying, setTrackPlaying] = useState(true);
   const [loopValue, setLoopValue] = useState();
   const [songID, setSongID] = useState();
+  const [UID, setUID] = useState();
+  const [userProfile, setUserProfile] = useState();
+  const [profilePicURL, setProfilePicURL] = useState();
   const {
     currentTrack,
     setCurrentTrack,
@@ -175,6 +179,33 @@ const HomeScreen = () => {
     }
   };
 
+  useEffect(() => {
+    const checkforUID = async () => {
+      const userUID = await AsyncStorage.getItem('UID');
+      if (userUID) {
+        console.log(userUID);
+        setUID(userUID);
+      }
+    };
+    checkforUID();
+  }, []);
+
+  useEffect(() => {
+    if (UID) {
+      const getProfilePicURL = async () => {
+        const url = await storage()
+          .ref(UID + 'PFP')
+          .getDownloadURL()
+          .catch(error => {
+            console.log(error);
+          });
+        setProfilePicURL(url);
+        console.log(url);
+      };
+      getProfilePicURL();
+    }
+  }, [UID]);
+
   return (
     <>
       {feed ? (
@@ -265,6 +296,18 @@ const HomeScreen = () => {
                       </View>
                     </View>
                     <BottomSheet captionProps={post._data.caption} />
+                    <View style={styles.addCommentContainer}>
+                      <Image
+                        style={styles.myProfilePic}
+                        source={{uri: profilePicURL}}
+                      />
+                      <TextInput
+                        style={styles.myCommentInput}
+                        placeholder="Add comment..."
+                        placeholderTextColor={Colors.greyOut}
+                        autoCapitalize={'none'}
+                      />
+                    </View>
                   </SafeAreaView>
                 );
               })}
@@ -399,5 +442,27 @@ const styles = StyleSheet.create({
     color: 'black',
     fontFamily: 'Inter-Regular',
     fontSize: 12,
+  },
+  addCommentContainer: {
+    position: 'absolute',
+    top: '133%',
+    flexDirection: 'row',
+    marginLeft: '5%',
+    alignItems: 'center',
+  },
+  myProfilePic: {
+    height: 33,
+    width: 33,
+    borderRadius: 40,
+  },
+  myCommentInput: {
+    backgroundColor: '#343434',
+    width: '83%',
+    marginLeft: '5%',
+    borderRadius: 6,
+    padding: 10,
+    color: 'white',
+    fontFamily: 'inter-regular',
+    fontSize: 11,
   },
 });
