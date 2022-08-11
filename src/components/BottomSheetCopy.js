@@ -43,7 +43,7 @@ const BottomSheetCopy = props => {
   const [likeFiller, setLikeFiller] = useState(false);
   const [likeTarget, setLikeTarget] = useState();
   const [myComment, setMyComment] = useState(false);
-  const [bottomSheetSmall, setBottomSheetSmall] = useState(true);
+  const [bottomSheetSmall, setBottomSheetSmall] = useState(false);
   const gesture = Gesture.Pan()
     .onStart(() => {
       context.value = {y: translateY.value};
@@ -165,6 +165,7 @@ const BottomSheetCopy = props => {
         .collection('posts')
         .doc(songID)
         .collection('comments')
+        .orderBy('likeAmount', 'desc')
         .get()
         .then(querySnapshot => {
           console.log(querySnapshot);
