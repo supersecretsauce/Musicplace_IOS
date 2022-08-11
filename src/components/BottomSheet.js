@@ -39,10 +39,12 @@ const BottomSheet = props => {
   const [inputTop, setInputTop] = useState(false);
   const [commentText, setCommentText] = useState();
   const [parentComments, setParentComments] = useState();
-  const [like, setLike] = useState(false);
-  const [likeFiller, setLikeFiller] = useState(false);
+  const [activeLikedComments, setActiveLikedComments] = useState([]);
+  const [likeChanged, setLikedChanged] = useState(false);
   const [likeTarget, setLikeTarget] = useState();
-  const [myComment, setMyComment] = useState();
+  const [myComment, setMyComment] = useState(false);
+  const [bottomSheetSmall, setBottomSheetSmall] = useState(false);
+  const [commentID, setCommentID] = useState();
   const gesture = Gesture.Pan()
     .onStart(() => {
       context.value = {y: translateY.value};
@@ -59,6 +61,7 @@ const BottomSheet = props => {
         } else {
           translateY.value = withSpring(0, {damping: 50});
         }
+        setBottomSheetSmall(true);
       } else {
         if (translateY.value >= -240) {
           translateY.value = withSpring(0, {damping: 50});
@@ -66,6 +69,7 @@ const BottomSheet = props => {
         } else {
           translateY.value = withSpring(0, {damping: 50});
         }
+        setBottomSheetSmall(false);
       }
     });
   const rBottomSheetStyle = useAnimatedStyle(() => {
@@ -155,51 +159,95 @@ const BottomSheet = props => {
       });
   };
 
+  // get all parent comments
   useEffect(() => {
     if (songID) {
       firestore()
         .collection('posts')
         .doc(songID)
         .collection('comments')
+        .orderBy('likeAmount', 'desc')
         .get()
         .then(querySnapshot => {
           console.log(querySnapshot);
           setParentComments(querySnapshot._docs);
         });
+      //re-run this effect everytime a user posts a comment
       setMyComment(false);
     }
-  }, [songID]);
+  }, [songID, myComment]);
 
-  // const addLike = () => {
+  // update like count for comments
+  // useEffect(() => {
   //   const increment = firebase.firestore.FieldValue.increment(1);
-
-  //   if (likeTarget) {
-  //     firestore()
-  //       .collection('posts')
-  //       .doc(songID)
-  //       .collection('comments')
-  //       .doc(likeTarget)
-  //       .update({
-  //         likeAmount: increment,
-  //       });
-  //     console.log('true');
+  //   const minusIncrement = firebase.firestore.FieldValue.increment(-1);
+  //   if (songID) {
+  //     if (likeTarget) {
+  //       firestore()
+  //         .collection('posts')
+  //         .doc(songID)
+  //         .collection('comments')
+  //         .doc(commentID)
+  //         .update({
+  //           likeAmount: increment,
+  //         });
+  //       console.log('true');
+  //     } else if (likeTarget === false) {
+  //       firestore()
+  //         .collection('posts')
+  //         .doc(songID)
+  //         .collection('comments')
+  //         .doc(commentID)
+  //         .update({
+  //           likeAmount: minusIncrement,
+  //         });
+  //       console.log('false');
+  //     }
   //   }
-  // };
+  // }, [likeTarget, songID, commentID]);
 
   useEffect(() => {
     const increment = firebase.firestore.FieldValue.increment(1);
-    if (likeTarget) {
-      firestore()
-        .collection('posts')
-        .doc(songID)
-        .collection('comments')
-        .doc(likeTarget)
-        .update({
-          likeAmount: increment,
-        });
-      console.log('true');
+    const minusIncrement = firebase.firestore.FieldValue.increment(-1);
+    if (commentID) {
+      if (activeLikedComments.includes(commentID)) {
+        setActiveLikedComments(
+          activeLikedComments.filter(comment => comment !== commentID),
+        );
+        firestore()
+          .collection('posts')
+          .doc(songID)
+          .collection('comments')
+          .doc(commentID)
+          .update({
+            likeAmount: minusIncrement,
+          });
+        console.log('true');
+      } else {
+        setActiveLikedComments(current => [...current, commentID]);
+        try {
+          firestore()
+            .collection('posts')
+            .doc(songID)
+            .collection('comments')
+            .doc(commentID)
+            .update({
+              likeAmount: increment,
+            });
+        } catch (error) {
+          console.log(error);
+        }
+
+        console.log('else statement');
+      }
     }
-  }, [likeTarget, songID]);
+  }, [likeChanged, commentID]);
+
+  useEffect(() => {
+    if (activeLikedComments) {
+      console.log(activeLikedComments);
+    }
+  }, [activeLikedComments]);
 
   return (
     <>
@@ -218,85 +266,65 @@ const BottomSheet = props => {
               </View>
             </View>
           )}
-          <ScrollView>
-            {myComment && (
-              <View style={styles.commentContainer}>
-                <View style={styles.commentLeftSide}>
-                  <Image
-                    style={styles.userProfilePic}
-                    source={{
-                      uri: profilePicURL,
-                    }}
-                  />
-                  <View style={styles.commentTextContainer}>
-                    <Text style={styles.userDisplayName}>{displayName}</Text>
-                    <Text style={styles.userComment}>{myComment}</Text>
-                  </View>
-                </View>
-                <View style={styles.likesContainer}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setLike(!like);
-                      setLikeFiller(!likeFiller);
-                      // setLikeTarget(item.id);
-                    }}>
-                    <Ionicons
-                      style={styles.socialIcon}
-                      name={likeFiller ? 'heart' : 'heart-outline'}
-                      color={likeFiller ? Colors.red : 'grey'}
-                      size={18}
-                    />
-                  </TouchableOpacity>
-                  <Text style={styles.likeText}>
-                    {/* {item._data.likeAmount} */}
-                  </Text>
-                </View>
-              </View>
-            )}
-            {parentComments && (
-              <FlatList
-                data={parentComments}
-                renderItem={({item, index}) => {
-                  return (
-                    <View style={styles.commentContainer} key={index}>
-                      <View style={styles.commentLeftSide}>
-                        <Image
-                          style={styles.userProfilePic}
-                          source={{
-                            uri: item._data.profilePicURL,
-                          }}
-                        />
-                        <View style={styles.commentTextContainer}>
-                          <Text style={styles.userDisplayName}>
-                            {item._data.displayName}
-                          </Text>
-                          <Text style={styles.userComment}>{item.id}</Text>
-                        </View>
-                      </View>
-                      <View style={styles.likesContainer}>
-                        <TouchableOpacity
-                          onPress={() => {
-                            setLike(!like);
-                            setLikeFiller(!likeFiller);
-                            setLikeTarget(item.id);
-                          }}>
-                          <Ionicons
-                            style={styles.socialIcon}
-                            name={likeFiller ? 'heart' : 'heart-outline'}
-                            color={likeFiller ? Colors.red : 'grey'}
-                            size={18}
-                          />
-                        </TouchableOpacity>
-                        <Text style={styles.likeText}>
-                          {item._data.likeAmount}
+
+          {parentComments && (
+            <FlatList
+              // style={styles.commentFlatList}
+              // contentContainerStyle={{paddingBottom: '200%'}}
+              contentContainerStyle={
+                bottomSheetSmall
+                  ? {paddingBottom: '108%'}
+                  : {paddingBottom: '160%'}
+              }
+              data={parentComments}
+              renderItem={({item, index}) => {
+                return (
+                  <View style={styles.commentContainer} key={index}>
+                    <View style={styles.commentLeftSide}>
+                      <Image
+                        style={styles.userProfilePic}
+                        source={{
+                          uri: item._data.profilePicURL,
+                        }}
+                      />
+                      <View style={styles.commentTextContainer}>
+                        <Text style={styles.userDisplayName}>
+                          {item._data.displayName}
                         </Text>
+                        <Text style={styles.userComment}>{item.id}</Text>
                       </View>
                     </View>
-                  );
-                }}
-              />
-            )}
-          </ScrollView>
+                    <View style={styles.likesContainer}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setCommentID(item.id);
+                          setMyComment(!myComment);
+                          setLikedChanged(!likeChanged);
+                        }}>
+                        <Ionicons
+                          style={styles.socialIcon}
+                          name={
+                            activeLikedComments.includes(item.id)
+                              ? 'heart'
+                              : 'heart-outline'
+                          }
+                          color={
+                            activeLikedComments.includes(item.id)
+                              ? Colors.red
+                              : 'grey'
+                          }
+                          size={18}
+                        />
+                      </TouchableOpacity>
+                      <Text style={styles.likeText}>
+                        {item._data.likeAmount}
+                      </Text>
+                    </View>
+                  </View>
+                );
+              }}
+            />
+          )}
           <View
             style={
               inputTop
@@ -308,7 +336,7 @@ const BottomSheet = props => {
               onSubmitEditing={() => {
                 setInputTop(!inputTop);
                 postComment();
-                setMyComment(commentText);
+                setMyComment(true);
               }}
               onEndEditing={() => {
                 setInputTop(false);
@@ -373,6 +401,7 @@ const styles = StyleSheet.create({
   },
 
   //user comments
+
   commentContainer: {
     alignItems: 'flex-start',
     marginLeft: '4%',
@@ -387,7 +416,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   commentTextContainer: {
-    marginLeft: '5%',
+    marginLeft: '7%',
   },
   userProfilePic: {
     height: 32,

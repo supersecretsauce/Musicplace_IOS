@@ -235,8 +235,13 @@ const HomeScreen = () => {
                         </Text>
                         <View style={styles.trackInfoBottom}>
                           <Text numberOfLines={1} style={styles.artistName}>
-                            {Object.values(post._data.artists)
+                            {/* {Object.values(post._data.artists)
                               .map(artist => artist)
+                              .join(', ')} */}
+                            {post._data.artists
+                              .map(artist => {
+                                return artist.name;
+                              })
                               .join(', ')}
                           </Text>
                           <Ionicons
