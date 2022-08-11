@@ -40,6 +40,7 @@ const BottomSheetCopy = props => {
   const [commentText, setCommentText] = useState();
   const [parentComments, setParentComments] = useState();
   const [activeLikedComments, setActiveLikedComments] = useState([]);
+  const [likeChanged, setLikedChanged] = useState(false);
   const [likeTarget, setLikeTarget] = useState();
   const [myComment, setMyComment] = useState(false);
   const [bottomSheetSmall, setBottomSheetSmall] = useState(false);
@@ -174,24 +175,45 @@ const BottomSheetCopy = props => {
       //re-run this effect everytime a user posts a comment
       setMyComment(false);
     }
-  }, [songID, myComment, likeTarget]);
+  }, [songID, myComment]);
 
   // update like count for comments
+  // useEffect(() => {
+  //   const increment = firebase.firestore.FieldValue.increment(1);
+  //   const minusIncrement = firebase.firestore.FieldValue.increment(-1);
+  //   if (songID) {
+  //     if (likeTarget) {
+  //       firestore()
+  //         .collection('posts')
+  //         .doc(songID)
+  //         .collection('comments')
+  //         .doc(commentID)
+  //         .update({
+  //           likeAmount: increment,
+  //         });
+  //       console.log('true');
+  //     } else if (likeTarget === false) {
+  //       firestore()
+  //         .collection('posts')
+  //         .doc(songID)
+  //         .collection('comments')
+  //         .doc(commentID)
+  //         .update({
+  //           likeAmount: minusIncrement,
+  //         });
+  //       console.log('false');
+  //     }
+  //   }
+  // }, [likeTarget, songID, commentID]);
+
   useEffect(() => {
     const increment = firebase.firestore.FieldValue.increment(1);
     const minusIncrement = firebase.firestore.FieldValue.increment(-1);
-    if (songID) {
-      if (likeTarget) {
-        firestore()
-          .collection('posts')
-          .doc(songID)
-          .collection('comments')
-          .doc(commentID)
-          .update({
-            likeAmount: increment,
-          });
-        console.log('true');
-      } else if (likeTarget === false) {
+    if (commentID) {
+      if (activeLikedComments.includes(commentID)) {
+        setActiveLikedComments(
+          activeLikedComments.filter(comment => comment !== commentID),
+        );
         firestore()
           .collection('posts')
           .doc(songID)
@@ -200,15 +222,26 @@ const BottomSheetCopy = props => {
           .update({
             likeAmount: minusIncrement,
           });
-        console.log('false');
+        console.log('true');
+      } else {
+        setActiveLikedComments(current => [...current, commentID]);
+        try {
+          firestore()
+            .collection('posts')
+            .doc(songID)
+            .collection('comments')
+            .doc(commentID)
+            .update({
+              likeAmount: increment,
+            });
+        } catch (error) {
+          console.log(error);
+        }
+
+        console.log('else statement');
       }
     }
-  }, [likeTarget, songID, commentID]);
-
-  // const likeUIHandler = () => {
-  //   setLike(!like);
-  //   setLikeFiller(!likeFiller);
-  // };
+  }, [likeChanged, commentID]);
 
   useEffect(() => {
     if (activeLikedComments) {
@@ -265,25 +298,20 @@ const BottomSheetCopy = props => {
                       <TouchableOpacity
                         onPress={() => {
                           setCommentID(item.id);
-                          setActiveLikedComments(current => [
-                            ...current,
-                            item.id,
-                          ]);
-                          // if (!likeTarget) {
-                          //   setLikeTarget(item.id);
-                          // } else {
-                          //   setLikeTarget(false);
-                          // }
+                          setMyComment(!myComment);
+                          setLikedChanged(!likeChanged);
                         }}>
                         <Ionicons
                           style={styles.socialIcon}
                           name={
-                            // likeTarget === item.id ? 'heart' :
-                            'heart-outline'
+                            activeLikedComments.includes(item.id)
+                              ? 'heart'
+                              : 'heart-outline'
                           }
                           color={
-                            // likeTarget === item.id ? Colors.red :
-                            'grey'
+                            activeLikedComments.includes(item.id)
+                              ? Colors.red
+                              : 'grey'
                           }
                           size={18}
                         />
