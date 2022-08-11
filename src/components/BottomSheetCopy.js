@@ -39,8 +39,7 @@ const BottomSheetCopy = props => {
   const [inputTop, setInputTop] = useState(false);
   const [commentText, setCommentText] = useState();
   const [parentComments, setParentComments] = useState();
-  const [like, setLike] = useState(false);
-  const [likeFiller, setLikeFiller] = useState(false);
+  const [activeLikedComments, setActiveLikedComments] = useState([]);
   const [likeTarget, setLikeTarget] = useState();
   const [myComment, setMyComment] = useState(false);
   const [bottomSheetSmall, setBottomSheetSmall] = useState(false);
@@ -206,10 +205,16 @@ const BottomSheetCopy = props => {
     }
   }, [likeTarget, songID, commentID]);
 
-  const likeUIHandler = () => {
-    setLike(!like);
-    setLikeFiller(!likeFiller);
-  };
+  // const likeUIHandler = () => {
+  //   setLike(!like);
+  //   setLikeFiller(!likeFiller);
+  // };
+
+  useEffect(() => {
+    if (activeLikedComments) {
+      console.log(activeLikedComments);
+    }
+  }, [activeLikedComments]);
 
   return (
     <>
@@ -260,20 +265,26 @@ const BottomSheetCopy = props => {
                       <TouchableOpacity
                         onPress={() => {
                           setCommentID(item.id);
-                          likeUIHandler();
-                          if (!likeTarget) {
-                            setLikeTarget(item.id);
-                          } else {
-                            setLikeTarget(false);
-                          }
+                          setActiveLikedComments(current => [
+                            ...current,
+                            item.id,
+                          ]);
+                          // if (!likeTarget) {
+                          //   setLikeTarget(item.id);
+                          // } else {
+                          //   setLikeTarget(false);
+                          // }
                         }}>
                         <Ionicons
-                          key={index}
                           style={styles.socialIcon}
                           name={
-                            likeTarget === item.id ? 'heart' : 'heart-outline'
+                            // likeTarget === item.id ? 'heart' :
+                            'heart-outline'
                           }
-                          color={likeTarget === item.id ? Colors.red : 'grey'}
+                          color={
+                            // likeTarget === item.id ? Colors.red :
+                            'grey'
+                          }
                           size={18}
                         />
                       </TouchableOpacity>
