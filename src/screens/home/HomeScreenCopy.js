@@ -16,11 +16,11 @@ import Swiper from 'react-native-swiper';
 import Sound from 'react-native-sound';
 import {Context} from '../../context/Context';
 import {useFocusEffect} from '@react-navigation/native';
-import BottomSheet from '../../components/BottomSheet';
+import BottomSheetCopy from '../../components/BottomSheetCopy';
 import Toast from 'react-native-toast-message';
 import {authFetch} from '../../services/SpotifyService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const HomeScreen = () => {
+const HomeScreenCopy = () => {
   const [feed, setFeed] = useState();
   const [forYouTrue, setForYouTrue] = useState(true);
   const [like, setLike] = useState(false);
@@ -271,7 +271,7 @@ const HomeScreen = () => {
                         </View>
                       </View>
                     </View>
-                    <BottomSheet
+                    <BottomSheetCopy
                       songIDProps={songID}
                       captionProps={post._data.caption}
                     />
@@ -292,7 +292,7 @@ const HomeScreen = () => {
   );
 };
 
-export default HomeScreen;
+export default HomeScreenCopy;
 
 const styles = StyleSheet.create({
   container: {

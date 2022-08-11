@@ -27,7 +27,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 
-const BottomSheet = props => {
+const BottomSheetCopy = props => {
   const [containerUp, setContainerUp] = useState(false);
   const caption = props.captionProps;
   const songID = props.songIDProps;
@@ -42,7 +42,8 @@ const BottomSheet = props => {
   const [like, setLike] = useState(false);
   const [likeFiller, setLikeFiller] = useState(false);
   const [likeTarget, setLikeTarget] = useState();
-  const [myComment, setMyComment] = useState();
+  const [myComment, setMyComment] = useState(false);
+  const [bottomSheetSmall, setBottomSheetSmall] = useState(true);
   const gesture = Gesture.Pan()
     .onStart(() => {
       context.value = {y: translateY.value};
@@ -59,6 +60,7 @@ const BottomSheet = props => {
         } else {
           translateY.value = withSpring(0, {damping: 50});
         }
+        setBottomSheetSmall(true);
       } else {
         if (translateY.value >= -240) {
           translateY.value = withSpring(0, {damping: 50});
@@ -66,6 +68,7 @@ const BottomSheet = props => {
         } else {
           translateY.value = withSpring(0, {damping: 50});
         }
+        setBottomSheetSmall(false);
       }
     });
   const rBottomSheetStyle = useAnimatedStyle(() => {
@@ -155,6 +158,7 @@ const BottomSheet = props => {
       });
   };
 
+  // get all parent comments
   useEffect(() => {
     if (songID) {
       firestore()
@@ -166,9 +170,10 @@ const BottomSheet = props => {
           console.log(querySnapshot);
           setParentComments(querySnapshot._docs);
         });
+      //re-run this effect everytime a user posts a comment
       setMyComment(false);
     }
-  }, [songID]);
+  }, [songID, myComment]);
 
   // const addLike = () => {
   //   const increment = firebase.firestore.FieldValue.increment(1);
@@ -218,85 +223,57 @@ const BottomSheet = props => {
               </View>
             </View>
           )}
-          <ScrollView>
-            {myComment && (
-              <View style={styles.commentContainer}>
-                <View style={styles.commentLeftSide}>
-                  <Image
-                    style={styles.userProfilePic}
-                    source={{
-                      uri: profilePicURL,
-                    }}
-                  />
-                  <View style={styles.commentTextContainer}>
-                    <Text style={styles.userDisplayName}>{displayName}</Text>
-                    <Text style={styles.userComment}>{myComment}</Text>
-                  </View>
-                </View>
-                <View style={styles.likesContainer}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setLike(!like);
-                      setLikeFiller(!likeFiller);
-                      // setLikeTarget(item.id);
-                    }}>
-                    <Ionicons
-                      style={styles.socialIcon}
-                      name={likeFiller ? 'heart' : 'heart-outline'}
-                      color={likeFiller ? Colors.red : 'grey'}
-                      size={18}
-                    />
-                  </TouchableOpacity>
-                  <Text style={styles.likeText}>
-                    {/* {item._data.likeAmount} */}
-                  </Text>
-                </View>
-              </View>
-            )}
-            {parentComments && (
-              <FlatList
-                data={parentComments}
-                renderItem={({item, index}) => {
-                  return (
-                    <View style={styles.commentContainer} key={index}>
-                      <View style={styles.commentLeftSide}>
-                        <Image
-                          style={styles.userProfilePic}
-                          source={{
-                            uri: item._data.profilePicURL,
-                          }}
-                        />
-                        <View style={styles.commentTextContainer}>
-                          <Text style={styles.userDisplayName}>
-                            {item._data.displayName}
-                          </Text>
-                          <Text style={styles.userComment}>{item.id}</Text>
-                        </View>
-                      </View>
-                      <View style={styles.likesContainer}>
-                        <TouchableOpacity
-                          onPress={() => {
-                            setLike(!like);
-                            setLikeFiller(!likeFiller);
-                            setLikeTarget(item.id);
-                          }}>
-                          <Ionicons
-                            style={styles.socialIcon}
-                            name={likeFiller ? 'heart' : 'heart-outline'}
-                            color={likeFiller ? Colors.red : 'grey'}
-                            size={18}
-                          />
-                        </TouchableOpacity>
-                        <Text style={styles.likeText}>
-                          {item._data.likeAmount}
+
+          {parentComments && (
+            <FlatList
+              // style={styles.commentFlatList}
+              // contentContainerStyle={{paddingBottom: '200%'}}
+              contentContainerStyle={
+                bottomSheetSmall
+                  ? {paddingBottom: '108%'}
+                  : {paddingBottom: '160%'}
+              }
+              data={parentComments}
+              renderItem={({item, index}) => {
+                return (
+                  <View style={styles.commentContainer} key={index}>
+                    <View style={styles.commentLeftSide}>
+                      <Image
+                        style={styles.userProfilePic}
+                        source={{
+                          uri: item._data.profilePicURL,
+                        }}
+                      />
+                      <View style={styles.commentTextContainer}>
+                        <Text style={styles.userDisplayName}>
+                          {item._data.displayName}
                         </Text>
+                        <Text style={styles.userComment}>{item.id}</Text>
                       </View>
                     </View>
-                  );
-                }}
-              />
-            )}
-          </ScrollView>
+                    <View style={styles.likesContainer}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setLike(!like);
+                          setLikeFiller(!likeFiller);
+                          setLikeTarget(item.id);
+                        }}>
+                        <Ionicons
+                          style={styles.socialIcon}
+                          name={likeFiller ? 'heart' : 'heart-outline'}
+                          color={likeFiller ? Colors.red : 'grey'}
+                          size={18}
+                        />
+                      </TouchableOpacity>
+                      <Text style={styles.likeText}>
+                        {item._data.likeAmount}
+                      </Text>
+                    </View>
+                  </View>
+                );
+              }}
+            />
+          )}
           <View
             style={
               inputTop
@@ -308,7 +285,7 @@ const BottomSheet = props => {
               onSubmitEditing={() => {
                 setInputTop(!inputTop);
                 postComment();
-                setMyComment(commentText);
+                setMyComment(true);
               }}
               onEndEditing={() => {
                 setInputTop(false);
@@ -331,7 +308,7 @@ const BottomSheet = props => {
   );
 };
 
-export default BottomSheet;
+export default BottomSheetCopy;
 
 const styles = StyleSheet.create({
   commentContainerBackground: {
@@ -373,6 +350,7 @@ const styles = StyleSheet.create({
   },
 
   //user comments
+
   commentContainer: {
     alignItems: 'flex-start',
     marginLeft: '4%',
