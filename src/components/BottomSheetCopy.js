@@ -44,6 +44,7 @@ const BottomSheetCopy = props => {
   const [likeTarget, setLikeTarget] = useState();
   const [myComment, setMyComment] = useState(false);
   const [bottomSheetSmall, setBottomSheetSmall] = useState(false);
+  const [commentID, setCommentID] = useState();
   const gesture = Gesture.Pan()
     .onStart(() => {
       context.value = {y: translateY.value};
@@ -174,38 +175,41 @@ const BottomSheetCopy = props => {
       //re-run this effect everytime a user posts a comment
       setMyComment(false);
     }
-  }, [songID, myComment]);
+  }, [songID, myComment, likeTarget]);
 
-  // const addLike = () => {
-  //   const increment = firebase.firestore.FieldValue.increment(1);
-
-  //   if (likeTarget) {
-  //     firestore()
-  //       .collection('posts')
-  //       .doc(songID)
-  //       .collection('comments')
-  //       .doc(likeTarget)
-  //       .update({
-  //         likeAmount: increment,
-  //       });
-  //     console.log('true');
-  //   }
-  // };
-
+  // update like count for comments
   useEffect(() => {
     const increment = firebase.firestore.FieldValue.increment(1);
-    if (likeTarget) {
-      firestore()
-        .collection('posts')
-        .doc(songID)
-        .collection('comments')
-        .doc(likeTarget)
-        .update({
-          likeAmount: increment,
-        });
-      console.log('true');
+    const minusIncrement = firebase.firestore.FieldValue.increment(-1);
+    if (songID) {
+      if (likeTarget) {
+        firestore()
+          .collection('posts')
+          .doc(songID)
+          .collection('comments')
+          .doc(commentID)
+          .update({
+            likeAmount: increment,
+          });
+        console.log('true');
+      } else if (likeTarget === false) {
+        firestore()
+          .collection('posts')
+          .doc(songID)
+          .collection('comments')
+          .doc(commentID)
+          .update({
+            likeAmount: minusIncrement,
+          });
+        console.log('false');
+      }
     }
-  }, [likeTarget, songID]);
+  }, [likeTarget, songID, commentID]);
+
+  const likeUIHandler = () => {
+    setLike(!like);
+    setLikeFiller(!likeFiller);
+  };
 
   return (
     <>
@@ -255,14 +259,21 @@ const BottomSheetCopy = props => {
                     <View style={styles.likesContainer}>
                       <TouchableOpacity
                         onPress={() => {
-                          setLike(!like);
-                          setLikeFiller(!likeFiller);
-                          setLikeTarget(item.id);
+                          setCommentID(item.id);
+                          likeUIHandler();
+                          if (!likeTarget) {
+                            setLikeTarget(item.id);
+                          } else {
+                            setLikeTarget(false);
+                          }
                         }}>
                         <Ionicons
+                          key={index}
                           style={styles.socialIcon}
-                          name={likeFiller ? 'heart' : 'heart-outline'}
-                          color={likeFiller ? Colors.red : 'grey'}
+                          name={
+                            likeTarget === item.id ? 'heart' : 'heart-outline'
+                          }
+                          color={likeTarget === item.id ? Colors.red : 'grey'}
                           size={18}
                         />
                       </TouchableOpacity>
@@ -366,7 +377,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   commentTextContainer: {
-    marginLeft: '5%',
+    marginLeft: '7%',
   },
   userProfilePic: {
     height: 32,
