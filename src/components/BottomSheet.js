@@ -177,35 +177,6 @@ const BottomSheet = props => {
     }
   }, [songID, myComment]);
 
-  // update like count for comments
-  // useEffect(() => {
-  //   const increment = firebase.firestore.FieldValue.increment(1);
-  //   const minusIncrement = firebase.firestore.FieldValue.increment(-1);
-  //   if (songID) {
-  //     if (likeTarget) {
-  //       firestore()
-  //         .collection('posts')
-  //         .doc(songID)
-  //         .collection('comments')
-  //         .doc(commentID)
-  //         .update({
-  //           likeAmount: increment,
-  //         });
-  //       console.log('true');
-  //     } else if (likeTarget === false) {
-  //       firestore()
-  //         .collection('posts')
-  //         .doc(songID)
-  //         .collection('comments')
-  //         .doc(commentID)
-  //         .update({
-  //           likeAmount: minusIncrement,
-  //         });
-  //       console.log('false');
-  //     }
-  //   }
-  // }, [likeTarget, songID, commentID]);
-
   useEffect(() => {
     const increment = firebase.firestore.FieldValue.increment(1);
     const minusIncrement = firebase.firestore.FieldValue.increment(-1);
@@ -241,6 +212,7 @@ const BottomSheet = props => {
         console.log('else statement');
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [likeChanged, commentID]);
 
   useEffect(() => {
