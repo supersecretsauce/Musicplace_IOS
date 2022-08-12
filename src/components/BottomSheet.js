@@ -8,8 +8,9 @@ import {
   FlatList,
   TouchableOpacity,
   ScrollView,
+  Keyboard,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
@@ -45,6 +46,10 @@ const BottomSheet = props => {
   const [myComment, setMyComment] = useState(false);
   const [bottomSheetSmall, setBottomSheetSmall] = useState(false);
   const [commentID, setCommentID] = useState();
+  const inputRef = useRef();
+  const replyUsernameRef = useRef();
+  const [replyUsername, setReplyUsername] = useState();
+  const [replyActive, setReplyActive] = useState(false);
   const gesture = Gesture.Pan()
     .onStart(() => {
       context.value = {y: translateY.value};
@@ -193,7 +198,6 @@ const BottomSheet = props => {
           .update({
             likeAmount: minusIncrement,
           });
-        console.log('true');
       } else {
         setActiveLikedComments(current => [...current, commentID]);
         try {
@@ -208,8 +212,6 @@ const BottomSheet = props => {
         } catch (error) {
           console.log(error);
         }
-
-        console.log('else statement');
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -220,6 +222,8 @@ const BottomSheet = props => {
       console.log(activeLikedComments);
     }
   }, [activeLikedComments]);
+
+  // REPLY LOGIC BELOW
 
   return (
     <>
@@ -251,48 +255,71 @@ const BottomSheet = props => {
               data={parentComments}
               renderItem={({item, index}) => {
                 return (
-                  <View style={styles.commentContainer} key={index}>
-                    <View style={styles.commentLeftSide}>
-                      <Image
-                        style={styles.userProfilePic}
-                        source={{
-                          uri: item._data.profilePicURL,
-                        }}
-                      />
-                      <View style={styles.commentTextContainer}>
-                        <Text style={styles.userDisplayName}>
-                          {item._data.displayName}
+                  <>
+                    <View style={styles.commentContainer} key={index}>
+                      <View style={styles.commentLeftSide}>
+                        <Image
+                          style={styles.userProfilePic}
+                          source={{
+                            uri: item._data.profilePicURL,
+                          }}
+                        />
+                        <View style={styles.commentTextContainer}>
+                          <Text
+                            ref={replyUsernameRef}
+                            style={styles.userDisplayName}>
+                            {item._data.displayName}
+                          </Text>
+                          <Text style={styles.userComment}>{item.id}</Text>
+                        </View>
+                      </View>
+                      <View style={styles.likesContainer}>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setCommentID(item.id);
+                            setMyComment(!myComment);
+                            setLikedChanged(!likeChanged);
+                          }}>
+                          <Ionicons
+                            style={styles.socialIcon}
+                            name={
+                              activeLikedComments.includes(item.id)
+                                ? 'heart'
+                                : 'heart-outline'
+                            }
+                            color={
+                              activeLikedComments.includes(item.id)
+                                ? Colors.red
+                                : 'grey'
+                            }
+                            size={18}
+                          />
+                        </TouchableOpacity>
+                        <Text style={styles.likeText}>
+                          {item._data.likeAmount}
                         </Text>
-                        <Text style={styles.userComment}>{item.id}</Text>
                       </View>
                     </View>
-                    <View style={styles.likesContainer}>
-                      <TouchableOpacity
-                        onPress={() => {
-                          setCommentID(item.id);
-                          setMyComment(!myComment);
-                          setLikedChanged(!likeChanged);
-                        }}>
-                        <Ionicons
-                          style={styles.socialIcon}
-                          name={
-                            activeLikedComments.includes(item.id)
-                              ? 'heart'
-                              : 'heart-outline'
-                          }
-                          color={
-                            activeLikedComments.includes(item.id)
-                              ? Colors.red
-                              : 'grey'
-                          }
-                          size={18}
-                        />
-                      </TouchableOpacity>
-                      <Text style={styles.likeText}>
-                        {item._data.likeAmount}
-                      </Text>
+                    <TouchableOpacity
+                      onPress={() => {
+                        // setInputTop(!inputTop);
+                        setReplyActive(!replyActive);
+                        inputRef.current.focus();
+                        setReplyUsername(item._data.displayName);
+                      }}
+                      style={styles.replyContainer}>
+                      <Text style={styles.replyText}>Reply</Text>
+                    </TouchableOpacity>
+                    <View style={styles.viewRepliesContainer}>
+                      <Text style={styles.viewRepliesText}>View Replies</Text>
+                      <Ionicons
+                        // style={styles.socialIcon}
+                        name={'chevron-down'}
+                        color={'grey'}
+                        size={18}
+                      />
                     </View>
-                  </View>
+                  </>
                 );
               }}
             />
@@ -309,14 +336,20 @@ const BottomSheet = props => {
                 setInputTop(!inputTop);
                 postComment();
                 setMyComment(true);
+                setReplyUsername(false);
               }}
               onEndEditing={() => {
                 setInputTop(false);
                 setCommentText('');
+                setReplyUsername(false);
               }}
+              ref={inputRef}
               onFocus={() => setInputTop(!inputTop)}
               style={styles.myCommentInput}
-              placeholder="Add comment..."
+              // placeholder="Add comment..."
+              placeholder={
+                replyUsername ? 'reply to ' + replyUsername : 'Add comment...'
+              }
               placeholderTextColor={Colors.greyOut}
               autoCapitalize={'none'}
               keyboardAppearance="dark"
@@ -373,12 +406,10 @@ const styles = StyleSheet.create({
   },
 
   //user comments
-
   commentContainer: {
     alignItems: 'flex-start',
     marginLeft: '4%',
-    marginTop: '3%',
-    marginBottom: '5%',
+
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '90%',
@@ -414,7 +445,30 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginTop: 2,
   },
-  //user comment input
+  // reply to parent comment
+  replyContainer: {
+    marginLeft: '14.5%',
+    marginTop: '2%',
+  },
+  replyText: {
+    color: Colors.greyOut,
+    fontSize: 12,
+    fontFamily: 'Inter-Regular',
+  },
+  // View replies
+  viewRepliesContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: '14.5%',
+    marginBottom: '3%',
+    marginTop: '3%',
+  },
+  viewRepliesText: {
+    color: Colors.greyOut,
+    fontSize: 12,
+    fontFamily: 'Inter-Medium',
+  },
+  //add comment
   noCommentContainer: {
     alignItems: 'center',
     marginTop: '20%',
@@ -434,7 +488,6 @@ const styles = StyleSheet.create({
     paddingVertical: '5%',
     backgroundColor: '#302F2F',
     borderBottomColor: 'white',
-    // borderBottomWidth: 0.2,
   },
   addCommentContainer: {
     position: 'absolute',
@@ -444,8 +497,6 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingVertical: '5%',
     backgroundColor: '#302F2F',
-    // borderTopLeftRadius: 6,
-    // borderTopRightRadius: 6,
   },
   myProfilePic: {
     height: 35,
