@@ -11,7 +11,6 @@ import PhoneNumberScreen from './src/screens/signup/PhoneNumberScreen';
 import EnterCodeScreen from './src/screens/signup/EnterCodeScreen';
 import CreateUsernameScreen from './src/screens/signup/CreateUsernameScreen';
 import ConnectSpotifyScreen from './src/screens/signup/ConnectSpotifyScreen';
-import HomeScreen from './src/screens/home/HomeScreen';
 import PostStackScreen from './src/routes/PostStackScreen';
 import ProfileStackScreen from './src/routes/ProfileStackScreen';
 import {Context} from './src/context/Context';
@@ -22,7 +21,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {StyleSheet, StatusBar} from 'react-native';
 import Toast from 'react-native-toast-message';
 import ActivityStackScreen from './src/routes/ActivityStackScreen';
-
+import HomeScreen from './src/screens/home/HomeScreen';
 export default function App() {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();

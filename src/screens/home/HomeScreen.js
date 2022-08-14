@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   Image,
   TouchableOpacity,
+  TextInput,
 } from 'react-native';
 import React, {useState, useEffect, useContext, useCallback} from 'react';
 import Colors from '../../assets/utilities/Colors';
@@ -19,7 +20,6 @@ import BottomSheet from '../../components/BottomSheet';
 import Toast from 'react-native-toast-message';
 import {authFetch} from '../../services/SpotifyService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 const HomeScreen = () => {
   const [feed, setFeed] = useState();
   const [forYouTrue, setForYouTrue] = useState(true);
@@ -31,6 +31,7 @@ const HomeScreen = () => {
   const [trackPlaying, setTrackPlaying] = useState(true);
   const [loopValue, setLoopValue] = useState();
   const [songID, setSongID] = useState();
+
   const {
     currentTrack,
     setCurrentTrack,
@@ -175,6 +176,12 @@ const HomeScreen = () => {
     }
   };
 
+  useEffect(() => {
+    if (feed) {
+      setSongID(feed[0].id);
+    }
+  }, [feed]);
+
   return (
     <>
       {feed ? (
@@ -228,8 +235,13 @@ const HomeScreen = () => {
                         </Text>
                         <View style={styles.trackInfoBottom}>
                           <Text numberOfLines={1} style={styles.artistName}>
-                            {Object.values(post._data.artists)
+                            {/* {Object.values(post._data.artists)
                               .map(artist => artist)
+                              .join(', ')} */}
+                            {post._data.artists
+                              .map(artist => {
+                                return artist.name;
+                              })
                               .join(', ')}
                           </Text>
                           <Ionicons
@@ -264,7 +276,10 @@ const HomeScreen = () => {
                         </View>
                       </View>
                     </View>
-                    <BottomSheet captionProps={post._data.caption} />
+                    <BottomSheet
+                      songIDProps={songID}
+                      captionProps={post._data.caption}
+                    />
                   </SafeAreaView>
                 );
               })}

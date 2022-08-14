@@ -16,6 +16,7 @@ import {firebase} from '@react-native-firebase/firestore';
 import BottomSheet from '../../components/BottomSheet';
 import Sound from 'react-native-sound';
 import {Context} from '../../context/Context';
+
 const ViewPostsScreen = ({route, navigation}) => {
   const {userPosts, selectedPostIndex} = route.params;
   const [postIndex, setPostIndex] = useState(0);
@@ -24,12 +25,12 @@ const ViewPostsScreen = ({route, navigation}) => {
   const [like, setLike] = useState(false);
   const [firestoreQ, setFirestoreQ] = useState();
   const [postPreviewURL, setPostPreviewURL] = useState();
-  const {currentPost, setCurrentPost, setProfileScreenFocus} =
-    useContext(Context);
   const [songLoaded, setSongLoaded] = useState(false);
   const [loopValue, setLoopValue] = useState();
   const [trackPlaying, setTrackPlaying] = useState(true);
   const [postID, setPostID] = useState();
+  const {currentPost, setCurrentPost, setProfileScreenFocus} =
+    useContext(Context);
 
   useEffect(() => {
     if (userPosts) {
