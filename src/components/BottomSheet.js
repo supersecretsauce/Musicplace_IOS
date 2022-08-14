@@ -104,6 +104,17 @@ const BottomSheet = props => {
           .getDownloadURL()
           .catch(error => {
             console.log(error);
+            const getDefaultPicURL = async () => {
+              const defaultURL = await storage()
+                .ref('circle.png')
+                .getDownloadURL()
+                .catch(error2 => {
+                  console.log(error2);
+                });
+              setProfilePicURL(defaultURL);
+              console.log(url);
+            };
+            getDefaultPicURL();
           });
         setProfilePicURL(url);
         console.log(url);
