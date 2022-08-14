@@ -10,7 +10,7 @@ import {
   ScrollView,
   Keyboard,
 } from 'react-native';
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useMemo} from 'react';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 import {firebase} from '@react-native-firebase/firestore';
 import Colors from '../assets/utilities/Colors';
@@ -104,6 +104,17 @@ const BottomSheet = props => {
           .getDownloadURL()
           .catch(error => {
             console.log(error);
+            const getDefaultPicURL = async () => {
+              const defaultURL = await storage()
+                .ref('circle.png')
+                .getDownloadURL()
+                .catch(error2 => {
+                  console.log(error2);
+                });
+              setProfilePicURL(defaultURL);
+              console.log(url);
+            };
+            getDefaultPicURL();
           });
         setProfilePicURL(url);
         console.log(url);
@@ -293,6 +304,7 @@ const BottomSheet = props => {
     if (replyActive) {
       postReply();
       console.log('reply is true');
+      setReplyActive(false);
     } else {
       postComment();
     }
@@ -315,11 +327,13 @@ const BottomSheet = props => {
       setMyComment(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [myComment]);
+  }, [viewReplies, myComment]);
 
   useEffect(() => {
     if (parentReplies) {
       console.log(parentReplies?._docs[0]?._data?.parent);
+    } else {
+      console.log('not true');
     }
   }, [parentReplies]);
 
