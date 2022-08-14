@@ -12,12 +12,6 @@ import {
 } from 'react-native';
 import React, {useState, useEffect, useRef} from 'react';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-  runOnJS,
-} from 'react-native-reanimated';
 import {firebase} from '@react-native-firebase/firestore';
 import Colors from '../assets/utilities/Colors';
 import Spotify from '../assets/img/spotify.svg';
@@ -25,9 +19,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  runOnJS,
+} from 'react-native-reanimated';
 
 const {height: SCREEN_HEIGHT} = Dimensions.get('window');
-
 const BottomSheet = props => {
   const [containerUp, setContainerUp] = useState(false);
   const caption = props.captionProps;
@@ -42,7 +41,6 @@ const BottomSheet = props => {
   const [parentComments, setParentComments] = useState();
   const [activeLikedComments, setActiveLikedComments] = useState([]);
   const [likeChanged, setLikedChanged] = useState(false);
-  const [likeTarget, setLikeTarget] = useState();
   const [myComment, setMyComment] = useState(false);
   const [bottomSheetSmall, setBottomSheetSmall] = useState(false);
   const [commentID, setCommentID] = useState();
@@ -50,6 +48,9 @@ const BottomSheet = props => {
   const replyUsernameRef = useRef();
   const [replyUsername, setReplyUsername] = useState();
   const [replyActive, setReplyActive] = useState(false);
+  const [replyID, setReplyID] = useState();
+  const [parentReplies, setParentReplies] = useState();
+  const [viewReplies, setViewReplies] = useState(false);
   const gesture = Gesture.Pan()
     .onStart(() => {
       context.value = {y: translateY.value};
@@ -139,12 +140,14 @@ const BottomSheet = props => {
       .collection('posts')
       .doc(songID)
       .collection('comments')
-      .doc(commentText)
-      .set({
+      .add({
         UID: UID,
+        parent: 'none',
+        comment: commentText,
         profilePicURL: profilePicURL,
         displayName: displayName,
         likeAmount: 0,
+        hasReplies: 'no',
         commentAddedAt:
           currentdate.getMonth() +
           1 +
@@ -171,6 +174,7 @@ const BottomSheet = props => {
         .collection('posts')
         .doc(songID)
         .collection('comments')
+        .where('parent', '==', 'none')
         .orderBy('likeAmount', 'desc')
         .get()
         .then(querySnapshot => {
@@ -182,6 +186,24 @@ const BottomSheet = props => {
     }
   }, [songID, myComment]);
 
+  // useEffect(() => {
+  //   if (songID) {
+  //     firestore()
+  //       .collection('posts')
+  //       .doc(songID)
+  //       .collection('comments')
+  //       .doc('ttttttttttttttttttttttt')
+  //       .get()
+  //       .then(querySnapshot => {
+  //         console.log(querySnapshot);
+  //         setParentComments(querySnapshot._docs);
+  //       });
+  //     //re-run this effect everytime a user posts a comment
+  //     setMyComment(false);
+  //   }
+  // }, []);
+
+  // Like a comment logic
   useEffect(() => {
     const increment = firebase.firestore.FieldValue.increment(1);
     const minusIncrement = firebase.firestore.FieldValue.increment(-1);
@@ -224,6 +246,82 @@ const BottomSheet = props => {
   }, [activeLikedComments]);
 
   // REPLY LOGIC BELOW
+  const postReply = () => {
+    const currentdate = new Date();
+    firestore()
+      .collection('posts')
+      .doc(songID)
+      .collection('comments')
+      .add({
+        UID: UID,
+        parent: replyID,
+        comment: commentText,
+        profilePicURL: profilePicURL,
+        displayName: displayName,
+        likeAmount: 0,
+        commentAddedAt:
+          currentdate.getMonth() +
+          1 +
+          '/' +
+          currentdate.getUTCDate() +
+          '/' +
+          currentdate.getFullYear() +
+          ' @ ' +
+          currentdate.getHours() +
+          ':' +
+          currentdate.getMinutes() +
+          ':' +
+          currentdate.getSeconds(),
+      })
+      .then(() => {
+        console.log('post added!');
+      });
+    firestore()
+      .collection('posts')
+      .doc(songID)
+      .collection('comments')
+      .doc(replyID)
+      .update({
+        hasReplies: 'yes',
+      })
+      .then(() => {
+        console.log('post added!');
+      });
+  };
+
+  const commentHandler = () => {
+    if (replyActive) {
+      postReply();
+      console.log('reply is true');
+    } else {
+      postComment();
+    }
+  };
+
+  useEffect(() => {
+    if (replyID) {
+      firestore()
+        .collection('posts')
+        .doc(songID)
+        .collection('comments')
+        .where('parent', '==', replyID)
+        .orderBy('likeAmount', 'desc')
+        .get()
+        .then(querySnapshot => {
+          console.log(querySnapshot);
+          setParentReplies(querySnapshot);
+        });
+      //re-run this effect everytime a user posts a comment
+      setMyComment(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [myComment]);
+
+  useEffect(() => {
+    if (parentReplies) {
+      console.log(parentReplies?._docs[0]?._data?.parent);
+    }
+  }, [parentReplies]);
 
   return (
     <>
@@ -249,75 +347,146 @@ const BottomSheet = props => {
               // contentContainerStyle={{paddingBottom: '200%'}}
               contentContainerStyle={
                 bottomSheetSmall
-                  ? {paddingBottom: '108%'}
+                  ? {paddingBottom: '110%'}
                   : {paddingBottom: '160%'}
               }
               data={parentComments}
               renderItem={({item, index}) => {
                 return (
                   <>
-                    <View style={styles.commentContainer} key={index}>
-                      <View style={styles.commentLeftSide}>
-                        <Image
-                          style={styles.userProfilePic}
-                          source={{
-                            uri: item._data.profilePicURL,
-                          }}
-                        />
-                        <View style={styles.commentTextContainer}>
-                          <Text
-                            ref={replyUsernameRef}
-                            style={styles.userDisplayName}>
-                            {item._data.displayName}
+                    <View key={index} style={styles.mainContainer}>
+                      <View style={styles.commentContainer}>
+                        <View style={styles.commentLeftSide}>
+                          <Image
+                            style={styles.userProfilePic}
+                            source={{
+                              uri: item._data.profilePicURL,
+                            }}
+                          />
+                          <View style={styles.commentTextContainer}>
+                            <Text
+                              ref={replyUsernameRef}
+                              style={styles.userDisplayName}>
+                              {item._data.displayName}
+                            </Text>
+                            <Text style={styles.userComment}>
+                              {item._data.comment}
+                            </Text>
+                          </View>
+                        </View>
+                        <View style={styles.likesContainer}>
+                          <TouchableOpacity
+                            onPress={() => {
+                              setCommentID(item.id);
+                              setMyComment(!myComment);
+                              setLikedChanged(!likeChanged);
+                            }}>
+                            <Ionicons
+                              style={styles.socialIcon}
+                              name={
+                                activeLikedComments.includes(item.id)
+                                  ? 'heart'
+                                  : 'heart-outline'
+                              }
+                              color={
+                                activeLikedComments.includes(item.id)
+                                  ? Colors.red
+                                  : 'grey'
+                              }
+                              size={18}
+                            />
+                          </TouchableOpacity>
+                          <Text style={styles.likeText}>
+                            {item._data.likeAmount}
                           </Text>
-                          <Text style={styles.userComment}>{item.id}</Text>
                         </View>
                       </View>
-                      <View style={styles.likesContainer}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setReplyActive(!replyActive);
+                          inputRef.current.focus();
+                          setReplyUsername(item._data.displayName);
+                          setReplyID(item.id);
+                        }}
+                        style={styles.replyContainer}>
+                        <Text style={styles.replyText}>Reply</Text>
+                      </TouchableOpacity>
+                      {item._data.hasReplies === 'yes' && (
                         <TouchableOpacity
+                          style={styles.viewRepliesContainer}
                           onPress={() => {
-                            setCommentID(item.id);
-                            setMyComment(!myComment);
-                            setLikedChanged(!likeChanged);
+                            setReplyID(item.id);
+                            setViewReplies(!viewReplies);
                           }}>
+                          <Text style={styles.viewRepliesText}>
+                            View Replies
+                          </Text>
                           <Ionicons
-                            style={styles.socialIcon}
-                            name={
-                              activeLikedComments.includes(item.id)
-                                ? 'heart'
-                                : 'heart-outline'
-                            }
-                            color={
-                              activeLikedComments.includes(item.id)
-                                ? Colors.red
-                                : 'grey'
-                            }
+                            // style={styles.socialIcon}
+                            name={viewReplies ? 'chevron-up' : 'chevron-down'}
+                            color={'grey'}
                             size={18}
                           />
                         </TouchableOpacity>
-                        <Text style={styles.likeText}>
-                          {item._data.likeAmount}
-                        </Text>
-                      </View>
-                    </View>
-                    <TouchableOpacity
-                      onPress={() => {
-                        // setInputTop(!inputTop);
-                        setReplyActive(!replyActive);
-                        inputRef.current.focus();
-                        setReplyUsername(item._data.displayName);
-                      }}
-                      style={styles.replyContainer}>
-                      <Text style={styles.replyText}>Reply</Text>
-                    </TouchableOpacity>
-                    <View style={styles.viewRepliesContainer}>
-                      <Text style={styles.viewRepliesText}>View Replies</Text>
-                      <Ionicons
-                        // style={styles.socialIcon}
-                        name={'chevron-down'}
-                        color={'grey'}
-                        size={18}
-                      />
+                      )}
+                      {parentReplies &&
+                      item.id === parentReplies._docs[0]._data?.parent &&
+                      viewReplies ? (
+                        <>
+                          {parentReplies._docs.map(reply => {
+                            return (
+                              <View
+                                key={reply._data.id}
+                                style={styles.repliesContainer}>
+                                <View style={styles.repliesLeftSide}>
+                                  <Image
+                                    style={styles.repliesProfilePic}
+                                    source={{
+                                      uri: reply._data.profilePicURL,
+                                    }}
+                                  />
+                                  <View style={styles.repliesTextContainer}>
+                                    <Text
+                                      ref={replyUsernameRef}
+                                      style={styles.repliesDisplayName}>
+                                      {reply._data.displayName}
+                                    </Text>
+                                    <Text style={styles.repliesComment}>
+                                      {reply._data.comment}
+                                    </Text>
+                                  </View>
+                                </View>
+                                <View style={styles.likesContainer}>
+                                  <TouchableOpacity
+                                    onPress={() => {
+                                      setCommentID(reply.id);
+                                      setMyComment(!myComment);
+                                      setLikedChanged(!likeChanged);
+                                    }}>
+                                    <Ionicons
+                                      style={styles.socialIcon}
+                                      name={
+                                        activeLikedComments.includes(reply.id)
+                                          ? 'heart'
+                                          : 'heart-outline'
+                                      }
+                                      color={
+                                        activeLikedComments.includes(reply.id)
+                                          ? Colors.red
+                                          : 'grey'
+                                      }
+                                      size={18}
+                                    />
+                                  </TouchableOpacity>
+                                  <Text style={styles.likeText}>
+                                    {reply._data.likeAmount}
+                                  </Text>
+                                </View>
+                              </View>
+                            );
+                          })}
+                        </>
+                      ) : null}
                     </View>
                   </>
                 );
@@ -334,7 +503,7 @@ const BottomSheet = props => {
             <TextInput
               onSubmitEditing={() => {
                 setInputTop(!inputTop);
-                postComment();
+                commentHandler();
                 setMyComment(true);
                 setReplyUsername(false);
               }}
@@ -383,7 +552,7 @@ const styles = StyleSheet.create({
     width: 75,
     alignSelf: 'center',
     marginTop: '3%',
-    marginBottom: '3%',
+    marginBottom: '5%',
   },
   captionContainer: {
     marginTop: '5%',
@@ -406,20 +575,24 @@ const styles = StyleSheet.create({
   },
 
   //user comments
+  mainContainer: {
+    marginBottom: '5%',
+  },
+
   commentContainer: {
     alignItems: 'flex-start',
     marginLeft: '4%',
-
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '90%',
+    // marginTop: '1%',
   },
   commentLeftSide: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   commentTextContainer: {
-    marginLeft: '7%',
+    marginLeft: '3%',
   },
   userProfilePic: {
     height: 32,
@@ -434,10 +607,13 @@ const styles = StyleSheet.create({
   userComment: {
     color: 'white',
     fontFamily: 'Inter-Regular',
-    marginTop: '3%',
+    marginTop: '2%',
+    width: 265,
+    lineHeight: 20,
   },
   likesContainer: {
     alignItems: 'center',
+    marginTop: '1%',
   },
   likeText: {
     color: Colors.greyOut,
@@ -460,7 +636,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginLeft: '14.5%',
-    marginBottom: '3%',
     marginTop: '3%',
   },
   viewRepliesText: {
@@ -468,6 +643,45 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'Inter-Medium',
   },
+  //reply styling
+  repliesContainer: {
+    alignItems: 'flex-start',
+    marginLeft: '14%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '80%',
+    marginTop: '3%',
+    marginBottom: '3%',
+  },
+  repliesLeftSide: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  repliesProfilePic: {
+    height: 22,
+    width: 22,
+    borderRadius: 32,
+  },
+  repliesTextContainer: {
+    marginLeft: '3%',
+  },
+  repliesDisplayName: {
+    color: Colors.greyOut,
+    fontSize: 12,
+    fontFamily: 'Inter-Medium',
+  },
+  repliesComment: {
+    color: 'white',
+    fontFamily: 'Inter-Regular',
+    marginTop: '2%',
+    fontSize: 13,
+    width: 230,
+    lineHeight: 20,
+  },
+  replySpacer: {
+    marginBottom: '5%',
+  },
+
   //add comment
   noCommentContainer: {
     alignItems: 'center',
