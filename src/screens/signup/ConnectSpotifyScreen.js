@@ -59,6 +59,8 @@ const ConnectSpotifyScreen = ({navigation}) => {
           followers: 0,
           following: 0,
           displayName: username,
+          followersList: null,
+          followingList: null,
         },
         {merge: true},
       );

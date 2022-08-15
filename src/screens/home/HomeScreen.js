@@ -20,7 +20,8 @@ import BottomSheet from '../../components/BottomSheet';
 import Toast from 'react-native-toast-message';
 import {authFetch} from '../../services/SpotifyService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-const HomeScreen = () => {
+import FollowingScreen from './FollowingScreen';
+const HomeScreen = ({navigation}) => {
   const [feed, setFeed] = useState();
   const [forYouTrue, setForYouTrue] = useState(true);
   const [like, setLike] = useState(false);
@@ -63,6 +64,14 @@ const HomeScreen = () => {
   const focusHandler = () => {
     setForYouTrue(!forYouTrue);
   };
+
+  useEffect(() => {
+    if (forYouTrue && currentTrack) {
+      currentTrack.play();
+    } else if (forYouTrue === false) {
+      currentTrack.pause();
+    }
+  }, [currentTrack, forYouTrue]);
 
   useFocusEffect(
     useCallback(() => {
@@ -199,91 +208,96 @@ const HomeScreen = () => {
                 For You
               </Text>
             </View>
-            <Swiper
-              horizontal={true}
-              showsButtons={false}
-              index={0}
-              loadMinimal={true}
-              onIndexChanged={index => {
-                setSongIndex(index);
-                setTrackPlaying(true);
-                currentTrack.pause();
-                setSongID(feed[index].id);
-              }}
-              showsPagination={false}>
-              {feed.map(post => {
-                return (
-                  <SafeAreaView key={post.id} style={styles.postContainer}>
-                    <TouchableOpacity
-                      onPress={pauseHandler}
-                      style={{
-                        width: '100%',
-                        alignSelf: 'center',
-                        alignItems: 'center',
-                      }}>
-                      <Image
-                        style={styles.coverArt}
-                        source={{
-                          uri: post._data.songPhoto,
-                        }}
-                      />
-                    </TouchableOpacity>
-                    <View style={styles.middleContainer}>
-                      <View style={styles.trackInfoContainer}>
-                        <Text numberOfLines={1} style={styles.trackName}>
-                          {post._data.songName}
-                        </Text>
-                        <View style={styles.trackInfoBottom}>
-                          <Text numberOfLines={1} style={styles.artistName}>
-                            {/* {Object.values(post._data.artists)
+            {forYouTrue ? (
+              <Swiper
+                horizontal={true}
+                showsButtons={false}
+                index={0}
+                loadMinimal={true}
+                onIndexChanged={index => {
+                  setSongIndex(index);
+                  setTrackPlaying(true);
+                  currentTrack.pause();
+                  setSongID(feed[index].id);
+                }}
+                showsPagination={false}>
+                {feed.map(post => {
+                  return (
+                    <SafeAreaView key={post.id} style={styles.postContainer}>
+                      <TouchableOpacity
+                        onPress={pauseHandler}
+                        style={{
+                          width: '100%',
+                          alignSelf: 'center',
+                          alignItems: 'center',
+                        }}>
+                        <Image
+                          style={styles.coverArt}
+                          source={{
+                            uri: post._data.songPhoto,
+                          }}
+                        />
+                      </TouchableOpacity>
+                      <View style={styles.middleContainer}>
+                        <View style={styles.trackInfoContainer}>
+                          <Text numberOfLines={1} style={styles.trackName}>
+                            {post._data.songName}
+                          </Text>
+                          <View style={styles.trackInfoBottom}>
+                            <Text numberOfLines={1} style={styles.artistName}>
+                              {/* {Object.values(post._data.artists)
                               .map(artist => artist)
                               .join(', ')} */}
-                            {post._data.artists
-                              .map(artist => {
-                                return artist.name;
-                              })
-                              .join(', ')}
-                          </Text>
-                          <Ionicons
-                            style={styles.smallDot}
-                            name="ellipse"
-                            color="white"
-                            size={5}
-                          />
-                          <Text numberOfLines={1} style={styles.albumName}>
-                            {post._data.albumName}
-                          </Text>
-                        </View>
-                      </View>
-                      <View style={styles.interactContainer}>
-                        <TouchableOpacity style={styles.spotifyButton}>
-                          <Spotify height={24} width={24} />
-                        </TouchableOpacity>
-                        <View style={styles.likesContainer}>
-                          <TouchableOpacity
-                            onPress={() => {
-                              setLike(!like);
-                              setLikeFiller(!likeFiller);
-                              showToast();
-                            }}>
+                              {post._data.artists
+                                .map(artist => {
+                                  return artist.name;
+                                })
+                                .join(', ')}
+                            </Text>
                             <Ionicons
-                              style={styles.socialIcon}
-                              name={likeFiller ? 'heart' : 'heart-outline'}
-                              color={likeFiller ? '#1DB954' : 'grey'}
-                              size={28}
+                              style={styles.smallDot}
+                              name="ellipse"
+                              color="white"
+                              size={5}
                             />
+                            <Text numberOfLines={1} style={styles.albumName}>
+                              {post._data.albumName}
+                            </Text>
+                          </View>
+                        </View>
+                        <View style={styles.interactContainer}>
+                          <TouchableOpacity style={styles.spotifyButton}>
+                            <Spotify height={24} width={24} />
                           </TouchableOpacity>
+                          <View style={styles.likesContainer}>
+                            <TouchableOpacity
+                              onPress={() => {
+                                setLike(!like);
+                                setLikeFiller(!likeFiller);
+                                showToast();
+                              }}>
+                              <Ionicons
+                                style={styles.socialIcon}
+                                name={likeFiller ? 'heart' : 'heart-outline'}
+                                color={likeFiller ? '#1DB954' : 'grey'}
+                                size={28}
+                              />
+                            </TouchableOpacity>
+                          </View>
                         </View>
                       </View>
-                    </View>
-                    <BottomSheet
-                      songIDProps={songID}
-                      captionProps={post._data.caption}
-                    />
-                  </SafeAreaView>
-                );
-              })}
-            </Swiper>
+                      <BottomSheet
+                        songIDProps={songID}
+                        captionProps={post._data.caption}
+                        navigationProps={navigation}
+                      />
+                    </SafeAreaView>
+                  );
+                })}
+              </Swiper>
+            ) : (
+              <FollowingScreen />
+            )}
           </SafeAreaView>
         </>
       ) : (
