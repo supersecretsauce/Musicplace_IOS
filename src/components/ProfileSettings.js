@@ -123,7 +123,7 @@ const ProfileSettings = props => {
           <Spotify height={24} width={24} />
           <Text style={styles.socialText}>
             {spotifyConnected
-              ? 'Disconnect from Spotufy'
+              ? 'Disconnect from Spotify'
               : 'Connect to Spotify'}
           </Text>
         </TouchableOpacity>
