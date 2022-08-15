@@ -1,9 +1,15 @@
-import {StyleSheet, Text, View, SafeAreaView, Image} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  SafeAreaView,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
 import React, {useState, useEffect, useContext} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Circle from '../../assets/img/circle.svg';
 import Colors from '../../assets/utilities/Colors';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 import EditProfileSheet from '../../components/EditProfileSheet';
 import firestore from '@react-native-firebase/firestore';
 import {Context} from '../../context/Context';
@@ -149,6 +155,9 @@ const ProfileScreen = ({navigation}) => {
             <View style={styles.sortContainer}>
               <View style={styles.iconContainer}>
                 <Ionicons name={'albums'} color="white" size={28} />
+                <TouchableOpacity>
+                  <Text style={styles.postInfoText}>Did I post this?</Text>
+                </TouchableOpacity>
               </View>
               <TouchableOpacity
                 onPress={() => setEditProfile(!editProfile)}
@@ -270,14 +279,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginLeft: '6%',
     marginTop: '8%',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     justifyContent: 'space-between',
+    width: '100%',
   },
   iconContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-
+  postInfoText: {
+    color: Colors.greyOut,
+    marginLeft: '10%',
+    fontSize: 12,
+    marginTop: '7%',
+    textDecorationLine: 'underline',
+    fontFamily: 'Inter-Medium',
+  },
   editProfileContainer: {
     borderColor: Colors.greyOut,
     borderWidth: 0.5,
