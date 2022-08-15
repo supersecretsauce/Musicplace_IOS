@@ -99,6 +99,13 @@ const ProfileScreen = ({navigation}) => {
     }
   }, [UID]);
 
+  const removeAutoPost = () => {
+    firestore().collection('users').doc(UID).update({
+      autoPost: false,
+    });
+    setShowModal(false);
+  };
+
   return (
     <>
       {userProfile && username ? (
@@ -184,7 +191,9 @@ const ProfileScreen = ({navigation}) => {
                   only post songs manually, see below.
                 </Text>
                 <View style={styles.btnContainer}>
-                  <TouchableOpacity style={styles.optOut}>
+                  <TouchableOpacity
+                    onPress={removeAutoPost}
+                    style={styles.optOut}>
                     <Text style={styles.optOutText}>Opt out</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
