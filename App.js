@@ -21,7 +21,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {StyleSheet, StatusBar} from 'react-native';
 import Toast from 'react-native-toast-message';
 import ActivityStackScreen from './src/routes/ActivityStackScreen';
-import HomeScreen from './src/screens/home/HomeScreen';
+import HomeStackScreen from './src/routes/HomeStackScreen';
 export default function App() {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
@@ -133,7 +133,7 @@ export default function App() {
                 headerShown: false,
                 tabBarStyle: {backgroundColor: 'black'},
               })}>
-              <Tab.Screen name="Home" component={HomeScreen} />
+              <Tab.Screen name="Home" component={HomeStackScreen} />
               <Tab.Screen name="Discover" component={ActivityStackScreen} />
               <Tab.Screen name="Post" component={PostStackScreen} />
               <Tab.Screen name="Activity" component={ActivityStackScreen} />

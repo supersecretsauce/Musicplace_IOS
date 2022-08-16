@@ -31,6 +31,7 @@ const BottomSheet = props => {
   const [containerUp, setContainerUp] = useState(false);
   const caption = props.captionProps;
   const songID = props.songIDProps;
+  const navigation = props.navigationProps;
   const translateY = useSharedValue(0);
   const context = useSharedValue({y: 0});
   const [UID, setUID] = useState();
@@ -371,18 +372,34 @@ const BottomSheet = props => {
                     <View key={index} style={styles.mainContainer}>
                       <View style={styles.commentContainer}>
                         <View style={styles.commentLeftSide}>
-                          <Image
-                            style={styles.userProfilePic}
-                            source={{
-                              uri: item._data.profilePicURL,
-                            }}
-                          />
+                          <TouchableOpacity
+                            onPress={() =>
+                              navigation.navigate('ViewUserScreen', {
+                                UID: item._data.UID,
+                                myUID: UID,
+                              })
+                            }>
+                            <Image
+                              style={styles.userProfilePic}
+                              source={{
+                                uri: item._data.profilePicURL,
+                              }}
+                            />
+                          </TouchableOpacity>
                           <View style={styles.commentTextContainer}>
-                            <Text
-                              ref={replyUsernameRef}
-                              style={styles.userDisplayName}>
-                              {item._data.displayName}
-                            </Text>
+                            <TouchableOpacity
+                              onPress={() =>
+                                navigation.navigate('ViewUserScreen', {
+                                  UID: item._data.UID,
+                                  myUID: UID,
+                                })
+                              }>
+                              <Text
+                                ref={replyUsernameRef}
+                                style={styles.userDisplayName}>
+                                {item._data.displayName}
+                              </Text>
+                            </TouchableOpacity>
                             <Text style={styles.userComment}>
                               {item._data.comment}
                             </Text>

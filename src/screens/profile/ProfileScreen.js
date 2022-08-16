@@ -1,9 +1,15 @@
-import {StyleSheet, Text, View, SafeAreaView, Image} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  SafeAreaView,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
 import React, {useState, useEffect, useContext} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Circle from '../../assets/img/circle.svg';
 import Colors from '../../assets/utilities/Colors';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 import EditProfileSheet from '../../components/EditProfileSheet';
 import firestore from '@react-native-firebase/firestore';
 import {Context} from '../../context/Context';
@@ -11,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserPosts from '../../components/UserPosts';
 import ProfileSettings from '../../components/ProfileSettings';
 import storage from '@react-native-firebase/storage';
+import Modal from 'react-native-modal';
 
 const ProfileScreen = ({navigation}) => {
   const [editProfile, setEditProfile] = useState(false);
@@ -20,6 +27,7 @@ const ProfileScreen = ({navigation}) => {
   const [profileSettings, setProfileSettings] = useState(false);
   const [profilePicURL, setProfilePicURL] = useState();
   const [headerURL, setHeaderURL] = useState();
+  const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
     const checkforUID = async () => {
@@ -91,6 +99,13 @@ const ProfileScreen = ({navigation}) => {
     }
   }, [UID]);
 
+  const removeAutoPost = () => {
+    firestore().collection('users').doc(UID).update({
+      autoPost: false,
+    });
+    setShowModal(false);
+  };
+
   return (
     <>
       {userProfile && username ? (
@@ -149,6 +164,13 @@ const ProfileScreen = ({navigation}) => {
             <View style={styles.sortContainer}>
               <View style={styles.iconContainer}>
                 <Ionicons name={'albums'} color="white" size={28} />
+                <TouchableOpacity>
+                  <Text
+                    onPress={() => setShowModal(true)}
+                    style={styles.postInfoText}>
+                    I didn't post this?
+                  </Text>
+                </TouchableOpacity>
               </View>
               <TouchableOpacity
                 onPress={() => setEditProfile(!editProfile)}
@@ -157,6 +179,31 @@ const ProfileScreen = ({navigation}) => {
               </TouchableOpacity>
             </View>
             <View style={styles.line} />
+            <Modal isVisible={showModal}>
+              <View style={styles.modalContainer}>
+                <Text style={styles.modalTop}>
+                  I don’t remember posting any of the tracks below, what’s up
+                  with that?{' '}
+                </Text>
+                <Text style={styles.modalMiddle}>
+                  By default, Musicplace posts the songs you listen to the most
+                  - updated daily. If you’d like to opt out of this service and
+                  only post songs manually, see below.
+                </Text>
+                <View style={styles.btnContainer}>
+                  <TouchableOpacity
+                    onPress={removeAutoPost}
+                    style={styles.optOut}>
+                    <Text style={styles.optOutText}>Opt out</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setShowModal(false)}
+                    style={styles.rock}>
+                    <Text style={styles.rockText}>Let it rock</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
             <UserPosts navigationProps={navigation} UIDProps={UID} />
             {editProfile && (
               <EditProfileSheet
@@ -270,14 +317,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginLeft: '6%',
     marginTop: '8%',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     justifyContent: 'space-between',
+    width: '100%',
   },
   iconContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-
+  postInfoText: {
+    color: Colors.greyOut,
+    marginLeft: '10%',
+    fontSize: 12,
+    marginTop: '7%',
+    textDecorationLine: 'underline',
+    fontFamily: 'Inter-Medium',
+  },
   editProfileContainer: {
     borderColor: Colors.greyOut,
     borderWidth: 0.5,
@@ -299,5 +354,56 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     alignSelf: 'center',
     marginTop: '4%',
+  },
+  modalContainer: {
+    height: '28%',
+    width: '95%',
+    backgroundColor: '#333333',
+    paddingVertical: 24,
+    borderRadius: 9,
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  modalTop: {
+    fontFamily: 'Inter-Bold',
+    fontSize: 14,
+    textAlign: 'center',
+    color: 'white',
+    width: '80%',
+  },
+  modalMiddle: {
+    fontSize: 12,
+    fontFamily: 'Inter-Regular',
+    width: '80%',
+    textAlign: 'center',
+    color: 'white',
+    lineHeight: 18,
+  },
+  btnContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: '3%',
+    width: '80%',
+  },
+  optOut: {
+    backgroundColor: 'rgba(255, 8, 0, .5)',
+    paddingHorizontal: 30,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  optOutText: {
+    color: 'white',
+    fontFamily: 'inter-bold',
+  },
+  rock: {
+    backgroundColor: Colors.red,
+    paddingHorizontal: 30,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  rockText: {
+    color: 'white',
+    fontFamily: 'inter-bold',
   },
 });
