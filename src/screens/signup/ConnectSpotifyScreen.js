@@ -14,7 +14,6 @@ import {authorize} from 'react-native-app-auth';
 import firestore from '@react-native-firebase/firestore';
 import {firebase} from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {merge} from 'qs/lib/utils';
 const ConnectSpotifyScreen = ({navigation}) => {
   const userInfo = firebase.auth().currentUser;
   const {setUserLogin, username} = useContext(Context);
