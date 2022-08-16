@@ -91,7 +91,9 @@ const ViewUserScreen = ({route, navigation}) => {
   }, []);
 
   useEffect(() => {
-    if (followersArray) {
+    if (followersArray === null) {
+      setFollowing(false);
+    } else if (followersArray) {
       if (followersArray.includes(myUID)) {
         setFollowing(true);
       } else {
@@ -105,7 +107,34 @@ const ViewUserScreen = ({route, navigation}) => {
     const minusIncrement = firebase.firestore.FieldValue.increment(-1);
 
     if (UID && myUID) {
-      if (followersArray.includes(myUID)) {
+      if (followersArray === null || !followersArray.includes(myUID)) {
+        firestore()
+          .collection('users')
+          .doc(UID)
+          .set(
+            {
+              followers: increment,
+              followersList: firebase.firestore.FieldValue.arrayUnion(myUID),
+            },
+            {merge: true},
+          )
+          .then(() => {
+            console.log('User updated!');
+          });
+        firestore()
+          .collection('users')
+          .doc(myUID)
+          .set(
+            {
+              following: increment,
+              followingList: firebase.firestore.FieldValue.arrayUnion(UID),
+            },
+            {merge: true},
+          )
+          .then(() => {
+            console.log('User updated!');
+          });
+      } else if (followersArray.includes(myUID)) {
         //do something
         firestore()
           .collection('users')
@@ -127,33 +156,6 @@ const ViewUserScreen = ({route, navigation}) => {
             {
               following: minusIncrement,
               followingList: firebase.firestore.FieldValue.arrayRemove(UID),
-            },
-            {merge: true},
-          )
-          .then(() => {
-            console.log('User updated!');
-          });
-      } else {
-        firestore()
-          .collection('users')
-          .doc(UID)
-          .set(
-            {
-              followers: increment,
-              followersList: firebase.firestore.FieldValue.arrayUnion(myUID),
-            },
-            {merge: true},
-          )
-          .then(() => {
-            console.log('User updated!');
-          });
-        firestore()
-          .collection('users')
-          .doc(myUID)
-          .set(
-            {
-              following: increment,
-              followingList: firebase.firestore.FieldValue.arrayUnion(UID),
             },
             {merge: true},
           )
