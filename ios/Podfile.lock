@@ -1041,7 +1041,7 @@ PODS:
     - React-jsi (= 0.69.1)
     - React-logger (= 0.69.1)
     - React-perflogger (= 0.69.1)
-  - RNCAsyncStorage (1.17.8):
+  - RNCAsyncStorage (1.17.9):
     - React-Core
   - RNFBApp (15.3.0):
     - Firebase/CoreOnly (= 9.4.0)
@@ -1336,7 +1336,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: e8b7dd6635cc95689b5db643b5a3848f1e05b30b
   React-runtimeexecutor: 27f468c5576eaf05ffb7a907528e44c75a3fcbae
   ReactCommon: e30ec17dfb1d4c4f3419eac254350d6abca6d5a2
-  RNCAsyncStorage: 7cbd0d823dbb0e415d40a7e77fea2292483c8bdb
+  RNCAsyncStorage: b2489b49e38c85e10ed45a888d13a2a4c7b32ea1
   RNFBApp: 0db41be0ca09ec0828164f16cd36732c0df8dabb
   RNFBAuth: 5258f9a4402f8dd1b85eebb00f62511e073c79b3
   RNFBFirestore: 991890f43c4ee33aed752418f06d80d0d9b8eb25

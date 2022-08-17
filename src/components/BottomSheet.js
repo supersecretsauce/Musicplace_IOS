@@ -10,7 +10,7 @@ import {
   ScrollView,
   Keyboard,
 } from 'react-native';
-import React, {useState, useEffect, useRef, useMemo} from 'react';
+import React, {useState, useEffect, useRef, useMemo, useCallback} from 'react';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 import {firebase} from '@react-native-firebase/firestore';
 import Colors from '../assets/utilities/Colors';
@@ -25,15 +25,13 @@ import Animated, {
   withSpring,
   runOnJS,
 } from 'react-native-reanimated';
-
 const {height: SCREEN_HEIGHT} = Dimensions.get('window');
+
 const BottomSheet = props => {
   const [containerUp, setContainerUp] = useState(false);
   const caption = props.captionProps;
   const songID = props.songIDProps;
   const navigation = props.navigationProps;
-  const translateY = useSharedValue(0);
-  const context = useSharedValue({y: 0});
   const [UID, setUID] = useState();
   const [displayName, setDisplayName] = useState();
   const [profilePicURL, setProfilePicURL] = useState();
@@ -52,6 +50,13 @@ const BottomSheet = props => {
   const [replyID, setReplyID] = useState();
   const [parentReplies, setParentReplies] = useState();
   const [viewReplies, setViewReplies] = useState(false);
+  const translateY = useSharedValue(0);
+  const scrollTo = useCallback(destination => {
+    'worklet';
+    translateY.value = withSpring(destination, {damping: 50});
+  }, []);
+  const context = useSharedValue({y: 0});
+
   const gesture = Gesture.Pan()
     .onStart(() => {
       context.value = {y: translateY.value};
@@ -63,24 +68,24 @@ const BottomSheet = props => {
     .onEnd(() => {
       if (!containerUp) {
         if (translateY.value <= -50) {
-          translateY.value = withSpring(-269, {damping: 50});
-          setContainerUp(true);
+          scrollTo(-269);
+          runOnJS(setContainerUp)(true);
         } else {
-          translateY.value = withSpring(0, {damping: 50});
+          scrollTo(0);
         }
-        setBottomSheetSmall(true);
+        runOnJS(setBottomSheetSmall)(true);
       } else {
         if (translateY.value >= -240) {
-          translateY.value = withSpring(0, {damping: 50});
-          setContainerUp(false);
+          scrollTo(0);
+          runOnJS(setContainerUp)(false);
         } else {
-          translateY.value = withSpring(0, {damping: 50});
+          scrollTo(0);
         }
-        setBottomSheetSmall(false);
+        runOnJS(setBottomSheetSmall)(false);
       }
     });
+
   const rBottomSheetStyle = useAnimatedStyle(() => {
-    'worklet';
     return {
       transform: [{translateY: translateY.value}],
     };
