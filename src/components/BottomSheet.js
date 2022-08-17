@@ -28,7 +28,6 @@ import Animated, {
 const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 
 const BottomSheet = props => {
-  const [containerUp, setContainerUp] = useState(false);
   const caption = props.captionProps;
   const songID = props.songIDProps;
   const navigation = props.navigationProps;
@@ -50,11 +49,15 @@ const BottomSheet = props => {
   const [replyID, setReplyID] = useState();
   const [parentReplies, setParentReplies] = useState();
   const [viewReplies, setViewReplies] = useState(false);
+  const [containerUp, setContainerUp] = useState(false);
   const translateY = useSharedValue(0);
-  const scrollTo = useCallback(destination => {
-    'worklet';
-    translateY.value = withSpring(destination, {damping: 50});
-  }, []);
+  const scrollTo = useCallback(
+    destination => {
+      'worklet';
+      translateY.value = withSpring(destination, {damping: 50});
+    },
+    [translateY],
+  );
   const context = useSharedValue({y: 0});
 
   const gesture = Gesture.Pan()
@@ -70,11 +73,13 @@ const BottomSheet = props => {
         if (translateY.value <= -50) {
           scrollTo(-269);
           runOnJS(setContainerUp)(true);
+        } else if (translateY.value >= 50) {
+          scrollTo(100);
         } else {
           scrollTo(0);
         }
         runOnJS(setBottomSheetSmall)(true);
-      } else {
+      } else if (containerUp) {
         if (translateY.value >= -240) {
           scrollTo(0);
           runOnJS(setContainerUp)(false);

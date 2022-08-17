@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
+  Linking,
 } from 'react-native';
 import React, {useState, useEffect, useContext, useCallback} from 'react';
 import Colors from '../../assets/utilities/Colors';
@@ -191,6 +192,12 @@ const HomeScreen = ({navigation}) => {
     }
   }, [feed]);
 
+  const listenOnSpotify = async () => {
+    await Linking.openURL(
+      `http://open.spotify.com/track/${feed[songIndex].id}`,
+    );
+  };
+
   return (
     <>
       {feed ? (
@@ -286,6 +293,13 @@ const HomeScreen = ({navigation}) => {
                           </View>
                         </View>
                       </View>
+                      <TouchableOpacity
+                        onPress={listenOnSpotify}
+                        style={styles.listenOnSpot}>
+                        <Text style={styles.listenOnSpotText}>
+                          LISTEN ON SPOTIFY
+                        </Text>
+                      </TouchableOpacity>
                       <BottomSheet
                         songIDProps={songID}
                         captionProps={post._data.caption}
@@ -428,5 +442,18 @@ const styles = StyleSheet.create({
     color: 'black',
     fontFamily: 'Inter-Regular',
     fontSize: 12,
+  },
+  listenOnSpot: {
+    position: 'absolute',
+    top: '99%',
+    paddingHorizontal: 50,
+    paddingVertical: 12,
+    borderRadius: 20,
+    backgroundColor: Colors.spotify,
+  },
+  listenOnSpotText: {
+    color: 'white',
+    fontFamily: 'Inter-Bold',
+    fontSize: 16,
   },
 });
