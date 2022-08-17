@@ -193,6 +193,7 @@ const HomeScreen = ({navigation}) => {
   }, [feed]);
 
   const listenOnSpotify = async () => {
+    currentTrack.pause();
     await Linking.openURL(
       `http://open.spotify.com/track/${feed[songIndex].id}`,
     );
