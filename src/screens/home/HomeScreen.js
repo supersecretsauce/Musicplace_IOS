@@ -6,8 +6,15 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
+  Linking,
 } from 'react-native';
-import React, {useState, useEffect, useContext, useCallback} from 'react';
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+  useMemo,
+} from 'react';
 import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Spotify from '../../assets/img/spotify.svg';
@@ -21,7 +28,8 @@ import Toast from 'react-native-toast-message';
 import {authFetch} from '../../services/SpotifyService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FollowingScreen from './FollowingScreen';
-const HomeScreen = ({navigation}) => {
+
+const HomeScreen = React.memo(({navigation}) => {
   const [feed, setFeed] = useState();
   const [forYouTrue, setForYouTrue] = useState(true);
   const [like, setLike] = useState(false);
@@ -32,6 +40,7 @@ const HomeScreen = ({navigation}) => {
   const [trackPlaying, setTrackPlaying] = useState(true);
   const [loopValue, setLoopValue] = useState();
   const [songID, setSongID] = useState();
+  const [parentComments, setParentComments] = useState();
 
   const {
     currentTrack,
@@ -44,22 +53,23 @@ const HomeScreen = ({navigation}) => {
   } = useContext(Context);
 
   // check if user has spotify connected to display proper screens
-  useEffect(() => {
-    const checkForSpotifyConnection = async () => {
-      const spotifyBoolean = await AsyncStorage.getItem('hasSpotify');
-      const localRefresh = await AsyncStorage.getItem('spotRefreshToken');
-      const localAccess = await AsyncStorage.getItem('spotAccessToken');
+  const checkForSpotifyConnection = useCallback(async () => {
+    const spotifyBoolean = await AsyncStorage.getItem('hasSpotify');
+    const localRefresh = await AsyncStorage.getItem('spotRefreshToken');
+    const localAccess = await AsyncStorage.getItem('spotAccessToken');
 
-      if (spotifyBoolean === 'false') {
-        console.log('not connected');
-      } else if (spotifyBoolean === 'true') {
-        setAccessToken(localAccess);
-        setRefreshToken(localRefresh);
-        console.log(accessToken);
-      }
-    };
-    checkForSpotifyConnection();
+    if (spotifyBoolean === 'false') {
+      // console.log('not connected');
+    } else if (spotifyBoolean === 'true') {
+      setAccessToken(localAccess);
+      setRefreshToken(localRefresh);
+      // console.log(accessToken);
+    }
   }, [accessToken, setAccessToken, setRefreshToken]);
+
+  useEffect(() => {
+    checkForSpotifyConnection();
+  }, [accessToken, checkForSpotifyConnection, setAccessToken, setRefreshToken]);
 
   const focusHandler = () => {
     setForYouTrue(!forYouTrue);
@@ -85,6 +95,7 @@ const HomeScreen = ({navigation}) => {
     const fetchFeed = async () => {
       const feedData = await firestore().collection('posts').get();
       if (feedData) {
+        // console.log(feedData._docs);
         setFeed(feedData._docs);
       }
     };
@@ -95,7 +106,7 @@ const HomeScreen = ({navigation}) => {
   useEffect(() => {
     if (feed) {
       setPostPreviewURL(feed[songIndex]._data.previewUrl);
-      console.log(feed);
+      // console.log(feed);
     }
   }, [feed, songIndex]);
 
@@ -105,7 +116,7 @@ const HomeScreen = ({navigation}) => {
       setCurrentTrack(
         new Sound(postPreviewURL, null, error => {
           if (error) {
-            console.log('failed to load the sound', error);
+            // console.log('failed to load the sound', error);
             return;
           }
           setSongLoaded(postPreviewURL);
@@ -122,10 +133,10 @@ const HomeScreen = ({navigation}) => {
     if (currentTrack && songLoaded) {
       currentTrack.play(success => {
         if (success) {
-          console.log('successfully finished playing');
+          // console.log('successfully finished playing');
           setLoopValue(Math.random());
         } else {
-          console.log('playback failed due to audio decoding errors');
+          // console.log('playback failed due to audio decoding errors');
         }
       });
     }
@@ -138,7 +149,7 @@ const HomeScreen = ({navigation}) => {
           setTrackPlaying(false);
           setLoopValue(Math.random());
         } else {
-          console.log('playback failed due to audio decoding errors');
+          // console.log('playback failed due to audio decoding errors');
         }
       });
       setTrackPlaying(true);
@@ -160,10 +171,10 @@ const HomeScreen = ({navigation}) => {
       authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
         .delete(`/me/tracks?ids=${songID}`)
         .then(response => {
-          console.log(response);
+          // console.log(response);
         })
         .catch(error => {
-          console.log(error);
+          // console.log(error);
           return error;
         });
     } else if (!like && songID) {
@@ -176,10 +187,10 @@ const HomeScreen = ({navigation}) => {
       authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
         .put(`/me/tracks?ids=${songID}`)
         .then(response => {
-          console.log(response);
+          // console.log(response);
         })
         .catch(error => {
-          console.log(error);
+          // console.log(error);
           return error;
         });
     }
@@ -187,9 +198,38 @@ const HomeScreen = ({navigation}) => {
 
   useEffect(() => {
     if (feed) {
+      // console.log('check me too');
       setSongID(feed[0].id);
     }
   }, [feed]);
+
+  const listenOnSpotify = async () => {
+    currentTrack.pause();
+    await Linking.openURL(
+      `http://open.spotify.com/track/${feed[songIndex].id}`,
+    );
+  };
+
+  const getSong = useCallback(() => {
+    if (songID) {
+      // console.log('yo');
+      firestore()
+        .collection('posts')
+        .doc(songID)
+        .collection('comments')
+        .where('parent', '==', 'none')
+        .orderBy('likeAmount', 'desc')
+        .get()
+        .then(querySnapshot => {
+          // console.log(querySnapshot);
+          setParentComments(querySnapshot._docs);
+        });
+    }
+  }, [songID]);
+
+  useEffect(() => {
+    getSong();
+  }, [getSong, songID]);
 
   return (
     <>
@@ -214,6 +254,7 @@ const HomeScreen = ({navigation}) => {
                 showsButtons={false}
                 index={0}
                 loadMinimal={true}
+                loadMinimalSize={1}
                 onIndexChanged={index => {
                   setSongIndex(index);
                   setTrackPlaying(true);
@@ -286,10 +327,18 @@ const HomeScreen = ({navigation}) => {
                           </View>
                         </View>
                       </View>
+                      <TouchableOpacity
+                        onPress={listenOnSpotify}
+                        style={styles.listenOnSpot}>
+                        <Text style={styles.listenOnSpotText}>
+                          LISTEN ON SPOTIFY
+                        </Text>
+                      </TouchableOpacity>
                       <BottomSheet
                         songIDProps={songID}
                         captionProps={post._data.caption}
                         navigationProps={navigation}
+                        parentCommentsProps={parentComments}
                       />
                     </SafeAreaView>
                   );
@@ -309,7 +358,7 @@ const HomeScreen = ({navigation}) => {
       )}
     </>
   );
-};
+});
 
 export default HomeScreen;
 
@@ -428,5 +477,18 @@ const styles = StyleSheet.create({
     color: 'black',
     fontFamily: 'Inter-Regular',
     fontSize: 12,
+  },
+  listenOnSpot: {
+    position: 'absolute',
+    top: '99%',
+    paddingHorizontal: 50,
+    paddingVertical: 12,
+    borderRadius: 20,
+    backgroundColor: Colors.spotify,
+  },
+  listenOnSpotText: {
+    color: 'white',
+    fontFamily: 'Inter-Bold',
+    fontSize: 16,
   },
 });

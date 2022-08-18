@@ -105,8 +105,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   tos: {
+    position: 'absolute',
     color: Color.greyOut,
-    marginTop: 250,
+    bottom: 30,
     width: 317,
     textAlign: 'center',
     marginLeft: 37,

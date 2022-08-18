@@ -10,7 +10,7 @@ import {
   ScrollView,
   Keyboard,
 } from 'react-native';
-import React, {useState, useEffect, useRef, useMemo} from 'react';
+import React, {useState, useEffect, useRef, useMemo, useCallback} from 'react';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
 import {firebase} from '@react-native-firebase/firestore';
 import Colors from '../assets/utilities/Colors';
@@ -25,21 +25,18 @@ import Animated, {
   withSpring,
   runOnJS,
 } from 'react-native-reanimated';
-
 const {height: SCREEN_HEIGHT} = Dimensions.get('window');
-const BottomSheet = props => {
-  const [containerUp, setContainerUp] = useState(false);
+
+const BottomSheet = React.memo(props => {
   const caption = props.captionProps;
   const songID = props.songIDProps;
   const navigation = props.navigationProps;
-  const translateY = useSharedValue(0);
-  const context = useSharedValue({y: 0});
+  const parentComments = props.parentCommentsProps;
   const [UID, setUID] = useState();
   const [displayName, setDisplayName] = useState();
   const [profilePicURL, setProfilePicURL] = useState();
   const [inputTop, setInputTop] = useState(false);
   const [commentText, setCommentText] = useState();
-  const [parentComments, setParentComments] = useState();
   const [activeLikedComments, setActiveLikedComments] = useState([]);
   const [likeChanged, setLikedChanged] = useState(false);
   const [myComment, setMyComment] = useState(false);
@@ -52,6 +49,17 @@ const BottomSheet = props => {
   const [replyID, setReplyID] = useState();
   const [parentReplies, setParentReplies] = useState();
   const [viewReplies, setViewReplies] = useState(false);
+  const [containerUp, setContainerUp] = useState(false);
+  const translateY = useSharedValue(0);
+  const scrollTo = useCallback(
+    destination => {
+      'worklet';
+      translateY.value = withSpring(destination, {damping: 50});
+    },
+    [translateY],
+  );
+  const context = useSharedValue({y: 0});
+
   const gesture = Gesture.Pan()
     .onStart(() => {
       context.value = {y: translateY.value};
@@ -63,39 +71,42 @@ const BottomSheet = props => {
     .onEnd(() => {
       if (!containerUp) {
         if (translateY.value <= -50) {
-          translateY.value = withSpring(-269, {damping: 50});
-          setContainerUp(true);
+          scrollTo(-269);
+          runOnJS(setContainerUp)(true);
+        } else if (translateY.value >= 50) {
+          scrollTo(100);
         } else {
-          translateY.value = withSpring(0, {damping: 50});
+          scrollTo(0);
         }
-        setBottomSheetSmall(true);
-      } else {
+        runOnJS(setBottomSheetSmall)(true);
+      } else if (containerUp) {
         if (translateY.value >= -240) {
-          translateY.value = withSpring(0, {damping: 50});
-          setContainerUp(false);
+          scrollTo(0);
+          runOnJS(setContainerUp)(false);
         } else {
-          translateY.value = withSpring(0, {damping: 50});
+          scrollTo(0);
         }
-        setBottomSheetSmall(false);
+        runOnJS(setBottomSheetSmall)(false);
       }
     });
+
   const rBottomSheetStyle = useAnimatedStyle(() => {
-    'worklet';
     return {
       transform: [{translateY: translateY.value}],
     };
   });
 
-  useEffect(() => {
-    const checkforUID = async () => {
-      const userUID = await AsyncStorage.getItem('UID');
-      if (userUID) {
-        console.log(userUID);
-        setUID(userUID);
-      }
-    };
-    checkforUID();
+  const checkforUID = useCallback(async () => {
+    const userUID = await AsyncStorage.getItem('UID');
+    if (userUID) {
+      // console.log(userUID);
+      setUID(userUID);
+    }
   }, []);
+
+  useEffect(() => {
+    checkforUID();
+  }, [checkforUID]);
 
   useEffect(() => {
     if (UID) {
@@ -104,47 +115,36 @@ const BottomSheet = props => {
           .ref(UID + 'PFP')
           .getDownloadURL()
           .catch(error => {
-            console.log(error);
+            // console.log(error);
             const getDefaultPicURL = async () => {
               const defaultURL = await storage()
                 .ref('circle.png')
                 .getDownloadURL()
                 .catch(error2 => {
-                  console.log(error2);
+                  // console.log(error2);
                 });
               setProfilePicURL(defaultURL);
-              console.log(url);
+              // console.log(url);
             };
             getDefaultPicURL();
           });
         setProfilePicURL(url);
-        console.log(url);
+        // console.log(url);
       };
       getProfilePicURL();
-
-      const getUserProfile = async () => {
-        const user = await firestore().collection('users').doc(UID).get();
-        setDisplayName(user._data?.displayName);
-      };
-      getUserProfile();
     }
+  }, [UID]);
+
+  const getUserProfile = useCallback(async () => {
+    const user = await firestore().collection('users').doc(UID).get();
+    setDisplayName(user._data?.displayName);
   }, [UID]);
 
   useEffect(() => {
     if (UID) {
-      const getUserProfile = async () => {
-        const user = await firestore().collection('users').doc(UID).get();
-        setDisplayName(user._data?.displayName);
-      };
       getUserProfile();
     }
-  }, [UID]);
-
-  useEffect(() => {
-    if (displayName) {
-      console.log(displayName);
-    }
-  }, [displayName]);
+  }, [UID, getUserProfile]);
 
   const postComment = () => {
     const currentdate = new Date();
@@ -175,45 +175,9 @@ const BottomSheet = props => {
           currentdate.getSeconds(),
       })
       .then(() => {
-        console.log('post added!');
+        // console.log('post added!');
       });
   };
-
-  // get all parent comments
-  useEffect(() => {
-    if (songID) {
-      firestore()
-        .collection('posts')
-        .doc(songID)
-        .collection('comments')
-        .where('parent', '==', 'none')
-        .orderBy('likeAmount', 'desc')
-        .get()
-        .then(querySnapshot => {
-          console.log(querySnapshot);
-          setParentComments(querySnapshot._docs);
-        });
-      //re-run this effect everytime a user posts a comment
-      setMyComment(false);
-    }
-  }, [songID, myComment]);
-
-  // useEffect(() => {
-  //   if (songID) {
-  //     firestore()
-  //       .collection('posts')
-  //       .doc(songID)
-  //       .collection('comments')
-  //       .doc('ttttttttttttttttttttttt')
-  //       .get()
-  //       .then(querySnapshot => {
-  //         console.log(querySnapshot);
-  //         setParentComments(querySnapshot._docs);
-  //       });
-  //     //re-run this effect everytime a user posts a comment
-  //     setMyComment(false);
-  //   }
-  // }, []);
 
   // Like a comment logic
   useEffect(() => {
@@ -251,12 +215,6 @@ const BottomSheet = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [likeChanged, commentID]);
 
-  useEffect(() => {
-    if (activeLikedComments) {
-      console.log(activeLikedComments);
-    }
-  }, [activeLikedComments]);
-
   // REPLY LOGIC BELOW
   const postReply = () => {
     const currentdate = new Date();
@@ -286,7 +244,7 @@ const BottomSheet = props => {
           currentdate.getSeconds(),
       })
       .then(() => {
-        console.log('post added!');
+        // console.log('post added!');
       });
     firestore()
       .collection('posts')
@@ -297,14 +255,14 @@ const BottomSheet = props => {
         hasReplies: 'yes',
       })
       .then(() => {
-        console.log('post added!');
+        // console.log('post added!');
       });
   };
 
   const commentHandler = () => {
     if (replyActive) {
       postReply();
-      console.log('reply is true');
+      // console.log('reply is true');
       setReplyActive(false);
     } else {
       postComment();
@@ -321,7 +279,7 @@ const BottomSheet = props => {
         .orderBy('likeAmount', 'desc')
         .get()
         .then(querySnapshot => {
-          console.log(querySnapshot);
+          // console.log(querySnapshot);
           setParentReplies(querySnapshot);
         });
       //re-run this effect everytime a user posts a comment
@@ -329,14 +287,6 @@ const BottomSheet = props => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [viewReplies, myComment]);
-
-  useEffect(() => {
-    if (parentReplies) {
-      console.log(parentReplies?._docs[0]?._data?.parent);
-    } else {
-      console.log('not true');
-    }
-  }, [parentReplies]);
 
   return (
     <>
@@ -369,7 +319,7 @@ const BottomSheet = props => {
               renderItem={({item, index}) => {
                 return (
                   <>
-                    <View key={index} style={styles.mainContainer}>
+                    <View key={item.id} style={styles.mainContainer}>
                       <View style={styles.commentContainer}>
                         <View style={styles.commentLeftSide}>
                           <TouchableOpacity
@@ -562,7 +512,7 @@ const BottomSheet = props => {
       </GestureDetector>
     </>
   );
-};
+});
 
 export default BottomSheet;
 
