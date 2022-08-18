@@ -27,8 +27,7 @@ import Animated, {
 } from 'react-native-reanimated';
 const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 
-const BottomSheet = props => {
-  console.log(SCREEN_HEIGHT);
+const BottomSheet = React.memo(props => {
   const caption = props.captionProps;
   const songID = props.songIDProps;
   const navigation = props.navigationProps;
@@ -190,9 +189,35 @@ const BottomSheet = props => {
       });
   };
 
+  useEffect(() => {
+    if (songID) {
+      console.log(songID);
+    }
+  }, [songID]);
+
+  // console.log('yes');
+
+  // useMemo(() => {
+  //   if (trueSongID) {
+  //     console.log('yo');
+  //     firestore()
+  //       .collection('posts')
+  //       .doc(trueSongID)
+  //       .collection('comments')
+  //       .where('parent', '==', 'none')
+  //       .orderBy('likeAmount', 'desc')
+  //       .get()
+  //       .then(querySnapshot => {
+  //         console.log(querySnapshot);
+  //         setParentComments(querySnapshot._docs);
+  //       });
+  //   }
+  // }, [trueSongID]);
+
   // get all parent comments
   useEffect(() => {
     if (songID) {
+      console.log('yo');
       firestore()
         .collection('posts')
         .doc(songID)
@@ -204,27 +229,8 @@ const BottomSheet = props => {
           console.log(querySnapshot);
           setParentComments(querySnapshot._docs);
         });
-      //re-run this effect everytime a user posts a comment
-      setMyComment(false);
     }
-  }, [songID, myComment]);
-
-  // useEffect(() => {
-  //   if (songID) {
-  //     firestore()
-  //       .collection('posts')
-  //       .doc(songID)
-  //       .collection('comments')
-  //       .doc('ttttttttttttttttttttttt')
-  //       .get()
-  //       .then(querySnapshot => {
-  //         console.log(querySnapshot);
-  //         setParentComments(querySnapshot._docs);
-  //       });
-  //     //re-run this effect everytime a user posts a comment
-  //     setMyComment(false);
-  //   }
-  // }, []);
+  }, [songID]);
 
   // Like a comment logic
   useEffect(() => {
@@ -573,7 +579,7 @@ const BottomSheet = props => {
       </GestureDetector>
     </>
   );
-};
+});
 
 export default BottomSheet;
 

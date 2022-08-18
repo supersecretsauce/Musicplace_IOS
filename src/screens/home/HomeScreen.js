@@ -188,6 +188,7 @@ const HomeScreen = ({navigation}) => {
 
   useEffect(() => {
     if (feed) {
+      console.log('check me too');
       setSongID(feed[0].id);
     }
   }, [feed]);
