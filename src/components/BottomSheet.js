@@ -28,6 +28,7 @@ import Animated, {
 const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 
 const BottomSheet = props => {
+  console.log(SCREEN_HEIGHT);
   const caption = props.captionProps;
   const songID = props.songIDProps;
   const navigation = props.navigationProps;
