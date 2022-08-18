@@ -31,12 +31,12 @@ const BottomSheet = React.memo(props => {
   const caption = props.captionProps;
   const songID = props.songIDProps;
   const navigation = props.navigationProps;
+  const parentComments = props.parentCommentsProps;
   const [UID, setUID] = useState();
   const [displayName, setDisplayName] = useState();
   const [profilePicURL, setProfilePicURL] = useState();
   const [inputTop, setInputTop] = useState(false);
   const [commentText, setCommentText] = useState();
-  const [parentComments, setParentComments] = useState();
   const [activeLikedComments, setActiveLikedComments] = useState([]);
   const [likeChanged, setLikedChanged] = useState(false);
   const [myComment, setMyComment] = useState(false);
@@ -96,16 +96,17 @@ const BottomSheet = React.memo(props => {
     };
   });
 
-  useEffect(() => {
-    const checkforUID = async () => {
-      const userUID = await AsyncStorage.getItem('UID');
-      if (userUID) {
-        console.log(userUID);
-        setUID(userUID);
-      }
-    };
-    checkforUID();
+  const checkforUID = useCallback(async () => {
+    const userUID = await AsyncStorage.getItem('UID');
+    if (userUID) {
+      // console.log(userUID);
+      setUID(userUID);
+    }
   }, []);
+
+  useEffect(() => {
+    checkforUID();
+  }, [checkforUID]);
 
   useEffect(() => {
     if (UID) {
@@ -114,47 +115,36 @@ const BottomSheet = React.memo(props => {
           .ref(UID + 'PFP')
           .getDownloadURL()
           .catch(error => {
-            console.log(error);
+            // console.log(error);
             const getDefaultPicURL = async () => {
               const defaultURL = await storage()
                 .ref('circle.png')
                 .getDownloadURL()
                 .catch(error2 => {
-                  console.log(error2);
+                  // console.log(error2);
                 });
               setProfilePicURL(defaultURL);
-              console.log(url);
+              // console.log(url);
             };
             getDefaultPicURL();
           });
         setProfilePicURL(url);
-        console.log(url);
+        // console.log(url);
       };
       getProfilePicURL();
-
-      const getUserProfile = async () => {
-        const user = await firestore().collection('users').doc(UID).get();
-        setDisplayName(user._data?.displayName);
-      };
-      getUserProfile();
     }
+  }, [UID]);
+
+  const getUserProfile = useCallback(async () => {
+    const user = await firestore().collection('users').doc(UID).get();
+    setDisplayName(user._data?.displayName);
   }, [UID]);
 
   useEffect(() => {
     if (UID) {
-      const getUserProfile = async () => {
-        const user = await firestore().collection('users').doc(UID).get();
-        setDisplayName(user._data?.displayName);
-      };
       getUserProfile();
     }
-  }, [UID]);
-
-  useEffect(() => {
-    if (displayName) {
-      console.log(displayName);
-    }
-  }, [displayName]);
+  }, [UID, getUserProfile]);
 
   const postComment = () => {
     const currentdate = new Date();
@@ -185,52 +175,9 @@ const BottomSheet = React.memo(props => {
           currentdate.getSeconds(),
       })
       .then(() => {
-        console.log('post added!');
+        // console.log('post added!');
       });
   };
-
-  useEffect(() => {
-    if (songID) {
-      console.log(songID);
-    }
-  }, [songID]);
-
-  // console.log('yes');
-
-  // useMemo(() => {
-  //   if (trueSongID) {
-  //     console.log('yo');
-  //     firestore()
-  //       .collection('posts')
-  //       .doc(trueSongID)
-  //       .collection('comments')
-  //       .where('parent', '==', 'none')
-  //       .orderBy('likeAmount', 'desc')
-  //       .get()
-  //       .then(querySnapshot => {
-  //         console.log(querySnapshot);
-  //         setParentComments(querySnapshot._docs);
-  //       });
-  //   }
-  // }, [trueSongID]);
-
-  // get all parent comments
-  useEffect(() => {
-    if (songID) {
-      console.log('yo');
-      firestore()
-        .collection('posts')
-        .doc(songID)
-        .collection('comments')
-        .where('parent', '==', 'none')
-        .orderBy('likeAmount', 'desc')
-        .get()
-        .then(querySnapshot => {
-          console.log(querySnapshot);
-          setParentComments(querySnapshot._docs);
-        });
-    }
-  }, [songID]);
 
   // Like a comment logic
   useEffect(() => {
@@ -268,12 +215,6 @@ const BottomSheet = React.memo(props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [likeChanged, commentID]);
 
-  useEffect(() => {
-    if (activeLikedComments) {
-      console.log(activeLikedComments);
-    }
-  }, [activeLikedComments]);
-
   // REPLY LOGIC BELOW
   const postReply = () => {
     const currentdate = new Date();
@@ -303,7 +244,7 @@ const BottomSheet = React.memo(props => {
           currentdate.getSeconds(),
       })
       .then(() => {
-        console.log('post added!');
+        // console.log('post added!');
       });
     firestore()
       .collection('posts')
@@ -314,14 +255,14 @@ const BottomSheet = React.memo(props => {
         hasReplies: 'yes',
       })
       .then(() => {
-        console.log('post added!');
+        // console.log('post added!');
       });
   };
 
   const commentHandler = () => {
     if (replyActive) {
       postReply();
-      console.log('reply is true');
+      // console.log('reply is true');
       setReplyActive(false);
     } else {
       postComment();
@@ -338,7 +279,7 @@ const BottomSheet = React.memo(props => {
         .orderBy('likeAmount', 'desc')
         .get()
         .then(querySnapshot => {
-          console.log(querySnapshot);
+          // console.log(querySnapshot);
           setParentReplies(querySnapshot);
         });
       //re-run this effect everytime a user posts a comment
@@ -346,14 +287,6 @@ const BottomSheet = React.memo(props => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [viewReplies, myComment]);
-
-  useEffect(() => {
-    if (parentReplies) {
-      console.log(parentReplies?._docs[0]?._data?.parent);
-    } else {
-      console.log('not true');
-    }
-  }, [parentReplies]);
 
   return (
     <>
@@ -386,7 +319,7 @@ const BottomSheet = React.memo(props => {
               renderItem={({item, index}) => {
                 return (
                   <>
-                    <View key={index} style={styles.mainContainer}>
+                    <View key={item.id} style={styles.mainContainer}>
                       <View style={styles.commentContainer}>
                         <View style={styles.commentLeftSide}>
                           <TouchableOpacity

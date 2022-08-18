@@ -31,7 +31,7 @@ export default function App() {
   const [currentTrack, setCurrentTrack] = useState();
   const [homeScreenFocus, setHomeScreenFocus] = useState();
   const [profileScreenFocus, setProfileScreenFocus] = useState();
-
+  const [parentComments, setParentComments] = useState();
   const [accessToken, setAccessToken] = useState('');
   const [username, setUsername] = useState('');
   const [currentPost, setCurrentPost] = useState();
@@ -102,6 +102,8 @@ export default function App() {
             setCurrentPost,
             profileScreenFocus,
             setProfileScreenFocus,
+            parentComments,
+            setParentComments,
           }}>
           {userLogin ? (
             <Tab.Navigator
