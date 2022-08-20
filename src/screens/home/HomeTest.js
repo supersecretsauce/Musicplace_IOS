@@ -6,7 +6,9 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
+  FlatList,
   Linking,
+  Dimensions,
 } from 'react-native';
 import React, {
   useState,
@@ -14,6 +16,7 @@ import React, {
   useContext,
   useCallback,
   useMemo,
+  useRef,
 } from 'react';
 import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -29,7 +32,7 @@ import {authFetch} from '../../services/SpotifyService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FollowingScreen from './FollowingScreen';
 import SheetTest from '../../components/SheetTest';
-const HomeScreen = React.memo(({navigation}) => {
+const HomeTest = ({navigation}) => {
   const [feed, setFeed] = useState();
   const [forYouTrue, setForYouTrue] = useState(true);
   const [like, setLike] = useState(false);
@@ -41,7 +44,8 @@ const HomeScreen = React.memo(({navigation}) => {
   const [loopValue, setLoopValue] = useState();
   const [songID, setSongID] = useState();
   const [parentComments, setParentComments] = useState();
-
+  const FlatListRef = useRef();
+  const [currentIndex, setCurrentIndex] = useState(0);
   const {
     currentTrack,
     setCurrentTrack,
@@ -52,36 +56,9 @@ const HomeScreen = React.memo(({navigation}) => {
     setRefreshToken,
   } = useContext(Context);
 
-  // check if user has spotify connected to display proper screens
-  const checkForSpotifyConnection = useCallback(async () => {
-    const spotifyBoolean = await AsyncStorage.getItem('hasSpotify');
-    const localRefresh = await AsyncStorage.getItem('spotRefreshToken');
-    const localAccess = await AsyncStorage.getItem('spotAccessToken');
-
-    if (spotifyBoolean === 'false') {
-      // console.log('not connected');
-    } else if (spotifyBoolean === 'true') {
-      setAccessToken(localAccess);
-      setRefreshToken(localRefresh);
-      // console.log(accessToken);
-    }
-  }, [setAccessToken, setRefreshToken]);
-
-  useEffect(() => {
-    checkForSpotifyConnection();
-  }, [accessToken, checkForSpotifyConnection, setAccessToken, setRefreshToken]);
-
   const focusHandler = () => {
     setForYouTrue(!forYouTrue);
   };
-
-  useEffect(() => {
-    if (forYouTrue && currentTrack) {
-      currentTrack.play();
-    } else if (forYouTrue === false) {
-      currentTrack.pause();
-    }
-  }, [currentTrack, forYouTrue]);
 
   useFocusEffect(
     useCallback(() => {
@@ -90,28 +67,80 @@ const HomeScreen = React.memo(({navigation}) => {
     }, [setHomeScreenFocus]),
   );
 
+  //pause track when off the for you page
+  useEffect(() => {
+    if (forYouTrue && currentTrack) {
+      currentTrack.play();
+    } else if (forYouTrue === false) {
+      currentTrack.pause();
+    }
+  }, [currentTrack, forYouTrue]);
+
+  // check if user has spotify connected to display proper screens
+  const checkForSpotifyConnection = useCallback(async () => {
+    const spotifyBoolean = await AsyncStorage.getItem('hasSpotify');
+    const localRefresh = await AsyncStorage.getItem('spotRefreshToken');
+    const localAccess = await AsyncStorage.getItem('spotAccessToken');
+
+    if (spotifyBoolean === 'false') {
+    } else if (spotifyBoolean === 'true') {
+      setAccessToken(localAccess);
+      setRefreshToken(localRefresh);
+    }
+  }, [setAccessToken, setRefreshToken]);
+  useEffect(() => {
+    checkForSpotifyConnection();
+  }, [accessToken, checkForSpotifyConnection, setAccessToken, setRefreshToken]);
+
   // update this to run less often?
   useEffect(() => {
-    const fetchFeed = async () => {
-      const feedData = await firestore()
+    const fetchFeed = () => {
+      firestore()
         .collection('posts')
-        .orderBy('popularity', 'desc')
-        .startAt(45)
-        .endAt(43)
-        .get();
-      if (feedData) {
-        console.log(feedData._docs);
-        setFeed(feedData._docs);
-      }
+        .orderBy('releaseDate', 'asc')
+
+        .get()
+        .then(querySnapshot => {
+          console.log(querySnapshot);
+          setFeed(querySnapshot._docs);
+        });
     };
     fetchFeed();
   }, []);
 
+  //index logic
+  const onViewableItemsChanged = ({viewableItems}) => {
+    if (viewableItems) {
+      // console.log(viewableItems[0].index);
+      setCurrentIndex(viewableItems[0].index);
+    }
+  };
+
+  const setTheIndex = useCallback(() => {
+    setSongIndex(currentIndex);
+  }, [currentIndex]);
+
+  useEffect(() => {
+    if (currentIndex) {
+      setTheIndex();
+    }
+  }, [currentIndex, setTheIndex]);
+
+  useEffect(() => {
+    if (songIndex) {
+      console.log(songIndex);
+      setTrackPlaying(true);
+      currentTrack.pause();
+      setSongID(feed[songIndex].id);
+    }
+  }, [currentTrack, feed, songIndex]);
+
+  const viewabilityConfigCallbackPairs = useRef([{onViewableItemsChanged}]);
   //set the song preview url based on index of feed
   useEffect(() => {
     if (feed) {
       setPostPreviewURL(feed[songIndex]._data.previewUrl);
-      // console.log(feed);
+      console.log(feed);
     }
   }, [feed, songIndex]);
 
@@ -201,13 +230,6 @@ const HomeScreen = React.memo(({navigation}) => {
     }
   };
 
-  useEffect(() => {
-    if (feed) {
-      // console.log('check me too');
-      setSongID(feed[0].id);
-    }
-  }, [feed]);
-
   const listenOnSpotify = async () => {
     currentTrack.pause();
     await Linking.openURL(
@@ -254,102 +276,48 @@ const HomeScreen = React.memo(({navigation}) => {
               </Text>
             </View>
             {forYouTrue ? (
-              <Swiper
-                horizontal={true}
-                showsButtons={false}
-                index={0}
-                loop={true}
-                loadMinimal={true}
-                loadMinimalSize={1}
-                onIndexChanged={index => {
-                  setSongIndex(index);
-                  setTrackPlaying(true);
-                  currentTrack.pause();
-                  setSongID(feed[index].id);
-                }}
-                showsPagination={false}>
-                {feed.map(post => {
-                  return (
-                    <SafeAreaView key={post.id} style={styles.postContainer}>
-                      <TouchableOpacity
-                        onPress={pauseHandler}
-                        style={{
-                          width: '100%',
-                          alignSelf: 'center',
-                          alignItems: 'center',
-                        }}>
-                        <Image
-                          style={styles.coverArt}
-                          source={{
-                            uri: post._data.songPhoto,
-                          }}
-                        />
-                      </TouchableOpacity>
-                      <View style={styles.middleContainer}>
-                        <View style={styles.trackInfoContainer}>
-                          <Text numberOfLines={1} style={styles.trackName}>
-                            {post._data.songName}
-                          </Text>
-                          <View style={styles.trackInfoBottom}>
-                            <Text numberOfLines={1} style={styles.artistName}>
-                              {/* {Object.values(post._data.artists)
-                              .map(artist => artist)
-                              .join(', ')} */}
-                              {post._data.artists
-                                .map(artist => {
-                                  return artist.name;
-                                })
-                                .join(', ')}
-                            </Text>
-                            <Ionicons
-                              style={styles.smallDot}
-                              name="ellipse"
-                              color="white"
-                              size={5}
+              <>
+                <FlatList
+                  horizontal={true}
+                  data={feed}
+                  snapToAlignment="start"
+                  decelerationRate={'fast'}
+                  viewabilityConfigCallbackPairs={
+                    viewabilityConfigCallbackPairs.current
+                  }
+                  snapToInterval={Dimensions.get('window').width}
+                  renderItem={({item, index}) => {
+                    return (
+                      <>
+                        <View style={styles.postContainer} key={index}>
+                          <TouchableOpacity
+                            onPress={pauseHandler}
+                            // eslint-disable-next-line react-native/no-inline-styles
+                            style={{
+                              width: '100%',
+                              alignSelf: 'center',
+                              alignItems: 'center',
+                            }}>
+                            <Image
+                              style={styles.coverArt}
+                              source={{
+                                uri: item._data.songPhoto,
+                              }}
                             />
-                            <Text numberOfLines={1} style={styles.albumName}>
-                              {post._data.albumName}
-                            </Text>
-                          </View>
-                        </View>
-                        <View style={styles.interactContainer}>
-                          <TouchableOpacity style={styles.spotifyButton}>
-                            <Spotify height={24} width={24} />
                           </TouchableOpacity>
-                          <View style={styles.likesContainer}>
-                            <TouchableOpacity
-                              onPress={() => {
-                                setLike(!like);
-                                setLikeFiller(!likeFiller);
-                                showToast();
-                              }}>
-                              <Ionicons
-                                style={styles.socialIcon}
-                                name={likeFiller ? 'heart' : 'heart-outline'}
-                                color={likeFiller ? '#1DB954' : 'grey'}
-                                size={28}
-                              />
-                            </TouchableOpacity>
+                          <View>
+                            {/* <View>
+                              <Text numberOfLines={1} style={styles.trackName}>
+                                {item._data.songName}
+                              </Text>
+                            </View> */}
                           </View>
                         </View>
-                      </View>
-                      <TouchableOpacity
-                        onPress={listenOnSpotify}
-                        style={styles.listenOnSpot}>
-                        <Text style={styles.listenOnSpotText}>
-                          LISTEN ON SPOTIFY
-                        </Text>
-                      </TouchableOpacity>
-                      <BottomSheet
-                        songIDProps={songID}
-                        captionProps={post._data.caption}
-                        navigationProps={navigation}
-                        parentCommentsProps={parentComments}
-                      />
-                    </SafeAreaView>
-                  );
-                })}
-              </Swiper>
+                      </>
+                    );
+                  }}
+                />
+              </>
             ) : (
               <FollowingScreen />
             )}
@@ -364,9 +332,9 @@ const HomeScreen = React.memo(({navigation}) => {
       )}
     </>
   );
-});
+};
 
-export default HomeScreen;
+export default HomeTest;
 
 const styles = StyleSheet.create({
   container: {
@@ -376,6 +344,7 @@ const styles = StyleSheet.create({
   topContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
+    marginBottom: 20,
   },
   unFocus: {
     color: Colors.greyOut,
@@ -390,111 +359,16 @@ const styles = StyleSheet.create({
     marginHorizontal: '5%',
   },
   postContainer: {
-    alignItems: 'center',
+    width: Dimensions.get('window').width,
   },
   coverArt: {
-    marginTop: '5%',
-    height: 350,
+    height: '71%',
     width: '90%',
-  },
-  middleContainer: {
-    width: '90%',
-    marginVertical: '5%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    height: '11%',
-  },
-  trackInfoContainer: {
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
   },
   trackName: {
     color: 'white',
     fontFamily: 'Inter-bold',
     fontSize: 24,
     width: 275,
-  },
-  trackInfoBottom: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  artistName: {
-    color: 'white',
-    fontFamily: 'Inter-regular',
-    fontSize: 16,
-    maxWidth: 130,
-  },
-  smallDot: {
-    marginHorizontal: '2%',
-  },
-  albumName: {
-    color: 'white',
-    fontFamily: 'Inter-regular',
-    fontSize: 16,
-    maxWidth: 130,
-  },
-  interactContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-  },
-  spotifyButton: {
-    marginTop: '3%',
-  },
-  likesContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 12,
-  },
-  socialIcon: {
-    marginRight: 2,
-  },
-  addedSong: {
-    position: 'absolute',
-    backgroundColor: 'white',
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderRadius: 6,
-    top: '99%',
-    zIndex: 1,
-    alignSelf: 'center',
-  },
-  addedSongText: {
-    color: 'black',
-    fontFamily: 'Inter-Regular',
-    fontSize: 12,
-  },
-
-  addedSongFade: {
-    position: 'absolute',
-    backgroundColor: 'clear',
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderRadius: 6,
-    top: '99%',
-    zIndex: 0,
-    alignSelf: 'center',
-  },
-  addedSongTextFade: {
-    color: 'black',
-    fontFamily: 'Inter-Regular',
-    fontSize: 12,
-  },
-  listenOnSpot: {
-    position: 'absolute',
-    top: '99%',
-    paddingHorizontal: 50,
-    paddingVertical: 12,
-    borderRadius: 20,
-    backgroundColor: Colors.spotify,
-  },
-  listenOnSpotText: {
-    color: 'white',
-    fontFamily: 'Inter-Bold',
-    fontSize: 16,
   },
 });

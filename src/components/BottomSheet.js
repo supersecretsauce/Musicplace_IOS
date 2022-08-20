@@ -19,7 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Animated, {
+import Reanimated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -291,7 +291,7 @@ const BottomSheet = React.memo(props => {
   return (
     <>
       <GestureDetector gesture={gesture}>
-        <Animated.View
+        <Reanimated.View
           style={[styles.commentContainerBackground, rBottomSheetStyle]}>
           <View style={styles.drawer} />
           {caption && (
@@ -508,7 +508,7 @@ const BottomSheet = React.memo(props => {
               returnKeyType="send"
             />
           </View>
-        </Animated.View>
+        </Reanimated.View>
       </GestureDetector>
     </>
   );
