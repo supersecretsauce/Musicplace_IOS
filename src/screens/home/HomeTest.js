@@ -101,7 +101,7 @@ const HomeTest = ({navigation}) => {
 
         .get()
         .then(querySnapshot => {
-          console.log(querySnapshot);
+          // console.log(querySnapshot);
           setFeed(querySnapshot._docs);
         });
     };
@@ -128,9 +128,8 @@ const HomeTest = ({navigation}) => {
 
   useEffect(() => {
     if (songIndex) {
-      console.log(songIndex);
+      currentTrack.stop();
       setTrackPlaying(true);
-      currentTrack.pause();
       setSongID(feed[songIndex].id);
     }
   }, [currentTrack, feed, songIndex]);
@@ -281,7 +280,7 @@ const HomeTest = ({navigation}) => {
                   horizontal={true}
                   data={feed}
                   snapToAlignment="start"
-                  decelerationRate={'fast'}
+                  decelerationRate={0.0001}
                   viewabilityConfigCallbackPairs={
                     viewabilityConfigCallbackPairs.current
                   }
@@ -295,7 +294,6 @@ const HomeTest = ({navigation}) => {
                             // eslint-disable-next-line react-native/no-inline-styles
                             style={{
                               width: '100%',
-                              alignSelf: 'center',
                               alignItems: 'center',
                             }}>
                             <Image
@@ -305,13 +303,73 @@ const HomeTest = ({navigation}) => {
                               }}
                             />
                           </TouchableOpacity>
-                          <View>
-                            {/* <View>
+                          <View style={styles.middleContainer}>
+                            <View style={styles.trackInfoContainer}>
                               <Text numberOfLines={1} style={styles.trackName}>
                                 {item._data.songName}
                               </Text>
-                            </View> */}
+                              <View style={styles.trackInfoBottom}>
+                                <Text
+                                  numberOfLines={1}
+                                  style={styles.artistName}>
+                                  {/* {Object.values(post._data.artists)
+                              .map(artist => artist)
+                              .join(', ')} */}
+                                  {item._data.artists
+                                    .map(artist => {
+                                      return artist.name;
+                                    })
+                                    .join(', ')}
+                                </Text>
+                                <Ionicons
+                                  style={styles.smallDot}
+                                  name="ellipse"
+                                  color="white"
+                                  size={5}
+                                />
+                                <Text
+                                  numberOfLines={1}
+                                  style={styles.albumName}>
+                                  {item._data.albumName}
+                                </Text>
+                              </View>
+                            </View>
+                            <View style={styles.interactContainer}>
+                              <TouchableOpacity style={styles.spotifyButton}>
+                                <Spotify height={24} width={24} />
+                              </TouchableOpacity>
+                              <View style={styles.likesContainer}>
+                                <TouchableOpacity
+                                  onPress={() => {
+                                    setLike(!like);
+                                    setLikeFiller(!likeFiller);
+                                    showToast();
+                                  }}>
+                                  <Ionicons
+                                    style={styles.socialIcon}
+                                    name={
+                                      likeFiller ? 'heart' : 'heart-outline'
+                                    }
+                                    color={likeFiller ? '#1DB954' : 'grey'}
+                                    size={28}
+                                  />
+                                </TouchableOpacity>
+                              </View>
+                            </View>
                           </View>
+                          <TouchableOpacity
+                            onPress={listenOnSpotify}
+                            style={styles.listenOnSpot}>
+                            <Text style={styles.listenOnSpotText}>
+                              LISTEN ON SPOTIFY
+                            </Text>
+                          </TouchableOpacity>
+                          <BottomSheet
+                            songIDProps={songID}
+                            captionProps={item._data.caption}
+                            navigationProps={navigation}
+                            parentCommentsProps={parentComments}
+                          />
                         </View>
                       </>
                     );
@@ -360,15 +418,110 @@ const styles = StyleSheet.create({
   },
   postContainer: {
     width: Dimensions.get('window').width,
+    alignItems: 'center',
   },
   coverArt: {
-    height: '71%',
+    height: 350,
+    width: 350,
+    resizeMode: 'contain',
+  },
+  middleContainer: {
     width: '90%',
+    marginTop: '5%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    height: '8.5%',
+  },
+  trackInfoContainer: {
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
   },
   trackName: {
     color: 'white',
     fontFamily: 'Inter-bold',
     fontSize: 24,
     width: 275,
+  },
+  trackInfoBottom: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  artistName: {
+    color: 'white',
+    fontFamily: 'Inter-regular',
+    fontSize: 16,
+    maxWidth: 130,
+  },
+  smallDot: {
+    marginHorizontal: '2%',
+  },
+  albumName: {
+    color: 'white',
+    fontFamily: 'Inter-regular',
+    fontSize: 16,
+    maxWidth: 130,
+  },
+  interactContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
+  spotifyButton: {
+    marginTop: '3%',
+  },
+  likesContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 12,
+  },
+  socialIcon: {
+    marginRight: 2,
+  },
+  addedSong: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderRadius: 6,
+    top: '99%',
+    zIndex: 1,
+    alignSelf: 'center',
+  },
+  addedSongText: {
+    color: 'black',
+    fontFamily: 'Inter-Regular',
+    fontSize: 12,
+  },
+
+  addedSongFade: {
+    position: 'absolute',
+    backgroundColor: 'clear',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderRadius: 6,
+    top: '99%',
+    zIndex: 0,
+    alignSelf: 'center',
+  },
+  addedSongTextFade: {
+    color: 'black',
+    fontFamily: 'Inter-Regular',
+    fontSize: 12,
+  },
+  listenOnSpot: {
+    top: '5%',
+    paddingHorizontal: 50,
+    paddingVertical: 12,
+    borderRadius: 20,
+    backgroundColor: Colors.spotify,
+  },
+  listenOnSpotText: {
+    color: 'white',
+    fontFamily: 'Inter-Bold',
+    fontSize: 16,
   },
 });
