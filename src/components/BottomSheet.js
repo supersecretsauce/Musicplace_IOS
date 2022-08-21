@@ -33,7 +33,6 @@ const BottomSheet = React.memo(props => {
   const caption = props.captionProps;
   const songID = props.songIDProps;
   const navigation = props.navigationProps;
-  const parentComments = props.parentCommentsProps;
   const [UID, setUID] = useState();
   const [displayName, setDisplayName] = useState();
   const [profilePicURL, setProfilePicURL] = useState();
@@ -53,15 +52,8 @@ const BottomSheet = React.memo(props => {
   const [viewReplies, setViewReplies] = useState(false);
   const [containerUp, setContainerUp] = useState(false);
   const translateY = useSharedValue(0);
+  const [parentComments, setParentComments] = useState();
   const [keyboardSpacing, setKeyboardSpacing] = useState();
-
-  // const scrollTo = useCallback(
-  //   destination => {
-  //     'worklet';
-  //     translateY.value = withSpring(destination, {damping: 50});
-  //   },
-  //   [translateY],
-  // );
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
@@ -297,6 +289,25 @@ const BottomSheet = React.memo(props => {
       postComment();
     }
   };
+
+  useEffect(() => {
+    if (songID) {
+      // console.log('yo');
+      firestore()
+        .collection('posts')
+        .doc(songID)
+        .collection('comments')
+        .where('parent', '==', 'none')
+        .orderBy('likeAmount', 'desc')
+        .get()
+        .then(querySnapshot => {
+          // console.log(querySnapshot);
+          console.log('test');
+          setMyComment(false);
+          setParentComments(querySnapshot._docs);
+        });
+    }
+  }, [songID, myComment]);
 
   useEffect(() => {
     if (replyID) {
@@ -565,7 +576,7 @@ const styles = StyleSheet.create({
     borderTopEndRadius: 30,
     borderTopStartRadius: 30,
     position: 'absolute',
-    top: 515,
+    top: 510,
   },
   drawer: {
     borderBottomColor: 'white',

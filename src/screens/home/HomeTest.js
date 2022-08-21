@@ -43,9 +43,9 @@ const HomeTest = ({navigation}) => {
   const [trackPlaying, setTrackPlaying] = useState(true);
   const [loopValue, setLoopValue] = useState();
   const [songID, setSongID] = useState();
-  const [parentComments, setParentComments] = useState();
   const FlatListRef = useRef();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [refreshComments, setRefreshComments] = useState(false);
   const {
     currentTrack,
     setCurrentTrack,
@@ -127,10 +127,13 @@ const HomeTest = ({navigation}) => {
   }, [currentIndex, setTheIndex]);
 
   useEffect(() => {
-    if (songIndex) {
-      currentTrack.stop();
+    if (songIndex === 0 && feed) {
+      setSongID(feed[0].id);
+      setTrackPlaying(true);
+    } else if (songIndex && feed) {
       setTrackPlaying(true);
       setSongID(feed[songIndex].id);
+      currentTrack.stop();
     }
   }, [currentTrack, feed, songIndex]);
 
@@ -236,27 +239,6 @@ const HomeTest = ({navigation}) => {
     );
   };
 
-  const getSong = useCallback(() => {
-    if (songID) {
-      // console.log('yo');
-      firestore()
-        .collection('posts')
-        .doc(songID)
-        .collection('comments')
-        .where('parent', '==', 'none')
-        .orderBy('likeAmount', 'desc')
-        .get()
-        .then(querySnapshot => {
-          // console.log(querySnapshot);
-          setParentComments(querySnapshot._docs);
-        });
-    }
-  }, [songID]);
-
-  useEffect(() => {
-    getSong();
-  }, [getSong, songID]);
-
   return (
     <>
       {feed ? (
@@ -349,7 +331,12 @@ const HomeTest = ({navigation}) => {
                     );
                   }}
                 />
-                <BottomSheet style={styles.bottomSheet} />
+                <BottomSheet
+                  style={styles.bottomSheet}
+                  songIDProps={songID}
+                  captionProps={feed[songIndex]._data.caption}
+                  navigationProps={navigation}
+                />
               </>
             ) : (
               <FollowingScreen />
@@ -493,7 +480,7 @@ const styles = StyleSheet.create({
   },
   listenOnSpot: {
     position: 'absolute',
-    top: '69%',
+    top: '71%',
     paddingHorizontal: 50,
     paddingVertical: 12,
     borderRadius: 20,
