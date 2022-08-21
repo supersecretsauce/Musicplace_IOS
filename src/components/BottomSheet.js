@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Keyboard,
+  KeyboardAvoidingView,
 } from 'react-native';
 import React, {useState, useEffect, useRef, useMemo, useCallback} from 'react';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
@@ -25,13 +26,13 @@ import Animated, {
   withSpring,
   runOnJS,
 } from 'react-native-reanimated';
+
 const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 
 const BottomSheet = React.memo(props => {
   const caption = props.captionProps;
   const songID = props.songIDProps;
   const navigation = props.navigationProps;
-  const parentComments = props.parentCommentsProps;
   const [UID, setUID] = useState();
   const [displayName, setDisplayName] = useState();
   const [profilePicURL, setProfilePicURL] = useState();
@@ -51,15 +52,35 @@ const BottomSheet = React.memo(props => {
   const [viewReplies, setViewReplies] = useState(false);
   const [containerUp, setContainerUp] = useState(false);
   const translateY = useSharedValue(0);
-  const scrollTo = useCallback(
-    destination => {
-      'worklet';
-      translateY.value = withSpring(destination, {damping: 50});
-    },
-    [translateY],
-  );
-  const context = useSharedValue({y: 0});
+  const [parentComments, setParentComments] = useState();
+  const [keyboardSpacing, setKeyboardSpacing] = useState();
 
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      e => {
+        console.log('yes');
+        console.log(e.endCoordinates.height);
+        console.log(Dimensions.get('window').height);
+        setKeyboardSpacing(
+          Dimensions.get('window').height - e.endCoordinates.height,
+        );
+      },
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        console.log('no');
+        console.log(Dimensions.get('window').height);
+      },
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
+  const context = useSharedValue({y: 0});
   const gesture = Gesture.Pan()
     .onStart(() => {
       context.value = {y: translateY.value};
@@ -71,20 +92,20 @@ const BottomSheet = React.memo(props => {
     .onEnd(() => {
       if (!containerUp) {
         if (translateY.value <= -50) {
-          scrollTo(-269);
+          translateY.value = withSpring(-269, {damping: 50});
           runOnJS(setContainerUp)(true);
         } else if (translateY.value >= 50) {
-          scrollTo(100);
+          translateY.value = withSpring(100, {damping: 50});
         } else {
-          scrollTo(0);
+          translateY.value = withSpring(0, {damping: 50});
         }
         runOnJS(setBottomSheetSmall)(true);
       } else if (containerUp) {
         if (translateY.value >= -240) {
-          scrollTo(0);
+          translateY.value = withSpring(0, {damping: 50});
           runOnJS(setContainerUp)(false);
         } else {
-          scrollTo(0);
+          translateY.value = withSpring(0, {damping: 50});
         }
         runOnJS(setBottomSheetSmall)(false);
       }
@@ -268,6 +289,25 @@ const BottomSheet = React.memo(props => {
       postComment();
     }
   };
+
+  useEffect(() => {
+    if (songID) {
+      // console.log('yo');
+      firestore()
+        .collection('posts')
+        .doc(songID)
+        .collection('comments')
+        .where('parent', '==', 'none')
+        .orderBy('likeAmount', 'desc')
+        .get()
+        .then(querySnapshot => {
+          // console.log(querySnapshot);
+          console.log('test');
+          setMyComment(false);
+          setParentComments(querySnapshot._docs);
+        });
+    }
+  }, [songID, myComment]);
 
   useEffect(() => {
     if (replyID) {
@@ -474,42 +514,54 @@ const BottomSheet = React.memo(props => {
               }}
             />
           )}
-          <View
-            style={
-              inputTop
-                ? styles.addCommentContainerTop
-                : styles.addCommentContainer
-            }>
-            <Image style={styles.myProfilePic} source={{uri: profilePicURL}} />
-            <TextInput
-              onSubmitEditing={() => {
-                setInputTop(!inputTop);
-                commentHandler();
-                setMyComment(true);
-                setReplyUsername(false);
-              }}
-              onEndEditing={() => {
-                setInputTop(false);
-                setCommentText('');
-                setReplyUsername(false);
-              }}
-              ref={inputRef}
-              onFocus={() => setInputTop(!inputTop)}
-              style={styles.myCommentInput}
-              // placeholder="Add comment..."
-              placeholder={
-                replyUsername ? 'reply to ' + replyUsername : 'Add comment...'
-              }
-              placeholderTextColor={Colors.greyOut}
-              autoCapitalize={'none'}
-              keyboardAppearance="dark"
-              value={commentText}
-              onChangeText={text => setCommentText(text)}
-              returnKeyType="send"
-            />
-          </View>
         </Animated.View>
       </GestureDetector>
+      {containerUp && (
+        <View
+          style={
+            inputTop && keyboardSpacing
+              ? // eslint-disable-next-line react-native/no-inline-styles
+                {
+                  position: 'absolute',
+                  top: keyboardSpacing - 73,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  width: '100%',
+                  paddingVertical: '5%',
+                  backgroundColor: '#302F2F',
+                  borderBottomColor: 'white',
+                }
+              : styles.addCommentContainer
+          }>
+          <Image style={styles.myProfilePic} source={{uri: profilePicURL}} />
+          <TextInput
+            onSubmitEditing={() => {
+              setInputTop(!inputTop);
+              commentHandler();
+              setMyComment(true);
+              setReplyUsername(false);
+            }}
+            onEndEditing={() => {
+              setInputTop(false);
+              setCommentText('');
+              setReplyUsername(false);
+            }}
+            ref={inputRef}
+            onFocus={() => setInputTop(!inputTop)}
+            style={styles.myCommentInput}
+            // placeholder="Add comment..."
+            placeholder={
+              replyUsername ? 'reply to ' + replyUsername : 'Add comment...'
+            }
+            placeholderTextColor={Colors.greyOut}
+            autoCapitalize={'none'}
+            keyboardAppearance="dark"
+            value={commentText}
+            onChangeText={text => setCommentText(text)}
+            returnKeyType="send"
+          />
+        </View>
+      )}
     </>
   );
 });
@@ -524,7 +576,7 @@ const styles = StyleSheet.create({
     borderTopEndRadius: 30,
     borderTopStartRadius: 30,
     position: 'absolute',
-    top: '96%',
+    top: 510,
   },
   drawer: {
     borderBottomColor: 'white',
@@ -676,7 +728,7 @@ const styles = StyleSheet.create({
   },
   addCommentContainerTop: {
     position: 'absolute',
-    top: '20.2%',
+    top: '61%',
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
@@ -686,7 +738,7 @@ const styles = StyleSheet.create({
   },
   addCommentContainer: {
     position: 'absolute',
-    top: '50.6%',
+    bottom: 0,
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
@@ -701,12 +753,14 @@ const styles = StyleSheet.create({
   },
   myCommentInput: {
     backgroundColor: '#1F1F1F',
-    width: '78%',
     marginLeft: '3%',
     borderRadius: 9,
-    padding: '2.75%',
+    paddingVertical: '3%',
+    paddingRight: '50%',
+    paddingLeft: 10,
     color: 'white',
     fontFamily: 'inter-regular',
+    textAlign: 'left',
     fontSize: 11,
   },
 });
