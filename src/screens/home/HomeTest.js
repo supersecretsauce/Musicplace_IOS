@@ -46,6 +46,7 @@ const HomeTest = ({navigation}) => {
   const FlatListRef = useRef();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [refreshComments, setRefreshComments] = useState(false);
+  const [activeLikedTracks, setActiveLikedTracks] = useState([]);
   const {
     currentTrack,
     setCurrentTrack,
@@ -196,8 +197,46 @@ const HomeTest = ({navigation}) => {
   };
 
   //show notification when liking and unliking song
-  const showToast = () => {
-    if (like) {
+  // const showToast = () => {
+  //   if (like) {
+  //     Toast.show({
+  //       type: 'success',
+  //       text1: 'Removed from liked songs',
+  //       text2: 'Well that was quick.',
+  //       visibilityTime: 2000,
+  //     });
+  //     authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
+  //       .delete(`/me/tracks?ids=${songID}`)
+  //       .then(response => {
+  //         // console.log(response);
+  //       })
+  //       .catch(error => {
+  //         console.log(error);
+  //         return error;
+  //       });
+  //   } else if (!like && songID) {
+  //     Toast.show({
+  //       type: 'success',
+  //       text1: 'Added to liked songs',
+  //       text2: "Don't believe us? Check your spotify library.",
+  //       visibilityTime: 2000,
+  //     });
+  //     authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
+  //       .put(`/me/tracks?ids=${songID}`)
+  //       .then(response => {
+  //         // console.log(response);
+  //       })
+  //       .catch(error => {
+  //         console.log(error);
+  //         return error;
+  //       });
+  //   }
+  // };
+
+  //liked a post logic
+  const likeHandler = () => {
+    if (activeLikedTracks.includes(songID)) {
+      setActiveLikedTracks(activeLikedTracks.filter(track => track !== songID));
       Toast.show({
         type: 'success',
         text1: 'Removed from liked songs',
@@ -207,13 +246,14 @@ const HomeTest = ({navigation}) => {
       authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
         .delete(`/me/tracks?ids=${songID}`)
         .then(response => {
-          // console.log(response);
+          console.log(response);
         })
         .catch(error => {
-          // console.log(error);
+          console.log(error);
           return error;
         });
-    } else if (!like && songID) {
+    } else {
+      setActiveLikedTracks(current => [...current, songID]);
       Toast.show({
         type: 'success',
         text1: 'Added to liked songs',
@@ -223,10 +263,10 @@ const HomeTest = ({navigation}) => {
       authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
         .put(`/me/tracks?ids=${songID}`)
         .then(response => {
-          // console.log(response);
+          console.log(response);
         })
         .catch(error => {
-          // console.log(error);
+          console.log(error);
           return error;
         });
     }
@@ -305,14 +345,20 @@ const HomeTest = ({navigation}) => {
                                   onPress={() => {
                                     setLike(!like);
                                     setLikeFiller(!likeFiller);
-                                    showToast();
+                                    likeHandler();
                                   }}>
                                   <Ionicons
                                     style={styles.socialIcon}
                                     name={
-                                      likeFiller ? 'heart' : 'heart-outline'
+                                      activeLikedTracks.includes(item.id)
+                                        ? 'heart'
+                                        : 'heart-outline'
                                     }
-                                    color={likeFiller ? '#1DB954' : 'grey'}
+                                    color={
+                                      activeLikedTracks.includes(item.id)
+                                        ? '#1DB954'
+                                        : 'grey'
+                                    }
                                     size={28}
                                   />
                                 </TouchableOpacity>

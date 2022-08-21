@@ -352,8 +352,8 @@ const BottomSheet = React.memo(props => {
               // contentContainerStyle={{paddingBottom: '200%'}}
               contentContainerStyle={
                 bottomSheetSmall
-                  ? {paddingBottom: '110%'}
-                  : {paddingBottom: '160%'}
+                  ? {paddingBottom: '105%'}
+                  : {paddingBottom: '150%'}
               }
               data={parentComments}
               renderItem={({item, index}) => {
