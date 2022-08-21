@@ -262,18 +262,6 @@ const HomeTest = ({navigation}) => {
       {feed ? (
         <>
           <SafeAreaView style={styles.container}>
-            <View style={styles.topContainer}>
-              <Text
-                onPress={focusHandler}
-                style={forYouTrue ? styles.unFocus : styles.Focus}>
-                Following
-              </Text>
-              <Text
-                onPress={focusHandler}
-                style={forYouTrue ? styles.Focus : styles.unFocus}>
-                For You
-              </Text>
-            </View>
             {forYouTrue ? (
               <>
                 <FlatList
@@ -288,21 +276,14 @@ const HomeTest = ({navigation}) => {
                   renderItem={({item, index}) => {
                     return (
                       <>
-                        <View style={styles.postContainer} key={index}>
-                          <TouchableOpacity
-                            onPress={pauseHandler}
-                            // eslint-disable-next-line react-native/no-inline-styles
-                            style={{
-                              width: '100%',
-                              alignItems: 'center',
-                            }}>
-                            <Image
-                              style={styles.coverArt}
-                              source={{
-                                uri: item._data.songPhoto,
-                              }}
-                            />
-                          </TouchableOpacity>
+                        <SafeAreaView style={styles.postContainer} key={index}>
+                          <Image
+                            style={styles.coverArt}
+                            source={{
+                              uri: item._data.songPhoto,
+                            }}
+                          />
+
                           <View style={styles.middleContainer}>
                             <View style={styles.trackInfoContainer}>
                               <Text numberOfLines={1} style={styles.trackName}>
@@ -312,9 +293,6 @@ const HomeTest = ({navigation}) => {
                                 <Text
                                   numberOfLines={1}
                                   style={styles.artistName}>
-                                  {/* {Object.values(post._data.artists)
-                              .map(artist => artist)
-                              .join(', ')} */}
                                   {item._data.artists
                                     .map(artist => {
                                       return artist.name;
@@ -364,12 +342,12 @@ const HomeTest = ({navigation}) => {
                               LISTEN ON SPOTIFY
                             </Text>
                           </TouchableOpacity>
-                        </View>
+                        </SafeAreaView>
                       </>
                     );
                   }}
                 />
-                <BottomSheet />
+                <BottomSheet style={styles.bottomSheet} />
               </>
             ) : (
               <FollowingScreen />
@@ -397,7 +375,7 @@ const styles = StyleSheet.create({
   topContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginBottom: 20,
+    // marginBottom: 20,
   },
   unFocus: {
     color: Colors.greyOut,
@@ -415,17 +393,20 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     alignItems: 'center',
   },
+  coverArtContainer: {
+    alignContent: 'center',
+  },
   coverArt: {
-    height: 350,
     width: 350,
-    resizeMode: 'contain',
+    height: '50%',
+    marginTop: '5%',
   },
   middleContainer: {
     width: '90%',
-    marginTop: '5%',
+    marginVertical: '5%',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    height: '8.5%',
+    height: '8%',
   },
   trackInfoContainer: {
     alignItems: 'flex-start',
@@ -508,7 +489,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   listenOnSpot: {
-    top: '6%',
+    position: 'absolute',
+    top: '69%',
     paddingHorizontal: 50,
     paddingVertical: 12,
     borderRadius: 20,

@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Keyboard,
+  KeyboardAvoidingView,
 } from 'react-native';
 import React, {useState, useEffect, useRef, useMemo, useCallback} from 'react';
 import {Gesture, GestureDetector} from 'react-native-gesture-handler';
@@ -474,42 +475,39 @@ const BottomSheet = React.memo(props => {
               }}
             />
           )}
-          <View
-            style={
-              inputTop
-                ? styles.addCommentContainerTop
-                : styles.addCommentContainer
-            }>
-            <Image style={styles.myProfilePic} source={{uri: profilePicURL}} />
-            <TextInput
-              onSubmitEditing={() => {
-                setInputTop(!inputTop);
-                commentHandler();
-                setMyComment(true);
-                setReplyUsername(false);
-              }}
-              onEndEditing={() => {
-                setInputTop(false);
-                setCommentText('');
-                setReplyUsername(false);
-              }}
-              ref={inputRef}
-              onFocus={() => setInputTop(!inputTop)}
-              style={styles.myCommentInput}
-              // placeholder="Add comment..."
-              placeholder={
-                replyUsername ? 'reply to ' + replyUsername : 'Add comment...'
-              }
-              placeholderTextColor={Colors.greyOut}
-              autoCapitalize={'none'}
-              keyboardAppearance="dark"
-              value={commentText}
-              onChangeText={text => setCommentText(text)}
-              returnKeyType="send"
-            />
-          </View>
         </Animated.View>
       </GestureDetector>
+      {containerUp && (
+        <View style={styles.addCommentContainer}>
+          <Image style={styles.myProfilePic} source={{uri: profilePicURL}} />
+          <TextInput
+            onSubmitEditing={() => {
+              setInputTop(!inputTop);
+              commentHandler();
+              setMyComment(true);
+              setReplyUsername(false);
+            }}
+            onEndEditing={() => {
+              setInputTop(false);
+              setCommentText('');
+              setReplyUsername(false);
+            }}
+            ref={inputRef}
+            onFocus={() => setInputTop(!inputTop)}
+            style={styles.myCommentInput}
+            // placeholder="Add comment..."
+            placeholder={
+              replyUsername ? 'reply to ' + replyUsername : 'Add comment...'
+            }
+            placeholderTextColor={Colors.greyOut}
+            autoCapitalize={'none'}
+            keyboardAppearance="dark"
+            value={commentText}
+            onChangeText={text => setCommentText(text)}
+            returnKeyType="send"
+          />
+        </View>
+      )}
     </>
   );
 });
@@ -524,7 +522,7 @@ const styles = StyleSheet.create({
     borderTopEndRadius: 30,
     borderTopStartRadius: 30,
     position: 'absolute',
-    top: '75%',
+    top: '73%',
   },
   drawer: {
     borderBottomColor: 'white',
@@ -676,7 +674,7 @@ const styles = StyleSheet.create({
   },
   addCommentContainerTop: {
     position: 'absolute',
-    top: '20.2%',
+    top: '61%',
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
@@ -686,7 +684,7 @@ const styles = StyleSheet.create({
   },
   addCommentContainer: {
     position: 'absolute',
-    top: '50.6%',
+    bottom: 0,
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
@@ -701,12 +699,14 @@ const styles = StyleSheet.create({
   },
   myCommentInput: {
     backgroundColor: '#1F1F1F',
-    width: '78%',
     marginLeft: '3%',
     borderRadius: 9,
-    padding: '2.75%',
+    paddingVertical: '3%',
+    paddingRight: '50%',
+    paddingLeft: 10,
     color: 'white',
     fontFamily: 'inter-regular',
+    textAlign: 'left',
     fontSize: 11,
   },
 });
