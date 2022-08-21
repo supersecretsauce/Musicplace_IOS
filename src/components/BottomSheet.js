@@ -26,6 +26,7 @@ import Animated, {
   withSpring,
   runOnJS,
 } from 'react-native-reanimated';
+
 const {height: SCREEN_HEIGHT} = Dimensions.get('window');
 
 const BottomSheet = React.memo(props => {
@@ -52,6 +53,8 @@ const BottomSheet = React.memo(props => {
   const [viewReplies, setViewReplies] = useState(false);
   const [containerUp, setContainerUp] = useState(false);
   const translateY = useSharedValue(0);
+  const [keyboardSpacing, setKeyboardSpacing] = useState();
+
   // const scrollTo = useCallback(
   //   destination => {
   //     'worklet';
@@ -59,8 +62,33 @@ const BottomSheet = React.memo(props => {
   //   },
   //   [translateY],
   // );
-  const context = useSharedValue({y: 0});
 
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      e => {
+        console.log('yes');
+        console.log(e.endCoordinates.height);
+        console.log(Dimensions.get('window').height);
+        setKeyboardSpacing(
+          Dimensions.get('window').height - e.endCoordinates.height,
+        );
+      },
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        console.log('no');
+        console.log(Dimensions.get('window').height);
+      },
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
+  const context = useSharedValue({y: 0});
   const gesture = Gesture.Pan()
     .onStart(() => {
       context.value = {y: translateY.value};
@@ -478,7 +506,22 @@ const BottomSheet = React.memo(props => {
         </Animated.View>
       </GestureDetector>
       {containerUp && (
-        <View style={styles.addCommentContainer}>
+        <View
+          style={
+            inputTop && keyboardSpacing
+              ? // eslint-disable-next-line react-native/no-inline-styles
+                {
+                  position: 'absolute',
+                  top: keyboardSpacing - 73,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  width: '100%',
+                  paddingVertical: '5%',
+                  backgroundColor: '#302F2F',
+                  borderBottomColor: 'white',
+                }
+              : styles.addCommentContainer
+          }>
           <Image style={styles.myProfilePic} source={{uri: profilePicURL}} />
           <TextInput
             onSubmitEditing={() => {
@@ -522,7 +565,7 @@ const styles = StyleSheet.create({
     borderTopEndRadius: 30,
     borderTopStartRadius: 30,
     position: 'absolute',
-    top: '73%',
+    top: 515,
   },
   drawer: {
     borderBottomColor: 'white',

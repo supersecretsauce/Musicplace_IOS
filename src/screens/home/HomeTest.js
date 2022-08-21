@@ -277,12 +277,14 @@ const HomeTest = ({navigation}) => {
                     return (
                       <>
                         <SafeAreaView style={styles.postContainer} key={index}>
-                          <Image
-                            style={styles.coverArt}
-                            source={{
-                              uri: item._data.songPhoto,
-                            }}
-                          />
+                          <TouchableOpacity onPress={pauseHandler}>
+                            <Image
+                              style={styles.coverArt}
+                              source={{
+                                uri: item._data.songPhoto,
+                              }}
+                            />
+                          </TouchableOpacity>
 
                           <View style={styles.middleContainer}>
                             <View style={styles.trackInfoContainer}>
@@ -398,8 +400,9 @@ const styles = StyleSheet.create({
   },
   coverArt: {
     width: 350,
-    height: '50%',
+    height: 350,
     marginTop: '5%',
+    resizeMode: 'contain',
   },
   middleContainer: {
     width: '90%',
