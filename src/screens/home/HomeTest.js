@@ -143,7 +143,7 @@ const HomeTest = ({navigation}) => {
     }
   }, [feed, songIndex]);
 
-  //set the sound of the current track
+  // set the sound of the current track
   useEffect(() => {
     if (postPreviewURL) {
       setCurrentTrack(
@@ -364,17 +364,12 @@ const HomeTest = ({navigation}) => {
                               LISTEN ON SPOTIFY
                             </Text>
                           </TouchableOpacity>
-                          <BottomSheet
-                            songIDProps={songID}
-                            captionProps={item._data.caption}
-                            navigationProps={navigation}
-                            parentCommentsProps={parentComments}
-                          />
                         </View>
                       </>
                     );
                   }}
                 />
+                <BottomSheet />
               </>
             ) : (
               <FollowingScreen />
@@ -513,7 +508,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   listenOnSpot: {
-    top: '5%',
+    top: '6%',
     paddingHorizontal: 50,
     paddingVertical: 12,
     borderRadius: 20,

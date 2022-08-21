@@ -19,7 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Reanimated, {
+import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -51,13 +51,13 @@ const BottomSheet = React.memo(props => {
   const [viewReplies, setViewReplies] = useState(false);
   const [containerUp, setContainerUp] = useState(false);
   const translateY = useSharedValue(0);
-  const scrollTo = useCallback(
-    destination => {
-      'worklet';
-      translateY.value = withSpring(destination, {damping: 50});
-    },
-    [translateY],
-  );
+  // const scrollTo = useCallback(
+  //   destination => {
+  //     'worklet';
+  //     translateY.value = withSpring(destination, {damping: 50});
+  //   },
+  //   [translateY],
+  // );
   const context = useSharedValue({y: 0});
 
   const gesture = Gesture.Pan()
@@ -71,20 +71,20 @@ const BottomSheet = React.memo(props => {
     .onEnd(() => {
       if (!containerUp) {
         if (translateY.value <= -50) {
-          scrollTo(-269);
+          translateY.value = withSpring(-269, {damping: 50});
           runOnJS(setContainerUp)(true);
         } else if (translateY.value >= 50) {
-          scrollTo(100);
+          translateY.value = withSpring(100, {damping: 50});
         } else {
-          scrollTo(0);
+          translateY.value = withSpring(0, {damping: 50});
         }
         runOnJS(setBottomSheetSmall)(true);
       } else if (containerUp) {
         if (translateY.value >= -240) {
-          scrollTo(0);
+          translateY.value = withSpring(0, {damping: 50});
           runOnJS(setContainerUp)(false);
         } else {
-          scrollTo(0);
+          translateY.value = withSpring(0, {damping: 50});
         }
         runOnJS(setBottomSheetSmall)(false);
       }
@@ -291,7 +291,7 @@ const BottomSheet = React.memo(props => {
   return (
     <>
       <GestureDetector gesture={gesture}>
-        <Reanimated.View
+        <Animated.View
           style={[styles.commentContainerBackground, rBottomSheetStyle]}>
           <View style={styles.drawer} />
           {caption && (
@@ -508,7 +508,7 @@ const BottomSheet = React.memo(props => {
               returnKeyType="send"
             />
           </View>
-        </Reanimated.View>
+        </Animated.View>
       </GestureDetector>
     </>
   );
@@ -524,7 +524,7 @@ const styles = StyleSheet.create({
     borderTopEndRadius: 30,
     borderTopStartRadius: 30,
     position: 'absolute',
-    top: '96%',
+    top: '75%',
   },
   drawer: {
     borderBottomColor: 'white',
