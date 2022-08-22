@@ -479,8 +479,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   listenOnSpot: {
-    position: 'absolute',
-    top: '71%',
+    position: 'relative',
+    top: '2.5%',
     paddingHorizontal: 50,
     paddingVertical: 12,
     borderRadius: 20,
