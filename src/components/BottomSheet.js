@@ -756,7 +756,7 @@ const styles = StyleSheet.create({
     marginLeft: '3%',
     borderRadius: 9,
     paddingVertical: '3%',
-    paddingRight: '50%',
+    width: '80%',
     paddingLeft: 10,
     color: 'white',
     fontFamily: 'inter-regular',
