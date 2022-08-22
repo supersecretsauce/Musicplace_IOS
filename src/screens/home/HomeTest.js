@@ -93,20 +93,22 @@ const HomeTest = ({navigation}) => {
   }, [accessToken, checkForSpotifyConnection, setAccessToken, setRefreshToken]);
 
   // update this to run less often?
-  useEffect(() => {
-    const fetchFeed = () => {
-      firestore()
-        .collection('posts')
-        .orderBy('releaseDate', 'asc')
 
-        .get()
-        .then(querySnapshot => {
-          // console.log(querySnapshot);
-          setFeed(querySnapshot._docs);
-        });
-    };
-    fetchFeed();
+  const fetchFeed = useCallback(() => {
+    firestore()
+      .collection('posts')
+      .orderBy('releaseDate', 'asc')
+
+      .get()
+      .then(querySnapshot => {
+        // console.log(querySnapshot);
+        setFeed(querySnapshot._docs);
+      });
   }, []);
+
+  useEffect(() => {
+    fetchFeed();
+  }, [fetchFeed]);
 
   //index logic
   const onViewableItemsChanged = ({viewableItems}) => {
