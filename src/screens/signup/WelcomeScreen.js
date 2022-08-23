@@ -2,7 +2,7 @@ import React from 'react';
 import {StyleSheet, Text, View, SafeAreaView, Image} from 'react-native';
 import {TouchableOpacity} from 'react-native';
 import Color from '../../assets/utilities/Colors';
-
+import Musicplace from '../../assets/img/musicplace-welcome.svg';
 const WelcomeScreen = ({navigation}) => {
   const pressHandler = () => {
     navigation.navigate('PhoneNumberScreen');
@@ -14,7 +14,7 @@ const WelcomeScreen = ({navigation}) => {
         <Text style={styles.signUp}>Signup</Text>
         <View style={styles.musicplaceContainer}>
           <Text style={styles.signupFor}>for</Text>
-          <Text style={styles.musicplace}> Musicplace</Text>
+          <Musicplace style={styles.musicplace} />
         </View>
       </View>
       <View style={styles.captionContainer}>
@@ -70,6 +70,8 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Bold',
     fontWeight: '600',
     fontSize: 45,
+    marginTop: 6,
+    marginLeft: 10,
   },
   captionContainer: {
     flexDirection: 'row',

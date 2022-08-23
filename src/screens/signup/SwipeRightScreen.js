@@ -37,22 +37,22 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
+    alignItems: 'center',
   },
   swipeText: {
     color: 'white',
     fontFamily: 'Inter-bold',
     fontSize: 35,
-    marginLeft: '6%',
     marginTop: '10%',
   },
   swipeDesc: {
     color: 'white',
     fontFamily: 'inter-regular',
     fontSize: 20,
-    marginLeft: '6%',
-    width: '85%',
+    width: '80%',
     marginTop: '3%',
     lineHeight: 28,
+    textAlign: 'center',
   },
   gif: {
     height: '60%',
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   },
   nextBtn: {
     backgroundColor: Colors.red,
-    borderRadius: 5,
+    borderRadius: 9,
     paddingVertical: 10,
     marginTop: '5%',
     width: 317,
