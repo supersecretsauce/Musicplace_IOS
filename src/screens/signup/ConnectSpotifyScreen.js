@@ -76,7 +76,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
     } catch (e) {
       console.log(e);
     }
-    setUserLogin(true);
+    navigation.navigate('SwipeUpScreen');
   };
 
   const maybeLater = async () => {
@@ -96,7 +96,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
     } catch (e) {
       console.log(e);
     }
-    setUserLogin(true);
+    navigation.navigate('SwipeUpScreen');
   };
 
   return (

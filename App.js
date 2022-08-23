@@ -13,6 +13,8 @@ import CreateUsernameScreen from './src/screens/signup/CreateUsernameScreen';
 import ConnectSpotifyScreen from './src/screens/signup/ConnectSpotifyScreen';
 import PostStackScreen from './src/routes/PostStackScreen';
 import ProfileStackScreen from './src/routes/ProfileStackScreen';
+import SwipeUpScreen from './src/screens/signup/SwipeUpScreen';
+import SwipeRightScreen from './src/screens/signup/SwipeRightScreen';
 import {Context} from './src/context/Context';
 import {useState, useEffect} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -162,6 +164,11 @@ export default function App() {
               <Stack.Screen
                 name="ConnectSpotifyScreen"
                 component={ConnectSpotifyScreen}
+              />
+              <Stack.Screen name="SwipeUpScreen" component={SwipeUpScreen} />
+              <Stack.Screen
+                name="SwipeRightScreen"
+                component={SwipeRightScreen}
               />
             </Stack.Navigator>
           )}
