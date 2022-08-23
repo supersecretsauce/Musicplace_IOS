@@ -393,9 +393,7 @@ const HomeTest = ({navigation}) => {
         </>
       ) : (
         <>
-          <SafeAreaView>
-            <Text>Nothing to see here</Text>
-          </SafeAreaView>
+          <SafeAreaView style={styles.container}></SafeAreaView>
         </>
       )}
     </>
