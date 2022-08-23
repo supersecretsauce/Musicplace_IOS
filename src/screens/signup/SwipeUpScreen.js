@@ -9,6 +9,8 @@ import {
 import React from 'react';
 import VerticalGif from '../../assets/img/vertical-gif.gif';
 import Colors from '../../assets/utilities/Colors';
+import HapticFeedback from 'react-native-haptic-feedback';
+
 const SwipeUpScreen = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
@@ -19,7 +21,10 @@ const SwipeUpScreen = ({navigation}) => {
       <Image source={VerticalGif} style={styles.gif} />
       <View style={styles.nextBtnContainer}>
         <TouchableOpacity
-          onPress={() => navigation.navigate('SwipeRightScreen')}
+          onPress={() => {
+            HapticFeedback.trigger('impactHeavy');
+            navigation.navigate('SwipeRightScreen');
+          }}
           style={styles.nextBtn}>
           <Text style={styles.nextText}>Next</Text>
         </TouchableOpacity>
