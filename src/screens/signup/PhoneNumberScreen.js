@@ -13,6 +13,7 @@ import {useState, useContext} from 'react';
 import {Context} from '../../context/Context';
 import auth from '@react-native-firebase/auth';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
+import HapticFeedback from 'react-native-haptic-feedback';
 const PhoneNumber = ({navigation}) => {
   const [inputValue, setInputValue] = useState('');
   const [showSubmitDone, setShowSubmitDone] = useState(false);
@@ -75,6 +76,8 @@ const PhoneNumber = ({navigation}) => {
   };
 
   async function signInWithPhoneNumber() {
+    HapticFeedback.trigger('impactHeavy');
+
     try {
       const confirmation = await auth().signInWithPhoneNumber(
         firebaseNumberFormat,
@@ -145,7 +148,7 @@ const styles = StyleSheet.create({
   musicplace: {
     position: 'absolute',
     alignSelf: 'center',
-    marginTop: '12.5%',
+    top: '8.2%',
   },
   desc: {
     color: 'white',

@@ -10,6 +10,7 @@ import React, {useContext} from 'react';
 import HorizontalGif from '../../assets/img/horizontal-gif.gif';
 import Colors from '../../assets/utilities/Colors';
 import {Context} from '../../context/Context';
+import HapticFeedback from 'react-native-haptic-feedback';
 
 const SwipeRightScreen = ({navigation}) => {
   const {setUserLogin} = useContext(Context);
@@ -22,7 +23,10 @@ const SwipeRightScreen = ({navigation}) => {
       <Image source={HorizontalGif} style={styles.gif} />
       <View style={styles.nextBtnContainer}>
         <TouchableOpacity
-          onPress={() => setUserLogin(true)}
+          onPress={() => {
+            HapticFeedback.trigger('impactHeavy');
+            setUserLogin(true);
+          }}
           style={styles.nextBtn}>
           <Text style={styles.nextText}>Start listening</Text>
         </TouchableOpacity>

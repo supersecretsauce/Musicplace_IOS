@@ -12,6 +12,7 @@ import {
 import {useState, useContext} from 'react';
 import {Context} from '../../context/Context';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
+import HapticFeedback from 'react-native-haptic-feedback';
 
 const EnterCodeScreen = ({navigation}) => {
   const [showEnterDone, setShowEnterDone] = useState(false);
@@ -45,6 +46,7 @@ const EnterCodeScreen = ({navigation}) => {
 
   let enterCode = async () => {
     try {
+      HapticFeedback.trigger('impactHeavy');
       await confirm.confirm(verificationCode);
       navigation.navigate('CreateUsernameScreen');
     } catch (error) {
@@ -106,7 +108,7 @@ const styles = StyleSheet.create({
   musicplace: {
     position: 'absolute',
     alignSelf: 'center',
-    marginTop: '12.5%',
+    top: '8.2%',
   },
   desc: {
     color: 'white',

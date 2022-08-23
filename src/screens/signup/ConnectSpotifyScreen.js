@@ -15,6 +15,7 @@ import firestore from '@react-native-firebase/firestore';
 import {firebase} from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
+import HapticFeedback from 'react-native-haptic-feedback';
 
 const ConnectSpotifyScreen = ({navigation}) => {
   const userInfo = firebase.auth().currentUser;
@@ -44,6 +45,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
   };
 
   const connectSpotify = async () => {
+    HapticFeedback.trigger('impactHeavy');
     const authState = await authorize(config);
     try {
       await firestore().collection('users').doc(userInfo.uid).set(
@@ -82,6 +84,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
   };
 
   const maybeLater = async () => {
+    HapticFeedback.trigger('impactHeavy');
     try {
       await firestore().collection('users').doc(userInfo.uid).set({
         phoneNumber: userInfo.phoneNumber,
@@ -113,7 +116,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
       </TouchableWithoutFeedback>
       <Musicplace style={styles.musicplace} />
       <Text style={styles.desc}>
-        Create a username so everyone knows it’s you.
+        Connect with Spotify to save songs right to your library.{' '}
       </Text>
       <View style={styles.inputContainer}>
         <View style={styles.spotifyBtnContainer}>
@@ -147,7 +150,7 @@ const styles = StyleSheet.create({
   musicplace: {
     position: 'absolute',
     alignSelf: 'center',
-    marginTop: '12.5%',
+    top: '8.2%',
   },
   desc: {
     color: 'white',

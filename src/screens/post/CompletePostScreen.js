@@ -190,7 +190,7 @@ const CompletePostScreen = ({route, navigation}) => {
                   multiline
                   autoCapitalize="none"
                   keyboardType="default"
-                  placeholder="Caption ideas include things like: where you were you first heard this song, the people you play this with...idk that's all we got. "
+                  placeholder="Caption ideas include things like: where you were when you first heard this song, the people you play this with...idk that's all we got. "
                   placeholderTextColor="grey"
                   value={value}
                   onChangeText={text => handleCaption(text)}
