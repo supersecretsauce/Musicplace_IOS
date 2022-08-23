@@ -14,6 +14,8 @@ import {authorize} from 'react-native-app-auth';
 import firestore from '@react-native-firebase/firestore';
 import {firebase} from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Musicplace from '../../assets/img/musicplace-signup.svg';
+
 const ConnectSpotifyScreen = ({navigation}) => {
   const userInfo = firebase.auth().currentUser;
   const {setUserLogin, username} = useContext(Context);
@@ -109,22 +111,21 @@ const ConnectSpotifyScreen = ({navigation}) => {
           />
         </View>
       </TouchableWithoutFeedback>
-      <View style={styles.textContainer}>
-        <Text style={styles.connect}>Connect with</Text>
-        <Text style={styles.spotify}>Spotify?</Text>
-        <Text style={styles.blurb}>
-          Liked songs are automaticaly linked with Spotify.{' '}
-        </Text>
-      </View>
-      <View style={styles.spotifyBtnContainer}>
-        <TouchableOpacity onPress={connectSpotify} style={styles.spotifyBtn}>
-          <Text style={styles.spotifyText}>Connect with Spotify</Text>
-        </TouchableOpacity>
-      </View>
-      <View style={styles.laterBtnContainer}>
-        <TouchableOpacity onPress={maybeLater} style={styles.laterBtn}>
-          <Text style={styles.laterText}>Maybe Later</Text>
-        </TouchableOpacity>
+      <Musicplace style={styles.musicplace} />
+      <Text style={styles.desc}>
+        Create a username so everyone knows it’s you.
+      </Text>
+      <View style={styles.inputContainer}>
+        <View style={styles.spotifyBtnContainer}>
+          <TouchableOpacity onPress={connectSpotify} style={styles.spotifyBtn}>
+            <Text style={styles.spotifyText}>Connect with Spotify</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.laterBtnContainer}>
+          <TouchableOpacity onPress={maybeLater} style={styles.laterBtn}>
+            <Text style={styles.laterText}>Maybe Later</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -143,38 +144,33 @@ const styles = StyleSheet.create({
   chevron: {
     marginTop: '1%',
   },
-  textContainer: {
-    marginTop: '25%',
-    marginLeft: '10%',
+  musicplace: {
+    position: 'absolute',
+    alignSelf: 'center',
+    marginTop: '12.5%',
   },
-  connect: {
+  desc: {
     color: 'white',
-    fontFamily: 'Inter-Medium',
-    fontSize: 30,
+    fontFamily: 'Inter-semibold',
+    fontSize: 18,
+    width: 300,
+    textAlign: 'center',
+    alignSelf: 'center',
+    marginTop: '8%',
   },
-  spotify: {
-    color: 'white',
-    fontFamily: 'Inter-Bold',
-    fontSize: 45,
-    marginTop: '3%',
-  },
-  blurb: {
-    color: Color.greyOut,
-    fontFamily: 'Inter-Medium',
-    fontSize: 14,
-    marginTop: '3%',
+  inputContainer: {
+    marginTop: '7%',
   },
   spotifyBtnContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: '18%',
   },
   spotifyBtn: {
     backgroundColor: Color.spotify,
     borderRadius: 5,
     paddingVertical: 10,
     marginTop: '5%',
-    width: 317,
+    width: '90%',
   },
   spotifyText: {
     color: 'white',
@@ -191,7 +187,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingVertical: 10,
     marginTop: '5%',
-    width: 317,
+    width: '90%',
   },
   laterText: {
     color: 'white',

@@ -12,7 +12,7 @@ import {
 import {useState, useContext} from 'react';
 import {Context} from '../../context/Context';
 import auth from '@react-native-firebase/auth';
-
+import Musicplace from '../../assets/img/musicplace-signup.svg';
 const PhoneNumber = ({navigation}) => {
   const [inputValue, setInputValue] = useState('');
   const [showSubmitDone, setShowSubmitDone] = useState(false);
@@ -89,11 +89,6 @@ const PhoneNumber = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* <FirebaseRecaptchaVerifierModal
-        ref={recaptchaVerifier}
-        firebaseConfig={app.options}
-        attemptInvisibleVerification={true}
-      /> */}
       <TouchableWithoutFeedback onPress={goBack}>
         <View style={styles.touchContainer}>
           <Image
@@ -102,11 +97,8 @@ const PhoneNumber = ({navigation}) => {
           />
         </View>
       </TouchableWithoutFeedback>
-      <View style={styles.textContainer}>
-        <Text style={styles.enter}>Enter your</Text>
-        <Text style={styles.number}>Phone Number</Text>
-        <Text style={styles.getStarted}>to get started</Text>
-      </View>
+      <Musicplace style={styles.musicplace} />
+      <Text style={styles.desc}>Enter your phone number to get started.</Text>
       <View style={styles.inputContainer}>
         <View style={styles.rectangle}>
           <Text style={styles.areaCode}>US +1</Text>
@@ -150,37 +142,29 @@ const styles = StyleSheet.create({
   chevron: {
     marginTop: '1%',
   },
-
-  textContainer: {
-    marginTop: '25%',
-    marginLeft: '10%',
+  musicplace: {
+    position: 'absolute',
+    alignSelf: 'center',
+    marginTop: '12.5%',
   },
-  enter: {
+  desc: {
     color: 'white',
-    fontFamily: 'Inter-Medium',
-    fontSize: 30,
-  },
-  number: {
-    color: 'white',
-    fontFamily: 'Inter-Bold',
-    fontSize: 45,
-    marginTop: '3%',
-  },
-  getStarted: {
-    color: 'white',
-    fontFamily: 'Inter-Medium',
-    fontSize: 30,
-    marginTop: '3%',
+    fontFamily: 'Inter-semibold',
+    fontSize: 18,
+    width: 250,
+    textAlign: 'center',
+    alignSelf: 'center',
+    marginTop: '8%',
   },
   inputContainer: {
     alignItems: 'center',
-    marginTop: 68,
+    marginTop: '12%',
   },
   rectangle: {
     backgroundColor: '#282828',
-    width: 317,
+    width: '90%',
     height: 44,
-    borderRadius: 5,
+    borderRadius: 9,
     alignItems: 'center',
     flexDirection: 'row',
   },
@@ -206,10 +190,10 @@ const styles = StyleSheet.create({
   },
   nextBtn: {
     backgroundColor: 'rgba(255, 8, 0, 0.5)',
-    borderRadius: 5,
+    borderRadius: 9,
     paddingVertical: 10,
     marginTop: '5%',
-    width: 317,
+    width: '90%',
   },
   nextText: {
     color: 'white',
@@ -221,10 +205,10 @@ const styles = StyleSheet.create({
 
   nextBtnDone: {
     backgroundColor: 'rgb(255, 8, 0)',
-    borderRadius: 5,
+    borderRadius: 9,
     paddingVertical: 10,
     marginTop: '5%',
-    width: 317,
+    width: '90%',
   },
 
   nextTextDone: {
