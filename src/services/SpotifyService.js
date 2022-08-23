@@ -59,6 +59,7 @@ export const authFetch = (
             console.log('set new tokens!');
             setAccessToken(response.data.access_token);
             setRefreshToken(response.data.refresh_token);
+            return;
           })
           .catch(e => {
             console.log(e);
