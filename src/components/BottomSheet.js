@@ -20,6 +20,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import HapticFeedback from 'react-native-haptic-feedback';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -206,6 +207,8 @@ const BottomSheet = React.memo(props => {
     const minusIncrement = firebase.firestore.FieldValue.increment(-1);
     if (commentID) {
       if (activeLikedComments.includes(commentID)) {
+        HapticFeedback.trigger('impactLight');
+
         setActiveLikedComments(
           activeLikedComments.filter(comment => comment !== commentID),
         );
@@ -218,6 +221,8 @@ const BottomSheet = React.memo(props => {
             likeAmount: minusIncrement,
           });
       } else {
+        HapticFeedback.trigger('impactLight');
+
         setActiveLikedComments(current => [...current, commentID]);
         try {
           firestore()

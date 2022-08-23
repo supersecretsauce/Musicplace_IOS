@@ -14,6 +14,7 @@ import Color from '../../assets/utilities/Colors';
 import firestore from '@react-native-firebase/firestore';
 import {firebase} from '@react-native-firebase/firestore';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
+import HapticFeedback from 'react-native-haptic-feedback';
 
 const CreateUsernameScreen = ({navigation}) => {
   const [submitDone, setSubmitDone] = useState(false);
@@ -51,6 +52,7 @@ const CreateUsernameScreen = ({navigation}) => {
   };
 
   const createUsername = async () => {
+    HapticFeedback.trigger('impactHeavy');
     try {
       await firestore().collection('usernames').doc(username).set({
         UID: userInfo.uid,
@@ -137,7 +139,7 @@ const styles = StyleSheet.create({
   musicplace: {
     position: 'absolute',
     alignSelf: 'center',
-    marginTop: '12.5%',
+    top: '8.2%',
   },
   desc: {
     color: 'white',

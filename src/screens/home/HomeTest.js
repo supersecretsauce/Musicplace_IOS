@@ -32,6 +32,8 @@ import {authFetch} from '../../services/SpotifyService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import FollowingScreen from './FollowingScreen';
 import SheetTest from '../../components/SheetTest';
+import HapticFeedback from 'react-native-haptic-feedback';
+
 const HomeTest = ({navigation}) => {
   const [feed, setFeed] = useState();
   const [forYouTrue, setForYouTrue] = useState(true);
@@ -238,6 +240,8 @@ const HomeTest = ({navigation}) => {
   //liked a post logic
   const likeHandler = () => {
     if (activeLikedTracks.includes(songID)) {
+      HapticFeedback.trigger('impactLight');
+
       setActiveLikedTracks(activeLikedTracks.filter(track => track !== songID));
       Toast.show({
         type: 'success',
@@ -255,6 +259,8 @@ const HomeTest = ({navigation}) => {
           return error;
         });
     } else {
+      HapticFeedback.trigger('impactHeavy');
+
       setActiveLikedTracks(current => [...current, songID]);
       Toast.show({
         type: 'success',

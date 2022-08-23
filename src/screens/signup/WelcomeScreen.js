@@ -1,11 +1,20 @@
 import React from 'react';
-import {StyleSheet, Text, View, SafeAreaView, Image} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  SafeAreaView,
+  Image,
+  useCallback,
+} from 'react-native';
 import {TouchableOpacity} from 'react-native';
 import Color from '../../assets/utilities/Colors';
 import Musicplace from '../../assets/img/musicplace-welcome.svg';
+import HapticFeedback from 'react-native-haptic-feedback';
 const WelcomeScreen = ({navigation}) => {
   const pressHandler = () => {
     navigation.navigate('PhoneNumberScreen');
+    HapticFeedback.trigger('impactHeavy');
   };
 
   return (
@@ -47,17 +56,18 @@ const styles = StyleSheet.create({
   },
   welcomeContainer: {
     marginTop: 186,
-    marginLeft: 37,
   },
   signUp: {
     color: 'white',
     fontFamily: 'Inter-Black',
     fontWeight: '500',
     fontSize: 40,
+    marginLeft: '12%',
   },
   musicplaceContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     marginTop: 12,
   },
   signupFor: {
@@ -71,12 +81,12 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 45,
     marginTop: 6,
-    marginLeft: 10,
+    marginLeft: 12,
   },
   captionContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft: 73,
+    justifyContent: 'center',
     marginTop: 18,
   },
   caption: {
