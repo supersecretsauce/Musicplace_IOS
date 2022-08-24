@@ -70,6 +70,7 @@ const CompletePostScreen = ({route, navigation}) => {
     setCaption(text);
   };
 
+  console.log(caption);
   const postSong = async () => {
     if (songPhoto) {
       try {
@@ -78,7 +79,7 @@ const CompletePostScreen = ({route, navigation}) => {
           .doc(song.id)
           .set({
             songName: song.name,
-            caption: caption,
+            caption: caption ? caption : null,
             albumName: albumName,
             artistName: song.artists.map(artist => artist.name),
             artistID: song.artists.map(artist => artist.id),
@@ -105,7 +106,7 @@ const CompletePostScreen = ({route, navigation}) => {
           .set({
             songID: song.id,
             songName: song.name,
-            caption: caption,
+            caption: caption ? caption : null,
             albumName: song.album.name,
             artistName: song.artists.map(artist => artist.name),
             artistID: song.artists.map(artist => artist.id),
