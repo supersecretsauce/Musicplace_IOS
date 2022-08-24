@@ -8,6 +8,7 @@ import {
   TextInput,
   Switch,
   Keyboard,
+  BackHandler,
 } from 'react-native';
 import React, {useEffect, useState, useMemo} from 'react';
 import Colors from '../../assets/utilities/Colors';
@@ -27,6 +28,14 @@ const CompletePostScreen = ({route, navigation}) => {
   const [value] = useState(false);
   const [trackPlaying, setTrackPlaying] = useState(false);
   const [caption, setCaption] = useState();
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('transitionEnd', e => {
+      track.pause();
+    });
+
+    return unsubscribe;
+  }, [navigation, track]);
 
   useEffect(() => {
     if (songPhoto) {
@@ -60,8 +69,6 @@ const CompletePostScreen = ({route, navigation}) => {
   const handleCaption = text => {
     setCaption(text);
   };
-
-  console.log(song.id);
 
   const postSong = async () => {
     if (songPhoto) {
@@ -126,7 +133,7 @@ const CompletePostScreen = ({route, navigation}) => {
       {songPhoto ? (
         <>
           <DismissKeyboard>
-            <View style={styles.container}>
+            <View onTouchMove={e => console.log(e)} style={styles.container}>
               <View style={styles.postContainer}>
                 <View style={styles.topContainer}>
                   <Ionicons
