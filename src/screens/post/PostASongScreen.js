@@ -187,7 +187,7 @@ const TestScreen = ({navigation}) => {
         <View style={styles.container}>
           <View style={styles.searchBackground}>
             <Text style={styles.postASong}>Post a song</Text>
-            <View style={styles.inputSearchContainer}>
+            {/* <View style={styles.inputSearchContainer}>
               <View style={styles.inputSearchBox}>
                 <Ionicons name="search-sharp" color="white" />
                 <TextInput
@@ -196,7 +196,7 @@ const TestScreen = ({navigation}) => {
                   placeholder="Search by song, album, or artist"
                 />
               </View>
-            </View>
+            </View> */}
             <View style={styles.navContainer}>
               <TouchableOpacity
                 onPress={() => {
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
   },
   searchBackground: {
     backgroundColor: Color.lightBlack,
-    height: '31.5%',
+    height: '24%',
   },
   postASong: {
     color: 'white',

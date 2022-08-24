@@ -27,7 +27,7 @@ const SpotifyLikedSongs = props => {
         <>
           <View style={styles.scrollContainer}>
             <FlatList
-              contentContainerStyle={{paddingBottom: 260}}
+              contentContainerStyle={{paddingBottom: 210}}
               style={{width: '100%', height: '100%'}}
               data={likedSongsArray}
               renderItem={({item, index}) => {
