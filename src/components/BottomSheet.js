@@ -53,9 +53,9 @@ const BottomSheet = React.memo(props => {
   const [viewReplies, setViewReplies] = useState(false);
   const [containerUp, setContainerUp] = useState(false);
   const translateY = useSharedValue(0);
-  const [parentComments, setParentComments] = useState();
+  const [parentComments, setParentComments] = useState(null);
   const [keyboardSpacing, setKeyboardSpacing] = useState();
-
+  const [showAddComment, setShowAddComment] = useState(false);
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
@@ -310,6 +310,11 @@ const BottomSheet = React.memo(props => {
           console.log('test');
           setMyComment(false);
           setParentComments(querySnapshot._docs);
+          if (querySnapshot._docs.length === 0) {
+            setShowAddComment(true);
+          } else {
+            setShowAddComment(false);
+          }
         });
     }
   }, [songID, myComment]);
@@ -333,6 +338,16 @@ const BottomSheet = React.memo(props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [viewReplies, myComment]);
 
+  useEffect(() => {
+    if (parentComments) {
+      if (parentComments.length === 0) {
+        console.log('true');
+      } else {
+        console.log('false');
+      }
+    }
+  }, [parentComments]);
+
   return (
     <>
       <GestureDetector gesture={gesture}>
@@ -350,7 +365,34 @@ const BottomSheet = React.memo(props => {
               </View>
             </View>
           )}
-
+          {showAddComment && (
+            <>
+              <View style={styles.commentContainer}>
+                <View style={styles.commentLeftSide}>
+                  <TouchableOpacity>
+                    <Image
+                      style={styles.userProfilePic}
+                      source={{
+                        uri: 'https://firebasestorage.googleapis.com/v0/b/musicplace-66f20.appspot.com/o/circle.png?alt=media&token=4d44b252-e89d-4887-8a07-14e4c596de60',
+                      }}
+                    />
+                  </TouchableOpacity>
+                  <View style={styles.commentTextContainer}>
+                    <TouchableOpacity>
+                      <Text
+                        ref={replyUsernameRef}
+                        style={styles.userDisplayName}>
+                        Musicplace
+                      </Text>
+                    </TouchableOpacity>
+                    <Text style={styles.userComment}>
+                      swipe up to add a comment 🤠
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            </>
+          )}
           {parentComments && (
             <FlatList
               // style={styles.commentFlatList}
