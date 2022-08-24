@@ -175,6 +175,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'Inter-Bold',
     fontSize: 18,
-    marginLeft: '8%',
+    marginLeft: '15%',
+    position: 'absolute',
   },
 });
