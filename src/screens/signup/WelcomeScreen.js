@@ -36,13 +36,13 @@ const WelcomeScreen = ({navigation}) => {
       <TouchableOpacity>
         <Text style={styles.login}>Login</Text>
       </TouchableOpacity>
-      <Text style={styles.tos}>
+      {/* <Text style={styles.tos}>
         By continuing , you agree to our{' '}
         <Text style={styles.highlight}> Terms of Service</Text> and acknowledge
         that you have read our
         <Text style={styles.highlight}> Privacy Policy</Text> to learn how we
         collect, use, and share your data.
-      </Text>
+      </Text> */}
     </SafeAreaView>
   );
 };
@@ -55,14 +55,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   welcomeContainer: {
-    marginTop: 186,
+    marginTop: '38%',
+    justifyContent: 'center',
+    alignSelf: 'center',
   },
   signUp: {
     color: 'white',
     fontFamily: 'Inter-Black',
     fontWeight: '500',
     fontSize: 40,
-    marginLeft: '12%',
+    textAlign: 'left',
   },
   musicplaceContainer: {
     flexDirection: 'row',
@@ -92,8 +94,8 @@ const styles = StyleSheet.create({
   caption: {
     marginLeft: 7,
     color: 'white',
-    fontSize: 16,
-    fontFamily: 'Inter-Regular',
+    fontSize: 18,
+    fontFamily: 'Inter-Medium',
   },
   signUpBtn: {
     backgroundColor: Color.red,
@@ -116,17 +118,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
   },
-  tos: {
-    position: 'absolute',
-    color: Color.greyOut,
-    bottom: 30,
-    width: 317,
-    textAlign: 'center',
-    marginLeft: 37,
-    fontSize: 12,
-    fontFamily: 'Inter-Regular',
-  },
-  highlight: {
-    color: 'white',
-  },
+  // tos: {
+  //   position: 'absolute',
+  //   color: Color.greyOut,
+  //   bottom: 30,
+  //   width: 317,
+  //   textAlign: 'center',
+  //   marginLeft: 37,
+  //   fontSize: 12,
+  //   fontFamily: 'Inter-Regular',
+  // },
+  // highlight: {
+  //   color: 'white',
+  // },
 });

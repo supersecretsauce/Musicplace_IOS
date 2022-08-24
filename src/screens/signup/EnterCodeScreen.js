@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import {useState, useContext} from 'react';
+import {useState, useContext, useEffect, useRef} from 'react';
 import {Context} from '../../context/Context';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
 import HapticFeedback from 'react-native-haptic-feedback';
@@ -76,6 +76,9 @@ const EnterCodeScreen = ({navigation}) => {
             placeholderTextColor="grey"
             value={verificationCode}
             onChangeText={text => handleInput(text)}
+            keyboardAppearance="dark"
+            autoFocus="true"
+            textContentType="oneTimeCode"
           />
         </View>
       </View>
@@ -108,7 +111,7 @@ const styles = StyleSheet.create({
   musicplace: {
     position: 'absolute',
     alignSelf: 'center',
-    top: '8.2%',
+    top: '8.75%',
   },
   desc: {
     color: 'white',

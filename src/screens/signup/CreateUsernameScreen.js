@@ -107,6 +107,9 @@ const CreateUsernameScreen = ({navigation}) => {
             value={username}
             autoCapitalize="none"
             onChangeText={text => handleText(text)}
+            keyboardAppearance="dark"
+            autoFocus="true"
+            textContentType="username"
           />
         </View>
       </View>

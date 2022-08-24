@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import {useState, useContext} from 'react';
+import {useState, useContext, useRef, useEffect} from 'react';
 import {Context} from '../../context/Context';
 import auth from '@react-native-firebase/auth';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
@@ -110,12 +110,18 @@ const PhoneNumber = ({navigation}) => {
             source={require('../../assets/img/VerticalLine.jpg')}
           />
           <TextInput
-            keyboardType="numeric"
+            keyboardType="phone-pad"
             style={styles.inputText}
             value={inputValue}
             onChangeText={text => handleInput(text)}
             placeholder="(123)-456-7890"
             placeholderTextColor="grey"
+            autoFocus="true"
+            keyboardAppearance="dark"
+            multiline="true"
+            textContentType="telephoneNumber"
+            // editable="false"
+            // autoFocus="true"
           />
         </View>
       </View>
@@ -148,7 +154,7 @@ const styles = StyleSheet.create({
   musicplace: {
     position: 'absolute',
     alignSelf: 'center',
-    top: '8.2%',
+    top: '8.75%',
   },
   desc: {
     color: 'white',
