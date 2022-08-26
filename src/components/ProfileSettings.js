@@ -28,7 +28,8 @@ const spotConfig = {
 };
 const ProfileSettings = props => {
   const [spotifyConnected, setSpotifyConnected] = useState();
-  const {setUserLogin, username} = useContext(Context);
+  const {setUserLogin, username, setCurrentTrack, currentTrack} =
+    useContext(Context);
   const UID = props.UIDProps;
 
   const IG = async () => {
@@ -82,6 +83,8 @@ const ProfileSettings = props => {
       .then(() => console.log('User signed out!'));
     AsyncStorage.clear();
     setUserLogin(false);
+    setCurrentTrack(null);
+    currentTrack.stop();
   };
 
   const deleteAccount = () => {
@@ -99,8 +102,10 @@ const ProfileSettings = props => {
       .then(() => {
         console.log('User deleted!');
       });
-    AsyncStorage.clear();
     setUserLogin(false);
+    AsyncStorage.clear();
+    setCurrentTrack(null);
+    currentTrack.stop();
   };
 
   return (
@@ -175,6 +180,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'Inter-Bold',
     fontSize: 18,
-    marginLeft: '8%',
+    marginLeft: '15%',
+    position: 'absolute',
   },
 });
