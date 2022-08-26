@@ -118,11 +118,13 @@ const HomeTest = ({navigation}) => {
     if (viewableItems) {
       // console.log(viewableItems[0].index);
       setCurrentIndex(viewableItems[0].index);
+      console.log('first part of the index', viewableItems[0].index);
     }
   };
 
   const setTheIndex = useCallback(() => {
     setSongIndex(currentIndex);
+    console.log('second part of the index', currentIndex);
   }, [currentIndex]);
 
   useEffect(() => {
@@ -157,9 +159,10 @@ const HomeTest = ({navigation}) => {
       setCurrentTrack(
         new Sound(postPreviewURL, null, error => {
           if (error) {
-            // console.log('failed to load the sound', error);
+            console.log('failed to load the sound', error);
             return;
           }
+          console.log(postPreviewURL);
           setSongLoaded(postPreviewURL);
         }),
       );

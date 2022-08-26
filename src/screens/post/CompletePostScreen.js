@@ -15,6 +15,11 @@ import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Sound from 'react-native-sound';
 import firestore from '@react-native-firebase/firestore';
+import Toast from 'react-native-toast-message';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {firebase} from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
 
 const DismissKeyboard = ({children}) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -28,6 +33,11 @@ const CompletePostScreen = ({route, navigation}) => {
   const [value] = useState(false);
   const [trackPlaying, setTrackPlaying] = useState(false);
   const [caption, setCaption] = useState();
+  const [accessToken, setAccessToken] = useState();
+  const [songMetrics, setSongMetrics] = useState();
+  const [UID, setUID] = useState();
+  const [userInfo, setUserInfo] = useState();
+  const [profilePic, setProfilePic] = useState();
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('transitionEnd', e => {
@@ -36,6 +46,66 @@ const CompletePostScreen = ({route, navigation}) => {
 
     return unsubscribe;
   }, [navigation, track]);
+
+  useEffect(() => {
+    const checkUserLogin = async () => {
+      try {
+        const asyncAccess = await AsyncStorage.getItem('spotAccessToken');
+        const asyncUID = await AsyncStorage.getItem('UID');
+        if (value === null) {
+          return;
+        } else {
+          setAccessToken(asyncAccess);
+          setUID(asyncUID);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    checkUserLogin();
+  }, []);
+
+  useEffect(() => {
+    if (UID) {
+      firestore()
+        .collection('users')
+        .doc(UID)
+        .get()
+        .then(response => setUserInfo(response._data));
+    }
+  }, [UID]);
+
+  useEffect(() => {
+    if (UID) {
+      storage()
+        .ref(UID + 'PFP')
+        .getDownloadURL()
+        .then(response => setProfilePic(response))
+        .catch(error => {
+          setProfilePic(null);
+        });
+    }
+  });
+
+  useEffect(() => {
+    if (song && accessToken) {
+      axios
+        .get(`https://api.spotify.com/v1/audio-features/${song.id}`, {
+          headers: {
+            Authorization: 'Bearer ' + accessToken,
+            'Content-Type': 'application/json',
+          },
+        })
+        .then(response => {
+          console.log(response);
+          setSongMetrics(response.data);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  }, [accessToken, song]);
 
   useEffect(() => {
     if (songPhoto) {
@@ -70,27 +140,52 @@ const CompletePostScreen = ({route, navigation}) => {
     setCaption(text);
   };
 
-  console.log(caption);
+  console.log(song);
+
   const postSong = async () => {
+    Toast.show({
+      type: 'success',
+      text1: 'song posted!',
+      // text2: "Don't believe us? Check your spotify library.",
+      visibilityTime: 2000,
+    });
     if (songPhoto) {
       try {
         await firestore()
           .collection('posts')
           .doc(song.id)
-          .set({
-            songName: song.name,
-            caption: caption ? caption : null,
-            albumName: albumName,
-            artistName: song.artists.map(artist => artist.name),
-            artistID: song.artists.map(artist => artist.id),
-            availableMarkets: song.available_markets,
-            previewURL: song.preview_url,
-            isExplicit: song.explicit,
-            durationInMs: song.duration_ms,
-            href: song.href,
-            trackNumber: song.track_number,
-            songPhoto: songPhoto,
-          })
+          .set(
+            {
+              acousticness: songMetrics.acousticness,
+              danceability: songMetrics.danceability,
+              energy: songMetrics.energy,
+              instrumentalness: songMetrics.instrumentalness,
+              key: songMetrics.key,
+              liveness: songMetrics.liveness,
+              loudness: songMetrics.loudness,
+              mode: songMetrics.mode,
+              releaseDate: song.album.release_date,
+              signature: songMetrics.time_signature,
+              speechiness: songMetrics.speechiness,
+              tempo: songMetrics.tempo,
+              valence: songMetrics.valence,
+              songID: song.id,
+              songName: song.name,
+              albumName: song.album.name,
+              artistName: song.artists.map(artist => artist.name),
+              artistID: song.artists.map(artist => artist.id),
+              availableMarkets: song.available_markets,
+              popularity: song.popularity,
+              previewURL: song.preview_url,
+              isExplicit: song.explicit,
+              durationInMs: song.duration_ms,
+              href: song.href,
+              trackNumber: song.track_number,
+              songPhoto: song.album.images[0].url,
+              users: firebase.firestore.FieldValue.arrayUnion(UID),
+            },
+            {merge: true},
+          )
           .then(() => {
             console.log('song added!');
           });
@@ -103,22 +198,38 @@ const CompletePostScreen = ({route, navigation}) => {
         await firestore()
           .collection('posts')
           .doc(song.id)
-          .set({
-            songID: song.id,
-            songName: song.name,
-            caption: caption ? caption : null,
-            albumName: song.album.name,
-            artistName: song.artists.map(artist => artist.name),
-            artistID: song.artists.map(artist => artist.id),
-            availableMarkets: song.available_markets,
-            popularity: song.popularity,
-            previewURL: song.preview_url,
-            isExplicit: song.explicit,
-            durationInMs: song.duration_ms,
-            href: song.href,
-            trackNumber: song.track_number,
-            songPhoto: song.album.images[0].url,
-          })
+          .set(
+            {
+              acousticness: songMetrics.acousticness,
+              danceability: songMetrics.danceability,
+              energy: songMetrics.energy,
+              instrumentalness: songMetrics.instrumentalness,
+              key: songMetrics.key,
+              liveness: songMetrics.liveness,
+              loudness: songMetrics.loudness,
+              mode: songMetrics.mode,
+              releaseDate: song.album.release_date,
+              signature: songMetrics.time_signature,
+              speechiness: songMetrics.speechiness,
+              tempo: songMetrics.tempo,
+              valence: songMetrics.valence,
+              songID: song.id,
+              songName: song.name,
+              albumName: song.album.name,
+              artistName: song.artists.map(artist => artist.name),
+              artistID: song.artists.map(artist => artist.id),
+              availableMarkets: song.available_markets,
+              popularity: song.popularity,
+              previewURL: song.preview_url,
+              isExplicit: song.explicit,
+              durationInMs: song.duration_ms,
+              href: song.href,
+              trackNumber: song.track_number,
+              songPhoto: song.album.images[0].url,
+              users: firebase.firestore.FieldValue.arrayUnion(UID),
+            },
+            {merge: true},
+          )
           .then(() => {
             console.log('song added!');
           });
@@ -127,7 +238,42 @@ const CompletePostScreen = ({route, navigation}) => {
         return;
       }
     }
+    if (caption) {
+      const currentdate = new Date();
+      firestore()
+        .collection('posts')
+        .doc(song.id)
+        .collection('comments')
+        .add({
+          UID: UID,
+          parent: 'none',
+          comment: caption,
+          profilePicURL: profilePic ? profilePic : null,
+          displayName: userInfo.displayName,
+          likeAmount: 0,
+          hasReplies: 'no',
+          commentAddedAt:
+            currentdate.getMonth() +
+            1 +
+            '/' +
+            currentdate.getUTCDate() +
+            '/' +
+            currentdate.getFullYear() +
+            ' @ ' +
+            currentdate.getHours() +
+            ':' +
+            currentdate.getMinutes() +
+            ':' +
+            currentdate.getSeconds(),
+        })
+        .then(() => {
+          console.log('post added!');
+        });
+    }
+    navigation.navigate('HomeScreen');
   };
+
+  console.log(caption);
 
   return (
     <>
@@ -198,7 +344,7 @@ const CompletePostScreen = ({route, navigation}) => {
                   multiline
                   autoCapitalize="none"
                   keyboardType="default"
-                  placeholder="Caption ideas include things like: where you were when you first heard this song, the people you play this with...idk that's all we got. "
+                  placeholder="add a comment."
                   placeholderTextColor="grey"
                   value={value}
                   onChangeText={text => handleCaption(text)}
@@ -316,7 +462,9 @@ const CompletePostScreen = ({route, navigation}) => {
                 multiline
                 autoCapitalize="none"
                 keyboardType="default"
-                placeholder="Caption ideas include things like: where you were you first heard this song, the people you play this with...idk that's all we got. "
+                placeholder="add a comment"
+                returnKeyType="next"
+                onEndEditing={() => Keyboard.dismiss()}
                 placeholderTextColor="grey"
                 value={value}
                 onChangeText={text => handleCaption(text)}
