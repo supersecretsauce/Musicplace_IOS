@@ -90,7 +90,14 @@ const ConnectSpotifyScreen = ({navigation}) => {
         phoneNumber: userInfo.phoneNumber,
         createdAt: userInfo.metadata.creationTime,
         lastSignIn: userInfo.metadata.lastSignInTime,
-        connectedWithSpotify: false,
+        connectedWithSpotify: true,
+        bio: null,
+        followers: 0,
+        following: 0,
+        displayName: username,
+        followersList: null,
+        followingList: null,
+        autoPost: true,
       });
     } catch (error) {
       return;
@@ -98,6 +105,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
     try {
       await AsyncStorage.setItem('user', 'true');
       await AsyncStorage.setItem('hasSpotify', 'false');
+      await AsyncStorage.setItem('UID', userInfo.uid);
     } catch (e) {
       console.log(e);
     }

@@ -33,6 +33,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import FollowingScreen from './FollowingScreen';
 import SheetTest from '../../components/SheetTest';
 import HapticFeedback from 'react-native-haptic-feedback';
+import {authorize} from 'react-native-app-auth';
 
 const HomeTest = ({navigation}) => {
   const [feed, setFeed] = useState();
@@ -49,6 +50,8 @@ const HomeTest = ({navigation}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [refreshComments, setRefreshComments] = useState(false);
   const [activeLikedTracks, setActiveLikedTracks] = useState([]);
+  const [spotifyConnectionStatus, setSpotifyConnectionStatus] = useState();
+  const [UID, setUID] = useState();
   const {
     currentTrack,
     setCurrentTrack,
@@ -84,11 +87,14 @@ const HomeTest = ({navigation}) => {
     const spotifyBoolean = await AsyncStorage.getItem('hasSpotify');
     const localRefresh = await AsyncStorage.getItem('spotRefreshToken');
     const localAccess = await AsyncStorage.getItem('spotAccessToken');
-
+    const localUID = await AsyncStorage.getItem('UID');
     if (spotifyBoolean === 'false') {
+      setSpotifyConnectionStatus(false);
     } else if (spotifyBoolean === 'true') {
+      setSpotifyConnectionStatus(true);
       setAccessToken(localAccess);
       setRefreshToken(localRefresh);
+      setUID(localUID);
     }
   }, [setAccessToken, setRefreshToken]);
   useEffect(() => {
@@ -203,43 +209,6 @@ const HomeTest = ({navigation}) => {
     }
   };
 
-  //show notification when liking and unliking song
-  // const showToast = () => {
-  //   if (like) {
-  //     Toast.show({
-  //       type: 'success',
-  //       text1: 'Removed from liked songs',
-  //       text2: 'Well that was quick.',
-  //       visibilityTime: 2000,
-  //     });
-  //     authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
-  //       .delete(`/me/tracks?ids=${songID}`)
-  //       .then(response => {
-  //         // console.log(response);
-  //       })
-  //       .catch(error => {
-  //         console.log(error);
-  //         return error;
-  //       });
-  //   } else if (!like && songID) {
-  //     Toast.show({
-  //       type: 'success',
-  //       text1: 'Added to liked songs',
-  //       text2: "Don't believe us? Check your spotify library.",
-  //       visibilityTime: 2000,
-  //     });
-  //     authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
-  //       .put(`/me/tracks?ids=${songID}`)
-  //       .then(response => {
-  //         // console.log(response);
-  //       })
-  //       .catch(error => {
-  //         console.log(error);
-  //         return error;
-  //       });
-  //   }
-  // };
-
   //liked a post logic
   const likeHandler = () => {
     if (activeLikedTracks.includes(songID)) {
@@ -288,6 +257,47 @@ const HomeTest = ({navigation}) => {
     await Linking.openURL(
       `http://open.spotify.com/track/${feed[songIndex].id}`,
     );
+  };
+
+  const connectToSpotify = async () => {
+    const config = {
+      clientId: '501638f5cfb04abfb61d039e370c5d99', // available on the app page
+      clientSecret: '16f92a6d7e9a4180b29af25bf012e6fe', // click "show client secret" to see this
+      redirectUrl: 'musicplace-ios:/musicplace-ios-login', // the redirect you defined after creating the app
+      scopes: [
+        'user-read-email',
+        'playlist-modify-public',
+        'user-read-private',
+        'user-library-read',
+        'user-follow-read',
+        'user-library-modify',
+        'user-top-read',
+      ], // the scopes you need to access
+      serviceConfiguration: {
+        authorizationEndpoint: 'https://accounts.spotify.com/authorize',
+        tokenEndpoint: 'https://accounts.spotify.com/api/token',
+      },
+    };
+    const authState = await authorize(config);
+    try {
+      await firestore().collection('users').doc(UID).set(
+        {
+          connectedWithSpotify: true,
+          spotifyAccessToken: authState.accessToken,
+          spotifyAccessTokenExpirationDate: authState.accessTokenExpirationDate,
+          spotifyRefreshToken: authState.refreshToken,
+          spotifyTokenType: authState.tokenType,
+        },
+        {merge: true},
+      );
+
+      await AsyncStorage.setItem('hasSpotify', 'true');
+      await AsyncStorage.setItem('spotAccessToken', authState.accessToken);
+      await AsyncStorage.setItem('spotRefreshToken', authState.refreshToken);
+      setSpotifyConnectionStatus(true);
+      setAccessToken(authState.accessToken);
+      setRefreshToken(authState.refreshTokenresh);
+    } catch (error) {}
   };
 
   return (
@@ -356,7 +366,9 @@ const HomeTest = ({navigation}) => {
                                   onPress={() => {
                                     setLike(!like);
                                     setLikeFiller(!likeFiller);
-                                    likeHandler();
+                                    spotifyConnectionStatus
+                                      ? likeHandler()
+                                      : null;
                                   }}>
                                   <Ionicons
                                     style={styles.socialIcon}
@@ -376,13 +388,23 @@ const HomeTest = ({navigation}) => {
                               </View>
                             </View>
                           </View>
-                          <TouchableOpacity
-                            onPress={listenOnSpotify}
-                            style={styles.listenOnSpot}>
-                            <Text style={styles.listenOnSpotText}>
-                              LISTEN ON SPOTIFY
-                            </Text>
-                          </TouchableOpacity>
+                          {spotifyConnectionStatus ? (
+                            <TouchableOpacity
+                              onPress={listenOnSpotify}
+                              style={styles.listenOnSpot}>
+                              <Text style={styles.listenOnSpotText}>
+                                LISTEN ON SPOTIFY
+                              </Text>
+                            </TouchableOpacity>
+                          ) : (
+                            <TouchableOpacity
+                              onPress={connectToSpotify}
+                              style={styles.listenOnSpot}>
+                              <Text style={styles.listenOnSpotText}>
+                                CONNECT TO SPOTIFY
+                              </Text>
+                            </TouchableOpacity>
+                          )}
                         </SafeAreaView>
                       </>
                     );

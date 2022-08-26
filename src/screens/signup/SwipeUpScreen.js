@@ -18,7 +18,12 @@ const SwipeUpScreen = ({navigation}) => {
       <Text style={styles.swipeDesc}>
         Expand the comment section or listen to a song on Spotify.
       </Text>
-      <Image source={VerticalGif} style={styles.gif} />
+      <Image
+        source={{
+          uri: 'https://firebasestorage.googleapis.com/v0/b/musicplace-66f20.appspot.com/o/vertical-gif.gif?alt=media&token=2e20d893-d078-4ffe-93e6-edbe86ceb5fc',
+        }}
+        style={styles.gif}
+      />
       <View style={styles.nextBtnContainer}>
         <TouchableOpacity
           onPress={() => {
