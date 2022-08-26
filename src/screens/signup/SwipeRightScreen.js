@@ -20,7 +20,12 @@ const SwipeRightScreen = ({navigation}) => {
       <Text style={styles.swipeDesc}>
         Swipe right to navigate to the next song.
       </Text>
-      <Image source={HorizontalGif} style={styles.gif} />
+      <Image
+        source={{
+          uri: 'https://firebasestorage.googleapis.com/v0/b/musicplace-66f20.appspot.com/o/horizontal-gif.gif?alt=media&token=021f64e9-8ee4-42cf-aacf-51405dbdc550',
+        }}
+        style={styles.gif}
+      />
       <View style={styles.nextBtnContainer}>
         <TouchableOpacity
           onPress={() => {
