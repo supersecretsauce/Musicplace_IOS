@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import React, {useContext} from 'react';
-import HorizontalGif from '../../assets/img/horizontal-gif.gif';
 import Colors from '../../assets/utilities/Colors';
 import {Context} from '../../context/Context';
 import HapticFeedback from 'react-native-haptic-feedback';
