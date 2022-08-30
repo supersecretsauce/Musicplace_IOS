@@ -40,6 +40,32 @@ export default function App() {
 
   // AsyncStorage.clear();
 
+  // useEffect(() => {
+  //   const removeShit = async () => {
+  //     try {
+  //       await AsyncStorage.removeItem('spotAccessToken');
+  //       await AsyncStorage.removeItem('spotRefreshToken');
+  //       console.log('Data removed');
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   removeShit();
+  // }, []);
+
+  // useEffect(() => {
+  //   const addShit = async () => {
+  //     try {
+  //       await AsyncStorage.setItem('spotAccessToken', 'woooo');
+  //       await AsyncStorage.setItem('spotRefreshToken', 'woooo');
+  //       console.log('Data removed');
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   addShit();
+  // });
+
   useEffect(() => {
     const checkUserLogin = async () => {
       try {
