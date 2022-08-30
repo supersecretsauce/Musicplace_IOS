@@ -1,3 +1,6 @@
+import firestore from '@react-native-firebase/firestore';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const spotConfig = {
   clientId: '501638f5cfb04abfb61d039e370c5d99', // available on the app page
   clientSecret: '16f92a6d7e9a4180b29af25bf012e6fe', // click "show client secret" to see this
@@ -33,6 +36,7 @@ export const authFetch = (
   });
   axiosInstance.interceptors.response.use(
     function (response) {
+      console.log(response);
       return response;
     },
     function (error) {
@@ -57,13 +61,59 @@ export const authFetch = (
           })
           .then(response => {
             console.log('set new tokens!');
+            console.log(response);
             setAccessToken(response.data.access_token);
             setRefreshToken(response.data.refresh_token);
+            return;
           })
           .catch(e => {
             console.log(e);
             console.log('bad token?');
-            return error;
+            //check firebase for new tokens
+            const getFirebaseToken = async () => {
+              try {
+                const UID = await AsyncStorage.getItem('UID');
+                await firestore()
+                  .collection('users')
+                  .doc(UID)
+                  .get()
+                  .then(querySnapshot => {
+                    console.log(querySnapshot);
+                    setRefreshToken(querySnapshot._data.spotifyRefreshToken);
+                    console.log(querySnapshot._data.spotifyRefreshToken);
+                  });
+                axios
+                  .post('https://accounts.spotify.com/api/token', data, {
+                    headers: {
+                      'Content-Type': 'application/x-www-form-urlencoded',
+                      Authorization:
+                        'Basic ' +
+                        Buffer.from(
+                          spotConfig.clientId + ':' + spotConfig.clientSecret,
+                        ).toString('base64'),
+                    },
+                  })
+                  .then(response => {
+                    console.log('set new tokens from firebase!');
+                    setAccessToken(response.data.access_token);
+                    setRefreshToken(response.data.refresh_token);
+                    return;
+                  })
+                  .catch(e => {
+                    console.log(e);
+                    console.log("it's all bad mate!");
+                    //check firebase for new tokens
+                    return;
+                  });
+              } catch (error) {
+                console.log(error);
+                console.log(
+                  'tried to get new tokens from firebase and those did not work',
+                );
+                return;
+              }
+            };
+            getFirebaseToken();
           });
       }
       return Promise.reject(error);

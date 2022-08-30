@@ -7,7 +7,8 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "devtools": "react-devtools"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.17.7",
@@ -22,10 +23,12 @@
     "firebase": "^9.8.4",
     "qs": "^6.11.0",
     "react": "18.0.0",
+    "react-devtools": "^4.25.0",
     "react-native": "0.69.1",
     "react-native-app-auth": "^6.4.3",
     "react-native-cli": "^2.0.1",
     "react-native-gesture-handler": "^2.5.0",
+    "react-native-haptic-feedback": "^1.14.0",
     "react-native-image-crop-picker": "^0.38.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.5",
     "react-native-modal": "^13.0.1",

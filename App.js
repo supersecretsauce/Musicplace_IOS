@@ -13,6 +13,8 @@ import CreateUsernameScreen from './src/screens/signup/CreateUsernameScreen';
 import ConnectSpotifyScreen from './src/screens/signup/ConnectSpotifyScreen';
 import PostStackScreen from './src/routes/PostStackScreen';
 import ProfileStackScreen from './src/routes/ProfileStackScreen';
+import SwipeUpScreen from './src/screens/signup/SwipeUpScreen';
+import SwipeRightScreen from './src/screens/signup/SwipeRightScreen';
 import {Context} from './src/context/Context';
 import {useState, useEffect} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -20,7 +22,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {StyleSheet, StatusBar} from 'react-native';
 import Toast from 'react-native-toast-message';
-import ActivityStackScreen from './src/routes/ActivityStackScreen';
 import HomeStackScreen from './src/routes/HomeStackScreen';
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -31,12 +32,38 @@ export default function App() {
   const [currentTrack, setCurrentTrack] = useState();
   const [homeScreenFocus, setHomeScreenFocus] = useState();
   const [profileScreenFocus, setProfileScreenFocus] = useState();
-
+  const [parentComments, setParentComments] = useState();
   const [accessToken, setAccessToken] = useState('');
   const [username, setUsername] = useState('');
   const [currentPost, setCurrentPost] = useState();
 
   // AsyncStorage.clear();
+
+  // useEffect(() => {
+  //   const removeShit = async () => {
+  //     try {
+  //       await AsyncStorage.removeItem('spotAccessToken');
+  //       await AsyncStorage.removeItem('spotRefreshToken');
+  //       console.log('Data removed');
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   removeShit();
+  // }, []);
+
+  // useEffect(() => {
+  //   const addShit = async () => {
+  //     try {
+  //       await AsyncStorage.setItem('spotAccessToken', 'woooo');
+  //       await AsyncStorage.setItem('spotRefreshToken', 'woooo');
+  //       console.log('Data removed');
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+  //   addShit();
+  // });
 
   useEffect(() => {
     const checkUserLogin = async () => {
@@ -102,6 +129,8 @@ export default function App() {
             setCurrentPost,
             profileScreenFocus,
             setProfileScreenFocus,
+            parentComments,
+            setParentComments,
           }}>
           {userLogin ? (
             <Tab.Navigator
@@ -134,9 +163,9 @@ export default function App() {
                 tabBarStyle: {backgroundColor: 'black'},
               })}>
               <Tab.Screen name="Home" component={HomeStackScreen} />
-              <Tab.Screen name="Discover" component={ActivityStackScreen} />
+              {/* <Tab.Screen name="Discover" component={ActivityStackScreen} /> */}
               <Tab.Screen name="Post" component={PostStackScreen} />
-              <Tab.Screen name="Activity" component={ActivityStackScreen} />
+              {/* <Tab.Screen name="Activity" component={ActivityStackScreen} /> */}
               <Tab.Screen name="Profile" component={ProfileStackScreen} />
             </Tab.Navigator>
           ) : (
@@ -160,6 +189,11 @@ export default function App() {
               <Stack.Screen
                 name="ConnectSpotifyScreen"
                 component={ConnectSpotifyScreen}
+              />
+              <Stack.Screen name="SwipeUpScreen" component={SwipeUpScreen} />
+              <Stack.Screen
+                name="SwipeRightScreen"
+                component={SwipeRightScreen}
               />
             </Stack.Navigator>
           )}

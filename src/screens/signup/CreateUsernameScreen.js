@@ -13,6 +13,8 @@ import {
 import Color from '../../assets/utilities/Colors';
 import firestore from '@react-native-firebase/firestore';
 import {firebase} from '@react-native-firebase/firestore';
+import Musicplace from '../../assets/img/musicplace-signup.svg';
+import HapticFeedback from 'react-native-haptic-feedback';
 
 const CreateUsernameScreen = ({navigation}) => {
   const [submitDone, setSubmitDone] = useState(false);
@@ -50,6 +52,7 @@ const CreateUsernameScreen = ({navigation}) => {
   };
 
   const createUsername = async () => {
+    HapticFeedback.trigger('impactHeavy');
     try {
       await firestore().collection('usernames').doc(username).set({
         UID: userInfo.uid,
@@ -79,19 +82,19 @@ const CreateUsernameScreen = ({navigation}) => {
           />
         </View>
       </TouchableWithoutFeedback>
-      <View style={styles.textContainer}>
-        <Text style={styles.create}>Create a</Text>
-        <Text style={styles.username}>Username</Text>
-        {takenUsername ? (
-          <Text style={styles.blurbTaken}>
-            That username is taken (we know the feeling).
-          </Text>
-        ) : (
-          <Text style={styles.blurb}>
-            We get it, you’re the one that found that song.
-          </Text>
-        )}
-      </View>
+      <Musicplace style={styles.musicplace} />
+      <Text style={styles.desc}>
+        Create a username so everyone knows it’s you.
+      </Text>
+      {/* {takenUsername ? (
+        <Text style={styles.blurbTaken}>
+          That username is taken (we know the feeling).
+        </Text>
+      ) : (
+        <Text style={styles.blurb}>
+          We get it, you’re the one that found that song.
+        </Text>
+      )} */}
       <View style={styles.inputContainer}>
         <View style={styles.rectangle}>
           <TextInput
@@ -104,6 +107,9 @@ const CreateUsernameScreen = ({navigation}) => {
             value={username}
             autoCapitalize="none"
             onChangeText={text => handleText(text)}
+            keyboardAppearance="dark"
+            autoFocus="true"
+            textContentType="username"
           />
         </View>
       </View>
@@ -133,20 +139,19 @@ const styles = StyleSheet.create({
   chevron: {
     marginTop: '1%',
   },
-  textContainer: {
-    marginTop: '25%',
-    marginLeft: '10%',
+  musicplace: {
+    position: 'absolute',
+    alignSelf: 'center',
+    top: '8.2%',
   },
-  create: {
+  desc: {
     color: 'white',
-    fontFamily: 'Inter-Medium',
-    fontSize: 30,
-  },
-  username: {
-    color: 'white',
-    fontFamily: 'Inter-Bold',
-    fontSize: 45,
-    marginTop: '3%',
+    fontFamily: 'Inter-semibold',
+    fontSize: 18,
+    width: 300,
+    textAlign: 'center',
+    alignSelf: 'center',
+    marginTop: '8%',
   },
   blurb: {
     color: Color.greyOut,
@@ -154,7 +159,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: '3%',
   },
-
   blurbTaken: {
     color: Color.greyOut,
     fontFamily: 'Inter-Medium',
@@ -162,15 +166,13 @@ const styles = StyleSheet.create({
     marginTop: '3%',
     width: '90%',
   },
-
   inputContainer: {
     alignItems: 'center',
-    marginTop: '22%',
+    marginTop: '12%',
   },
-
   rectangle: {
     backgroundColor: '#282828',
-    width: 317,
+    width: '90%',
     height: 44,
     borderRadius: 5,
     alignItems: 'center',
@@ -181,7 +183,6 @@ const styles = StyleSheet.create({
     marginLeft: 14,
     fontSize: 16,
   },
-
   inputText: {
     color: 'white',
     fontSize: 16,
@@ -199,7 +200,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     paddingVertical: 10,
     marginTop: '5%',
-    width: 317,
+    width: '90%',
   },
   nextText: {
     color: 'white',
@@ -208,15 +209,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     opacity: 0.5,
   },
-
   nextBtnDone: {
     backgroundColor: 'rgb(255, 8, 0)',
     borderRadius: 5,
     paddingVertical: 10,
     marginTop: '5%',
-    width: 317,
+    width: '90%',
   },
-
   nextTextDone: {
     color: 'white',
     fontFamily: 'Inter-Bold',

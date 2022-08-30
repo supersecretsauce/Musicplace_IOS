@@ -68,45 +68,47 @@ const SpotifyAlbums = props => {
             data={albumTracks}
             renderItem={({item, index}) => {
               return (
-                <TouchableOpacity
-                  onPress={() => {
-                    navigation.navigate('CompletePostScreen', {
-                      song: item,
-                      songPhoto: albumPhoto,
-                      albumName: albumName,
-                    });
-                  }}>
-                  <View style={styles.songContainer} key={index}>
-                    <Image
-                      style={styles.songPhoto}
-                      source={{
-                        uri: albumPhoto,
-                      }}
-                    />
-                    <View style={styles.songInfoContainer}>
-                      <View style={styles.trackNameContainer}>
-                        <Text numberOfLines={1} style={styles.trackName}>
-                          {item.name}
-                        </Text>
+                <View key={index}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      navigation.navigate('CompletePostScreen', {
+                        song: item,
+                        songPhoto: albumPhoto,
+                        albumName: albumName,
+                      });
+                    }}>
+                    <View style={styles.songContainer} key={index}>
+                      <Image
+                        style={styles.songPhoto}
+                        source={{
+                          uri: albumPhoto,
+                        }}
+                      />
+                      <View style={styles.songInfoContainer}>
+                        <View style={styles.trackNameContainer}>
+                          <Text numberOfLines={1} style={styles.trackName}>
+                            {item.name}
+                          </Text>
+                        </View>
+                        <View style={styles.artistContainer}>
+                          <Text numberOfLines={1} style={styles.artistText}>
+                            {item.artists
+                              .map(artist => {
+                                return artist.name;
+                              })
+                              .join(', ')}
+                          </Text>
+                        </View>
                       </View>
-                      <View style={styles.artistContainer}>
-                        <Text numberOfLines={1} style={styles.artistText}>
-                          {item.artists
-                            .map(artist => {
-                              return artist.name;
-                            })
-                            .join(', ')}
-                        </Text>
-                      </View>
+                      <Ionicons
+                        style={styles.circleClick}
+                        name="chevron-forward"
+                        color={Colors.greyOut}
+                        size={25}
+                      />
                     </View>
-                    <Ionicons
-                      style={styles.circleClick}
-                      name="chevron-forward"
-                      color={Colors.greyOut}
-                      size={25}
-                    />
-                  </View>
-                </TouchableOpacity>
+                  </TouchableOpacity>
+                </View>
               );
             }}
           />

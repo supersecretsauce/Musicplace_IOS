@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>musicplace_ios</string>
+	<string>Musicplace</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -48,6 +48,8 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This application will access your photos to allow you to edit your profile picture.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Inter-Black.ttf</string>
@@ -72,12 +74,8 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This application will access your photos to allow you to edit your profile picture.</string>
 </dict>
 </plist>
