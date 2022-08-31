@@ -6,15 +6,8 @@ import {
 } from '@react-navigation/native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import WelcomeScreen from './src/screens/signup/WelcomeScreen';
-import PhoneNumberScreen from './src/screens/signup/PhoneNumberScreen';
-import EnterCodeScreen from './src/screens/signup/EnterCodeScreen';
-import CreateUsernameScreen from './src/screens/signup/CreateUsernameScreen';
-import ConnectSpotifyScreen from './src/screens/signup/ConnectSpotifyScreen';
 import PostStackScreen from './src/routes/PostStackScreen';
 import ProfileStackScreen from './src/routes/ProfileStackScreen';
-import SwipeUpScreen from './src/screens/signup/SwipeUpScreen';
-import SwipeRightScreen from './src/screens/signup/SwipeRightScreen';
 import {Context} from './src/context/Context';
 import {useState, useEffect} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -23,6 +16,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {StyleSheet, StatusBar} from 'react-native';
 import Toast from 'react-native-toast-message';
 import HomeStackScreen from './src/routes/HomeStackScreen';
+import WelcomeStackScreen from './src/routes/WelcomeStackScreen';
+
 export default function App() {
   const Stack = createNativeStackNavigator();
   const Tab = createBottomTabNavigator();
@@ -173,27 +168,9 @@ export default function App() {
               screenOptions={{
                 headerShown: false,
               }}>
-              <Stack.Screen name="WelcomeScreen" component={WelcomeScreen} />
               <Stack.Screen
-                name="PhoneNumberScreen"
-                component={PhoneNumberScreen}
-              />
-              <Stack.Screen
-                name="EnterCodeScreen"
-                component={EnterCodeScreen}
-              />
-              <Stack.Screen
-                name="CreateUsernameScreen"
-                component={CreateUsernameScreen}
-              />
-              <Stack.Screen
-                name="ConnectSpotifyScreen"
-                component={ConnectSpotifyScreen}
-              />
-              <Stack.Screen name="SwipeUpScreen" component={SwipeUpScreen} />
-              <Stack.Screen
-                name="SwipeRightScreen"
-                component={SwipeRightScreen}
+                name="WelcomeStackScreen"
+                component={WelcomeStackScreen}
               />
             </Stack.Navigator>
           )}

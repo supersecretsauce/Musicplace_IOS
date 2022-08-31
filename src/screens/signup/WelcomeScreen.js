@@ -12,8 +12,12 @@ import Color from '../../assets/utilities/Colors';
 import Musicplace from '../../assets/img/musicplace-welcome.svg';
 import HapticFeedback from 'react-native-haptic-feedback';
 const WelcomeScreen = ({navigation}) => {
-  const pressHandler = () => {
+  const signupHandler = () => {
     navigation.navigate('PhoneNumberScreen');
+    HapticFeedback.trigger('impactHeavy');
+  };
+  const loginHandler = () => {
+    navigation.navigate('ExistingPhoneNumberScreen');
     HapticFeedback.trigger('impactHeavy');
   };
 
@@ -30,10 +34,10 @@ const WelcomeScreen = ({navigation}) => {
         <Image source={require('../../assets/img/Sparkles.png')} />
         <Text style={styles.caption}>Music discovery starts here.</Text>
       </View>
-      <TouchableOpacity onPress={pressHandler} style={styles.signUpBtn}>
+      <TouchableOpacity onPress={signupHandler} style={styles.signUpBtn}>
         <Text style={styles.signUpText}>Sign up</Text>
       </TouchableOpacity>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={loginHandler}>
         <Text style={styles.login}>Login</Text>
       </TouchableOpacity>
       {/* <Text style={styles.tos}>
