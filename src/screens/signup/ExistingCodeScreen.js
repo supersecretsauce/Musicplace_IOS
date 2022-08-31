@@ -13,7 +13,7 @@ import {useState, useContext, useEffect, useRef} from 'react';
 import {Context} from '../../context/Context';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
 import HapticFeedback from 'react-native-haptic-feedback';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const ExistingCodeScreen = ({navigation}) => {
   const [showEnterDone, setShowEnterDone] = useState(false);
   const [verificationCode, setVerificationCode] = useState();
@@ -49,6 +49,7 @@ const ExistingCodeScreen = ({navigation}) => {
       HapticFeedback.trigger('impactHeavy');
       await confirm.confirm(verificationCode);
       setUserLogin(true);
+      await AsyncStorage.setItem('user', 'true');
     } catch (error) {
       console.log('Invalid code.');
       return;
