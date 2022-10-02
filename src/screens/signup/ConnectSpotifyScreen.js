@@ -68,7 +68,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
         {merge: true},
       );
     } catch (error) {
-      return;
+      console.log(error);
     }
     try {
       await AsyncStorage.setItem('user', 'true');

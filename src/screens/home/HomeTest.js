@@ -124,11 +124,6 @@ const HomeTest = ({navigation}) => {
   //index logic
   const onViewableItemsChanged = ({viewableItems}) => {
     setCurrentIndex(viewableItems[0].index);
-    console.log('length', viewableItems.length);
-    //if a user is changing screens, update the db with watch history
-    if (viewableItems.length >= 2) {
-      console.log('yoooo');
-    }
   };
   const viewabilityConfigCallbackPairs = useRef([{onViewableItemsChanged}]);
 
@@ -137,7 +132,6 @@ const HomeTest = ({navigation}) => {
       watchDuration.current += 1;
     }, 1000);
   };
-
   const setWatches = () => {
     if (feed) {
       firestore()
@@ -146,8 +140,7 @@ const HomeTest = ({navigation}) => {
         .collection('watches')
         .add({
           songID: feed[songIndex].id,
-          status: 'just watched',
-          duration: watchDuration,
+          duration: watchDuration.current,
         })
         .then(() => {
           console.log('added watch document');
@@ -155,17 +148,20 @@ const HomeTest = ({navigation}) => {
         .catch(error => {
           console.log(error);
         });
+      watchDuration.current = 0;
     }
   };
 
   useEffect(() => {
     clearInterval(timerID.current);
     userWatches();
+    console.log('recording watches is called');
   }, [currentIndex]);
 
   const setTheIndex = useCallback(() => {
     setSongIndex(currentIndex);
-    console.log('new song');
+    console.log('uploading watches to db');
+
     setWatches();
 
     // console.log('second part of the index', currentIndex);
