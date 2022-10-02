@@ -135,7 +135,6 @@ const HomeTest = ({navigation}) => {
   const userWatches = () => {
     timerID.current = setInterval(() => {
       watchDuration.current += 1;
-      console.log(watchDuration.current);
     }, 1000);
   };
 
