@@ -60,7 +60,7 @@ const BottomSheet = React.memo(props => {
     const keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
       e => {
-        console.log('yes');
+        // console.log('yes');
         console.log(e.endCoordinates.height);
         console.log(Dimensions.get('window').height);
         setKeyboardSpacing(
@@ -72,7 +72,7 @@ const BottomSheet = React.memo(props => {
       'keyboardDidHide',
       () => {
         console.log('no');
-        console.log(Dimensions.get('window').height);
+        // console.log(Dimensions.get('window').height);
       },
     );
 
@@ -307,7 +307,7 @@ const BottomSheet = React.memo(props => {
         .get()
         .then(querySnapshot => {
           // console.log(querySnapshot);
-          console.log('test');
+          // console.log('test');
           setMyComment(false);
           setParentComments(querySnapshot._docs);
           if (querySnapshot._docs.length === 0) {
@@ -341,9 +341,9 @@ const BottomSheet = React.memo(props => {
   useEffect(() => {
     if (parentComments) {
       if (parentComments.length === 0) {
-        console.log('true');
+        // console.log('true');
       } else {
-        console.log('false');
+        // console.log('false');
       }
     }
   }, [parentComments]);
