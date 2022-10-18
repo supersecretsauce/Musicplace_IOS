@@ -51,6 +51,8 @@ const HomeTest = ({navigation}) => {
   const [refreshComments, setRefreshComments] = useState(false);
   const [activeLikedTracks, setActiveLikedTracks] = useState([]);
   const [spotifyConnectionStatus, setSpotifyConnectionStatus] = useState();
+  const timerID = useRef(0);
+  const watchDuration = useRef(0);
   const [UID, setUID] = useState();
   const {
     currentTrack,
@@ -121,16 +123,48 @@ const HomeTest = ({navigation}) => {
 
   //index logic
   const onViewableItemsChanged = ({viewableItems}) => {
-    if (viewableItems) {
-      // console.log(viewableItems[0].index);
-      setCurrentIndex(viewableItems[0].index);
-      console.log('first part of the index', viewableItems[0].index);
+    setCurrentIndex(viewableItems[0].index);
+  };
+  const viewabilityConfigCallbackPairs = useRef([{onViewableItemsChanged}]);
+
+  const userWatches = () => {
+    timerID.current = setInterval(() => {
+      watchDuration.current += 1;
+    }, 1000);
+  };
+  const setWatches = () => {
+    if (feed) {
+      firestore()
+        .collection('users')
+        .doc(UID)
+        .collection('watches')
+        .add({
+          songID: feed[songIndex].id,
+          duration: watchDuration.current,
+        })
+        .then(() => {
+          console.log('added watch document');
+        })
+        .catch(error => {
+          console.log(error);
+        });
+      watchDuration.current = 0;
     }
   };
 
+  useEffect(() => {
+    clearInterval(timerID.current);
+    userWatches();
+    console.log('recording watches is called');
+  }, [currentIndex]);
+
   const setTheIndex = useCallback(() => {
     setSongIndex(currentIndex);
-    console.log('second part of the index', currentIndex);
+    console.log('uploading watches to db');
+
+    setWatches();
+
+    // console.log('second part of the index', currentIndex);
   }, [currentIndex]);
 
   useEffect(() => {
@@ -150,12 +184,11 @@ const HomeTest = ({navigation}) => {
     }
   }, [currentTrack, feed, songIndex]);
 
-  const viewabilityConfigCallbackPairs = useRef([{onViewableItemsChanged}]);
   //set the song preview url based on index of feed
   useEffect(() => {
     if (feed) {
       setPostPreviewURL(feed[songIndex]._data.previewUrl);
-      console.log(feed);
+      // console.log(feed);
     }
   }, [feed, songIndex]);
 
@@ -168,7 +201,7 @@ const HomeTest = ({navigation}) => {
             console.log('failed to load the sound', error);
             return;
           }
-          console.log(postPreviewURL);
+          // console.log(postPreviewURL);
           setSongLoaded(postPreviewURL);
         }),
       );
@@ -391,6 +424,7 @@ const HomeTest = ({navigation}) => {
                             <TouchableOpacity
                               onPress={listenOnSpotify}
                               style={styles.listenOnSpot}>
+                              <Spotify height={24} width={24} />
                               <Text style={styles.listenOnSpotText}>
                                 LISTEN ON SPOTIFY
                               </Text>
@@ -399,6 +433,7 @@ const HomeTest = ({navigation}) => {
                             <TouchableOpacity
                               onPress={connectToSpotify}
                               style={styles.listenOnSpot}>
+                              <Spotify height={24} width={24} />
                               <Text style={styles.listenOnSpotText}>
                                 CONNECT TO SPOTIFY
                               </Text>
@@ -557,14 +592,18 @@ const styles = StyleSheet.create({
   listenOnSpot: {
     position: 'relative',
     top: '2.5%',
-    paddingHorizontal: 50,
+    paddingHorizontal: 40,
     paddingVertical: 12,
     borderRadius: 20,
-    backgroundColor: Colors.spotify,
+    backgroundColor: '#1F1F1F',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   listenOnSpotText: {
     color: 'white',
     fontFamily: 'Inter-Bold',
     fontSize: 16,
+    marginLeft: 10,
   },
 });
