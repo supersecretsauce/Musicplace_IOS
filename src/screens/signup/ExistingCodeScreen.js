@@ -14,11 +14,15 @@ import {Context} from '../../context/Context';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
 import HapticFeedback from 'react-native-haptic-feedback';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {firebase} from '@react-native-firebase/firestore';
+
 const ExistingCodeScreen = ({navigation}) => {
   const [showEnterDone, setShowEnterDone] = useState(false);
   const [verificationCode, setVerificationCode] = useState();
   const {confirm, setUserLogin} = useContext(Context);
+  const userInfo = firebase.auth().currentUser;
 
+  console.log(userInfo);
   const goBack = () => {
     navigation.navigate('ExistingPhoneNumberScreen');
   };
@@ -50,6 +54,7 @@ const ExistingCodeScreen = ({navigation}) => {
       await confirm.confirm(verificationCode);
       setUserLogin(true);
       await AsyncStorage.setItem('user', 'true');
+      await AsyncStorage.setItem('UID', userInfo.uid);
     } catch (error) {
       console.log('Invalid code.');
       return;
