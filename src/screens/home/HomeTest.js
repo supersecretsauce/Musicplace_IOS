@@ -424,6 +424,7 @@ const HomeTest = ({navigation}) => {
                             <TouchableOpacity
                               onPress={listenOnSpotify}
                               style={styles.listenOnSpot}>
+                              <Spotify height={24} width={24} />
                               <Text style={styles.listenOnSpotText}>
                                 LISTEN ON SPOTIFY
                               </Text>
@@ -432,6 +433,7 @@ const HomeTest = ({navigation}) => {
                             <TouchableOpacity
                               onPress={connectToSpotify}
                               style={styles.listenOnSpot}>
+                              <Spotify height={24} width={24} />
                               <Text style={styles.listenOnSpotText}>
                                 CONNECT TO SPOTIFY
                               </Text>
@@ -590,14 +592,18 @@ const styles = StyleSheet.create({
   listenOnSpot: {
     position: 'relative',
     top: '2.5%',
-    paddingHorizontal: 50,
+    paddingHorizontal: 40,
     paddingVertical: 12,
     borderRadius: 20,
-    backgroundColor: Colors.spotify,
+    backgroundColor: '#1F1F1F',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   listenOnSpotText: {
     color: 'white',
     fontFamily: 'Inter-Bold',
     fontSize: 16,
+    marginLeft: 10,
   },
 });
