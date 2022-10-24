@@ -590,7 +590,7 @@
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = musicplace_ios/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Musicplace;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -620,7 +620,7 @@
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = musicplace_ios/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Musicplace;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
