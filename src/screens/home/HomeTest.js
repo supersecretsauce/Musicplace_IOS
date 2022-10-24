@@ -21,6 +21,7 @@ import React, {
 import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Spotify from '../../assets/img/spotify.svg';
+import SpotifyLogo from '../../assets/img/spotify-logo.svg';
 import firestore from '@react-native-firebase/firestore';
 import Swiper from 'react-native-swiper';
 import Sound from 'react-native-sound';
@@ -360,12 +361,48 @@ const HomeTest = ({navigation}) => {
                               }}
                             />
                           </TouchableOpacity>
-
                           <View style={styles.middleContainer}>
                             <View style={styles.trackInfoContainer}>
-                              <Text numberOfLines={1} style={styles.trackName}>
-                                {item._data.songName}
-                              </Text>
+                              <View style={styles.trackInfoTop}>
+                                <View>
+                                  <Text
+                                    numberOfLines={1}
+                                    style={styles.trackName}>
+                                    {item._data.songName}
+                                  </Text>
+                                </View>
+                                <View style={styles.interactContainer}>
+                                  <TouchableOpacity
+                                    style={styles.spotifyButton}>
+                                    <SpotifyLogo width={70} />
+                                  </TouchableOpacity>
+                                  <View style={styles.likesContainer}>
+                                    <TouchableOpacity
+                                      onPress={() => {
+                                        setLike(!like);
+                                        setLikeFiller(!likeFiller);
+                                        spotifyConnectionStatus
+                                          ? likeHandler()
+                                          : null;
+                                      }}>
+                                      <Ionicons
+                                        style={styles.socialIcon}
+                                        name={
+                                          activeLikedTracks.includes(item.id)
+                                            ? 'heart'
+                                            : 'heart-outline'
+                                        }
+                                        color={
+                                          activeLikedTracks.includes(item.id)
+                                            ? '#1DB954'
+                                            : 'grey'
+                                        }
+                                        size={28}
+                                      />
+                                    </TouchableOpacity>
+                                  </View>
+                                </View>
+                              </View>
                               <View style={styles.trackInfoBottom}>
                                 <Text
                                   numberOfLines={1}
@@ -387,36 +424,6 @@ const HomeTest = ({navigation}) => {
                                   style={styles.albumName}>
                                   {item._data.albumName}
                                 </Text>
-                              </View>
-                            </View>
-                            <View style={styles.interactContainer}>
-                              <TouchableOpacity style={styles.spotifyButton}>
-                                <Spotify height={24} width={24} />
-                              </TouchableOpacity>
-                              <View style={styles.likesContainer}>
-                                <TouchableOpacity
-                                  onPress={() => {
-                                    setLike(!like);
-                                    setLikeFiller(!likeFiller);
-                                    spotifyConnectionStatus
-                                      ? likeHandler()
-                                      : null;
-                                  }}>
-                                  <Ionicons
-                                    style={styles.socialIcon}
-                                    name={
-                                      activeLikedTracks.includes(item.id)
-                                        ? 'heart'
-                                        : 'heart-outline'
-                                    }
-                                    color={
-                                      activeLikedTracks.includes(item.id)
-                                        ? '#1DB954'
-                                        : 'grey'
-                                    }
-                                    size={28}
-                                  />
-                                </TouchableOpacity>
                               </View>
                             </View>
                           </View>
@@ -513,11 +520,16 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'space-between',
   },
+  trackInfoTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '87.9%',
+  },
   trackName: {
     color: 'white',
     fontFamily: 'Inter-bold',
     fontSize: 24,
-    width: 275,
+    width: 245,
   },
   trackInfoBottom: {
     flexDirection: 'row',
