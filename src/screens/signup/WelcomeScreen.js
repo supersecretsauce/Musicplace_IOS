@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  SafeAreaView,
-  Image,
-  useCallback,
-} from 'react-native';
+import {StyleSheet, Text, View, SafeAreaView, Image} from 'react-native';
 import {TouchableOpacity} from 'react-native';
 import Color from '../../assets/utilities/Colors';
 import Musicplace from '../../assets/img/musicplace-welcome.svg';

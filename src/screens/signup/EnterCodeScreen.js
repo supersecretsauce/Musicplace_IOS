@@ -9,10 +9,11 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import {useState, useContext, useEffect, useRef} from 'react';
+import {useState, useContext} from 'react';
 import {Context} from '../../context/Context';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
 import HapticFeedback from 'react-native-haptic-feedback';
+import Toast from 'react-native-toast-message';
 
 const EnterCodeScreen = ({navigation}) => {
   const [showEnterDone, setShowEnterDone] = useState(false);
@@ -51,6 +52,12 @@ const EnterCodeScreen = ({navigation}) => {
       navigation.navigate('CreateUsernameScreen');
     } catch (error) {
       console.log('Invalid code.');
+      Toast.show({
+        type: 'error',
+        text1: 'This code is not valid',
+        text2: 'Make sure you entered the correct number.',
+        visibilityTime: 3000,
+      });
       return;
     }
   };
@@ -168,7 +175,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     opacity: 0.5,
   },
-
   nextBtnDone: {
     backgroundColor: 'rgb(255, 8, 0)',
     borderRadius: 9,
@@ -176,7 +182,6 @@ const styles = StyleSheet.create({
     marginTop: '5%',
     width: '90%',
   },
-
   nextTextDone: {
     color: 'white',
     fontFamily: 'Inter-Bold',

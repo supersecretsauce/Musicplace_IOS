@@ -9,11 +9,14 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import {useState, useContext, useRef, useEffect} from 'react';
+import {useState, useContext} from 'react';
 import {Context} from '../../context/Context';
 import auth from '@react-native-firebase/auth';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
 import HapticFeedback from 'react-native-haptic-feedback';
+import firestore from '@react-native-firebase/firestore';
+import Toast from 'react-native-toast-message';
+
 const PhoneNumber = ({navigation}) => {
   const [inputValue, setInputValue] = useState('');
   const [showSubmitDone, setShowSubmitDone] = useState(false);
@@ -75,9 +78,30 @@ const PhoneNumber = ({navigation}) => {
     }
   };
 
+  async function doesNumberExist() {
+    firestore()
+      .collection('users')
+      // Filter results
+      .where('phoneNumber', '==', firebaseNumberFormat)
+      .get()
+      .then(querySnapshot => {
+        if (querySnapshot.empty === true) {
+          console.log('this number does not exist');
+          signInWithPhoneNumber();
+        } else {
+          console.log('this number does exist');
+          Toast.show({
+            type: 'error',
+            text1: 'This number already exists',
+            text2: 'Try logging in instead.',
+            visibilityTime: 3000,
+          });
+        }
+      });
+  }
+
   async function signInWithPhoneNumber() {
     HapticFeedback.trigger('impactHeavy');
-
     try {
       const confirmation = await auth().signInWithPhoneNumber(
         firebaseNumberFormat,
@@ -120,14 +144,12 @@ const PhoneNumber = ({navigation}) => {
             keyboardAppearance="dark"
             multiline="true"
             textContentType="telephoneNumber"
-            // editable="false"
-            // autoFocus="true"
           />
         </View>
       </View>
       <View style={styles.nextBtnContainer}>
         <TouchableOpacity
-          onPress={signInWithPhoneNumber}
+          onPress={doesNumberExist}
           style={showSubmitDone ? styles.nextBtnDone : styles.nextBtn}>
           <Text style={showSubmitDone ? styles.nextTextDone : styles.nextText}>
             Next
@@ -211,7 +233,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     opacity: 0.5,
   },
-
   nextBtnDone: {
     backgroundColor: 'rgb(255, 8, 0)',
     borderRadius: 9,
@@ -219,7 +240,6 @@ const styles = StyleSheet.create({
     marginTop: '5%',
     width: '90%',
   },
-
   nextTextDone: {
     color: 'white',
     fontFamily: 'Inter-Bold',

@@ -15,10 +15,11 @@ import firestore from '@react-native-firebase/firestore';
 import {firebase} from '@react-native-firebase/firestore';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
 import HapticFeedback from 'react-native-haptic-feedback';
+import Toast from 'react-native-toast-message';
 
 const CreateUsernameScreen = ({navigation}) => {
   const [submitDone, setSubmitDone] = useState(false);
-  const [takenUsername, setTakenUsername] = useState(false);
+  const [userNames, setUsernames] = useState(null);
   const userInfo = firebase.auth().currentUser;
   const {username, setUsername} = useContext(Context);
 
@@ -51,24 +52,51 @@ const CreateUsernameScreen = ({navigation}) => {
     }
   };
 
-  const createUsername = async () => {
-    HapticFeedback.trigger('impactHeavy');
-    try {
-      await firestore().collection('usernames').doc(username).set({
-        UID: userInfo.uid,
+  // get all usernames and set them in state
+  const getAllUsernames = async () => {
+    let docIDs = await firestore()
+      .collection('usernames')
+      .get()
+      .then(resp => {
+        return resp.docs.map(doc => {
+          return doc.id;
+        });
       });
-    } catch (error) {
-      setTakenUsername(true);
+    setUsernames(docIDs);
+  };
+
+  getAllUsernames();
+
+  const checkIfUsernameTaken = async () => {
+    if (username === '') {
+      console.log("can't enter empty string");
       return;
     }
-    if (takenUsername === false) {
-      navigation.navigate('ConnectSpotifyScreen');
+    if (userNames.includes(username)) {
+      console.log('this name is taken');
+      Toast.show({
+        type: 'error',
+        text1: 'This username is taken',
+        text2: 'Try entering another username.',
+        visibilityTime: 3000,
+      });
+    } else {
+      console.log('this name is not taken');
+      HapticFeedback.trigger('impactHeavy');
+      try {
+        await firestore().collection('usernames').doc(username).set({
+          UID: userInfo.uid,
+        });
+        navigation.navigate('ConnectSpotifyScreen');
+      } catch (error) {
+        console.log('error uploading username to db');
+        return;
+      }
     }
   };
 
   const backspace = ({nativeEvent}) => {
     if (nativeEvent.key === 'Backspace') {
-      setTakenUsername(false);
     }
   };
 
@@ -86,15 +114,6 @@ const CreateUsernameScreen = ({navigation}) => {
       <Text style={styles.desc}>
         Create a username so everyone knows it’s you.
       </Text>
-      {/* {takenUsername ? (
-        <Text style={styles.blurbTaken}>
-          That username is taken (we know the feeling).
-        </Text>
-      ) : (
-        <Text style={styles.blurb}>
-          We get it, you’re the one that found that song.
-        </Text>
-      )} */}
       <View style={styles.inputContainer}>
         <View style={styles.rectangle}>
           <TextInput
@@ -115,7 +134,7 @@ const CreateUsernameScreen = ({navigation}) => {
       </View>
       <View style={styles.nextBtnContainer}>
         <TouchableOpacity
-          onPress={createUsername}
+          onPress={checkIfUsernameTaken}
           style={submitDone ? styles.nextBtnDone : styles.nextBtn}>
           <Text style={submitDone ? styles.nextTextDone : styles.nextText}>
             Next
