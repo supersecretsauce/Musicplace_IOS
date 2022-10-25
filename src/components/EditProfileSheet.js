@@ -15,7 +15,7 @@ import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ImagePicker from 'react-native-image-crop-picker';
 import storage from '@react-native-firebase/storage';
-
+import {Toast} from 'react-native-toast-message/lib/src/Toast';
 const DismissKeyboard = ({children}) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
     {children}
@@ -32,10 +32,10 @@ const EditProfileSheet = props => {
   const UID = props.UIDProps;
   const setHeaderURL = props.SetHeaderURLProps;
   const headerURL = props.headerURLProps;
-  const [displayName, setDisplayName] = useState('');
+  const [profilePic, setProfilePic] = useState(null);
+  const [header, setHeader] = useState(null);
+  const [name, setName] = useState('');
   const [bio, setBio] = useState('');
-  const [profilePic, setProfilePic] = useState();
-  const [header, setHeader] = useState();
 
   const openLibrary = () => {
     ImagePicker.openPicker({
@@ -72,8 +72,50 @@ const EditProfileSheet = props => {
       });
   };
 
+  const uploadName = async () => {
+    if (name === '') {
+      console.log('nothing changed');
+    } else {
+      if (UID) {
+        firestore()
+          .collection('users')
+          .doc(UID)
+          .update({
+            displayName: name,
+          })
+          .then(() => {
+            console.log('User updated!');
+          })
+          .catch(e => console.log(e));
+      }
+    }
+  };
+
+  const uploadBio = async () => {
+    if (bio === '') {
+      console.log('nothing changed');
+    } else {
+      if (UID) {
+        firestore()
+          .collection('users')
+          .doc(UID)
+          .update({
+            bio: bio,
+          })
+          .then(() => {
+            console.log('User updated!');
+          })
+          .catch(e => console.log(e));
+      }
+    }
+  };
+
   const saveChanges = () => {
     const uploadPhoto = async () => {
+      if (!profilePic) {
+        console.log('no pfp uploaded');
+        return;
+      }
       const reference = storage().ref(UID + 'PFP');
       const task = reference.putFile(profilePic.path);
       task.on('state_changed', taskSnapshot => {
@@ -97,6 +139,10 @@ const EditProfileSheet = props => {
     };
 
     const uploadHeader = async () => {
+      if (!header) {
+        console.log('no pfp uploaded');
+        return;
+      }
       const reference = storage().ref(UID + 'HEADER');
       const task = reference.putFile(header.path);
       task.on('state_changed', taskSnapshot => {
@@ -120,25 +166,13 @@ const EditProfileSheet = props => {
         })
         .catch(e => console.log(e));
     };
-
-    if (UID) {
-      firestore()
-        .collection('users')
-        .doc(UID)
-        .update({
-          displayName: displayName,
-          bio: bio,
-        })
-        .then(() => {
-          console.log('User updated!');
-        })
-        .catch(e => console.log(e));
-    }
+    uploadName();
+    uploadBio();
     uploadPhoto();
     uploadHeader();
     setEditProfile(false);
   };
-  console.log(profilePicURL);
+
   return (
     <DismissKeyboard>
       <View style={styles.container}>
@@ -205,7 +239,7 @@ const EditProfileSheet = props => {
               keyboardType="default"
               placeholder={userProfile.displayName || username._docs[0].id}
               placeholderTextColor={Colors.greyOut}
-              onChangeText={text => setDisplayName(text)}
+              onChangeText={text => setName(text)}
             />
           </View>
           <View style={styles.bioContainer}>
