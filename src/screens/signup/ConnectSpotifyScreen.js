@@ -19,7 +19,7 @@ import HapticFeedback from 'react-native-haptic-feedback';
 
 const ConnectSpotifyScreen = ({navigation}) => {
   const userInfo = firebase.auth().currentUser;
-  const {setUserLogin, username} = useContext(Context);
+  const {username} = useContext(Context);
 
   const goBack = () => {
     navigation.navigate('CreateUsernameScreen');
@@ -64,6 +64,8 @@ const ConnectSpotifyScreen = ({navigation}) => {
           followersList: null,
           followingList: null,
           autoPost: true,
+          topSongs: [],
+          userPosts: [],
         },
         {merge: true},
       );
@@ -89,7 +91,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
         phoneNumber: userInfo.phoneNumber,
         createdAt: userInfo.metadata.creationTime,
         lastSignIn: userInfo.metadata.lastSignInTime,
-        connectedWithSpotify: true,
+        connectedWithSpotify: false,
         bio: null,
         followers: 0,
         following: 0,
@@ -97,6 +99,8 @@ const ConnectSpotifyScreen = ({navigation}) => {
         followersList: null,
         followingList: null,
         autoPost: true,
+        topSongs: [],
+        userPosts: [],
       });
     } catch (error) {
       return;
