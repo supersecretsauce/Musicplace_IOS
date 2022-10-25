@@ -9,6 +9,7 @@ import {
   Switch,
   Keyboard,
   BackHandler,
+  Linking,
 } from 'react-native';
 import React, {useEffect, useState, useMemo} from 'react';
 import Colors from '../../assets/utilities/Colors';
@@ -20,6 +21,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {firebase} from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
+import Spotify from '../../assets/img/spotify.svg';
 
 const DismissKeyboard = ({children}) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -118,22 +120,26 @@ const CompletePostScreen = ({route, navigation}) => {
     [song.preview_url],
   );
 
-  const playPreview = () => {
-    console.log(track);
-    if (trackPlaying === false) {
-      track.play(success => {
-        if (success) {
-          console.log('done');
-          setTrackPlaying(false);
-        } else {
-          console.log('playback failed due to audio decoding errors');
-        }
-      });
-      setTrackPlaying(true);
-    } else {
-      track.pause();
-      setTrackPlaying(false);
-    }
+  // const playPreview = () => {
+  //   console.log(track);
+  //   if (trackPlaying === false) {
+  //     track.play(success => {
+  //       if (success) {
+  //         console.log('done');
+  //         setTrackPlaying(false);
+  //       } else {
+  //         console.log('playback failed due to audio decoding errors');
+  //       }
+  //     });
+  //     setTrackPlaying(true);
+  //   } else {
+  //     track.pause();
+  //     setTrackPlaying(false);
+  //   }
+  // };
+
+  const handleDeepLink = async () => {
+    await Linking.openURL(`http://open.spotify.com/track/${song.id}`);
   };
 
   const handleCaption = text => {
@@ -321,14 +327,13 @@ const CompletePostScreen = ({route, navigation}) => {
                   </View>
                   <TouchableOpacity
                     style={styles.previewBtn}
-                    onPress={playPreview}>
-                    <Ionicons
+                    onPress={handleDeepLink}>
+                    <Spotify
                       // style={styles.chevron}
-                      name="play-circle"
-                      color="white"
-                      size={18}
+                      height={20}
+                      width={20}
                     />
-                    <Text style={styles.previewText}>Preview</Text>
+                    <Text style={styles.previewText}>LISTEN ON SPOTIFY</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -438,15 +443,14 @@ const CompletePostScreen = ({route, navigation}) => {
                   </Text>
                 </View>
                 <TouchableOpacity
-                  onPress={playPreview}
+                  onPress={handleDeepLink}
                   style={styles.previewBtn}>
-                  <Ionicons
+                  <Spotify
                     // style={styles.chevron}
-                    name="play-circle"
-                    color="white"
-                    size={18}
+                    height={20}
+                    width={20}
                   />
-                  <Text style={styles.previewText}>Preview</Text>
+                  <Text style={styles.previewText}>LISTEN ON SPOTIFY</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -599,17 +603,17 @@ const styles = StyleSheet.create({
   previewBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.greyBtn,
+    backgroundColor: '#1F1F1F',
     borderRadius: 9,
-    paddingVertical: 4,
+    paddingVertical: 6,
     alignSelf: 'center',
     justifyContent: 'center',
-    width: 165,
+    width: 168,
   },
   previewText: {
     color: 'white',
-    fontFamily: 'Inter-Medium',
-    fontSize: 16,
+    fontFamily: 'Inter-Bold',
+    fontSize: 12,
     marginLeft: 5,
   },
   captionContainer: {
