@@ -25,6 +25,7 @@ const ViewUserScreen = ({route, navigation}) => {
           .collection('users')
           .doc(UID)
           .onSnapshot(documentSnapshot => {
+            console.log(documentSnapshot.data());
             setUserInfo(documentSnapshot.data());
           });
       };
@@ -41,6 +42,9 @@ const ViewUserScreen = ({route, navigation}) => {
         .then(querySnapshot => {
           console.log(querySnapshot);
           setUsername(querySnapshot);
+        })
+        .catch(e => {
+          console.log(e);
         });
     }
   }, [UID]);
@@ -88,7 +92,7 @@ const ViewUserScreen = ({route, navigation}) => {
       };
       fetchUserTracks();
     }
-  }, []);
+  }, [UID]);
 
   useEffect(() => {
     if (followersArray === null) {
@@ -171,7 +175,11 @@ const ViewUserScreen = ({route, navigation}) => {
       {userInfo ? (
         <>
           <View style={styles.container}>
-            <Image style={styles.header} source={{uri: headerURL}} />
+            {headerURL ? (
+              <Image style={styles.userHeader} source={{uri: headerURL}} />
+            ) : (
+              <View style={styles.header} source={{uri: headerURL}} />
+            )}
             <Ionicons
               onPress={() => navigation.navigate('HomeScreen')}
               style={styles.menuIcon}
@@ -193,9 +201,11 @@ const ViewUserScreen = ({route, navigation}) => {
               {username && (
                 <>
                   <Text style={styles.name}>
-                    {userInfo.displayName || username._docs[0].id}
+                    {userInfo.displayName || username._docs[0]?.id || 'null'}
                   </Text>
-                  <Text style={styles.handle}>@{username._docs[0].id}</Text>
+                  <Text style={styles.handle}>
+                    @{username._docs[0]?.id ? username._docs[0]?.id : 'null'}
+                  </Text>
                 </>
               )}
 
@@ -245,6 +255,10 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: 'rgba(255, 8, 0, .25)',
+    width: '100%',
+    height: '22%',
+  },
+  userHeader: {
     width: '100%',
     height: '22%',
   },
