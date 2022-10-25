@@ -104,19 +104,21 @@ const EditProfileSheet = props => {
           `${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`,
         );
       });
-      task.then(() => {
-        const getHeaderURL = async () => {
-          const url = await storage()
-            .ref(UID + 'HEADER')
-            .getDownloadURL()
-            .catch(error => {
-              console.log(error);
-            });
-          console.log(url);
-          setHeaderURL(url);
-        };
-        getHeaderURL();
-      });
+      task
+        .then(() => {
+          const getHeaderURL = async () => {
+            const url = await storage()
+              .ref(UID + 'HEADER')
+              .getDownloadURL()
+              .catch(error => {
+                console.log(error);
+              });
+            console.log(url);
+            setHeaderURL(url);
+          };
+          getHeaderURL();
+        })
+        .catch(e => console.log(e));
     };
 
     if (UID) {
@@ -129,7 +131,8 @@ const EditProfileSheet = props => {
         })
         .then(() => {
           console.log('User updated!');
-        });
+        })
+        .catch(e => console.log(e));
     }
     uploadPhoto();
     uploadHeader();
