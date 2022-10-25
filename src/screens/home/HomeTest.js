@@ -122,19 +122,14 @@ const HomeTest = ({navigation}) => {
     fetchFeed();
   }, [fetchFeed]);
 
-  //index logic
-  const onViewableItemsChanged = ({viewableItems}) => {
-    setCurrentIndex(viewableItems[0].index);
-  };
-  const viewabilityConfigCallbackPairs = useRef([{onViewableItemsChanged}]);
-
+  //recording how long a user spends on each track
   const userWatches = () => {
     timerID.current = setInterval(() => {
       watchDuration.current += 1;
     }, 1000);
   };
   const setWatches = () => {
-    if (feed) {
+    if (feed && songIndex > 0) {
       firestore()
         .collection('users')
         .doc(UID)
@@ -153,35 +148,46 @@ const HomeTest = ({navigation}) => {
     }
   };
 
+  //index logic
+  const onViewableItemsChanged = ({viewableItems}) => {
+    setCurrentIndex(viewableItems[0].index);
+  };
+  const viewabilityConfigCallbackPairs = useRef([{onViewableItemsChanged}]);
+
   useEffect(() => {
     clearInterval(timerID.current);
     userWatches();
-    console.log('recording watches is called');
   }, [currentIndex]);
 
   const setTheIndex = useCallback(() => {
     setSongIndex(currentIndex);
-    console.log('uploading watches to db');
-
-    setWatches();
-
-    // console.log('second part of the index', currentIndex);
   }, [currentIndex]);
 
+  // every time the index is changed, pause song, sew new url, then play new url
   useEffect(() => {
+    if (currentTrack) {
+      currentTrack.stop();
+      if (currentIndex === 0) {
+        setPostPreviewURL(feed[0]._data.previewUrl);
+      }
+      if (currentIndex === 1) {
+        setPostPreviewURL(feed[1]._data.previewUrl);
+      }
+    }
     if (currentIndex) {
       setTheIndex();
     }
-  }, [currentIndex, setTheIndex]);
+  }, [currentIndex, currentTrack, feed, setTheIndex]);
 
   useEffect(() => {
+    console.log('song index is', songIndex);
     if (songIndex === 0 && feed) {
+      console.log('im on the first track');
       setSongID(feed[0].id);
       setTrackPlaying(true);
     } else if (songIndex && feed) {
       setTrackPlaying(true);
       setSongID(feed[songIndex].id);
-      currentTrack.stop();
     }
   }, [currentTrack, feed, songIndex]);
 
@@ -196,6 +202,9 @@ const HomeTest = ({navigation}) => {
   // set the sound of the current track
   useEffect(() => {
     if (postPreviewURL) {
+      // everytime url changes, add a watch document
+      setWatches();
+
       setCurrentTrack(
         new Sound(postPreviewURL, null, error => {
           if (error) {
