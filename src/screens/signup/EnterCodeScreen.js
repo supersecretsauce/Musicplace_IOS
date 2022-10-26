@@ -14,6 +14,7 @@ import {Context} from '../../context/Context';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
 import HapticFeedback from 'react-native-haptic-feedback';
 import Toast from 'react-native-toast-message';
+import {mixpanel} from '../../../mixpanel';
 
 const EnterCodeScreen = ({navigation}) => {
   const [showEnterDone, setShowEnterDone] = useState(false);
@@ -48,6 +49,7 @@ const EnterCodeScreen = ({navigation}) => {
   let enterCode = async () => {
     try {
       HapticFeedback.trigger('impactHeavy');
+      mixpanel.track('New Signup');
       await confirm.confirm(verificationCode);
       navigation.navigate('CreateUsernameScreen');
     } catch (error) {

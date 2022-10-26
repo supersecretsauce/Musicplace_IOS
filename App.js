@@ -1,15 +1,11 @@
-import React from 'react';
-import {
-  NavigationContainer,
-  useNavigationState,
-  useRoute,
-} from '@react-navigation/native';
+import React, {useState, useEffect, useRef} from 'react';
+import {NavigationContainer} from '@react-navigation/native';
+import {AppState} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import PostStackScreen from './src/routes/PostStackScreen';
 import ProfileStackScreen from './src/routes/ProfileStackScreen';
 import {Context} from './src/context/Context';
-import {useState, useEffect} from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -17,6 +13,9 @@ import {StyleSheet, StatusBar} from 'react-native';
 import Toast from 'react-native-toast-message';
 import HomeStackScreen from './src/routes/HomeStackScreen';
 import WelcomeStackScreen from './src/routes/WelcomeStackScreen';
+import {mixpanel} from './mixpanel';
+
+mixpanel.init();
 
 export default function App() {
   const Stack = createNativeStackNavigator();
@@ -31,8 +30,28 @@ export default function App() {
   const [accessToken, setAccessToken] = useState('');
   const [username, setUsername] = useState('');
   const [currentPost, setCurrentPost] = useState();
+  const appState = useRef(AppState.currentState);
 
   // AsyncStorage.clear();
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        console.log('App has come to the foreground!');
+      } else {
+        console.log('App is in the background!');
+      }
+
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   useEffect(() => {
     const checkUserLogin = async () => {
@@ -50,8 +69,6 @@ export default function App() {
 
     checkUserLogin();
   }, []);
-
-  useEffect(() => {});
 
   useEffect(() => {
     if (currentTrack) {
