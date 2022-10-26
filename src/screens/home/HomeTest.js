@@ -35,7 +35,7 @@ import FollowingScreen from './FollowingScreen';
 import SheetTest from '../../components/SheetTest';
 import HapticFeedback from 'react-native-haptic-feedback';
 import {authorize} from 'react-native-app-auth';
-
+import {mixpanel} from '../../../mixpanel';
 const HomeTest = ({navigation}) => {
   const [feed, setFeed] = useState();
   const [forYouTrue, setForYouTrue] = useState(true);
@@ -202,9 +202,9 @@ const HomeTest = ({navigation}) => {
   // set the sound of the current track
   useEffect(() => {
     if (postPreviewURL) {
-      // everytime url changes, add a watch document
+      // everytime url changes, add a watch document and upload watch to mixpanel
       setWatches();
-
+      mixpanel.track('New Listen');
       setCurrentTrack(
         new Sound(postPreviewURL, null, error => {
           if (error) {
