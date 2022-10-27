@@ -27,6 +27,9 @@ const EditProfileSheet = props => {
   const [PFP, setPFP] = useState(null);
   const [name, setName] = useState(userProfile.displayName);
   const [bio, setBio] = useState(userProfile.bio);
+  const [userSelectedPFP, setUserSelectedPFP] = useState(false);
+  const [userSelectedHeader, setUserSelectedHeader] = useState(false);
+
   const dimensions = useWindowDimensions();
 
   const getHeaderAndPFP = async () => {
@@ -61,6 +64,7 @@ const EditProfileSheet = props => {
     })
       .then(image => {
         setPFP(image);
+        setUserSelectedPFP(true);
       })
       .catch(error => {
         console.log(error);
@@ -71,13 +75,12 @@ const EditProfileSheet = props => {
     ImagePicker.openPicker({
       width: 2000,
       height: 2000,
-      cropping: true,
-      cropperCircleOverlay: true,
       avoidEmptySpaceAroundImage: true,
       mediaType: 'photo',
     })
       .then(image => {
         setHeader(image);
+        setUserSelectedHeader(true);
       })
       .catch(error => {
         console.log(error);
@@ -98,18 +101,21 @@ const EditProfileSheet = props => {
         console.log('User updated!');
       })
       .catch(e => console.log(e));
-    if (PFP) {
+    if (PFP && userSelectedPFP) {
+      console.log('trying PFP');
       const reference = storage().ref(UID + 'PFP');
-      const task = reference.putFile(PFP);
+      const task = reference.putFile(PFP.path);
       task.on('state_changed', taskSnapshot => {
         console.log(
           `${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`,
         );
       });
     }
-    if (header) {
+    if (header && userSelectedHeader) {
+      console.log(header);
+      console.log('trying header');
       const reference = storage().ref(UID + 'HEADER');
-      const task = reference.putFile(header);
+      const task = reference.putFile(header.path);
       task.on('state_changed', taskSnapshot => {
         console.log(
           `${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`,
@@ -130,7 +136,10 @@ const EditProfileSheet = props => {
         <Text style={styles.editText}>Edit Profile</Text>
         <View style={styles.headerContainer}>
           {header ? (
-            <Image style={styles.header} source={header} />
+            <Image
+              style={styles.header}
+              source={{uri: header.path || header}}
+            />
           ) : (
             <View style={styles.header} />
           )}
@@ -143,7 +152,7 @@ const EditProfileSheet = props => {
             <Image
               resizeMode="contain"
               style={styles.PFP}
-              source={{uri: PFP}}
+              source={{uri: PFP.path || PFP}}
             />
           </View>
         ) : (
@@ -234,7 +243,7 @@ const styles = StyleSheet.create({
     height: 90,
     width: 90,
     borderRadius: 90,
-    backgroundColor: 'rgba(255, 8, 0)',
+    backgroundColor: Colors.red,
   },
   addPFPIcon: {
     position: 'absolute',
