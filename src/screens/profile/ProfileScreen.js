@@ -17,6 +17,7 @@ import UserPosts from '../../components/UserPosts';
 import storage from '@react-native-firebase/storage';
 import Modal from 'react-native-modal';
 import ProfileSettings2 from '../../components/ProfileSettings2';
+import EditProfileSheet2 from '../../components/EditProfileSheet2';
 import {PanGestureHandler} from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedGestureHandler,
@@ -35,11 +36,18 @@ const ProfileScreen = ({navigation}) => {
   const [showModal, setShowModal] = useState(false);
   const dimensions = useWindowDimensions();
   const top = useSharedValue(dimensions.height);
+  const top2 = useSharedValue(dimensions.height);
   const style = useAnimatedStyle(() => {
     return {
       top: withSpring(top.value, SPRING_CONFIG),
     };
   });
+  const style2 = useAnimatedStyle(() => {
+    return {
+      top: withSpring(top2.value, SPRING_CONFIG),
+    };
+  });
+
   const SPRING_CONFIG = {
     damping: 80,
     overshootClamping: true,
@@ -115,6 +123,7 @@ const ProfileScreen = ({navigation}) => {
     setShowModal(false);
   };
 
+  //animations for profile settings
   const gestureHandler = useAnimatedGestureHandler({
     onStart(_, context) {
       context.startTop = top.value;
@@ -123,16 +132,36 @@ const ProfileScreen = ({navigation}) => {
       top.value = context.startTop + event.translationY;
     },
     onEnd() {
-      if (top.value > dimensions.height / 2 + 50) {
+      if (top.value > dimensions.height / 2.25 + 50) {
         top.value = dimensions.height;
       } else {
-        top.value = dimensions.height / 2;
+        top.value = dimensions.height / 2.25;
       }
     },
   });
 
   function handleSpring() {
     top.value = withSpring(dimensions.height / 2.25, SPRING_CONFIG);
+  }
+
+  const gestureHandler2 = useAnimatedGestureHandler({
+    onStart(_, context) {
+      context.startTop = top2.value;
+    },
+    onActive(event, context) {
+      top2.value = context.startTop + event.translationY;
+    },
+    onEnd() {
+      if (top2.value > dimensions.height / 10 + 50) {
+        top2.value = dimensions.height;
+      } else {
+        top2.value = dimensions.height / 10;
+      }
+    },
+  });
+
+  function handleSpring2() {
+    top2.value = withSpring(dimensions.height / 10, SPRING_CONFIG);
   }
 
   return (
@@ -202,7 +231,7 @@ const ProfileScreen = ({navigation}) => {
                 </TouchableOpacity>
               </View>
               <TouchableOpacity
-                onPress={() => setEditProfile(!editProfile)}
+                onPress={handleSpring2}
                 style={styles.editProfileContainer}>
                 <Text style={styles.editProfileText}>Edit profile</Text>
               </TouchableOpacity>
@@ -234,7 +263,7 @@ const ProfileScreen = ({navigation}) => {
               </View>
             </Modal>
             <UserPosts navigationProps={navigation} UIDProps={UID} />
-            {editProfile && (
+            {/* {editProfile && (
               <EditProfileSheet
                 displayNameProps={userProfile.name}
                 editProps={setEditProfile}
@@ -247,8 +276,27 @@ const ProfileScreen = ({navigation}) => {
                 SetHeaderURLProps={setHeaderURL}
                 headerURLProps={headerURL}
               />
-            )}
+            )} */}
           </View>
+          <PanGestureHandler onGestureEvent={gestureHandler2}>
+            <Animated.View
+              style={[
+                // eslint-disable-next-line react-native/no-inline-styles
+                {
+                  position: 'absolute',
+                  backgroundColor: '#1C1C1C',
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  borderTopLeftRadius: 20,
+                  borderTopRightRadius: 20,
+                  alignItems: 'center',
+                },
+                style2,
+              ]}>
+              <EditProfileSheet2 userProfile={userProfile} UID={UID} />
+            </Animated.View>
+          </PanGestureHandler>
           <PanGestureHandler onGestureEvent={gestureHandler}>
             <Animated.View
               style={[
