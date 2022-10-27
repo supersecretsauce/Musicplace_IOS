@@ -25,6 +25,7 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
+import {SPRING_CONFIG} from '../../assets/utilities/reanimated-2';
 
 const ProfileScreen = ({navigation}) => {
   const [editProfile, setEditProfile] = useState(false);
@@ -47,14 +48,6 @@ const ProfileScreen = ({navigation}) => {
       top: withSpring(top2.value, SPRING_CONFIG),
     };
   });
-
-  const SPRING_CONFIG = {
-    damping: 80,
-    overshootClamping: true,
-    restDisplacementThreshold: 0.1,
-    restSpeedThreshold: 0.1,
-    stiffness: 500,
-  };
 
   useEffect(() => {
     const checkforUID = async () => {
@@ -263,20 +256,6 @@ const ProfileScreen = ({navigation}) => {
               </View>
             </Modal>
             <UserPosts navigationProps={navigation} UIDProps={UID} />
-            {/* {editProfile && (
-              <EditProfileSheet
-                displayNameProps={userProfile.name}
-                editProps={setEditProfile}
-                usernameProps={username}
-                userProfileProps={userProfile}
-                editProfileProps={setEditProfile}
-                UIDProps={UID}
-                SetProfilePicURLProps={setProfilePicURL}
-                ProfilePicURLProps={profilePicURL}
-                SetHeaderURLProps={setHeaderURL}
-                headerURLProps={headerURL}
-              />
-            )} */}
           </View>
           <PanGestureHandler onGestureEvent={gestureHandler2}>
             <Animated.View
@@ -294,7 +273,11 @@ const ProfileScreen = ({navigation}) => {
                 },
                 style2,
               ]}>
-              <EditProfileSheet2 userProfile={userProfile} UID={UID} />
+              <EditProfileSheet2
+                top2={top2}
+                userProfile={userProfile}
+                UID={UID}
+              />
             </Animated.View>
           </PanGestureHandler>
           <PanGestureHandler onGestureEvent={gestureHandler}>
@@ -313,7 +296,7 @@ const ProfileScreen = ({navigation}) => {
                 },
                 style,
               ]}>
-              <ProfileSettings2 UIDProps={UID} />
+              <ProfileSettings2 top={top} UID={UID} />
             </Animated.View>
           </PanGestureHandler>
         </>

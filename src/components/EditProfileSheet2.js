@@ -5,6 +5,7 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
+  useWindowDimensions,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import storage from '@react-native-firebase/storage';
@@ -12,13 +13,21 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../assets/utilities/Colors';
 import ImagePicker from 'react-native-image-crop-picker';
 import firestore from '@react-native-firebase/firestore';
+import {SPRING_CONFIG} from '../assets/utilities/reanimated-2';
+import Animated, {
+  useAnimatedGestureHandler,
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
 
 const EditProfileSheet2 = props => {
-  const {UID, userProfile} = props;
+  const {UID, userProfile, top2} = props;
   const [header, setHeader] = useState(null);
   const [PFP, setPFP] = useState(null);
   const [name, setName] = useState(userProfile.displayName);
   const [bio, setBio] = useState(userProfile.bio);
+  const dimensions = useWindowDimensions();
 
   const getHeaderAndPFP = async () => {
     const headerURL = await storage()
@@ -76,6 +85,8 @@ const EditProfileSheet2 = props => {
   };
 
   const saveChanges = () => {
+    top2.value = withSpring(dimensions.height, SPRING_CONFIG);
+
     firestore()
       .collection('users')
       .doc(UID)

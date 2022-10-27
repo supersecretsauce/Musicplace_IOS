@@ -15,7 +15,7 @@ const ProfileSettings2 = props => {
   const [spotifyConnected, setSpotifyConnected] = useState(false);
   const {setUserLogin, username, setCurrentTrack, currentTrack} =
     useContext(Context);
-  const UID = props.UIDProps;
+  const {UID} = props;
 
   useEffect(() => {
     const checkForSpotifyConnection = async () => {
