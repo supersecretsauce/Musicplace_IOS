@@ -2,32 +2,51 @@ import {
   StyleSheet,
   Text,
   View,
-  SafeAreaView,
   Image,
   TouchableOpacity,
+  useWindowDimensions,
 } from 'react-native';
-import React, {useState, useEffect, useContext} from 'react';
+import React, {useState, useEffect} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Circle from '../../assets/img/circle.svg';
 import Colors from '../../assets/utilities/Colors';
 import EditProfileSheet from '../../components/EditProfileSheet';
-import firestore from '@react-native-firebase/firestore';
-import {Context} from '../../context/Context';
+import firestore, {doc, getDoc} from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserPosts from '../../components/UserPosts';
-import ProfileSettings from '../../components/ProfileSettings';
 import storage from '@react-native-firebase/storage';
 import Modal from 'react-native-modal';
+import ProfileSettings2 from '../../components/ProfileSettings2';
+import {PanGestureHandler} from 'react-native-gesture-handler';
+import Animated, {
+  useAnimatedGestureHandler,
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
 
 const ProfileScreen = ({navigation}) => {
   const [editProfile, setEditProfile] = useState(false);
   const [userProfile, setUserProfile] = useState();
   const [username, setUsername] = useState();
   const [UID, setUID] = useState();
-  const [profileSettings, setProfileSettings] = useState(false);
   const [profilePicURL, setProfilePicURL] = useState();
   const [headerURL, setHeaderURL] = useState();
   const [showModal, setShowModal] = useState(false);
+  const dimensions = useWindowDimensions();
+  const top = useSharedValue(dimensions.height);
+  const style = useAnimatedStyle(() => {
+    return {
+      top: withSpring(top.value, SPRING_CONFIG),
+    };
+  });
+  const SPRING_CONFIG = {
+    damping: 80,
+    overshootClamping: true,
+    restDisplacementThreshold: 0.1,
+    restSpeedThreshold: 0.1,
+    stiffness: 500,
+  };
 
   useEffect(() => {
     const checkforUID = async () => {
@@ -40,63 +59,53 @@ const ProfileScreen = ({navigation}) => {
     checkforUID();
   }, []);
 
+  const fetchProfile = async () => {
+    firestore()
+      .collection('users')
+      .doc(UID)
+      .get()
+      .then(querySnapshot => {
+        console.log(querySnapshot);
+        setUserProfile(querySnapshot.data());
+      });
+
+    firestore()
+      .collection('usernames')
+      .where('UID', '==', UID)
+      .get()
+      .then(querySnapshot => {
+        console.log(querySnapshot);
+        setUsername(querySnapshot);
+      });
+  };
+
+  const getProfilePicURL = async () => {
+    const url = await storage()
+      .ref(UID + 'PFP')
+      .getDownloadURL()
+      .catch(error => {
+        console.log(error);
+      });
+    setProfilePicURL(url);
+  };
+
+  const getHeaderURL = async () => {
+    const url = await storage()
+      .ref(UID + 'HEADER')
+      .getDownloadURL()
+      .catch(error => {
+        console.log(error);
+      });
+    setHeaderURL(url);
+  };
+
   useEffect(() => {
     if (UID) {
-      console.log(UID);
-      const fetchProfile = async () => {
-        firestore()
-          .collection('users')
-          .doc(UID)
-          .onSnapshot(documentSnapshot => {
-            console.log('User data: ', documentSnapshot.data());
-            setUserProfile(documentSnapshot.data());
-          });
-      };
       fetchProfile();
-    }
-  }, [UID]);
-
-  useEffect(() => {
-    if (UID) {
-      firestore()
-        .collection('usernames')
-        .where('UID', '==', UID)
-        .get()
-        .then(querySnapshot => {
-          console.log(querySnapshot);
-          setUsername(querySnapshot);
-        });
-    }
-  }, [UID]);
-
-  useEffect(() => {
-    if (UID) {
-      const getProfilePicURL = async () => {
-        const url = await storage()
-          .ref(UID + 'PFP')
-          .getDownloadURL()
-          .catch(error => {
-            console.log(error);
-          });
-        setProfilePicURL(url);
-      };
       getProfilePicURL();
-    }
-  }, [UID]);
-
-  useEffect(() => {
-    if (UID) {
-      const getHeaderURL = async () => {
-        const url = await storage()
-          .ref(UID + 'HEADER')
-          .getDownloadURL()
-          .catch(error => {
-            console.log(error);
-          });
-        setHeaderURL(url);
-      };
       getHeaderURL();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [UID]);
 
   const removeAutoPost = () => {
@@ -106,6 +115,26 @@ const ProfileScreen = ({navigation}) => {
     setShowModal(false);
   };
 
+  const gestureHandler = useAnimatedGestureHandler({
+    onStart(_, context) {
+      context.startTop = top.value;
+    },
+    onActive(event, context) {
+      top.value = context.startTop + event.translationY;
+    },
+    onEnd() {
+      if (top.value > dimensions.height / 2 + 50) {
+        top.value = dimensions.height;
+      } else {
+        top.value = dimensions.height / 2;
+      }
+    },
+  });
+
+  function handleSpring() {
+    top.value = withSpring(dimensions.height / 2.25, SPRING_CONFIG);
+  }
+
   return (
     <>
       {userProfile && username ? (
@@ -114,7 +143,7 @@ const ProfileScreen = ({navigation}) => {
             {headerURL ? (
               <>
                 <Ionicons
-                  onPress={() => setProfileSettings(!profileSettings)}
+                  onPress={handleSpring}
                   style={styles.menuIcon}
                   name={'menu'}
                   color={'white'}
@@ -125,7 +154,7 @@ const ProfileScreen = ({navigation}) => {
             ) : (
               <View style={styles.header}>
                 <Ionicons
-                  onPress={() => setProfileSettings(!profileSettings)}
+                  onPress={handleSpring}
                   style={styles.menuIcon}
                   name={'menu'}
                   color={'white'}
@@ -219,8 +248,26 @@ const ProfileScreen = ({navigation}) => {
                 headerURLProps={headerURL}
               />
             )}
-            {profileSettings && <ProfileSettings UIDProps={UID} />}
           </View>
+          <PanGestureHandler onGestureEvent={gestureHandler}>
+            <Animated.View
+              style={[
+                // eslint-disable-next-line react-native/no-inline-styles
+                {
+                  position: 'absolute',
+                  backgroundColor: '#1C1C1C',
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  borderTopLeftRadius: 20,
+                  borderTopRightRadius: 20,
+                  alignItems: 'center',
+                },
+                style,
+              ]}>
+              <ProfileSettings2 UIDProps={UID} />
+            </Animated.View>
+          </PanGestureHandler>
         </>
       ) : (
         <>
