@@ -11,7 +11,7 @@ import {Context} from '../context/Context';
 import {authorize} from 'react-native-app-auth';
 import {spotConfig} from '../../SpotifyConfig';
 
-const ProfileSettings2 = props => {
+const ProfileSettings = props => {
   const [spotifyConnected, setSpotifyConnected] = useState(false);
   const {setUserLogin, username, setCurrentTrack, currentTrack} =
     useContext(Context);
@@ -133,7 +133,7 @@ const ProfileSettings2 = props => {
   );
 };
 
-export default ProfileSettings2;
+export default ProfileSettings;
 
 const styles = StyleSheet.create({
   drawer: {

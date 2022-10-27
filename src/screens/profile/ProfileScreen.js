@@ -10,14 +10,13 @@ import React, {useState, useEffect} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Circle from '../../assets/img/circle.svg';
 import Colors from '../../assets/utilities/Colors';
-import EditProfileSheet from '../../components/EditProfileSheet';
 import firestore, {doc, getDoc} from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import UserPosts from '../../components/UserPosts';
 import storage from '@react-native-firebase/storage';
 import Modal from 'react-native-modal';
-import ProfileSettings2 from '../../components/ProfileSettings2';
-import EditProfileSheet2 from '../../components/EditProfileSheet2';
+import ProfileSettings from '../../components/ProfileSettings';
+import EditProfileSheet from '../../components/EditProfileSheet';
 import {PanGestureHandler} from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedGestureHandler,
@@ -273,7 +272,7 @@ const ProfileScreen = ({navigation}) => {
                 },
                 style2,
               ]}>
-              <EditProfileSheet2
+              <EditProfileSheet
                 top2={top2}
                 userProfile={userProfile}
                 UID={UID}
@@ -296,7 +295,7 @@ const ProfileScreen = ({navigation}) => {
                 },
                 style,
               ]}>
-              <ProfileSettings2 top={top} UID={UID} />
+              <ProfileSettings top={top} UID={UID} />
             </Animated.View>
           </PanGestureHandler>
         </>
