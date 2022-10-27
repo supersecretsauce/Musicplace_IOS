@@ -23,7 +23,7 @@ const UserPosts = props => {
           .collection('users')
           .doc(UID)
           .onSnapshot(documentSnapshot => {
-            setUserPosts(documentSnapshot.data().topSongs);
+            setUserPosts(documentSnapshot?.data()?.topSongs);
           });
       };
       fetchUserTracks();

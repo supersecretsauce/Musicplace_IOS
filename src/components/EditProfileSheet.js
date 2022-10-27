@@ -2,42 +2,55 @@ import {
   StyleSheet,
   Text,
   View,
+  Image,
   TouchableOpacity,
   TextInput,
-  TouchableWithoutFeedback,
-  Keyboard,
-  Image,
+  useWindowDimensions,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
-import Colors from '../assets/utilities/Colors';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import firestore from '@react-native-firebase/firestore';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import ImagePicker from 'react-native-image-crop-picker';
 import storage from '@react-native-firebase/storage';
-import {Toast} from 'react-native-toast-message/lib/src/Toast';
-const DismissKeyboard = ({children}) => (
-  <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-    {children}
-  </TouchableWithoutFeedback>
-);
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import Colors from '../assets/utilities/Colors';
+import ImagePicker from 'react-native-image-crop-picker';
+import firestore from '@react-native-firebase/firestore';
+import {SPRING_CONFIG} from '../assets/utilities/reanimated-2';
+import Animated, {
+  useAnimatedGestureHandler,
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
 
 const EditProfileSheet = props => {
-  const setPostsTrue = props.editProps;
-  const username = props.usernameProps;
-  const userProfile = props.userProfileProps;
-  const setEditProfile = props.editProfileProps;
-  const setProfilePicURL = props.SetProfilePicURLProps;
-  const profilePicURL = props.ProfilePicURLProps;
-  const UID = props.UIDProps;
-  const setHeaderURL = props.SetHeaderURLProps;
-  const headerURL = props.headerURLProps;
-  const [profilePic, setProfilePic] = useState(null);
+  const {UID, userProfile, top2} = props;
   const [header, setHeader] = useState(null);
-  const [name, setName] = useState('');
-  const [bio, setBio] = useState('');
+  const [PFP, setPFP] = useState(null);
+  const [name, setName] = useState(userProfile.displayName);
+  const [bio, setBio] = useState(userProfile.bio);
+  const dimensions = useWindowDimensions();
 
-  const openLibrary = () => {
+  const getHeaderAndPFP = async () => {
+    const headerURL = await storage()
+      .ref(UID + 'HEADER')
+      .getDownloadURL()
+      .catch(error => {
+        console.log(error);
+      });
+    const PFPURL = await storage()
+      .ref(UID + 'PFP')
+      .getDownloadURL()
+      .catch(error => {
+        console.log(error);
+      });
+    setPFP(PFPURL);
+    setHeader(headerURL);
+  };
+
+  useEffect(() => {
+    getHeaderAndPFP();
+  }, []);
+
+  const selectPFP = () => {
     ImagePicker.openPicker({
       width: 2000,
       height: 2000,
@@ -47,24 +60,23 @@ const EditProfileSheet = props => {
       mediaType: 'photo',
     })
       .then(image => {
-        console.log(image);
-        setProfilePic(image);
+        setPFP(image);
       })
       .catch(error => {
         console.log(error);
       });
   };
 
-  const openLibraryHeader = () => {
+  const selectHeader = () => {
     ImagePicker.openPicker({
       width: 2000,
       height: 2000,
       cropping: true,
+      cropperCircleOverlay: true,
       avoidEmptySpaceAroundImage: true,
       mediaType: 'photo',
     })
       .then(image => {
-        console.log(image);
         setHeader(image);
       })
       .catch(error => {
@@ -72,201 +84,103 @@ const EditProfileSheet = props => {
       });
   };
 
-  const uploadName = async () => {
-    if (name === '') {
-      console.log('nothing changed');
-    } else {
-      if (UID) {
-        firestore()
-          .collection('users')
-          .doc(UID)
-          .update({
-            displayName: name,
-          })
-          .then(() => {
-            console.log('User updated!');
-          })
-          .catch(e => console.log(e));
-      }
-    }
-  };
-
-  const uploadBio = async () => {
-    if (bio === '') {
-      console.log('nothing changed');
-    } else {
-      if (UID) {
-        firestore()
-          .collection('users')
-          .doc(UID)
-          .update({
-            bio: bio,
-          })
-          .then(() => {
-            console.log('User updated!');
-          })
-          .catch(e => console.log(e));
-      }
-    }
-  };
-
   const saveChanges = () => {
-    const uploadPhoto = async () => {
-      if (!profilePic) {
-        console.log('no pfp uploaded');
-        return;
-      }
-      const reference = storage().ref(UID + 'PFP');
-      const task = reference.putFile(profilePic.path);
-      task.on('state_changed', taskSnapshot => {
-        console.log(
-          `${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`,
-        );
-      });
-      task.then(() => {
-        const getProfilePicURL = async () => {
-          const url = await storage()
-            .ref(UID + 'PFP')
-            .getDownloadURL()
-            .catch(error => {
-              console.log(error);
-            });
-          console.log(url);
-          setProfilePicURL(url);
-        };
-        getProfilePicURL();
-      });
-    };
+    top2.value = withSpring(dimensions.height, SPRING_CONFIG);
 
-    const uploadHeader = async () => {
-      if (!header) {
-        console.log('no pfp uploaded');
-        return;
-      }
-      const reference = storage().ref(UID + 'HEADER');
-      const task = reference.putFile(header.path);
+    firestore()
+      .collection('users')
+      .doc(UID)
+      .update({
+        displayName: name,
+        bio: bio,
+      })
+      .then(() => {
+        console.log('User updated!');
+      })
+      .catch(e => console.log(e));
+    if (PFP) {
+      const reference = storage().ref(UID + 'PFP');
+      const task = reference.putFile(PFP);
       task.on('state_changed', taskSnapshot => {
         console.log(
           `${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`,
         );
       });
-      task
-        .then(() => {
-          const getHeaderURL = async () => {
-            const url = await storage()
-              .ref(UID + 'HEADER')
-              .getDownloadURL()
-              .catch(error => {
-                console.log(error);
-              });
-            console.log(url);
-            setHeaderURL(url);
-          };
-          getHeaderURL();
-        })
-        .catch(e => console.log(e));
-    };
-    uploadName();
-    uploadBio();
-    uploadPhoto();
-    uploadHeader();
-    setEditProfile(false);
+    }
+    if (header) {
+      const reference = storage().ref(UID + 'HEADER');
+      const task = reference.putFile(header);
+      task.on('state_changed', taskSnapshot => {
+        console.log(
+          `${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`,
+        );
+      });
+    }
   };
 
   return (
-    <DismissKeyboard>
+    <>
       <View style={styles.container}>
-        <Text onPress={() => setPostsTrue(false)} style={styles.cancelText}>
-          Cancel
-        </Text>
-        <Text style={styles.editProfileText}>Edit Profile</Text>
-        {header || headerURL ? (
-          <Image
-            onPress={openLibraryHeader}
-            style={styles.header}
-            // source={{uri: header.path || uri: headerURL}}
-            source={{uri: header?.path || headerURL}}
-          />
-        ) : (
-          // eslint-disable-next-line react/self-closing-comp
-          <TouchableOpacity
-            style={styles.header}
-            onPress={openLibraryHeader}></TouchableOpacity>
-        )}
-        {profilePic || profilePicURL ? (
-          <View style={styles.profilePicContainer}>
+        <TouchableOpacity
+          onPress={() =>
+            (top2.value = withSpring(dimensions.height, SPRING_CONFIG))
+          }>
+          <Text style={styles.cancelText}>Cancel</Text>
+        </TouchableOpacity>
+        <Text style={styles.editText}>Edit Profile</Text>
+        <View style={styles.headerContainer}>
+          {header ? (
+            <Image style={styles.header} source={header} />
+          ) : (
+            <View style={styles.header} />
+          )}
+        </View>
+        <TouchableOpacity onPress={selectHeader} style={styles.addHeaderIcon}>
+          <Ionicons name={'add-circle'} color={'white'} size={36} />
+        </TouchableOpacity>
+        {PFP ? (
+          <View style={styles.PFPContainer}>
             <Image
-              style={styles.userProfilePic}
-              source={{uri: profilePic?.path || profilePicURL}}
+              resizeMode="contain"
+              style={styles.PFP}
+              source={{uri: PFP}}
             />
           </View>
         ) : (
-          <TouchableOpacity
-            onPress={openLibrary}
-            style={styles.profilePicContainer}>
-            <Image
-              style={styles.userProfilePic}
-              source={require('../assets/img/circle.png')}
-            />
-          </TouchableOpacity>
+          <View style={styles.PFPContainer}>
+            <View style={styles.defaultPFP} />
+          </View>
         )}
-        <TouchableOpacity onPress={openLibrary} style={styles.addPFPContainer}>
-          <Ionicons
-            style={styles.addPFP}
-            name="add-circle"
-            color="white"
-            size={35}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={openLibraryHeader}
-          style={styles.addHeaderContainer}>
-          <Ionicons
-            style={styles.addHeader}
-            name="add-circle"
-            color="white"
-            size={35}
-          />
+        <TouchableOpacity onPress={selectPFP} style={styles.addPFPIcon}>
+          <Ionicons name={'add-circle'} color={'white'} size={28} />
         </TouchableOpacity>
         <View style={styles.userInfoContainer}>
           <View style={styles.nameContainer}>
-            <Text style={styles.name}>Name</Text>
+            <Text style={styles.nameText}>Name:</Text>
             <TextInput
-              maxLength={10}
-              style={styles.nameText}
-              multiline
-              autoCapitalize="none"
-              keyboardType="default"
-              placeholder={userProfile.displayName || username._docs[0].id}
-              placeholderTextColor={Colors.greyOut}
+              maxLength={14}
+              style={styles.nameInput}
+              placeholder={name ? name : 'add name'}
+              placeholderTextColor={'grey'}
               onChangeText={text => setName(text)}
             />
           </View>
           <View style={styles.bioContainer}>
-            <Text style={styles.bio}>Bio</Text>
+            <Text style={styles.bioText}>Bio:</Text>
             <TextInput
               maxLength={162}
-              style={styles.bioText}
-              multiline
-              autoCapitalize="none"
-              keyboardType="default"
-              placeholder={userProfile.bio || 'tell us about yourself'}
-              placeholderTextColor={Colors.greyOut}
+              style={styles.input}
+              placeholder={bio ? bio : 'add bio'}
+              placeholderTextColor={'grey'}
               onChangeText={text => setBio(text)}
             />
           </View>
         </View>
         <TouchableOpacity onPress={saveChanges} style={styles.saveBtn}>
-          <Ionicons
-            style={styles.circleClick}
-            name="save"
-            color="white"
-            size={25}
-          />
           <Text style={styles.saveText}>Save</Text>
         </TouchableOpacity>
       </View>
-    </DismissKeyboard>
+    </>
   );
 };
 
@@ -274,21 +188,20 @@ export default EditProfileSheet;
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#1C1C1C',
-    position: 'absolute',
     width: '100%',
-    height: '87.5%',
-    bottom: 0,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    flex: 1,
+    height: '100%',
+    // position: 'absolute',
   },
   cancelText: {
+    fontFamily: 'Inter-Medium',
     color: 'white',
     position: 'absolute',
-    marginTop: '6.6%',
-    marginLeft: '7%',
+    left: '7%',
+    marginTop: '6.5%',
+    fontSize: 14,
   },
-  editProfileText: {
+  editText: {
     fontFamily: 'Inter-Bold',
     color: 'white',
     alignSelf: 'center',
@@ -296,99 +209,96 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   header: {
+    position: 'absolute',
     backgroundColor: 'rgba(255, 8, 0, .25)',
     width: '100%',
-    height: '22%',
-    marginTop: '8%',
+    height: 150,
+    top: 20,
   },
-  profilePic: {
+  addHeaderIcon: {
     position: 'absolute',
-    marginLeft: '5%',
-    marginTop: '35%',
-    height: 100,
-    width: 100,
+    right: '6%',
+    top: 195,
   },
-  profilePicContainer: {
+  PFPContainer: {
     position: 'absolute',
-    marginLeft: '5%',
-    marginTop: '45%',
-    height: 75,
-    width: 75,
-    borderRadius: 100,
+    left: '7%',
+    top: 165,
   },
-  userProfilePic: {
-    height: 100,
-    width: 100,
-    borderRadius: 100,
+  PFP: {
+    height: 90,
+    width: 90,
+    borderRadius: 90,
   },
-  addPFPContainer: {
+  defaultPFP: {
+    height: 90,
+    width: 90,
+    borderRadius: 90,
+    backgroundColor: 'rgba(255, 8, 0)',
+  },
+  addPFPIcon: {
     position: 'absolute',
-    marginLeft: '22%',
-    marginTop: '64%',
-  },
-  addPFP: {},
-  addHeaderContainer: {
-    position: 'absolute',
-    marginLeft: '86%',
-    marginTop: '54%',
+    left: '24%',
+    top: 230,
   },
   userInfoContainer: {
-    marginLeft: '7%',
-    marginTop: '18%',
-    height: '45%',
-    alignItems: 'flex-start',
+    position: 'absolute',
+    paddingLeft: '8%',
+    top: 280,
+    height: '100%',
   },
   nameContainer: {
     flexDirection: 'row',
-  },
-  name: {
-    color: 'white',
-    fontFamily: 'Inter-Bold',
-    fontSize: 16,
-    marginTop: '1%',
+    alignItems: 'center',
   },
   nameText: {
-    color: Colors.greyOut,
-    fontFamily: 'Inter-medium',
-    fontSize: 15,
-    width: '90%',
+    color: 'white',
+    fontFamily: 'Inter-Bold',
+    fontSize: 17,
     marginLeft: '5%',
+    width: 55,
+  },
+  nameInput: {
+    marginLeft: '8%',
+    color: 'white',
+    width: 150,
   },
   bioContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    justifyContent: 'center',
-    marginTop: '6%',
-  },
-  bio: {
-    color: 'white',
-    fontFamily: 'Inter-SemiBold',
-    fontSize: 16,
-    marginTop: '2.75%',
+    marginTop: '10%',
   },
   bioText: {
-    color: Colors.greyOut,
-    fontFamily: 'Inter-Medium',
-    fontSize: 15,
-    width: '70%',
-    lineHeight: 24,
-    marginLeft: '11%',
+    color: 'white',
+    fontFamily: 'Inter-Bold',
+    fontSize: 17,
+    marginLeft: '5%',
+    width: 55,
+  },
+  input: {
+    marginLeft: '8%',
+    color: 'white',
+    width: 150,
   },
   saveBtn: {
+    position: 'absolute',
     flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.red,
-    justifyContent: 'center',
-    width: '90%',
     alignSelf: 'center',
-    marginTop: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: Colors.red,
     paddingVertical: 10,
-    borderRadius: 9,
+    paddingHorizontal: 80,
+    borderRadius: 30,
+    shadowOffset: {width: -2, height: 4},
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    top: '88%',
   },
   saveText: {
     color: 'white',
     fontFamily: 'Inter-Bold',
-    marginLeft: '3%',
+    marginLeft: '10%',
     fontSize: 20,
   },
 });
