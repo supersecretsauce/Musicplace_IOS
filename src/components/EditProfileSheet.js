@@ -183,7 +183,7 @@ const EditProfileSheet = props => {
           <View style={styles.bioContainer}>
             <Text style={styles.bioText}>Bio:</Text>
             <TextInput
-              maxLength={162}
+              maxLength={90}
               style={styles.input}
               placeholder={bio ? bio : 'add bio'}
               placeholderTextColor={'grey'}

@@ -3,6 +3,7 @@ import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import ProfileScreen from '../screens/profile/ProfileScreen';
 import ViewPostsScreen from '../screens/profile/ViewPostsScreen';
+
 const PostStackScreen = () => {
   const PostStack = createNativeStackNavigator();
   const config = {
