@@ -4,8 +4,8 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import ProfileScreen from '../screens/profile/ProfileScreen';
 import ViewPostsScreen from '../screens/profile/ViewPostsScreen';
 
-const PostStackScreen = () => {
-  const PostStack = createNativeStackNavigator();
+const ProfileStackScreen = () => {
+  const ProfileStack = createNativeStackNavigator();
   const config = {
     animation: 'spring',
     config: {
@@ -19,23 +19,22 @@ const PostStackScreen = () => {
   };
 
   return (
-    <PostStack.Navigator screenOptions={{headerShown: false}}>
-      <PostStack.Screen name="ProfileScreen" component={ProfileScreen} />
-      <PostStack.Screen
+    <ProfileStack.Navigator screenOptions={{headerShown: false}}>
+      <ProfileStack.Screen name="ProfileScreen" component={ProfileScreen} />
+      <ProfileStack.Screen
         name="ViewPostsScreen"
         component={ViewPostsScreen}
         options={{
-          // gestureDirection: 'vertical',
           transitionSpec: {
             open: config,
             close: config,
           },
         }}
       />
-    </PostStack.Navigator>
+    </ProfileStack.Navigator>
   );
 };
 
-export default PostStackScreen;
+export default ProfileStackScreen;
 
 const styles = StyleSheet.create({});
