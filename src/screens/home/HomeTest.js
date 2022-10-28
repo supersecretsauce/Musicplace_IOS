@@ -205,16 +205,17 @@ const HomeTest = ({navigation}) => {
       // everytime url changes, add a watch document and upload watch to mixpanel
       setWatches();
       mixpanel.track('New Listen');
-      setCurrentTrack(
-        new Sound(postPreviewURL, null, error => {
-          if (error) {
-            console.log('failed to load the sound', error);
-            return;
-          }
-          // console.log(postPreviewURL);
-          setSongLoaded(postPreviewURL);
-        }),
-      );
+      let newTrack = new Sound(postPreviewURL, null, error => {
+        if (error) {
+          console.log('failed to load the sound', error);
+          return;
+        }
+        // console.log(postPreviewURL);
+        setSongLoaded(postPreviewURL);
+      });
+      console.log(newTrack);
+      newTrack.setCategory('Playback');
+      setCurrentTrack(newTrack);
     } else {
       setCurrentTrack(null);
     }
