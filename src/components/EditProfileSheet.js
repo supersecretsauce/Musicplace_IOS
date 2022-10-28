@@ -22,14 +22,20 @@ import Animated, {
 } from 'react-native-reanimated';
 
 const EditProfileSheet = props => {
-  const {UID, userProfile, top2} = props;
-  const [header, setHeader] = useState(null);
-  const [PFP, setPFP] = useState(null);
-  const [name, setName] = useState(userProfile.displayName);
-  const [bio, setBio] = useState(userProfile.bio);
+  const {
+    UID,
+    top2,
+    setPFP,
+    PFP,
+    header,
+    setHeader,
+    setDisplayName,
+    displayName,
+    bio,
+    setBio,
+  } = props;
   const [userSelectedPFP, setUserSelectedPFP] = useState(false);
   const [userSelectedHeader, setUserSelectedHeader] = useState(false);
-
   const dimensions = useWindowDimensions();
 
   const getHeaderAndPFP = async () => {
@@ -94,7 +100,7 @@ const EditProfileSheet = props => {
       .collection('users')
       .doc(UID)
       .update({
-        displayName: name,
+        displayName: displayName,
         bio: bio,
       })
       .then(() => {
@@ -169,9 +175,9 @@ const EditProfileSheet = props => {
             <TextInput
               maxLength={14}
               style={styles.nameInput}
-              placeholder={name ? name : 'add name'}
+              placeholder={displayName ? displayName : 'add name'}
               placeholderTextColor={'grey'}
-              onChangeText={text => setName(text)}
+              onChangeText={text => setDisplayName(text)}
             />
           </View>
           <View style={styles.bioContainer}>

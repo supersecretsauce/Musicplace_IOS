@@ -27,12 +27,13 @@ import Animated, {
 import {SPRING_CONFIG} from '../../assets/utilities/reanimated-2';
 
 const ProfileScreen = ({navigation}) => {
-  const [editProfile, setEditProfile] = useState(false);
   const [userProfile, setUserProfile] = useState();
   const [username, setUsername] = useState();
   const [UID, setUID] = useState();
-  const [profilePicURL, setProfilePicURL] = useState();
-  const [headerURL, setHeaderURL] = useState();
+  const [bio, setBio] = useState(null);
+  const [header, setHeader] = useState(null);
+  const [PFP, setPFP] = useState(null);
+  const [displayName, setDisplayName] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const dimensions = useWindowDimensions();
   const top = useSharedValue(dimensions.height);
@@ -52,7 +53,6 @@ const ProfileScreen = ({navigation}) => {
     const checkforUID = async () => {
       const userUID = await AsyncStorage.getItem('UID');
       if (userUID) {
-        console.log(userUID);
         setUID(userUID);
       }
     };
@@ -67,6 +67,8 @@ const ProfileScreen = ({navigation}) => {
       .then(querySnapshot => {
         console.log(querySnapshot);
         setUserProfile(querySnapshot.data());
+        setDisplayName(querySnapshot.data().displayName);
+        setBio(querySnapshot.data().bio);
       });
 
     firestore()
@@ -86,7 +88,7 @@ const ProfileScreen = ({navigation}) => {
       .catch(error => {
         console.log(error);
       });
-    setProfilePicURL(url);
+    setPFP(url);
   };
 
   const getHeaderURL = async () => {
@@ -96,7 +98,7 @@ const ProfileScreen = ({navigation}) => {
       .catch(error => {
         console.log(error);
       });
-    setHeaderURL(url);
+    setHeader(url);
   };
 
   useEffect(() => {
@@ -161,7 +163,7 @@ const ProfileScreen = ({navigation}) => {
       {userProfile && username ? (
         <>
           <View style={styles.container}>
-            {headerURL ? (
+            {header ? (
               <>
                 <Ionicons
                   onPress={handleSpring}
@@ -170,7 +172,10 @@ const ProfileScreen = ({navigation}) => {
                   color={'white'}
                   size={36}
                 />
-                <Image style={styles.header} source={{uri: headerURL}} />
+                <Image
+                  style={styles.header}
+                  source={{uri: header.path || header}}
+                />
               </>
             ) : (
               <View style={styles.header}>
@@ -184,11 +189,11 @@ const ProfileScreen = ({navigation}) => {
               </View>
             )}
 
-            {profilePicURL ? (
+            {PFP ? (
               <View style={styles.profilePicURLContainer}>
                 <Image
                   style={styles.profilePicURL}
-                  source={{uri: profilePicURL}}
+                  source={{uri: PFP.path || PFP}}
                 />
               </View>
             ) : (
@@ -196,10 +201,10 @@ const ProfileScreen = ({navigation}) => {
             )}
             <View style={styles.profileLeft}>
               <Text style={styles.name}>
-                {userProfile.displayName || username._docs[0].id}
+                {displayName || username._docs[0].id}
               </Text>
               <Text style={styles.handle}>@{username._docs[0].id}</Text>
-              <Text style={styles.bio}>{userProfile.bio}</Text>
+              <Text style={styles.bio}>{bio}</Text>
             </View>
             <View style={styles.socialStatsContainer}>
               <View style={styles.followersContainer}>
@@ -276,6 +281,14 @@ const ProfileScreen = ({navigation}) => {
                 top2={top2}
                 userProfile={userProfile}
                 UID={UID}
+                setPFP={setPFP}
+                PFP={PFP}
+                header={header}
+                setHeader={setHeader}
+                setDisplayName={setDisplayName}
+                displayName={displayName}
+                bio={bio}
+                setBio={setBio}
               />
             </Animated.View>
           </PanGestureHandler>
