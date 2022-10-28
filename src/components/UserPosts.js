@@ -17,24 +17,16 @@ const UserPosts = props => {
 
   useEffect(() => {
     if (UID) {
-      console.log(UID);
-      const fetchUserTracks = async () => {
-        firestore()
-          .collection('users')
-          .doc(UID)
-          .onSnapshot(documentSnapshot => {
-            setUserPosts(documentSnapshot?.data()?.topSongs);
-          });
-      };
-      fetchUserTracks();
+      const subscriber = firestore()
+        .collection('users')
+        .doc(UID)
+        .onSnapshot(documentSnapshot => {
+          setUserPosts(documentSnapshot?.data()?.userPosts);
+        });
+
+      return () => subscriber();
     }
   }, [UID]);
-
-  useEffect(() => {
-    if (userPosts) {
-      console.log(userPosts);
-    }
-  }, [userPosts]);
 
   return (
     <View style={styles.container}>
@@ -45,7 +37,7 @@ const UserPosts = props => {
               <FlatList
                 data={userPosts}
                 numColumns={2}
-                contentContainerStyle={{paddingBottom: 390}}
+                contentContainerStyle={{paddingBottom: 10}}
                 style={{width: '100%', height: '100%', marginTop: 1}}
                 renderItem={({item, index}) => {
                   return (
@@ -71,7 +63,7 @@ const UserPosts = props => {
                           <Text numberOfLines={1} style={styles.artistName}>
                             {item.artists
                               ?.map(artist => {
-                                return artist;
+                                return artist.name;
                               })
                               .join(', ')}
                           </Text>
@@ -82,7 +74,6 @@ const UserPosts = props => {
                 }}
               />
             </View>
-            <View></View>
           </>
         ) : (
           <></>
@@ -95,6 +86,10 @@ const UserPosts = props => {
 export default UserPosts;
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: 215,
+  },
   trackScrollContainer: {
     justifyContent: 'center',
     alignItems: 'center',
