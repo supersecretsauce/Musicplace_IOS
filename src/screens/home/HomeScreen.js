@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: 350,
     alignSelf: 'center',
-    marginTop: 10,
+    marginTop: 15,
   },
   songName: {
     color: 'white',
