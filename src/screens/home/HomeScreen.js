@@ -9,6 +9,7 @@ import {
   Linking,
 } from 'react-native';
 import React, {useState, useEffect, useContext, useCallback} from 'react';
+import {useFocusEffect} from '@react-navigation/native';
 import Swiper from 'react-native-swiper';
 import Sound from 'react-native-sound';
 import Spotify from '../../assets/img/spotify.svg';
@@ -20,7 +21,7 @@ import Toast from 'react-native-toast-message';
 import {authFetch} from '../../services/SpotifyService';
 import {Context} from '../../context/Context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useFocusEffect} from '@react-navigation/native';
+import {mixpanel} from '../../../mixpanel';
 
 const HomeScreen = () => {
   Sound.setCategory('Playback');
@@ -155,6 +156,7 @@ const HomeScreen = () => {
             onIndexChanged={index => {
               currentTrack.stop();
               setCurrentIndex(index);
+              mixpanel.track('New Listen');
             }}
             loop={false}
             showsButtons={false}>
