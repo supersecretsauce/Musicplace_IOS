@@ -30,7 +30,7 @@ const HomeScreen = () => {
       <>
         {feed ? (
           <>
-            <Swiper showsButtons={false}>
+            <Swiper loop={false} showsButtons={false}>
               {feed.map(post => {
                 return (
                   <View>
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
-    top: 500,
+    top: 510,
   },
   listenOnSpotifyText: {
     color: 'white',
