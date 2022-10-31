@@ -13,31 +13,22 @@ const BottomSheet2 = () => {
   const startingHeight = dimensions.height / 1.5;
   const gestureHandler = useAnimatedGestureHandler({});
   return (
-    <SafeAreaView>
-      <View
+    <PanGestureHandler onGestureEvent={gestureHandler}>
+      <Animated.View
         style={{
-          backgroundColor: 'red',
-          height: 350,
-          width: 500,
-          // bottom: 0,
+          position: 'absolute',
+          backgroundColor: '#1F1F1F',
+          borderTopEndRadius: 30,
+          borderTopStartRadius: 30,
+          width: dimensions.width,
+          height: dimensions.height,
+          bottom: 0,
+          // top: '70%',
+          top: 485,
         }}>
-        {/* <PanGestureHandler onGestureEvent={gestureHandler}>
-        <Animated.View
-          style={{
-            position: 'absolute',
-            backgroundColor: '#1F1F1F',
-            borderTopEndRadius: 30,
-            borderTopStartRadius: 30,
-            width: dimensions.width,
-            height: 200,
-            bottom: 0,
-            // top: '70%',
-          }}>
-          <Text>hey</Text>
-        </Animated.View>
-      </PanGestureHandler> */}
-      </View>
-    </SafeAreaView>
+        <Text>hey</Text>
+      </Animated.View>
+    </PanGestureHandler>
   );
 };
 

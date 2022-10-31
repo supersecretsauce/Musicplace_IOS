@@ -26,7 +26,7 @@ const HomeScreen = () => {
   }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <>
         {feed ? (
           <>
@@ -41,7 +41,7 @@ const HomeScreen = () => {
                       }}
                       resizeMode="cover"
                     />
-                    {/* <View style={styles.topRow}>
+                    <View style={styles.topRow}>
                       <Text numberOfLines={1} style={styles.songName}>
                         {post._data.songName}
                       </Text>
@@ -78,20 +78,21 @@ const HomeScreen = () => {
                       <Text style={styles.listenOnSpotifyText}>
                         LISTEN ON SPOTIFY
                       </Text>
-                    </TouchableOpacity> */}
+                    </TouchableOpacity>
                   </View>
                 );
               })}
             </Swiper>
-            <View
+            {/* <View
               style={{
                 backgroundColor: 'red',
                 height: 500,
                 width: 500,
-                position: 'absolute',
+                top: 300,
+                // position: 'absolute',
               }}
-            />
-            {/* <BottomSheet2 /> */}
+            /> */}
+            <BottomSheet2 />
           </>
         ) : (
           <>
@@ -101,7 +102,7 @@ const HomeScreen = () => {
           </>
         )}
       </>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -116,6 +117,7 @@ const styles = StyleSheet.create({
     height: 350,
     width: 350,
     alignSelf: 'center',
+    marginTop: '13%',
   },
   topRow: {
     flexDirection: 'row',
@@ -169,7 +171,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     alignSelf: 'center',
-    top: 460,
+    top: 500,
   },
   listenOnSpotifyText: {
     color: 'white',
