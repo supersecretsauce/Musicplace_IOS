@@ -56,12 +56,6 @@ const BottomSheet2 = () => {
             runOnJS(setContainerSmall)(true);
           }
         }
-        // if (top.value < 580 && top.value > 490) {
-        //   top.value = 580;
-        // } else if (top.value < 490) {
-        //   top.value = 200;
-        //   runOnJS(setContainerUp)(true);
-        // }
       }
     },
   });
