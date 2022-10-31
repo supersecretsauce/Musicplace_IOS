@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   TouchableWithoutFeedback,
+  Linking,
 } from 'react-native';
 import React, {useState, useEffect, useContext, useCallback} from 'react';
 import Swiper from 'react-native-swiper';
@@ -83,7 +84,6 @@ const HomeScreen = () => {
         },
       );
       setCurrentTrack(newTrack);
-      console.log('set track');
     }
   }, [currentIndex, feed]);
 
@@ -138,6 +138,12 @@ const HomeScreen = () => {
           return error;
         });
     }
+  }
+
+  async function listenOnSpotify() {
+    await Linking.openURL(
+      `http://open.spotify.com/track/${feed[currentIndex]._data.id}`,
+    );
   }
 
   return (
@@ -206,7 +212,9 @@ const HomeScreen = () => {
                       {post._data.albumName}
                     </Text>
                   </View>
-                  <TouchableOpacity style={styles.listenOnSpotifyBtn}>
+                  <TouchableOpacity
+                    style={styles.listenOnSpotifyBtn}
+                    onPress={listenOnSpotify}>
                     <Spotify />
                     <Text style={styles.listenOnSpotifyText}>
                       LISTEN ON SPOTIFY
