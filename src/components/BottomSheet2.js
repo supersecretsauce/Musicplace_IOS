@@ -30,7 +30,6 @@ const BottomSheet2 = () => {
       if (containerUp) {
         if (top.value > 200 && top.value < 490) {
           top.value = withSpring(490, SPRING_CONFIG);
-          console.log('container down');
           runOnJS(setContainerUp)(false);
         } else if (top.value > 490) {
           top.value = withSpring(580, SPRING_CONFIG);
