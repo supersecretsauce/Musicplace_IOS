@@ -104,6 +104,7 @@ const HomeScreen = () => {
       .add({
         songID: feed[currentIndex]._data.id,
         duration: timeDiff,
+        date: new Date(),
       })
       .then(() => {
         console.log('added watch document');
