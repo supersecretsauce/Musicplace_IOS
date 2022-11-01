@@ -261,7 +261,7 @@ const HomeScreen = () => {
               );
             })}
           </Swiper>
-          <BottomSheet2 feed={feed} currentIndex={currentIndex} />
+          <BottomSheet2 UID={UID} feed={feed} currentIndex={currentIndex} />
         </>
       ) : (
         <>
