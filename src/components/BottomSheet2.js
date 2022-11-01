@@ -8,7 +8,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import Animated, {
   useAnimatedGestureHandler,
   useSharedValue,
@@ -30,6 +30,8 @@ const BottomSheet2 = props => {
   const [containerSmall, setContainerSmall] = useState(false);
   const [comments, setComments] = useState(false);
   const [profilePicURL, setProfilePicURL] = useState(null);
+  const [inputFocused, setInputFocused] = useState(false);
+  const inputRef = useRef();
 
   // get comments
   useEffect(() => {
@@ -110,6 +112,21 @@ const BottomSheet2 = props => {
     },
   });
 
+  const bottom = useSharedValue(0);
+  const inputContainerStyle = useAnimatedStyle(() => {
+    return {
+      bottom: bottom.value,
+    };
+  });
+
+  useEffect(() => {
+    if (inputFocused) {
+      bottom.value = 500;
+    } else {
+      console.log('not focused');
+      bottom.value = 0;
+    }
+  }, [inputFocused]);
   return (
     <>
       <PanGestureHandler onGestureEvent={gestureHandler}>
@@ -170,32 +187,40 @@ const BottomSheet2 = props => {
         </Animated.View>
       </PanGestureHandler>
       {containerUp && (
-        <View style={styles.myUserContainer}>
-          {profilePicURL && (
-            <Image
-              style={styles.myProfilePic}
-              source={{
-                uri: profilePicURL,
-              }}
-            />
-          )}
-          <View style={styles.inputBackground}>
-            <TextInput
-              style={styles.commentInput}
-              placeholderTextColor={Colors.greyOut}
-              placeholder="add a comment..."
-            />
-            <TouchableOpacity>
-              <Ionicons
-                // style={styles.socialIcon}
-                name={'send'}
-                color={'grey'}
-                size={18}
+        <PanGestureHandler>
+          <Animated.View style={[styles.myUserContainer, inputContainerStyle]}>
+            {profilePicURL && (
+              <Image
+                style={styles.myProfilePic}
+                source={{
+                  uri: profilePicURL,
+                }}
               />
-            </TouchableOpacity>
-          </View>
-          {/* <TextInput style={styles.commentInput} /> */}
-        </View>
+            )}
+            <View style={styles.inputBackground}>
+              <TextInput
+                ref={inputRef}
+                onFocus={e => {
+                  setInputFocused(true);
+                  console.log(e);
+                }}
+                onBlur={() => setInputFocused(false)}
+                style={styles.commentInput}
+                placeholderTextColor={Colors.greyOut}
+                placeholder="add a comment..."
+              />
+              <TouchableOpacity>
+                <Ionicons
+                  // style={styles.socialIcon}
+                  name={'send'}
+                  color={'grey'}
+                  size={18}
+                />
+              </TouchableOpacity>
+            </View>
+            {/* <TextInput style={styles.commentInput} /> */}
+          </Animated.View>
+        </PanGestureHandler>
       )}
     </>
   );
@@ -270,6 +295,8 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
 
+  //comment UI
+
   myUserContainer: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -278,6 +305,8 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     flexDirection: 'row',
     paddingBottom: 20,
+    position: 'absolute',
+    bottom: 0,
   },
   myProfilePic: {
     height: 48,
