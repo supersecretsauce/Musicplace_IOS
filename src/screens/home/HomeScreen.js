@@ -30,6 +30,7 @@ const HomeScreen = () => {
   const [currentTrack, setCurrentTrack] = useState(null);
   const [likedTracks, setLikedTracks] = useState([]);
   const [hasSpotify, setHasSpotify] = useState(null);
+  const [UID, setUID] = useState(null);
   const {accessToken, refreshToken, setAccessToken, setRefreshToken} =
     useContext(Context);
 
@@ -49,7 +50,7 @@ const HomeScreen = () => {
   useEffect(() => {
     async function getFeed() {
       const docs = await firestore().collection('posts').get();
-      console.log(docs);
+      console.log(docs._docs);
       setFeed(docs._docs);
     }
     getFeed();
@@ -61,6 +62,7 @@ const HomeScreen = () => {
       if (spotifyBoolean === 'false') {
         setHasSpotify(false);
       } else if (spotifyBoolean === 'true') {
+        setUID(localUID);
         setHasSpotify(true);
         setAccessToken(localAccess);
         setRefreshToken(localRefresh);
@@ -87,6 +89,27 @@ const HomeScreen = () => {
       setCurrentTrack(newTrack);
     }
   }, [currentIndex, feed]);
+
+  let startTime = new Date();
+  function recordTime() {
+    let endTime = new Date();
+    let timeDiff = endTime - startTime;
+    startTime = new Date();
+    firestore()
+      .collection('users')
+      .doc(UID)
+      .collection('watches')
+      .add({
+        songID: feed[currentIndex]._data.id,
+        duration: timeDiff,
+      })
+      .then(() => {
+        console.log('added watch document');
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
 
   let playing = true;
   function pauseHandler() {
@@ -157,6 +180,7 @@ const HomeScreen = () => {
               currentTrack.stop();
               setCurrentIndex(index);
               mixpanel.track('New Listen');
+              recordTime();
             }}
             loop={false}
             showsButtons={false}>
