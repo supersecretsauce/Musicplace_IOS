@@ -114,13 +114,6 @@ const BottomSheet2 = props => {
     },
   });
 
-  const bottom = useSharedValue(keyboardHeight);
-  const inputContainerStyle = useAnimatedStyle(() => {
-    return {
-      bottom: bottom.value,
-    };
-  });
-
   useEffect(() => {
     const showSubscription = Keyboard.addListener(
       'keyboardDidShow',
@@ -146,12 +139,6 @@ const BottomSheet2 = props => {
     setKeyboardHeight(0);
   }
 
-  useEffect(() => {
-    if (keyboardHeight) {
-      console.log('truthy');
-    }
-    bottom.value = keyboardHeight;
-  }, [keyboardHeight]);
   return (
     <>
       <PanGestureHandler onGestureEvent={gestureHandler}>
@@ -212,55 +199,53 @@ const BottomSheet2 = props => {
         </Animated.View>
       </PanGestureHandler>
       {containerUp && (
-        <PanGestureHandler>
-          <Animated.View
-            style={
-              keyboardHeight
-                ? {
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    width: '100%',
-                    backgroundColor: '#302F2F',
-                    paddingVertical: 20,
-                    flexDirection: 'row',
-                    paddingBottom: 20,
-                    position: 'absolute',
-                    top: keyboardHeight - 89,
-                  }
-                : styles.myUserContainer
-            }>
-            {profilePicURL && (
-              <Image
-                style={styles.myProfilePic}
-                source={{
-                  uri: profilePicURL,
-                }}
+        <View
+          style={
+            keyboardHeight
+              ? {
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: '100%',
+                  backgroundColor: '#302F2F',
+                  paddingVertical: 20,
+                  flexDirection: 'row',
+                  paddingBottom: 20,
+                  position: 'absolute',
+                  top: keyboardHeight - 89,
+                }
+              : styles.myUserContainer
+          }>
+          {profilePicURL && (
+            <Image
+              style={styles.myProfilePic}
+              source={{
+                uri: profilePicURL,
+              }}
+            />
+          )}
+          <View style={styles.inputBackground}>
+            <TextInput
+              ref={inputRef}
+              onFocus={e => {
+                setInputFocused(true);
+                console.log(e);
+              }}
+              onBlur={() => setInputFocused(false)}
+              style={styles.commentInput}
+              placeholderTextColor={Colors.greyOut}
+              placeholder="add a comment..."
+            />
+            <TouchableOpacity>
+              <Ionicons
+                // style={styles.socialIcon}
+                name={'send'}
+                color={'grey'}
+                size={18}
               />
-            )}
-            <View style={styles.inputBackground}>
-              <TextInput
-                ref={inputRef}
-                onFocus={e => {
-                  setInputFocused(true);
-                  console.log(e);
-                }}
-                onBlur={() => setInputFocused(false)}
-                style={styles.commentInput}
-                placeholderTextColor={Colors.greyOut}
-                placeholder="add a comment..."
-              />
-              <TouchableOpacity>
-                <Ionicons
-                  // style={styles.socialIcon}
-                  name={'send'}
-                  color={'grey'}
-                  size={18}
-                />
-              </TouchableOpacity>
-            </View>
-            {/* <TextInput style={styles.commentInput} /> */}
-          </Animated.View>
-        </PanGestureHandler>
+            </TouchableOpacity>
+          </View>
+          {/* <TextInput style={styles.commentInput} /> */}
+        </View>
       )}
     </>
   );
