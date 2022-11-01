@@ -2,7 +2,6 @@ import {
   StyleSheet,
   Text,
   View,
-  SafeAreaView,
   TouchableOpacity,
   Image,
   TouchableWithoutFeedback,
@@ -38,10 +37,13 @@ const HomeScreen = () => {
     useCallback(() => {
       if (currentTrack) {
         currentTrack.play();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        playing = true;
       }
       return () => {
         if (currentTrack) {
           currentTrack.pause();
+          playing = false;
         }
       };
     }, [currentTrack]),
