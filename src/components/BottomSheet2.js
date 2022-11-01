@@ -24,7 +24,6 @@ const BottomSheet2 = () => {
     },
     onActive(event, context) {
       top.value = context.startTop + event.translationY;
-      console.log(top.value);
     },
     onEnd() {
       if (containerUp) {

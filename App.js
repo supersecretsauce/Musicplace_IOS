@@ -70,16 +70,16 @@ export default function App() {
     checkUserLogin();
   }, []);
 
-  useEffect(() => {
-    if (currentTrack) {
-      if (homeScreenFocus === false) {
-        currentTrack.pause();
-      }
-      if (homeScreenFocus === true) {
-        currentTrack.play();
-      }
-    }
-  }, [currentTrack, homeScreenFocus]);
+  // useEffect(() => {
+  //   if (currentTrack) {
+  //     if (homeScreenFocus === false) {
+  //       currentTrack.pause();
+  //     }
+  //     if (homeScreenFocus === true) {
+  //       currentTrack.play();
+  //     }
+  //   }
+  // }, [currentTrack, homeScreenFocus]);
 
   useEffect(() => {
     if (currentPost) {
