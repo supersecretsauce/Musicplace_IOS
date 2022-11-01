@@ -1,5 +1,5 @@
 import {StyleSheet, Text, View, SafeAreaView} from 'react-native';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Animated, {
   useAnimatedGestureHandler,
   useSharedValue,
@@ -9,9 +9,25 @@ import Animated, {
 } from 'react-native-reanimated';
 import {PanGestureHandler} from 'react-native-gesture-handler';
 import {SPRING_CONFIG} from '../assets/utilities/reanimated-2';
-const BottomSheet2 = () => {
+import firestore from '@react-native-firebase/firestore';
+const BottomSheet2 = props => {
+  const {currentIndex, feed} = props;
   const [containerUp, setContainerUp] = useState(false);
   const [containerSmall, setContainerSmall] = useState(false);
+  const [comments, setComments] = useState(false);
+
+  useEffect(() => {
+    async function getComments() {
+      const commentDocs = await firestore()
+        .collection('posts')
+        .doc(feed[currentIndex].id)
+        .collection('comments')
+        .get();
+      console.log(commentDocs);
+    }
+    getComments();
+  }, [currentIndex, feed]);
+
   const top = useSharedValue(490);
   const style = useAnimatedStyle(() => {
     return {
@@ -57,6 +73,7 @@ const BottomSheet2 = () => {
       }
     },
   });
+
   return (
     <PanGestureHandler onGestureEvent={gestureHandler}>
       <Animated.View style={[styles.animatedSheet, style]}></Animated.View>

@@ -261,7 +261,7 @@ const HomeScreen = () => {
               );
             })}
           </Swiper>
-          <BottomSheet2 />
+          <BottomSheet2 feed={feed} currentIndex={currentIndex} />
         </>
       ) : (
         <>
