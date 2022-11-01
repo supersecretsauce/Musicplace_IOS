@@ -10,6 +10,8 @@ import Animated, {
 import {PanGestureHandler} from 'react-native-gesture-handler';
 import {SPRING_CONFIG} from '../assets/utilities/reanimated-2';
 import firestore from '@react-native-firebase/firestore';
+import {FlashList} from '@shopify/flash-list';
+
 const BottomSheet2 = props => {
   const {currentIndex, feed} = props;
   const [containerUp, setContainerUp] = useState(false);
@@ -24,6 +26,7 @@ const BottomSheet2 = props => {
         .collection('comments')
         .get();
       console.log(commentDocs);
+      setComments(commentDocs._docs);
     }
     getComments();
   }, [currentIndex, feed]);
@@ -74,9 +77,40 @@ const BottomSheet2 = props => {
     },
   });
 
+  const DATA = [
+    {
+      title: 'First Item',
+    },
+    {
+      title: 'Second Item',
+    },
+  ];
+
   return (
     <PanGestureHandler onGestureEvent={gestureHandler}>
-      <Animated.View style={[styles.animatedSheet, style]}></Animated.View>
+      <Animated.View style={[styles.animatedSheet, style]}>
+        <>
+          {comments ? (
+            <>
+              <View style={styles.flatlistContainer}>
+                <FlashList
+                  data={comments}
+                  estimatedItemSize={comments.length}
+                  renderItem={({item}) => (
+                    <Text style={{color: 'white', zIndex: 2}}>
+                      {item._data.comment}
+                    </Text>
+                  )}
+                />
+              </View>
+            </>
+          ) : (
+            <>
+              <Text>no comments</Text>
+            </>
+          )}
+        </>
+      </Animated.View>
     </PanGestureHandler>
   );
 };
@@ -92,5 +126,16 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     bottom: 0,
+  },
+  flatlistContainer: {
+    // backgroundColor: 'red',
+    width: 500,
+    height: 500,
+    marginTop: 20,
+  },
+  commentContainer: {
+    backgroundColor: 'red',
+    width: 500,
+    height: 500,
   },
 });
