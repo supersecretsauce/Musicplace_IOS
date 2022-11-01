@@ -6,7 +6,8 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
-  KeyboardAvoidingView,
+  Keyboard,
+  Dimensions,
 } from 'react-native';
 import React, {useState, useEffect, useRef} from 'react';
 import Animated, {
@@ -31,6 +32,7 @@ const BottomSheet2 = props => {
   const [comments, setComments] = useState(false);
   const [profilePicURL, setProfilePicURL] = useState(null);
   const [inputFocused, setInputFocused] = useState(false);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const inputRef = useRef();
 
   // get comments
@@ -112,7 +114,7 @@ const BottomSheet2 = props => {
     },
   });
 
-  const bottom = useSharedValue(0);
+  const bottom = useSharedValue(keyboardHeight);
   const inputContainerStyle = useAnimatedStyle(() => {
     return {
       bottom: bottom.value,
@@ -120,13 +122,36 @@ const BottomSheet2 = props => {
   });
 
   useEffect(() => {
-    if (inputFocused) {
-      bottom.value = 500;
-    } else {
-      console.log('not focused');
-      bottom.value = 0;
+    const showSubscription = Keyboard.addListener(
+      'keyboardDidShow',
+      onKeyboardDidShow,
+    );
+    const hideSubscription = Keyboard.addListener(
+      'keyboardDidHide',
+      onKeyboardDidHide,
+    );
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
+
+  function onKeyboardDidShow(e) {
+    setKeyboardHeight(
+      Dimensions.get('window').height - e.endCoordinates.height,
+    );
+  }
+
+  function onKeyboardDidHide() {
+    setKeyboardHeight(0);
+  }
+
+  useEffect(() => {
+    if (keyboardHeight) {
+      console.log('truthy');
     }
-  }, [inputFocused]);
+    bottom.value = keyboardHeight;
+  }, [keyboardHeight]);
   return (
     <>
       <PanGestureHandler onGestureEvent={gestureHandler}>
@@ -188,7 +213,22 @@ const BottomSheet2 = props => {
       </PanGestureHandler>
       {containerUp && (
         <PanGestureHandler>
-          <Animated.View style={[styles.myUserContainer, inputContainerStyle]}>
+          <Animated.View
+            style={
+              keyboardHeight
+                ? {
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '100%',
+                    backgroundColor: '#302F2F',
+                    paddingVertical: 20,
+                    flexDirection: 'row',
+                    paddingBottom: 20,
+                    position: 'absolute',
+                    top: keyboardHeight - 89,
+                  }
+                : styles.myUserContainer
+            }>
             {profilePicURL && (
               <Image
                 style={styles.myProfilePic}
