@@ -123,44 +123,53 @@ const HomeScreen = () => {
   }
 
   function likeHandler() {
-    if (likedTracks.includes(feed[currentIndex]._data.id)) {
-      HapticFeedback.trigger('impactLight');
-      setLikedTracks(
-        likedTracks.filter(id => id != feed[currentIndex]._data.id),
-      );
-      Toast.show({
-        type: 'success',
-        text1: 'Removed from liked songs',
-        text2: 'Well that was quick.',
-        visibilityTime: 2000,
-      });
-      authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
-        .delete(`/me/tracks?ids=${feed[currentIndex]._data.id}`)
-        .then(response => {
-          console.log(response);
-        })
-        .catch(error => {
-          console.log(error);
-          return error;
+    if (hasSpotify) {
+      if (likedTracks.includes(feed[currentIndex]._data.id)) {
+        HapticFeedback.trigger('impactLight');
+        setLikedTracks(
+          likedTracks.filter(id => id != feed[currentIndex]._data.id),
+        );
+        Toast.show({
+          type: 'success',
+          text1: 'Removed from liked songs',
+          text2: 'Well that was quick.',
+          visibilityTime: 2000,
         });
+        authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
+          .delete(`/me/tracks?ids=${feed[currentIndex]._data.id}`)
+          .then(response => {
+            console.log(response);
+          })
+          .catch(error => {
+            console.log(error);
+            return error;
+          });
+      } else {
+        HapticFeedback.trigger('impactHeavy');
+        setLikedTracks(current => [...current, feed[currentIndex]._data.id]);
+        Toast.show({
+          type: 'success',
+          text1: 'Added to liked songs',
+          text2: "Don't believe us? Check your spotify library.",
+          visibilityTime: 2000,
+        });
+        authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
+          .put(`/me/tracks?ids=${feed[currentIndex]._data.id}`)
+          .then(response => {
+            console.log(response);
+          })
+          .catch(error => {
+            console.log(error);
+            return error;
+          });
+      }
     } else {
-      HapticFeedback.trigger('impactHeavy');
-      setLikedTracks(current => [...current, feed[currentIndex]._data.id]);
       Toast.show({
-        type: 'success',
-        text1: 'Added to liked songs',
-        text2: "Don't believe us? Check your spotify library.",
+        type: 'info',
+        text1: 'Connect to Spotify',
+        text2: 'Connect to Spotify to save this track to your library.',
         visibilityTime: 2000,
       });
-      authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
-        .put(`/me/tracks?ids=${feed[currentIndex]._data.id}`)
-        .then(response => {
-          console.log(response);
-        })
-        .catch(error => {
-          console.log(error);
-          return error;
-        });
     }
   }
 
