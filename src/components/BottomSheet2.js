@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
+  KeyboardAvoidingView,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import Animated, {
@@ -178,7 +179,22 @@ const BottomSheet2 = props => {
               }}
             />
           )}
-          <TextInput style={styles.commentInput} />
+          <View style={styles.inputBackground}>
+            <TextInput
+              style={styles.commentInput}
+              placeholderTextColor={Colors.greyOut}
+              placeholder="add a comment..."
+            />
+            <TouchableOpacity>
+              <Ionicons
+                // style={styles.socialIcon}
+                name={'send'}
+                color={'grey'}
+                size={18}
+              />
+            </TouchableOpacity>
+          </View>
+          {/* <TextInput style={styles.commentInput} /> */}
         </View>
       )}
     </>
@@ -253,30 +269,34 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginTop: 2,
   },
+
   myUserContainer: {
     justifyContent: 'center',
+    alignItems: 'center',
     width: '100%',
-    backgroundColor: 'black',
-    paddingVertical: 10,
-    position: 'absolute',
+    backgroundColor: '#302F2F',
+    paddingVertical: 20,
     flexDirection: 'row',
-    bottom: 0,
+    paddingBottom: 20,
   },
   myProfilePic: {
-    height: 32,
-    width: 32,
-    borderRadius: 32,
+    height: 48,
+    width: 48,
+    borderRadius: 48,
+  },
+  inputBackground: {
+    backgroundColor: '#1F1F1F',
+    width: 290,
+    height: 45,
+    marginLeft: 15,
+    borderRadius: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 15,
   },
   commentInput: {
-    backgroundColor: '#1F1F1F',
-    marginLeft: '3%',
-    borderRadius: 9,
-    paddingVertical: '3%',
-    width: 300,
-    paddingLeft: 10,
-    color: 'white',
-    fontFamily: 'inter-regular',
-    textAlign: 'left',
-    fontSize: 11,
+    paddingVertical: 5,
+    paddingRight: 120,
   },
 });
