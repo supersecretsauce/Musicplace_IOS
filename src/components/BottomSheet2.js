@@ -19,7 +19,6 @@ import Animated, {
 import {PanGestureHandler} from 'react-native-gesture-handler';
 import {SPRING_CONFIG} from '../assets/utilities/reanimated-2';
 import firestore from '@react-native-firebase/firestore';
-import {FlashList} from '@shopify/flash-list';
 import Colors from '../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import storage from '@react-native-firebase/storage';
