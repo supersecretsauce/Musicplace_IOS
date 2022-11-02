@@ -315,7 +315,20 @@ const BottomSheet2 = props => {
               </>
             ) : (
               <>
-                <Text>no comments</Text>
+                <View style={styles.defaultCommentContainer}>
+                  <Image
+                    style={styles.defaultProfilePic}
+                    source={{
+                      uri: 'https://firebasestorage.googleapis.com/v0/b/musicplace-66f20.appspot.com/o/circle.png?alt=media&token=4d44b252-e89d-4887-8a07-14e4c596de60',
+                    }}
+                  />
+                  <View style={styles.defaultCommentMiddle}>
+                    <Text style={styles.displayName}>Musicplace</Text>
+                    <Text style={styles.comment}>
+                      swipe up to add a comment
+                    </Text>
+                  </View>
+                </View>
               </>
             )}
           </>
@@ -452,7 +465,21 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginTop: 2,
   },
-  //comment UI
+  // default comment UI
+  defaultCommentContainer: {
+    width: '90%',
+    alignSelf: 'center',
+    flexDirection: 'row',
+  },
+  defaultCommentMiddle: {
+    marginLeft: 15,
+  },
+  defaultProfilePic: {
+    height: 32,
+    width: 32,
+    borderRadius: 32,
+  },
+  //add a comment UI
   myUserContainer: {
     justifyContent: 'center',
     alignItems: 'center',
