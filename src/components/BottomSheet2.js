@@ -8,6 +8,7 @@ import {
   TextInput,
   Keyboard,
   Dimensions,
+  KeyboardAvoidingView,
 } from 'react-native';
 import React, {useState, useEffect, useRef} from 'react';
 import Animated, {
@@ -32,7 +33,6 @@ const BottomSheet2 = props => {
   const [comments, setComments] = useState(false);
   const [profilePicURL, setProfilePicURL] = useState(null);
   const [inputFocused, setInputFocused] = useState(false);
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const inputRef = useRef();
 
   // get comments
@@ -114,31 +114,6 @@ const BottomSheet2 = props => {
     },
   });
 
-  useEffect(() => {
-    const showSubscription = Keyboard.addListener(
-      'keyboardDidShow',
-      onKeyboardDidShow,
-    );
-    const hideSubscription = Keyboard.addListener(
-      'keyboardDidHide',
-      onKeyboardDidHide,
-    );
-    return () => {
-      showSubscription.remove();
-      hideSubscription.remove();
-    };
-  }, []);
-
-  function onKeyboardDidShow(e) {
-    setKeyboardHeight(
-      Dimensions.get('window').height - e.endCoordinates.height,
-    );
-  }
-
-  function onKeyboardDidHide() {
-    setKeyboardHeight(0);
-  }
-
   return (
     <>
       <PanGestureHandler onGestureEvent={gestureHandler}>
@@ -199,53 +174,40 @@ const BottomSheet2 = props => {
         </Animated.View>
       </PanGestureHandler>
       {containerUp && (
-        <View
-          style={
-            keyboardHeight
-              ? {
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  width: '100%',
-                  backgroundColor: '#302F2F',
-                  paddingVertical: 20,
-                  flexDirection: 'row',
-                  paddingBottom: 20,
-                  position: 'absolute',
-                  top: keyboardHeight - 89,
-                }
-              : styles.myUserContainer
-          }>
-          {profilePicURL && (
-            <Image
-              style={styles.myProfilePic}
-              source={{
-                uri: profilePicURL,
-              }}
-            />
-          )}
-          <View style={styles.inputBackground}>
-            <TextInput
-              ref={inputRef}
-              onFocus={e => {
-                setInputFocused(true);
-                console.log(e);
-              }}
-              onBlur={() => setInputFocused(false)}
-              style={styles.commentInput}
-              placeholderTextColor={Colors.greyOut}
-              placeholder="add a comment..."
-            />
-            <TouchableOpacity>
-              <Ionicons
-                // style={styles.socialIcon}
-                name={'send'}
-                color={'grey'}
-                size={18}
+        <KeyboardAvoidingView behavior="position">
+          <View style={styles.myUserContainer}>
+            {profilePicURL && (
+              <Image
+                style={styles.myProfilePic}
+                source={{
+                  uri: profilePicURL,
+                }}
               />
-            </TouchableOpacity>
+            )}
+            <View style={styles.inputBackground}>
+              <TextInput
+                ref={inputRef}
+                onFocus={e => {
+                  setInputFocused(true);
+                  console.log(e);
+                }}
+                onBlur={() => setInputFocused(false)}
+                style={styles.commentInput}
+                placeholderTextColor={Colors.greyOut}
+                placeholder="add a comment..."
+              />
+              <TouchableOpacity>
+                <Ionicons
+                  // style={styles.socialIcon}
+                  name={'send'}
+                  color={'grey'}
+                  size={18}
+                />
+              </TouchableOpacity>
+            </View>
+            {/* <TextInput style={styles.commentInput} /> */}
           </View>
-          {/* <TextInput style={styles.commentInput} /> */}
-        </View>
+        </KeyboardAvoidingView>
       )}
     </>
   );
