@@ -50,6 +50,7 @@ const BottomSheet2 = props => {
       .get();
     console.log('comment documents', commentDocs);
     if (commentDocs.empty) {
+      setComments(null);
       return;
     } else {
       console.log('comments exist!');
@@ -165,6 +166,7 @@ const BottomSheet2 = props => {
             })
             .then(() => {
               getCommentReplies(replyInfo.id);
+              getComments();
               setUserText('');
               console.log('comment added!');
             });
