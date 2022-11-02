@@ -235,12 +235,13 @@ const BottomSheet2 = props => {
             <View style={styles.drawer} />
             {comments ? (
               <>
-                <View style={styles.flatlistContainer}>
+                <View
+                  style={
+                    containerUp ? styles.flatlistContainer : {height: '30%'}
+                  }>
                   <FlatList
-                    // contentContainerStyle={{paddingBottom: 20}}
-                    // disableAutoLayout={true}
+                    contentContainerStyle={{paddingBottom: '20%'}}
                     data={comments}
-                    // estimatedItemSize={comments.length}
                     renderItem={({item}) => (
                       <>
                         <View style={styles.commentAndReplyContainer}>
