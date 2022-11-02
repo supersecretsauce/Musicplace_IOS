@@ -6,8 +6,6 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
-  Keyboard,
-  Dimensions,
   KeyboardAvoidingView,
 } from 'react-native';
 import React, {useState, useEffect, useRef} from 'react';
@@ -32,24 +30,26 @@ const BottomSheet2 = props => {
   const [containerSmall, setContainerSmall] = useState(false);
   const [comments, setComments] = useState(false);
   const [profilePicURL, setProfilePicURL] = useState(null);
-  const [inputFocused, setInputFocused] = useState(false);
-  const inputRef = useRef();
+  const [userDoc, setUserDoc] = useState(null);
+  const [userText, setUserText] = useState(null);
 
   // get comments
+
+  async function getComments() {
+    const commentDocs = await firestore()
+      .collection('posts')
+      .doc(feed[currentIndex].id)
+      .collection('comments')
+      .get();
+    console.log(commentDocs._docs);
+    setComments(commentDocs._docs);
+  }
+
   useEffect(() => {
-    async function getComments() {
-      const commentDocs = await firestore()
-        .collection('posts')
-        .doc(feed[currentIndex].id)
-        .collection('comments')
-        .get();
-      console.log(commentDocs._docs);
-      setComments(commentDocs._docs);
-    }
     getComments();
   }, [currentIndex, feed]);
 
-  // get current user's profile picture
+  // get current user's profile picture and their user document
   useEffect(() => {
     if (UID) {
       const getProfilePicURL = async () => {
@@ -64,7 +64,15 @@ const BottomSheet2 = props => {
           setProfilePicURL(url);
         }
       };
+      const getUserDoc = async () => {
+        const doc = await firestore().collection('users').doc(UID).get();
+        if (doc) {
+          console.log(doc._data);
+          setUserDoc(doc._data);
+        }
+      };
       getProfilePicURL();
+      getUserDoc();
     }
   }, [UID]);
 
@@ -114,6 +122,26 @@ const BottomSheet2 = props => {
     },
   });
 
+  function handleCommentSubmit() {
+    console.log(userText);
+    firestore()
+      .collection('posts')
+      .doc(feed[currentIndex].id)
+      .collection('comments')
+      .add({
+        comment: userText,
+        displayName: userDoc.displayName,
+        profilePicURL: profilePicURL,
+        hasReplies: 'no',
+        likeAmount: 0,
+        parent: 'none',
+      })
+      .then(() => {
+        getComments();
+        console.log('comment added!');
+      });
+  }
+
   return (
     <>
       <PanGestureHandler onGestureEvent={gestureHandler}>
@@ -124,6 +152,7 @@ const BottomSheet2 = props => {
               <>
                 <View style={styles.flatlistContainer}>
                   <FlashList
+                    contentContainerStyle={{paddingBottom: 20}}
                     disableAutoLayout={true}
                     data={comments}
                     estimatedItemSize={comments.length}
@@ -186,26 +215,23 @@ const BottomSheet2 = props => {
             )}
             <View style={styles.inputBackground}>
               <TextInput
-                ref={inputRef}
-                onFocus={e => {
-                  setInputFocused(true);
-                  console.log(e);
-                }}
-                onBlur={() => setInputFocused(false)}
+                onChangeText={text => setUserText(text)}
                 style={styles.commentInput}
                 placeholderTextColor={Colors.greyOut}
                 placeholder="add a comment..."
+                keyboardAppearance="dark"
+                autoCapitalize={'none'}
+                returnKeyType="send"
               />
-              <TouchableOpacity>
+              <TouchableOpacity onPress={handleCommentSubmit}>
                 <Ionicons
-                  // style={styles.socialIcon}
+                  style={styles.sendIcon}
                   name={'send'}
                   color={'grey'}
                   size={18}
                 />
               </TouchableOpacity>
             </View>
-            {/* <TextInput style={styles.commentInput} /> */}
           </View>
         </KeyboardAvoidingView>
       )}
@@ -237,7 +263,7 @@ const styles = StyleSheet.create({
   flatlistContainer: {
     // backgroundColor: 'red',
     width: '100%',
-    height: 300,
+    height: '60%',
   },
   commentContainer: {
     // backgroundColor: 'red',
@@ -313,6 +339,7 @@ const styles = StyleSheet.create({
   },
   commentInput: {
     paddingVertical: 5,
-    paddingRight: 120,
+    width: 230,
+    color: 'white',
   },
 });
