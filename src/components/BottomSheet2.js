@@ -25,6 +25,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import storage from '@react-native-firebase/storage';
 import ReplyComments from './ReplyComments';
 import Toast from 'react-native-toast-message';
+import {firebase} from '@react-native-firebase/firestore';
 
 const BottomSheet2 = props => {
   const {currentIndex, feed, UID} = props;
@@ -38,6 +39,8 @@ const BottomSheet2 = props => {
   const [showReplies, setShowReplies] = useState(false);
   const [parentCommentID, setParentCommentID] = useState([]);
   const [replies, setReplies] = useState(null);
+  const [likedComments, setLikedComments] = useState([]);
+  const [likeValue, setLikeValue] = useState(0);
   const inputRef = useRef();
 
   // get comments
@@ -244,6 +247,42 @@ const BottomSheet2 = props => {
     }
   }
 
+  //handle liked comment logic
+  async function likeComment(itemID) {
+    const increment = firebase.firestore.FieldValue.increment(1);
+    const decrement = firebase.firestore.FieldValue.increment(-1);
+
+    if (likedComments.includes(itemID)) {
+      setLikedComments(likedComments.filter(comment => comment !== itemID));
+      firestore()
+        .collection('posts')
+        .doc(feed[currentIndex].id)
+        .collection('comments')
+        .doc(itemID)
+        .update({
+          likeAmount: decrement,
+        })
+        .then(() => {
+          console.log('Like removed :(');
+        });
+      setLikeValue(-1);
+    } else {
+      setLikedComments([...likedComments, itemID]);
+      firestore()
+        .collection('posts')
+        .doc(feed[currentIndex].id)
+        .collection('comments')
+        .doc(itemID)
+        .update({
+          likeAmount: increment,
+        })
+        .then(() => {
+          console.log('Like added!');
+        });
+      setLikeValue(1);
+    }
+  }
+
   return (
     <>
       <PanGestureHandler onGestureEvent={gestureHandler}>
@@ -305,16 +344,29 @@ const BottomSheet2 = props => {
                               </View>
                             </View>
                             <View style={styles.commentRight}>
-                              <TouchableOpacity>
+                              <TouchableOpacity
+                                onPress={() => likeComment(item.id)}>
                                 <Ionicons
                                   style={styles.socialIcon}
-                                  name={'heart-outline'}
-                                  color={'grey'}
+                                  name={
+                                    likedComments.includes(item.id)
+                                      ? 'heart'
+                                      : 'heart-outline'
+                                  }
+                                  color={
+                                    likedComments.includes(item.id)
+                                      ? Colors.red
+                                      : 'grey'
+                                  }
                                   size={18}
                                 />
                               </TouchableOpacity>
                               <Text style={styles.likeAmount}>
-                                {item._data.likeAmount}
+                                {likedComments.includes(item.id)
+                                  ? likeValue === 1
+                                    ? item._data.likeAmount + 1
+                                    : item._data.likeAmount - 1
+                                  : item._data.likeAmount}
                               </Text>
                             </View>
                           </View>
