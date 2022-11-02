@@ -2,13 +2,12 @@ import {
   StyleSheet,
   Text,
   View,
-  SafeAreaView,
   Image,
   TouchableOpacity,
   TextInput,
   KeyboardAvoidingView,
 } from 'react-native';
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect} from 'react';
 import Animated, {
   useAnimatedGestureHandler,
   useSharedValue,
@@ -34,14 +33,15 @@ const BottomSheet2 = props => {
   const [userText, setUserText] = useState(null);
 
   // get comments
-
   async function getComments() {
     const commentDocs = await firestore()
       .collection('posts')
       .doc(feed[currentIndex].id)
       .collection('comments')
+      .where('parent', '==', 'none')
+      .orderBy('likeAmount', 'desc')
       .get();
-    console.log(commentDocs._docs);
+    console.log('comment documents', commentDocs._docs);
     setComments(commentDocs._docs);
   }
 
@@ -76,6 +76,9 @@ const BottomSheet2 = props => {
     }
   }, [UID]);
 
+  /* animations for the bottom sheet 
+  NOTE: THE ANIMATIONS DO NOT WORK WHEN DEBUGGING
+  */
   const top = useSharedValue(490);
   const style = useAnimatedStyle(() => {
     return {
@@ -122,6 +125,7 @@ const BottomSheet2 = props => {
     },
   });
 
+  // handle logic when a user posts a comment
   function handleCommentSubmit() {
     console.log(userText);
     firestore()
