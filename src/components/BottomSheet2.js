@@ -24,6 +24,7 @@ import Colors from '../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import storage from '@react-native-firebase/storage';
 import ReplyComments from './ReplyComments';
+import Toast from 'react-native-toast-message';
 
 const BottomSheet2 = props => {
   const {currentIndex, feed, UID} = props;
@@ -165,6 +166,11 @@ const BottomSheet2 = props => {
               hasReplies: true,
             })
             .then(() => {
+              Toast.show({
+                type: 'success',
+                text1: 'Reply posted.',
+                visibilityTime: 2000,
+              });
               getCommentReplies(replyInfo.id);
               getComments();
               setUserText('');
@@ -185,6 +191,11 @@ const BottomSheet2 = props => {
           parent: 'none',
         })
         .then(() => {
+          Toast.show({
+            type: 'success',
+            text1: 'Comment posted.',
+            visibilityTime: 2000,
+          });
           getComments();
           setUserText('');
           console.log('comment added!');
@@ -195,8 +206,14 @@ const BottomSheet2 = props => {
   //handle reply logic
   function handleCommentReply(item) {
     console.log('reply item', item);
+    setContainerUp(true);
     setReplyInfo(item);
-    inputRef.current.focus();
+    if (containerUp) {
+      inputRef.current.focus();
+    } else {
+      setContainerUp(true);
+      top.value = withSpring(200, SPRING_CONFIG);
+    }
   }
 
   //get comment replies
