@@ -69,7 +69,8 @@ const EditProfileSheet = props => {
       mediaType: 'photo',
     })
       .then(image => {
-        setPFP(image);
+        console.log(image);
+        setPFP(image.path);
         setUserSelectedPFP(true);
       })
       .catch(error => {
@@ -85,7 +86,7 @@ const EditProfileSheet = props => {
       mediaType: 'photo',
     })
       .then(image => {
-        setHeader(image);
+        setHeader(image.path);
         setUserSelectedHeader(true);
       })
       .catch(error => {
@@ -110,7 +111,7 @@ const EditProfileSheet = props => {
     if (PFP && userSelectedPFP) {
       console.log('trying PFP');
       const reference = storage().ref(UID + 'PFP');
-      const task = reference.putFile(PFP.path);
+      const task = reference.putFile(PFP);
       task.on('state_changed', taskSnapshot => {
         console.log(
           `${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`,
@@ -121,7 +122,7 @@ const EditProfileSheet = props => {
       console.log(header);
       console.log('trying header');
       const reference = storage().ref(UID + 'HEADER');
-      const task = reference.putFile(header.path);
+      const task = reference.putFile(header);
       task.on('state_changed', taskSnapshot => {
         console.log(
           `${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`,
@@ -142,10 +143,7 @@ const EditProfileSheet = props => {
         <Text style={styles.editText}>Edit Profile</Text>
         <View style={styles.headerContainer}>
           {header ? (
-            <Image
-              style={styles.header}
-              source={{uri: header.path || header}}
-            />
+            <Image style={styles.header} source={{uri: header}} />
           ) : (
             <View style={styles.header} />
           )}
@@ -158,7 +156,9 @@ const EditProfileSheet = props => {
             <Image
               resizeMode="contain"
               style={styles.PFP}
-              source={{uri: PFP.path || PFP}}
+              source={{
+                uri: PFP,
+              }}
             />
           </View>
         ) : (

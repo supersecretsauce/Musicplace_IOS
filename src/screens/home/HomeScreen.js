@@ -63,6 +63,7 @@ const HomeScreen = () => {
       const localUID = await AsyncStorage.getItem('UID');
       if (spotifyBoolean === 'false') {
         setHasSpotify(false);
+        setUID(localUID);
       } else if (spotifyBoolean === 'true') {
         setUID(localUID);
         setHasSpotify(true);
@@ -262,7 +263,7 @@ const HomeScreen = () => {
               );
             })}
           </Swiper>
-          <BottomSheet2 />
+          <BottomSheet2 UID={UID} feed={feed} currentIndex={currentIndex} />
         </>
       ) : (
         <>
