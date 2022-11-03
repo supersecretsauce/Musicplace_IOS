@@ -10,13 +10,16 @@ import React, {useEffect, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import Colors from '../assets/utilities/Colors';
 const UserPosts = props => {
-  const {UID, navigation} = props;
+  const {profileID, UID, navigation} = props;
   const [userPosts, setUserPosts] = useState([]);
 
   useEffect(() => {
     if (UID) {
       async function getTracks() {
-        const posts = await firestore().collection('users').doc(UID).get();
+        const posts = await firestore()
+          .collection('users')
+          .doc(profileID)
+          .get();
         if (posts.exists) {
           console.log(posts._data.userPosts);
           setUserPosts(posts._data.userPosts);
@@ -24,7 +27,7 @@ const UserPosts = props => {
       }
       getTracks();
     }
-  }, [UID]);
+  }, [profileID]);
 
   return (
     <View style={styles.container}>

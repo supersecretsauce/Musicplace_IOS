@@ -47,7 +47,7 @@ const SinglePostBottomSheet = props => {
   async function getComments() {
     const commentDocs = await firestore()
       .collection('posts')
-      .doc(songInfo.id)
+      .doc(songInfo[0].id)
       .collection('comments')
       .where('parent', '==', 'none')
       .orderBy('likeAmount', 'desc')
@@ -149,7 +149,7 @@ const SinglePostBottomSheet = props => {
     if (replyInfo) {
       firestore()
         .collection('posts')
-        .doc(songInfo.id)
+        .doc(songInfo[0].id)
         .collection('comments')
         .add({
           comment: userText,
@@ -163,7 +163,7 @@ const SinglePostBottomSheet = props => {
         .then(() => {
           firestore()
             .collection('posts')
-            .doc(songInfo.id)
+            .doc(songInfo[0].id)
             .collection('comments')
             .doc(replyInfo.id)
             .update({
@@ -184,7 +184,7 @@ const SinglePostBottomSheet = props => {
     } else {
       firestore()
         .collection('posts')
-        .doc(songInfo.id)
+        .doc(songInfo[0].id)
         .collection('comments')
         .add({
           comment: userText,
@@ -225,7 +225,7 @@ const SinglePostBottomSheet = props => {
   async function getCommentReplies(itemID) {
     const replyDocs = await firestore()
       .collection('posts')
-      .doc(songInfo.id)
+      .doc(songInfo[0].id)
       .collection('comments')
       .where('parent', '==', itemID)
       .orderBy('likeAmount', 'desc')
@@ -258,7 +258,7 @@ const SinglePostBottomSheet = props => {
       setLikedComments(likedComments.filter(comment => comment !== itemID));
       firestore()
         .collection('posts')
-        .doc(songInfo.id)
+        .doc(songInfo[0].id)
         .collection('comments')
         .doc(itemID)
         .update({
@@ -272,7 +272,7 @@ const SinglePostBottomSheet = props => {
       setLikedComments([...likedComments, itemID]);
       firestore()
         .collection('posts')
-        .doc(songInfo.id)
+        .doc(songInfo[0].id)
         .collection('comments')
         .doc(itemID)
         .update({
