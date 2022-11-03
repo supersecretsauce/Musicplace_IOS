@@ -213,10 +213,11 @@ const ProfileScreen = ({navigation}) => {
                 color="white"
                 size={28}
               />
+              <Text style={styles.postText}>Posts</Text>
               <TouchableOpacity
                 style={styles.helpIcon}
                 onPress={() => setShowModal(!showModal)}>
-                <Ionicons name={'help-circle-outline'} color="grey" size={24} />
+                <Ionicons name={'help-circle-outline'} color="grey" size={19} />
               </TouchableOpacity>
             </View>
             <TouchableOpacity
@@ -225,7 +226,7 @@ const ProfileScreen = ({navigation}) => {
               <Text style={styles.editProfileText}>Edit profile</Text>
             </TouchableOpacity>
           </View>
-          <UserPosts navigationProps={navigation} UIDProps={UID} />
+          <UserPosts UID={UID} />
           <Modal isVisible={showModal}>
             <View style={styles.modalContainer}>
               <Text style={styles.modalTop}>
@@ -400,11 +401,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  postText: {
+    color: 'white',
+    fontSize: 18,
+    fontFamily: 'Inter-Medium',
+    marginLeft: 10,
+  },
   albumIcon: {
     // left: 28,
   },
   helpIcon: {
-    left: 10,
+    left: 6,
   },
   editProfileContainer: {
     borderColor: Colors.greyOut,

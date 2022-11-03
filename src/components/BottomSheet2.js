@@ -25,7 +25,7 @@ import storage from '@react-native-firebase/storage';
 import ReplyComments from './ReplyComments';
 import Toast from 'react-native-toast-message';
 import {firebase} from '@react-native-firebase/firestore';
-
+import {useNavigation} from '@react-navigation/native';
 const BottomSheet2 = props => {
   const {currentIndex, feed, UID} = props;
   const [containerUp, setContainerUp] = useState(false);
@@ -41,6 +41,7 @@ const BottomSheet2 = props => {
   const [likedComments, setLikedComments] = useState([]);
   const [likeValue, setLikeValue] = useState(0);
   const inputRef = useRef();
+  const {navigate} = useNavigation();
 
   // get comments
   async function getComments() {
@@ -157,6 +158,7 @@ const BottomSheet2 = props => {
           hasReplies: 'no',
           likeAmount: 0,
           parent: replyInfo.id,
+          UID: UID,
         })
         .then(() => {
           firestore()
@@ -191,6 +193,7 @@ const BottomSheet2 = props => {
           hasReplies: false,
           likeAmount: 0,
           parent: 'none',
+          UID: UID,
         })
         .then(() => {
           Toast.show({
@@ -302,7 +305,13 @@ const BottomSheet2 = props => {
                         <View style={styles.commentAndReplyContainer}>
                           <View style={styles.commentContainer}>
                             <View style={styles.commentLeft}>
-                              <TouchableOpacity>
+                              <TouchableOpacity
+                                onPress={() => {
+                                  navigate('ViewUserScreen2', {
+                                    profileID: item._data.UID,
+                                    UID: UID,
+                                  });
+                                }}>
                                 <Image
                                   style={styles.profilePic}
                                   source={{

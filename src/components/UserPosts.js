@@ -10,21 +10,20 @@ import React, {useEffect, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import Colors from '../assets/utilities/Colors';
 const UserPosts = props => {
-  const UID = props.UIDProps;
-  const navigation = props.navigationProps;
+  const {UID} = props;
   const [userPosts, setUserPosts] = useState([]);
   const [songID, setSongID] = useState();
 
   useEffect(() => {
     if (UID) {
-      const subscriber = firestore()
-        .collection('users')
-        .doc(UID)
-        .onSnapshot(documentSnapshot => {
-          setUserPosts(documentSnapshot?.data()?.userPosts);
-        });
-
-      return () => subscriber();
+      async function getTracks() {
+        const posts = await firestore().collection('users').doc(UID).get();
+        if (posts.exists) {
+          console.log(posts._data.userPosts);
+          setUserPosts(posts._data.userPosts);
+        }
+      }
+      getTracks();
     }
   }, [UID]);
 
@@ -45,10 +44,10 @@ const UserPosts = props => {
                       <TouchableOpacity
                         onPress={() => {
                           setSongID(item.id);
-                          navigation.navigate('ViewPostsScreen', {
-                            userPosts: userPosts,
-                            selectedPostIndex: index,
-                          });
+                          // navigation.navigate('ViewPostsScreen', {
+                          //   userPosts: userPosts,
+                          //   selectedPostIndex: index,
+                          // });
                         }}>
                         <Image
                           style={styles.songPhoto}
@@ -87,7 +86,7 @@ export default UserPosts;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     marginTop: 215,
   },
   trackScrollContainer: {
