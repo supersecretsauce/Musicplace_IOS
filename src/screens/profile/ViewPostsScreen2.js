@@ -88,7 +88,6 @@ const ViewPostsScreen2 = ({route}) => {
           playing = false;
           recordTime();
           mixpanel.track('New Listen');
-
           console.log('user left screen');
         }
       };

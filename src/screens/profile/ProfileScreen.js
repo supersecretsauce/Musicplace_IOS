@@ -11,7 +11,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../assets/utilities/Colors';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import UserPosts from '../../components/UserPosts';
+import MyPosts from '../../components/MyPosts';
 import storage from '@react-native-firebase/storage';
 import Modal from 'react-native-modal';
 import ProfileSettings from '../../components/ProfileSettings';
@@ -226,7 +226,7 @@ const ProfileScreen = ({navigation}) => {
               <Text style={styles.editProfileText}>Edit profile</Text>
             </TouchableOpacity>
           </View>
-          <UserPosts UID={UID} />
+          <MyPosts UID={UID} navigation={navigation} />
           <Modal isVisible={showModal}>
             <View style={styles.modalContainer}>
               <Text style={styles.modalTop}>

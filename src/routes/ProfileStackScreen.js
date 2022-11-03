@@ -2,7 +2,7 @@ import {StyleSheet} from 'react-native';
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import ProfileScreen from '../screens/profile/ProfileScreen';
-import ViewPostsScreen from '../screens/profile/ViewPostsScreen';
+import ViewPostsScreen2 from '../screens/profile/ViewPostsScreen2';
 
 const ProfileStackScreen = () => {
   const ProfileStack = createNativeStackNavigator();
@@ -22,8 +22,8 @@ const ProfileStackScreen = () => {
     <ProfileStack.Navigator screenOptions={{headerShown: false}}>
       <ProfileStack.Screen name="ProfileScreen" component={ProfileScreen} />
       <ProfileStack.Screen
-        name="ViewPostsScreen"
-        component={ViewPostsScreen}
+        name="ViewPostsScreen2"
+        component={ViewPostsScreen2}
         options={{
           transitionSpec: {
             open: config,
