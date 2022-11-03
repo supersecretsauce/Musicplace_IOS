@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   TextInput,
   useWindowDimensions,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import storage from '@react-native-firebase/storage';
@@ -31,6 +33,8 @@ const EditProfileSheet = props => {
   } = props;
   const [userSelectedPFP, setUserSelectedPFP] = useState(false);
   const [userSelectedHeader, setUserSelectedHeader] = useState(false);
+  const [localDisplayName, setLocalDisplayName] = useState(false);
+  const [localBio, setLocalBio] = useState(false);
   const dimensions = useWindowDimensions();
 
   const getHeaderAndPFP = async () => {
@@ -92,17 +96,32 @@ const EditProfileSheet = props => {
   const saveChanges = () => {
     top2.value = withSpring(dimensions.height, SPRING_CONFIG);
 
-    firestore()
-      .collection('users')
-      .doc(UID)
-      .update({
-        displayName: displayName,
-        bio: bio,
-      })
-      .then(() => {
-        console.log('User updated!');
-      })
-      .catch(e => console.log(e));
+    if (localDisplayName) {
+      firestore()
+        .collection('users')
+        .doc(UID)
+        .update({
+          displayName: localDisplayName,
+        })
+        .then(() => {
+          setDisplayName(localDisplayName);
+          console.log('User updated!');
+        })
+        .catch(e => console.log(e));
+    }
+    if (localBio) {
+      firestore()
+        .collection('users')
+        .doc(UID)
+        .update({
+          bio: localBio,
+        })
+        .then(() => {
+          console.log('User updated!');
+          setBio(localBio);
+        })
+        .catch(e => console.log(e));
+    }
     if (PFP && userSelectedPFP) {
       console.log('trying PFP');
       const reference = storage().ref(UID + 'PFP');
@@ -128,68 +147,72 @@ const EditProfileSheet = props => {
 
   return (
     <>
-      <View style={styles.container}>
-        <TouchableOpacity
-          onPress={() =>
-            (top2.value = withSpring(dimensions.height, SPRING_CONFIG))
-          }>
-          <Text style={styles.cancelText}>Cancel</Text>
-        </TouchableOpacity>
-        <Text style={styles.editText}>Edit Profile</Text>
-        <View style={styles.headerContainer}>
-          {header ? (
-            <Image style={styles.header} source={{uri: header}} />
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <View style={styles.container}>
+          <TouchableOpacity
+            onPress={() =>
+              (top2.value = withSpring(dimensions.height, SPRING_CONFIG))
+            }>
+            <Text style={styles.cancelText}>Cancel</Text>
+          </TouchableOpacity>
+          <Text style={styles.editText}>Edit Profile</Text>
+          <View style={styles.headerContainer}>
+            {header ? (
+              <Image style={styles.header} source={{uri: header}} />
+            ) : (
+              <View style={styles.header} />
+            )}
+          </View>
+          <TouchableOpacity onPress={selectHeader} style={styles.addHeaderIcon}>
+            <Ionicons name={'add-circle'} color={'white'} size={36} />
+          </TouchableOpacity>
+          {PFP ? (
+            <View style={styles.PFPContainer}>
+              <Image
+                resizeMode="contain"
+                style={styles.PFP}
+                source={{
+                  uri: PFP,
+                }}
+              />
+            </View>
           ) : (
-            <View style={styles.header} />
+            <View style={styles.PFPContainer}>
+              <View style={styles.defaultPFP} />
+            </View>
           )}
+          <TouchableOpacity onPress={selectPFP} style={styles.addPFPIcon}>
+            <Ionicons name={'add-circle'} color={'white'} size={28} />
+          </TouchableOpacity>
+          <View style={styles.userInfoContainer}>
+            <View style={styles.nameContainer}>
+              <Text style={styles.nameText}>Name:</Text>
+              <TextInput
+                maxLength={14}
+                style={styles.nameInput}
+                placeholder={displayName ? displayName : 'add name'}
+                placeholderTextColor={'grey'}
+                onChangeText={text => setLocalDisplayName(text)}
+                returnKeyType="done"
+              />
+            </View>
+            <View style={styles.bioContainer}>
+              <Text style={styles.bioText}>Bio:</Text>
+              <TextInput
+                maxLength={90}
+                style={styles.input}
+                placeholder={bio ? bio : 'add bio'}
+                placeholderTextColor={'grey'}
+                onChangeText={text => setLocalBio(text)}
+                returnKeyType="done"
+              />
+            </View>
+          </View>
+          <TouchableOpacity onPress={saveChanges} style={styles.saveBtn}>
+            <Text style={styles.saveText}>Save</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={selectHeader} style={styles.addHeaderIcon}>
-          <Ionicons name={'add-circle'} color={'white'} size={36} />
-        </TouchableOpacity>
-        {PFP ? (
-          <View style={styles.PFPContainer}>
-            <Image
-              resizeMode="contain"
-              style={styles.PFP}
-              source={{
-                uri: PFP,
-              }}
-            />
-          </View>
-        ) : (
-          <View style={styles.PFPContainer}>
-            <View style={styles.defaultPFP} />
-          </View>
-        )}
-        <TouchableOpacity onPress={selectPFP} style={styles.addPFPIcon}>
-          <Ionicons name={'add-circle'} color={'white'} size={28} />
-        </TouchableOpacity>
-        <View style={styles.userInfoContainer}>
-          <View style={styles.nameContainer}>
-            <Text style={styles.nameText}>Name:</Text>
-            <TextInput
-              maxLength={14}
-              style={styles.nameInput}
-              placeholder={displayName ? displayName : 'add name'}
-              placeholderTextColor={'grey'}
-              onChangeText={text => setDisplayName(text)}
-            />
-          </View>
-          <View style={styles.bioContainer}>
-            <Text style={styles.bioText}>Bio:</Text>
-            <TextInput
-              maxLength={90}
-              style={styles.input}
-              placeholder={bio ? bio : 'add bio'}
-              placeholderTextColor={'grey'}
-              onChangeText={text => setBio(text)}
-            />
-          </View>
-        </View>
-        <TouchableOpacity onPress={saveChanges} style={styles.saveBtn}>
-          <Text style={styles.saveText}>Save</Text>
-        </TouchableOpacity>
-      </View>
+      </TouchableWithoutFeedback>
     </>
   );
 };

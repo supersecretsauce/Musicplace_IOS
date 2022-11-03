@@ -80,6 +80,7 @@ const ProfileScreen = ({navigation}) => {
       .catch(error => {
         console.log(error);
       });
+    console.log('url', url);
     setPFP(url);
   };
 
@@ -182,7 +183,7 @@ const ProfileScreen = ({navigation}) => {
             <View style={styles.PFP} />
           )}
           <TouchableOpacity style={styles.settingsIcon} onPress={handleSpring}>
-            <Ionicons color={Colors.greyOut} name="settings" size={30} />
+            <Ionicons color={'white'} name="settings" size={30} />
           </TouchableOpacity>
           <View style={styles.userInfoContainer}>
             <Text style={styles.displayName}>
@@ -313,7 +314,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
   },
   header: {
-    backgroundColor: 'red',
+    backgroundColor: 'rgba(255, 8, 0, 0.7)',
     height: 160,
     width: '100%',
   },
@@ -324,6 +325,7 @@ const styles = StyleSheet.create({
     width: 94,
     height: 94,
     borderRadius: 94,
+    backgroundColor: 'red',
   },
   settingsIcon: {
     position: 'absolute',
