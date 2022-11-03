@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import {useState, useContext, useEffect, useRef} from 'react';
+import {useState, useContext} from 'react';
 import {Context} from '../../context/Context';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
 import HapticFeedback from 'react-native-haptic-feedback';
@@ -174,7 +174,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     opacity: 0.5,
   },
-
   nextBtnDone: {
     backgroundColor: 'rgb(255, 8, 0)',
     borderRadius: 9,
@@ -182,7 +181,6 @@ const styles = StyleSheet.create({
     marginTop: '5%',
     width: '90%',
   },
-
   nextTextDone: {
     color: 'white',
     fontFamily: 'Inter-Bold',

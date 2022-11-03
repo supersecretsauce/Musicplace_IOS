@@ -26,8 +26,10 @@ import ReplyComments from './ReplyComments';
 import Toast from 'react-native-toast-message';
 import {firebase} from '@react-native-firebase/firestore';
 import {useNavigation} from '@react-navigation/native';
-const BottomSheet2 = props => {
-  const {currentIndex, feed, UID} = props;
+import HapticFeedback from 'react-native-haptic-feedback';
+
+const SinglePostBottomSheet = props => {
+  const {songInfo, UID} = props;
   const [containerUp, setContainerUp] = useState(false);
   const [containerSmall, setContainerSmall] = useState(false);
   const [comments, setComments] = useState(false);
@@ -47,7 +49,7 @@ const BottomSheet2 = props => {
   async function getComments() {
     const commentDocs = await firestore()
       .collection('posts')
-      .doc(feed[currentIndex].id)
+      .doc(songInfo[0].id)
       .collection('comments')
       .where('parent', '==', 'none')
       .orderBy('likeAmount', 'desc')
@@ -64,7 +66,7 @@ const BottomSheet2 = props => {
 
   useEffect(() => {
     getComments();
-  }, [currentIndex, feed]);
+  }, [songInfo]);
 
   // get current user's profile picture and their user document
   useEffect(() => {
@@ -94,8 +96,8 @@ const BottomSheet2 = props => {
   }, [UID]);
 
   /* animations for the bottom sheet 
-  NOTE: THE ANIMATIONS DO NOT WORK WHEN DEBUGGING
-  */
+    NOTE: THE ANIMATIONS DO NOT WORK WHEN DEBUGGING
+    */
   const top = useSharedValue(490);
   const style = useAnimatedStyle(() => {
     return {
@@ -149,7 +151,7 @@ const BottomSheet2 = props => {
     if (replyInfo) {
       firestore()
         .collection('posts')
-        .doc(feed[currentIndex].id)
+        .doc(songInfo[0].id)
         .collection('comments')
         .add({
           comment: userText,
@@ -163,7 +165,7 @@ const BottomSheet2 = props => {
         .then(() => {
           firestore()
             .collection('posts')
-            .doc(feed[currentIndex].id)
+            .doc(songInfo[0].id)
             .collection('comments')
             .doc(replyInfo.id)
             .update({
@@ -184,7 +186,7 @@ const BottomSheet2 = props => {
     } else {
       firestore()
         .collection('posts')
-        .doc(feed[currentIndex].id)
+        .doc(songInfo[0].id)
         .collection('comments')
         .add({
           comment: userText,
@@ -225,7 +227,7 @@ const BottomSheet2 = props => {
   async function getCommentReplies(itemID) {
     const replyDocs = await firestore()
       .collection('posts')
-      .doc(feed[currentIndex].id)
+      .doc(songInfo[0].id)
       .collection('comments')
       .where('parent', '==', itemID)
       .orderBy('likeAmount', 'desc')
@@ -251,6 +253,7 @@ const BottomSheet2 = props => {
 
   //handle liked comment logic
   async function likeComment(itemID) {
+    HapticFeedback.trigger('selection');
     const increment = firebase.firestore.FieldValue.increment(1);
     const decrement = firebase.firestore.FieldValue.increment(-1);
 
@@ -258,7 +261,7 @@ const BottomSheet2 = props => {
       setLikedComments(likedComments.filter(comment => comment !== itemID));
       firestore()
         .collection('posts')
-        .doc(feed[currentIndex].id)
+        .doc(songInfo[0].id)
         .collection('comments')
         .doc(itemID)
         .update({
@@ -272,7 +275,7 @@ const BottomSheet2 = props => {
       setLikedComments([...likedComments, itemID]);
       firestore()
         .collection('posts')
-        .doc(feed[currentIndex].id)
+        .doc(songInfo[0].id)
         .collection('comments')
         .doc(itemID)
         .update({
@@ -307,7 +310,7 @@ const BottomSheet2 = props => {
                             <View style={styles.commentLeft}>
                               <TouchableOpacity
                                 onPress={() => {
-                                  navigate('ViewUserScreen2', {
+                                  navigate('ViewUserScreen', {
                                     profileID: item._data.UID,
                                     UID: UID,
                                   });
@@ -457,7 +460,7 @@ const BottomSheet2 = props => {
   );
 };
 
-export default BottomSheet2;
+export default SinglePostBottomSheet;
 
 const styles = StyleSheet.create({
   animatedSheet: {
@@ -479,7 +482,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   flatlistContainer: {
-    // backgroundColor: 'red',
     width: '100%',
     height: '60%',
   },
@@ -487,7 +489,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   commentContainer: {
-    // backgroundColor: 'red',
     width: '90%',
     alignSelf: 'center',
     flexDirection: 'row',

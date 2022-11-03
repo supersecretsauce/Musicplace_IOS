@@ -13,7 +13,6 @@ import {useState, useContext, useRef, useEffect} from 'react';
 import {Context} from '../../context/Context';
 import auth from '@react-native-firebase/auth';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
-import HapticFeedback from 'react-native-haptic-feedback';
 import firestore from '@react-native-firebase/firestore';
 import Toast from 'react-native-toast-message';
 
@@ -142,8 +141,6 @@ const ExistingPhoneNumberScreen = ({navigation}) => {
             keyboardAppearance="dark"
             multiline="true"
             textContentType="telephoneNumber"
-            // editable="false"
-            // autoFocus="true"
           />
         </View>
       </View>
@@ -233,7 +230,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     opacity: 0.5,
   },
-
   nextBtnDone: {
     backgroundColor: 'rgb(255, 8, 0)',
     borderRadius: 9,
@@ -241,7 +237,6 @@ const styles = StyleSheet.create({
     marginTop: '5%',
     width: '90%',
   },
-
   nextTextDone: {
     color: 'white',
     fontFamily: 'Inter-Bold',

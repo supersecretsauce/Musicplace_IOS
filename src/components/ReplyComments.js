@@ -45,10 +45,8 @@ const ReplyComments = props => {
 export default ReplyComments;
 
 const styles = StyleSheet.create({
-  //reply ui
   replyCommentContainer: {
     flexDirection: 'row',
-    // backgroundColor: 'red',
     paddingVertical: 16,
     justifyContent: 'space-between',
     width: '90%',
@@ -75,7 +73,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'Inter-Regular',
     marginTop: '2%',
-    // width: 265,
     lineHeight: 20,
     fontSize: 12,
   },

@@ -211,7 +211,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     fontSize: 12,
   },
-
   //show tracks
   songContainer: {
     marginTop: '5%',
@@ -259,7 +258,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     marginLeft: '87%',
   },
-
   backBtn: {
     backgroundColor: Colors.red,
     justifyContent: 'center',

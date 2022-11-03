@@ -1,248 +1,198 @@
-import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
-import Colors from '../../assets/utilities/Colors';
-import Circle from '../../assets/img/circle.svg';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
 import storage from '@react-native-firebase/storage';
+import Colors from '../../assets/utilities/Colors';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import UserPosts from '../../components/UserPosts';
 import {firebase} from '@react-native-firebase/firestore';
+import HapticFeedback from 'react-native-haptic-feedback';
 
 const ViewUserScreen = ({route, navigation}) => {
-  const [userInfo, setUserInfo] = useState();
-  const [username, setUsername] = useState();
-  const [profilePicURL, setProfilePicURL] = useState();
-  const [headerURL, setHeaderURL] = useState();
-  const [followersArray, setFollowersArray] = useState();
-  const [following, setFollowing] = useState();
-  const {UID, myUID} = route.params;
+  const {profileID, UID} = route.params;
+  const [userProfile, setUserProfile] = useState(null);
+  const [header, setHeader] = useState(null);
+  const [profilePic, setProfilePic] = useState(null);
+  const [userName, setUserName] = useState(null);
+  const [followersList, setFollowersList] = useState([]);
 
   useEffect(() => {
-    if (UID) {
-      console.log(UID);
-      const fetchUserTracks = async () => {
-        firestore()
-          .collection('users')
-          .doc(UID)
-          .onSnapshot(documentSnapshot => {
-            console.log(documentSnapshot.data());
-            setUserInfo(documentSnapshot.data());
-          });
-      };
-      fetchUserTracks();
+    if (profileID) {
+      const profileDoc = firestore()
+        .collection('users')
+        .doc(profileID)
+        .onSnapshot(documentSnapshot => {
+          console.log('User data: ', documentSnapshot.data());
+          setUserProfile(documentSnapshot.data());
+          console.log(documentSnapshot.data().followersList);
+          setFollowersList(documentSnapshot.data().followersList);
+        });
+
+      // Stop listening for updates when no longer required
+      return () => profileDoc();
     }
-  }, [UID]);
+  }, [profileID]);
 
   useEffect(() => {
-    if (UID) {
+    if (profileID) {
+      const fetchUserProfile = async () => {
+        const usernameDoc = await firestore()
+          .collection('usernames')
+          .where('UID', '==', profileID)
+          .get();
+        if (!usernameDoc.empty) {
+          console.log(usernameDoc.docs[0]);
+          setUserName(usernameDoc._docs[0]);
+        }
+      };
+      const getImages = async () => {
+        const headerURL = await storage()
+          .ref(profileID + 'HEADER')
+          .getDownloadURL()
+          .catch(error => {
+            console.log(error);
+          });
+        const profilePicURL = await storage()
+          .ref(profileID + 'PFP')
+          .getDownloadURL()
+          .catch(error => {
+            console.log(error);
+          });
+        setHeader(headerURL);
+        setProfilePic(profilePicURL);
+      };
+
+      fetchUserProfile();
+      getImages();
+    }
+  }, [profileID]);
+
+  //follow a user logic
+  async function followHandler() {
+    HapticFeedback.trigger('impactSoft');
+    const increment = firebase.firestore.FieldValue.increment(1);
+    const decrement = firebase.firestore.FieldValue.increment(-1);
+    if (followersList.includes(UID)) {
       firestore()
-        .collection('usernames')
-        .where('UID', '==', UID)
-        .get()
-        .then(querySnapshot => {
-          console.log(querySnapshot);
-          setUsername(querySnapshot);
+        .collection('users')
+        .doc(profileID)
+        .update({
+          followersList: firestore.FieldValue.arrayRemove(UID),
+          followers: decrement,
         })
-        .catch(e => {
-          console.log(e);
+        .then(() => {
+          console.log('removed follower!');
+        });
+      firestore()
+        .collection('users')
+        .doc(UID)
+        .update({
+          followingList: firestore.FieldValue.arrayRemove(profileID),
+          following: decrement,
+        })
+        .then(() => {
+          console.log('unfollowed user!');
+        });
+    } else {
+      firestore()
+        .collection('users')
+        .doc(profileID)
+        .update({
+          followersList: firestore.FieldValue.arrayUnion(UID),
+          followers: increment,
+        })
+        .then(() => {
+          console.log('added follower!');
+        });
+      firestore()
+        .collection('users')
+        .doc(UID)
+        .update({
+          followingList: firestore.FieldValue.arrayUnion(profileID),
+          following: increment,
+        })
+        .then(() => {
+          console.log('followed user!');
         });
     }
-  }, [UID]);
-
-  useEffect(() => {
-    if (UID) {
-      const getProfilePicURL = async () => {
-        const url = await storage()
-          .ref(UID + 'PFP')
-          .getDownloadURL()
-          .catch(error => {
-            console.log(error);
-          });
-        setProfilePicURL(url);
-      };
-      getProfilePicURL();
-    }
-  }, [UID]);
-
-  useEffect(() => {
-    if (UID) {
-      const getHeaderURL = async () => {
-        const url = await storage()
-          .ref(UID + 'HEADER')
-          .getDownloadURL()
-          .catch(error => {
-            console.log(error);
-          });
-        setHeaderURL(url);
-      };
-      getHeaderURL();
-    }
-  }, [UID]);
-
-  //get followers
-  useEffect(() => {
-    if (UID) {
-      const fetchUserTracks = async () => {
-        firestore()
-          .collection('users')
-          .doc(UID)
-          .onSnapshot(documentSnapshot => {
-            setFollowersArray(documentSnapshot.data().followersList);
-          });
-      };
-      fetchUserTracks();
-    }
-  }, [UID]);
-
-  useEffect(() => {
-    if (followersArray === null) {
-      setFollowing(false);
-    } else if (followersArray) {
-      if (followersArray.includes(myUID)) {
-        setFollowing(true);
-      } else {
-        setFollowing(false);
-      }
-    }
-  }, [followersArray, myUID]);
-
-  const followHandler = () => {
-    const increment = firebase.firestore.FieldValue.increment(1);
-    const minusIncrement = firebase.firestore.FieldValue.increment(-1);
-
-    if (UID && myUID) {
-      if (followersArray === null || !followersArray.includes(myUID)) {
-        firestore()
-          .collection('users')
-          .doc(UID)
-          .set(
-            {
-              followers: increment,
-              followersList: firebase.firestore.FieldValue.arrayUnion(myUID),
-            },
-            {merge: true},
-          )
-          .then(() => {
-            console.log('User updated!');
-          });
-        firestore()
-          .collection('users')
-          .doc(myUID)
-          .set(
-            {
-              following: increment,
-              followingList: firebase.firestore.FieldValue.arrayUnion(UID),
-            },
-            {merge: true},
-          )
-          .then(() => {
-            console.log('User updated!');
-          });
-      } else if (followersArray.includes(myUID)) {
-        //do something
-        firestore()
-          .collection('users')
-          .doc(UID)
-          .set(
-            {
-              followers: minusIncrement,
-              followersList: firebase.firestore.FieldValue.arrayRemove(myUID),
-            },
-            {merge: true},
-          )
-          .then(() => {
-            console.log('User updated!');
-          });
-        firestore()
-          .collection('users')
-          .doc(myUID)
-          .set(
-            {
-              following: minusIncrement,
-              followingList: firebase.firestore.FieldValue.arrayRemove(UID),
-            },
-            {merge: true},
-          )
-          .then(() => {
-            console.log('User updated!');
-          });
-      }
-    }
-  };
+  }
 
   return (
-    <>
-      {userInfo ? (
-        <>
-          <View style={styles.container}>
-            {headerURL ? (
-              <Image style={styles.userHeader} source={{uri: headerURL}} />
-            ) : (
-              <View style={styles.header} source={{uri: headerURL}} />
-            )}
-            <Ionicons
-              onPress={() => navigation.navigate('HomeScreen')}
-              style={styles.menuIcon}
-              name={'chevron-back'}
-              color={'white'}
-              size={40}
+    <View style={styles.container}>
+      {userProfile ? (
+        <View>
+          {header ? (
+            <Image
+              style={styles.header}
+              source={{
+                uri: header,
+              }}
             />
-            {profilePicURL ? (
-              <View style={styles.profilePicURLContainer}>
-                <Image
-                  style={styles.profilePicURL}
-                  source={{uri: profilePicURL}}
-                />
-              </View>
-            ) : (
-              <Circle style={styles.profilePic} width={75} height={75} />
-            )}
-            <View style={styles.profileLeft}>
-              {username && (
-                <>
-                  <Text style={styles.name}>
-                    {userInfo.displayName || username._docs[0]?.id || 'null'}
-                  </Text>
-                  <Text style={styles.handle}>
-                    @{username._docs[0]?.id ? username._docs[0]?.id : 'null'}
-                  </Text>
-                </>
-              )}
-
-              <Text style={styles.bio}>{userInfo.bio}</Text>
+          ) : (
+            <View style={styles.header} />
+          )}
+          <TouchableOpacity
+            style={styles.backBtn}
+            onPress={() => navigation.navigate('HomeScreen')}>
+            <Ionicons name={'chevron-back'} color="white" size={40} />
+          </TouchableOpacity>
+          {profilePic ? (
+            <Image
+              style={styles.PFP}
+              source={{
+                uri: profilePic,
+              }}
+            />
+          ) : (
+            <View style={styles.PFP} />
+          )}
+          <View style={styles.userInfoContainer}>
+            <Text style={styles.displayName}>
+              {userProfile.displayName ? userProfile.displayName : 'n/a'}
+            </Text>
+            <Text style={styles.handle}>
+              {userName ? `@${userName?.id}` : 'n/a'}
+            </Text>
+            <Text numberOfLines={2} style={styles.bio}>
+              {userProfile.bio && userProfile.bio}
+            </Text>
+          </View>
+          <View style={styles.userStatsContainer}>
+            <View style={styles.statsContainer}>
+              <Text style={styles.stats}>{userProfile.followers}</Text>
+              <Text style={styles.statsText}>Followers</Text>
             </View>
-            <View style={styles.socialStatsContainer}>
-              <View style={styles.followersContainer}>
-                <Text style={styles.number}>{userInfo.followers}</Text>
-                <Text style={styles.numberText}>Followers</Text>
-              </View>
-              <View style={styles.followingContainer}>
-                <Text style={styles.number}>{userInfo.following}</Text>
-                <Text style={styles.numberText}>Following</Text>
-              </View>
+            <View style={styles.statsContainer}>
+              <Text style={styles.stats}>{userProfile.following}</Text>
+              <Text style={styles.statsText}>Following</Text>
             </View>
-            <View style={styles.sortContainer}>
-              <View style={styles.iconContainer}>
-                <Ionicons name={'albums'} color="white" size={28} />
-              </View>
+          </View>
+          <View style={styles.dividerContainer}>
+            <View style={styles.postHeader}>
+              <Ionicons
+                style={styles.albumIcon}
+                name={'albums'}
+                color="white"
+                size={28}
+              />
+              <Text style={styles.postText}>Posts</Text>
+            </View>
+            {UID !== profileID && (
               <TouchableOpacity
-                onPress={followHandler}
-                style={styles.editProfileContainer}>
-                <Text style={styles.editProfileText}>
-                  {following ? 'Unfollow' : 'Follow'}
+                style={styles.followBtn}
+                onPress={followHandler}>
+                <Text style={styles.followText}>
+                  {followersList?.includes(UID) ? 'Unfollow' : 'Follow'}
                 </Text>
               </TouchableOpacity>
-            </View>
-            <View style={styles.line} />
-            <UserPosts UIDProps={UID} />
+            )}
           </View>
-        </>
+          <UserPosts navigation={navigation} profileID={profileID} UID={UID} />
+        </View>
       ) : (
-        <>
-          <View style={styles.container} />
-        </>
+        <></>
       )}
-    </>
+    </View>
   );
 };
 
@@ -254,43 +204,29 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
   },
   header: {
-    backgroundColor: 'rgba(255, 8, 0, .25)',
+    backgroundColor: 'red',
+    height: 160,
     width: '100%',
-    height: '22%',
   },
-  userHeader: {
-    width: '100%',
-    height: '22%',
-  },
-  menuIcon: {
+  backBtn: {
     position: 'absolute',
-    marginLeft: '4.5%',
-    marginTop: '15%',
-    zIndex: 1,
+    top: '5%',
+    left: 22,
   },
-  profilePic: {
+  PFP: {
     position: 'absolute',
-    marginLeft: '5%',
-    marginTop: '24%',
+    left: 26,
+    top: 113,
+    width: 94,
+    height: 94,
+    borderRadius: 94,
   },
-  profilePicURLContainer: {
+  userInfoContainer: {
     position: 'absolute',
-    marginLeft: '5%',
-    marginTop: '30%',
-    height: 75,
-    width: 75,
-    borderRadius: 100,
+    top: 215,
+    left: 28,
   },
-  profilePicURL: {
-    height: 100,
-    width: 100,
-    borderRadius: 100,
-  },
-  profileLeft: {
-    marginLeft: '6%',
-    marginTop: '15%',
-  },
-  name: {
+  displayName: {
     fontFamily: 'Inter-Bold',
     color: 'white',
     fontSize: 18,
@@ -298,73 +234,74 @@ const styles = StyleSheet.create({
   handle: {
     fontFamily: 'Inter-Regular',
     color: Colors.greyOut,
-    fontSize: 16,
-    marginTop: '1%',
+    fontSize: 14,
+    marginTop: 5,
   },
   bio: {
     fontFamily: 'Inter-Regular',
     color: 'white',
     fontSize: 14,
-    marginTop: '3%',
+    marginTop: 10,
     lineHeight: 20,
+    minWidth: 320,
+    maxWidth: 320,
   },
-  socialStatsContainer: {
-    position: 'absolute',
-    marginLeft: '61%',
-    marginTop: '48%',
+  userStatsContainer: {
     flexDirection: 'row',
+    position: 'absolute',
+    justifyContent: 'space-between',
+    right: 25,
+    top: 175,
+    width: 130,
   },
-  number: {
+  statsContainer: {
+    alignItems: 'center',
+  },
+  stats: {
     fontFamily: 'Inter-SemiBold',
     color: 'white',
     fontSize: 16,
   },
-  numberText: {
+  statsText: {
     fontFamily: 'Inter-SemiBold',
     color: Colors.greyOut,
     fontSize: 12,
     marginTop: '10%',
   },
-  followersContainer: {
+  dividerContainer: {
+    position: 'absolute',
     alignItems: 'center',
-  },
-  followingContainer: {
-    marginLeft: '13%',
-    alignItems: 'center',
-  },
-  sortContainer: {
-    flexDirection: 'row',
-    marginLeft: '6%',
-    marginTop: '8%',
-    width: '100%',
-    alignItems: 'center',
+    alignSelf: 'center',
     justifyContent: 'space-between',
+    flexDirection: 'row',
+    top: 325,
+    width: '88%',
+    borderBottomColor: 'grey',
+    borderBottomWidth: 1,
+    paddingBottom: 10,
   },
-  iconContainer: {
+  postHeader: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-
-  editProfileContainer: {
+  postText: {
+    color: 'white',
+    fontSize: 18,
+    fontFamily: 'Inter-Medium',
+    marginLeft: 10,
+  },
+  followBtn: {
     borderColor: Colors.greyOut,
     borderWidth: 0.5,
     paddingVertical: 6,
-    paddingHorizontal: 50,
-    marginRight: '12%',
+    paddingHorizontal: 40,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 9,
   },
-  editProfileText: {
+  followText: {
     color: 'white',
     fontSize: 12,
     fontFamily: 'Inter-Medium',
-  },
-  line: {
-    borderBottomColor: Colors.greyOut,
-    width: '90%',
-    borderWidth: 0.5,
-    alignSelf: 'center',
-    marginTop: '4%',
   },
 });

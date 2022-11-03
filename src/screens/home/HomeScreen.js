@@ -14,13 +14,14 @@ import Sound from 'react-native-sound';
 import Spotify from '../../assets/img/spotify.svg';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
-import BottomSheet2 from '../../components/BottomSheet2';
+import BottomSheet from '../../components/BottomSheet';
 import HapticFeedback from 'react-native-haptic-feedback';
 import Toast from 'react-native-toast-message';
 import {authFetch} from '../../services/SpotifyService';
 import {Context} from '../../context/Context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {mixpanel} from '../../../mixpanel';
+import {firebase} from '@react-native-firebase/firestore';
 
 const HomeScreen = () => {
   Sound.setCategory('Playback');
@@ -28,10 +29,15 @@ const HomeScreen = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentTrack, setCurrentTrack] = useState(null);
   const [likedTracks, setLikedTracks] = useState([]);
-  const [hasSpotify, setHasSpotify] = useState(null);
   const [UID, setUID] = useState(null);
-  const {accessToken, refreshToken, setAccessToken, setRefreshToken} =
-    useContext(Context);
+  const {
+    accessToken,
+    refreshToken,
+    setAccessToken,
+    setRefreshToken,
+    setHasSpotify,
+    hasSpotify,
+  } = useContext(Context);
 
   useFocusEffect(
     useCallback(() => {
@@ -98,17 +104,30 @@ const HomeScreen = () => {
     let endTime = new Date();
     let timeDiff = endTime - startTime;
     startTime = new Date();
+    const increment = firebase.firestore.FieldValue.increment(timeDiff);
     firestore()
-      .collection('users')
-      .doc(UID)
+      .collection('posts')
+      .doc(feed[currentIndex].id)
       .collection('watches')
       .add({
-        songID: feed[currentIndex]._data.id,
+        UID: UID,
         duration: timeDiff,
         date: new Date(),
       })
       .then(() => {
         console.log('added watch document');
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    firestore()
+      .collection('posts')
+      .doc(feed[currentIndex].id)
+      .update({
+        totalMSListened: increment,
+      })
+      .then(() => {
+        console.log('updated duration!');
       })
       .catch(error => {
         console.log(error);
@@ -191,9 +210,9 @@ const HomeScreen = () => {
             loadMinimal={true}
             onIndexChanged={index => {
               currentTrack.stop();
+              recordTime();
               setCurrentIndex(index);
               mixpanel.track('New Listen');
-              recordTime();
             }}
             loop={false}
             showsButtons={false}>
@@ -263,7 +282,7 @@ const HomeScreen = () => {
               );
             })}
           </Swiper>
-          <BottomSheet2 UID={UID} feed={feed} currentIndex={currentIndex} />
+          <BottomSheet UID={UID} feed={feed} currentIndex={currentIndex} />
         </>
       ) : (
         <>

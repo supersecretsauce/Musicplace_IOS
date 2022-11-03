@@ -14,12 +14,7 @@ import Colors from '../assets/utilities/Colors';
 import ImagePicker from 'react-native-image-crop-picker';
 import firestore from '@react-native-firebase/firestore';
 import {SPRING_CONFIG} from '../assets/utilities/reanimated-2';
-import Animated, {
-  useAnimatedGestureHandler,
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-} from 'react-native-reanimated';
+import {withSpring} from 'react-native-reanimated';
 
 const EditProfileSheet = props => {
   const {
@@ -206,7 +201,6 @@ const styles = StyleSheet.create({
     width: '100%',
     flex: 1,
     height: '100%',
-    // position: 'absolute',
   },
   cancelText: {
     fontFamily: 'Inter-Medium',

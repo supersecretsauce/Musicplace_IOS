@@ -9,17 +9,14 @@ import {
 import React, {useEffect, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import Colors from '../assets/utilities/Colors';
-const UserPosts = props => {
-  const {profileID, UID, navigation} = props;
+const MyPosts = props => {
+  const {UID, navigation} = props;
   const [userPosts, setUserPosts] = useState([]);
 
   useEffect(() => {
     if (UID) {
       async function getTracks() {
-        const posts = await firestore()
-          .collection('users')
-          .doc(profileID)
-          .get();
+        const posts = await firestore().collection('users').doc(UID).get();
         if (posts.exists) {
           console.log(posts._data.userPosts);
           setUserPosts(posts._data.userPosts);
@@ -27,7 +24,7 @@ const UserPosts = props => {
       }
       getTracks();
     }
-  }, [profileID]);
+  }, [UID]);
 
   return (
     <View style={styles.container}>
@@ -38,7 +35,7 @@ const UserPosts = props => {
               <FlatList
                 data={userPosts}
                 numColumns={2}
-                contentContainerStyle={{paddingBottom: '90%'}}
+                contentContainerStyle={{paddingBottom: '40%'}}
                 style={{width: '100%', height: '100%', marginTop: 1}}
                 renderItem={({item, index}) => {
                   return (
@@ -84,7 +81,7 @@ const UserPosts = props => {
   );
 };
 
-export default UserPosts;
+export default MyPosts;
 
 const styles = StyleSheet.create({
   container: {

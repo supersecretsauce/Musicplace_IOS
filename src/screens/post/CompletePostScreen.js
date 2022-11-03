@@ -33,7 +33,6 @@ const CompletePostScreen = ({route, navigation}) => {
   const {song, songPhoto, albumName} = route.params;
   const [songIMG, setSongIMG] = useState();
   const [value] = useState(false);
-  const [trackPlaying, setTrackPlaying] = useState(false);
   const [caption, setCaption] = useState();
   const [accessToken, setAccessToken] = useState();
   const [songMetrics, setSongMetrics] = useState();
@@ -120,24 +119,6 @@ const CompletePostScreen = ({route, navigation}) => {
     [song.preview_url],
   );
 
-  // const playPreview = () => {
-  //   console.log(track);
-  //   if (trackPlaying === false) {
-  //     track.play(success => {
-  //       if (success) {
-  //         console.log('done');
-  //         setTrackPlaying(false);
-  //       } else {
-  //         console.log('playback failed due to audio decoding errors');
-  //       }
-  //     });
-  //     setTrackPlaying(true);
-  //   } else {
-  //     track.pause();
-  //     setTrackPlaying(false);
-  //   }
-  // };
-
   const handleDeepLink = async () => {
     await Linking.openURL(`http://open.spotify.com/track/${song.id}`);
   };
@@ -152,7 +133,6 @@ const CompletePostScreen = ({route, navigation}) => {
     Toast.show({
       type: 'success',
       text1: 'song posted!',
-      // text2: "Don't believe us? Check your spotify library.",
       visibilityTime: 2000,
     });
     if (songPhoto) {
