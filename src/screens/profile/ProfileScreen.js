@@ -225,7 +225,7 @@ const ProfileScreen = ({navigation}) => {
               <Text style={styles.editProfileText}>Edit profile</Text>
             </TouchableOpacity>
           </View>
-          <UserPosts navigationProps={navigation} UIDProps={UID} />
+          <UserPosts UID={UID} />
           <Modal isVisible={showModal}>
             <View style={styles.modalContainer}>
               <Text style={styles.modalTop}>
