@@ -5,77 +5,78 @@ import storage from '@react-native-firebase/storage';
 import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import UserPosts from '../../components/UserPosts';
+import {firebase} from '@react-native-firebase/firestore';
 
-const ViewUserScreen2 = ({route}) => {
+const ViewUserScreen2 = ({route, navigation}) => {
   const {profileID, UID} = route.params;
   const [userProfile, setUserProfile] = useState(null);
   const [header, setHeader] = useState(null);
   const [profilePic, setProfilePic] = useState(null);
   const [userName, setUserName] = useState(null);
-
-  //   useEffect(() => {
-  //     if (profileID) {
-  //       const profileDoc = firestore()
-  //         .collection('Users')
-  //         .doc(profileID)
-  //         .onSnapshot(documentSnapshot => {
-  //           console.log('User data: ', documentSnapshot.data());
-  //         });
-
-  //       // Stop listening for updates when no longer required
-  //       return () => profileDoc();
-  //     }
-  //   }, [profileID]);
+  const [followersList, setFollowersList] = useState([]);
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
-      const profileDoc = await firestore()
+    if (profileID) {
+      const profileDoc = firestore()
         .collection('users')
         .doc(profileID)
-        .get();
-
-      if (profileDoc.exists) {
-        console.log(profileDoc);
-        setUserProfile(profileDoc);
-      }
-      const usernameDoc = await firestore()
-        .collection('usernames')
-        .where('UID', '==', profileID)
-        .get();
-      if (!usernameDoc.empty) {
-        console.log(usernameDoc.docs[0]);
-        setUserName(usernameDoc._docs[0]);
-      }
-    };
-    const getImages = async () => {
-      const headerURL = await storage()
-        .ref(profileID + 'HEADER')
-        .getDownloadURL()
-        .catch(error => {
-          console.log(error);
+        .onSnapshot(documentSnapshot => {
+          console.log('User data: ', documentSnapshot.data());
+          setUserProfile(documentSnapshot.data());
+          console.log(documentSnapshot.data().followersList);
+          setFollowersList(documentSnapshot.data().followersList);
         });
-      const profilePicURL = await storage()
-        .ref(profileID + 'PFP')
-        .getDownloadURL()
-        .catch(error => {
-          console.log(error);
-        });
-      setHeader(headerURL);
-      setProfilePic(profilePicURL);
-    };
 
-    fetchUserProfile();
-    getImages();
+      // Stop listening for updates when no longer required
+      return () => profileDoc();
+    }
+  }, [profileID]);
+
+  useEffect(() => {
+    if (profileID) {
+      const fetchUserProfile = async () => {
+        const usernameDoc = await firestore()
+          .collection('usernames')
+          .where('UID', '==', profileID)
+          .get();
+        if (!usernameDoc.empty) {
+          console.log(usernameDoc.docs[0]);
+          setUserName(usernameDoc._docs[0]);
+        }
+      };
+      const getImages = async () => {
+        const headerURL = await storage()
+          .ref(profileID + 'HEADER')
+          .getDownloadURL()
+          .catch(error => {
+            console.log(error);
+          });
+        const profilePicURL = await storage()
+          .ref(profileID + 'PFP')
+          .getDownloadURL()
+          .catch(error => {
+            console.log(error);
+          });
+        setHeader(headerURL);
+        setProfilePic(profilePicURL);
+      };
+
+      fetchUserProfile();
+      getImages();
+    }
   }, [profileID]);
 
   //follow a user logic
-  async function followHandler(ID) {
-    if (userProfile._data.followersList.includes(ID)) {
+  async function followHandler() {
+    const increment = firebase.firestore.FieldValue.increment(1);
+    const decrement = firebase.firestore.FieldValue.increment(-1);
+    if (followersList.includes(UID)) {
       firestore()
         .collection('users')
         .doc(profileID)
         .update({
           followersList: firestore.FieldValue.arrayRemove(UID),
+          followers: decrement,
         })
         .then(() => {
           console.log('removed follower!');
@@ -85,6 +86,7 @@ const ViewUserScreen2 = ({route}) => {
         .doc(UID)
         .update({
           followingList: firestore.FieldValue.arrayRemove(profileID),
+          following: decrement,
         })
         .then(() => {
           console.log('unfollowed user!');
@@ -95,6 +97,7 @@ const ViewUserScreen2 = ({route}) => {
         .doc(profileID)
         .update({
           followersList: firestore.FieldValue.arrayUnion(UID),
+          followers: increment,
         })
         .then(() => {
           console.log('added follower!');
@@ -104,6 +107,7 @@ const ViewUserScreen2 = ({route}) => {
         .doc(UID)
         .update({
           followingList: firestore.FieldValue.arrayUnion(profileID),
+          following: increment,
         })
         .then(() => {
           console.log('followed user!');
@@ -125,6 +129,11 @@ const ViewUserScreen2 = ({route}) => {
           ) : (
             <View style={styles.header} />
           )}
+          <TouchableOpacity
+            style={styles.backBtn}
+            onPress={() => navigation.navigate('HomeScreen')}>
+            <Ionicons name={'chevron-back'} color="white" size={40} />
+          </TouchableOpacity>
           {profilePic ? (
             <Image
               style={styles.PFP}
@@ -137,24 +146,22 @@ const ViewUserScreen2 = ({route}) => {
           )}
           <View style={styles.userInfoContainer}>
             <Text style={styles.displayName}>
-              {userProfile._data.displayName
-                ? userProfile._data.displayName
-                : 'n/a'}
+              {userProfile.displayName ? userProfile.displayName : 'n/a'}
             </Text>
             <Text style={styles.handle}>
               {userName ? `@${userName?.id}` : 'n/a'}
             </Text>
             <Text numberOfLines={2} style={styles.bio}>
-              {userProfile._data.bio && userProfile._data.bio}
+              {userProfile.bio && userProfile.bio}
             </Text>
           </View>
           <View style={styles.userStatsContainer}>
             <View style={styles.statsContainer}>
-              <Text style={styles.stats}>{userProfile._data.followers}</Text>
+              <Text style={styles.stats}>{userProfile.followers}</Text>
               <Text style={styles.statsText}>Followers</Text>
             </View>
             <View style={styles.statsContainer}>
-              <Text style={styles.stats}>{userProfile._data.following}</Text>
+              <Text style={styles.stats}>{userProfile.following}</Text>
               <Text style={styles.statsText}>Following</Text>
             </View>
           </View>
@@ -168,8 +175,10 @@ const ViewUserScreen2 = ({route}) => {
             {UID !== profileID && (
               <TouchableOpacity
                 style={styles.followBtn}
-                onPress={() => followHandler(userProfile.id)}>
-                <Text style={styles.followText}>Follow</Text>
+                onPress={followHandler}>
+                <Text style={styles.followText}>
+                  {followersList?.includes(UID) ? 'Unfollow' : 'Follow'}
+                </Text>
               </TouchableOpacity>
             )}
           </View>
@@ -193,6 +202,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'red',
     height: 160,
     width: '100%',
+  },
+  backBtn: {
+    position: 'absolute',
+    top: '5%',
+    left: 22,
   },
   PFP: {
     position: 'absolute',
