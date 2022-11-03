@@ -6,6 +6,7 @@ import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import UserPosts from '../../components/UserPosts';
 import {firebase} from '@react-native-firebase/firestore';
+import HapticFeedback from 'react-native-haptic-feedback';
 
 const ViewUserScreen = ({route, navigation}) => {
   const {profileID, UID} = route.params;
@@ -68,6 +69,7 @@ const ViewUserScreen = ({route, navigation}) => {
 
   //follow a user logic
   async function followHandler() {
+    HapticFeedback.trigger('impactSoft');
     const increment = firebase.firestore.FieldValue.increment(1);
     const decrement = firebase.firestore.FieldValue.increment(-1);
     if (followersList.includes(UID)) {
@@ -223,7 +225,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 215,
     left: 28,
-    // backgroundColor: 'red',
   },
   displayName: {
     fontFamily: 'Inter-Bold',
@@ -251,7 +252,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     right: 25,
     top: 175,
-    // backgroundColor: 'green',
     width: 130,
   },
   statsContainer: {

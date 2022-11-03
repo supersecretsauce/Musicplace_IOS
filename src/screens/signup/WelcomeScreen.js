@@ -33,13 +33,6 @@ const WelcomeScreen = ({navigation}) => {
       <TouchableOpacity onPress={loginHandler}>
         <Text style={styles.login}>Login</Text>
       </TouchableOpacity>
-      {/* <Text style={styles.tos}>
-        By continuing , you agree to our{' '}
-        <Text style={styles.highlight}> Terms of Service</Text> and acknowledge
-        that you have read our
-        <Text style={styles.highlight}> Privacy Policy</Text> to learn how we
-        collect, use, and share your data.
-      </Text> */}
     </SafeAreaView>
   );
 };
@@ -115,17 +108,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 16,
   },
-  // tos: {
-  //   position: 'absolute',
-  //   color: Color.greyOut,
-  //   bottom: 30,
-  //   width: 317,
-  //   textAlign: 'center',
-  //   marginLeft: 37,
-  //   fontSize: 12,
-  //   fontFamily: 'Inter-Regular',
-  // },
-  // highlight: {
-  //   color: 'white',
-  // },
 });

@@ -207,12 +207,7 @@ const ProfileScreen = ({navigation}) => {
           </View>
           <View style={styles.dividerContainer}>
             <View style={styles.iconContainer}>
-              <Ionicons
-                style={styles.albumIcon}
-                name={'albums'}
-                color="white"
-                size={28}
-              />
+              <Ionicons name={'albums'} color="white" size={28} />
               <Text style={styles.postText}>Posts</Text>
               <TouchableOpacity
                 style={styles.helpIcon}
@@ -339,7 +334,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 215,
     left: 28,
-    // backgroundColor: 'red',
   },
   displayName: {
     fontFamily: 'Inter-Bold',
@@ -367,7 +361,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     right: 25,
     top: 175,
-    // backgroundColor: 'green',
     width: 130,
   },
   statsContainer: {
@@ -392,7 +385,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     top: 325,
     width: '88%',
-    // backgroundColor: 'grey',
     borderBottomColor: 'grey',
     borderBottomWidth: 1,
     paddingBottom: 10,
@@ -406,9 +398,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'Inter-Medium',
     marginLeft: 10,
-  },
-  albumIcon: {
-    // left: 28,
   },
   helpIcon: {
     left: 6,

@@ -26,6 +26,8 @@ import ReplyComments from './ReplyComments';
 import Toast from 'react-native-toast-message';
 import {firebase} from '@react-native-firebase/firestore';
 import {useNavigation} from '@react-navigation/native';
+import HapticFeedback from 'react-native-haptic-feedback';
+
 const BottomSheet = props => {
   const {currentIndex, feed, UID} = props;
   const [containerUp, setContainerUp] = useState(false);
@@ -251,6 +253,7 @@ const BottomSheet = props => {
 
   //handle liked comment logic
   async function likeComment(itemID) {
+    HapticFeedback.trigger('selection');
     const increment = firebase.firestore.FieldValue.increment(1);
     const decrement = firebase.firestore.FieldValue.increment(-1);
 
@@ -353,6 +356,7 @@ const BottomSheet = props => {
                             </View>
                             <View style={styles.commentRight}>
                               <TouchableOpacity
+                                style={styles.likeContainer}
                                 onPress={() => likeComment(item.id)}>
                                 <Ionicons
                                   style={styles.socialIcon}
@@ -368,14 +372,14 @@ const BottomSheet = props => {
                                   }
                                   size={18}
                                 />
+                                <Text style={styles.likeAmount}>
+                                  {likedComments.includes(item.id)
+                                    ? likeValue === 1
+                                      ? item._data.likeAmount + 1
+                                      : item._data.likeAmount - 1
+                                    : item._data.likeAmount}
+                                </Text>
                               </TouchableOpacity>
-                              <Text style={styles.likeAmount}>
-                                {likedComments.includes(item.id)
-                                  ? likeValue === 1
-                                    ? item._data.likeAmount + 1
-                                    : item._data.likeAmount - 1
-                                  : item._data.likeAmount}
-                              </Text>
                             </View>
                           </View>
                           {showReplies &&
@@ -479,7 +483,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   flatlistContainer: {
-    // backgroundColor: 'red',
     width: '100%',
     height: '60%',
   },
@@ -487,7 +490,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   commentContainer: {
-    // backgroundColor: 'red',
     width: '90%',
     alignSelf: 'center',
     flexDirection: 'row',
@@ -535,6 +537,9 @@ const styles = StyleSheet.create({
   },
   commentRight: {
     flexDirection: 'column',
+    alignItems: 'center',
+  },
+  likeContainer: {
     alignItems: 'center',
   },
   likeAmount: {

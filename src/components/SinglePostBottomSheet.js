@@ -26,6 +26,8 @@ import ReplyComments from './ReplyComments';
 import Toast from 'react-native-toast-message';
 import {firebase} from '@react-native-firebase/firestore';
 import {useNavigation} from '@react-navigation/native';
+import HapticFeedback from 'react-native-haptic-feedback';
+
 const SinglePostBottomSheet = props => {
   const {songInfo, UID} = props;
   const [containerUp, setContainerUp] = useState(false);
@@ -251,6 +253,7 @@ const SinglePostBottomSheet = props => {
 
   //handle liked comment logic
   async function likeComment(itemID) {
+    HapticFeedback.trigger('selection');
     const increment = firebase.firestore.FieldValue.increment(1);
     const decrement = firebase.firestore.FieldValue.increment(-1);
 
@@ -479,7 +482,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   flatlistContainer: {
-    // backgroundColor: 'red',
     width: '100%',
     height: '60%',
   },
@@ -487,7 +489,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   commentContainer: {
-    // backgroundColor: 'red',
     width: '90%',
     alignSelf: 'center',
     flexDirection: 'row',

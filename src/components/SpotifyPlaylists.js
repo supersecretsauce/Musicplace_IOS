@@ -219,9 +219,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     fontSize: 12,
   },
-
   // show tracks
-
   trackScrollContainer: {
     flex: 1,
   },
@@ -271,7 +269,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     marginLeft: '87%',
   },
-
   backBtn: {
     backgroundColor: Colors.red,
     justifyContent: 'center',

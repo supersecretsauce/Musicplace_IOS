@@ -19,7 +19,6 @@ import {
   View,
   SafeAreaView,
   TouchableOpacity,
-  TextInput,
 } from 'react-native';
 import React, {useEffect, useState, useContext} from 'react';
 import {Context} from '../../context/Context';
@@ -31,7 +30,6 @@ import axios from 'axios';
 import {authFetch} from '../../services/SpotifyService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Color from '../../assets/utilities/Colors';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import SpotifyPlaylists from '../../components/SpotifyPlaylists';
 import SpotifyLikedSongs from '../../components/SpotifyLikedSongs';
 import SpotifyAlbums from '../../components/SpotifyAlbums';
@@ -186,16 +184,6 @@ const TestScreen = ({navigation}) => {
         <View style={styles.container}>
           <View style={styles.searchBackground}>
             <Text style={styles.postASong}>Post a song</Text>
-            {/* <View style={styles.inputSearchContainer}>
-              <View style={styles.inputSearchBox}>
-                <Ionicons name="search-sharp" color="white" />
-                <TextInput
-                  style={styles.inputSearch}
-                  placeholderTextColor="white"
-                  placeholder="Search by song, album, or artist"
-                />
-              </View>
-            </View> */}
             <View style={styles.navContainer}>
               <TouchableOpacity
                 onPress={() => {
@@ -362,7 +350,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     fontSize: 12,
   },
-
   navIconActive: {
     color: 'white',
     borderColor: 'white',
@@ -374,7 +361,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     fontSize: 12,
   },
-
   // not connected
   noSpotifyContainer: {
     backgroundColor: 'black',

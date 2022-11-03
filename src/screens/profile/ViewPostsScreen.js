@@ -2,7 +2,6 @@ import {
   StyleSheet,
   Text,
   View,
-  SafeAreaView,
   TouchableWithoutFeedback,
   TouchableOpacity,
   Image,
@@ -22,8 +21,6 @@ import {authFetch} from '../../services/SpotifyService';
 import Toast from 'react-native-toast-message';
 import {firebase} from '@react-native-firebase/firestore';
 import {mixpanel} from '../../../mixpanel';
-
-// USE MIXPANEL LISTENS
 
 const ViewPostsScreen = ({route}) => {
   Sound.setCategory('Playback');
@@ -177,16 +174,7 @@ const ViewPostsScreen = ({route}) => {
     <View style={styles.container}>
       {songInfo ? (
         <>
-          <Swiper
-            loadMinimal={true}
-            onIndexChanged={index => {
-              //   currentTrack.stop();
-              //   setCurrentIndex(index);
-              //   mixpanel.track('New Listen');
-              //   recordTime();
-            }}
-            loop={false}
-            showsButtons={false}>
+          <Swiper loadMinimal={true} loop={false} showsButtons={false}>
             {songInfo.map((post, index) => {
               return (
                 <View key={index}>
