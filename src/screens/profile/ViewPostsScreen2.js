@@ -20,6 +20,8 @@ import {useFocusEffect} from '@react-navigation/native';
 import HapticFeedback from 'react-native-haptic-feedback';
 import {authFetch} from '../../services/SpotifyService';
 import Toast from 'react-native-toast-message';
+import {firebase} from '@react-native-firebase/firestore';
+import {mixpanel} from '../../../mixpanel';
 
 // USE MIXPANEL LISTENS
 
@@ -43,17 +45,30 @@ const ViewPostsScreen2 = ({route}) => {
     let endTime = new Date();
     let timeDiff = endTime - startTime;
     startTime = new Date();
+    const increment = firebase.firestore.FieldValue.increment(timeDiff);
     firestore()
-      .collection('users')
-      .doc(UID)
+      .collection('posts')
+      .doc(songInfo[0].id)
       .collection('watches')
       .add({
-        songID: songInfo[0].id,
+        UID: UID,
         duration: timeDiff,
         date: new Date(),
       })
       .then(() => {
         console.log('added watch document');
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    firestore()
+      .collection('posts')
+      .doc(songInfo[0].id)
+      .update({
+        totalMSListened: increment,
+      })
+      .then(() => {
+        console.log('updated duration!');
       })
       .catch(error => {
         console.log(error);
@@ -72,6 +87,8 @@ const ViewPostsScreen2 = ({route}) => {
           currentTrack.pause();
           playing = false;
           recordTime();
+          mixpanel.track('New Listen');
+
           console.log('user left screen');
         }
       };

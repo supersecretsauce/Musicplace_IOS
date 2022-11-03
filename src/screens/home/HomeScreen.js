@@ -21,6 +21,7 @@ import {authFetch} from '../../services/SpotifyService';
 import {Context} from '../../context/Context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {mixpanel} from '../../../mixpanel';
+import {firebase} from '@react-native-firebase/firestore';
 
 const HomeScreen = () => {
   Sound.setCategory('Playback');
@@ -103,17 +104,30 @@ const HomeScreen = () => {
     let endTime = new Date();
     let timeDiff = endTime - startTime;
     startTime = new Date();
+    const increment = firebase.firestore.FieldValue.increment(timeDiff);
     firestore()
-      .collection('users')
-      .doc(UID)
+      .collection('posts')
+      .doc(feed[currentIndex].id)
       .collection('watches')
       .add({
-        songID: feed[currentIndex]._data.id,
+        UID: UID,
         duration: timeDiff,
         date: new Date(),
       })
       .then(() => {
         console.log('added watch document');
+      })
+      .catch(error => {
+        console.log(error);
+      });
+    firestore()
+      .collection('posts')
+      .doc(feed[currentIndex].id)
+      .update({
+        totalMSListened: increment,
+      })
+      .then(() => {
+        console.log('updated duration!');
       })
       .catch(error => {
         console.log(error);
@@ -196,9 +210,9 @@ const HomeScreen = () => {
             loadMinimal={true}
             onIndexChanged={index => {
               currentTrack.stop();
+              recordTime();
               setCurrentIndex(index);
               mixpanel.track('New Listen');
-              recordTime();
             }}
             loop={false}
             showsButtons={false}>
