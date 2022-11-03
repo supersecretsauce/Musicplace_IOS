@@ -14,7 +14,7 @@ import Sound from 'react-native-sound';
 import Spotify from '../../assets/img/spotify.svg';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
-import BottomSheet2 from '../../components/BottomSheet2';
+import BottomSheet from '../../components/BottomSheet';
 import HapticFeedback from 'react-native-haptic-feedback';
 import Toast from 'react-native-toast-message';
 import {authFetch} from '../../services/SpotifyService';
@@ -282,7 +282,7 @@ const HomeScreen = () => {
               );
             })}
           </Swiper>
-          <BottomSheet2 UID={UID} feed={feed} currentIndex={currentIndex} />
+          <BottomSheet UID={UID} feed={feed} currentIndex={currentIndex} />
         </>
       ) : (
         <>

@@ -45,7 +45,7 @@ const UserPosts = props => {
                     <View style={styles.postContainer} key={index}>
                       <TouchableOpacity
                         onPress={() => {
-                          navigation.navigate('ViewPostsScreen2', {
+                          navigation.navigate('ViewPostsScreen', {
                             //making the song an array so it works with swiper package
                             songInfo: [userPosts[index]],
                             UID: UID,

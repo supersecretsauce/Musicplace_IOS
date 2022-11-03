@@ -307,7 +307,7 @@ const SinglePostBottomSheet = props => {
                             <View style={styles.commentLeft}>
                               <TouchableOpacity
                                 onPress={() => {
-                                  navigate('ViewUserScreen2', {
+                                  navigate('ViewUserScreen', {
                                     profileID: item._data.UID,
                                     UID: UID,
                                   });
