@@ -166,12 +166,15 @@ const ViewUserScreen2 = ({route, navigation}) => {
             </View>
           </View>
           <View style={styles.dividerContainer}>
-            <Ionicons
-              style={styles.albumIcon}
-              name={'albums'}
-              color="white"
-              size={28}
-            />
+            <View style={styles.postHeader}>
+              <Ionicons
+                style={styles.albumIcon}
+                name={'albums'}
+                color="white"
+                size={28}
+              />
+              <Text style={styles.postText}>Posts</Text>
+            </View>
             {UID !== profileID && (
               <TouchableOpacity
                 style={styles.followBtn}
@@ -276,6 +279,16 @@ const styles = StyleSheet.create({
     borderBottomColor: 'grey',
     borderBottomWidth: 1,
     paddingBottom: 10,
+  },
+  postHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  postText: {
+    color: 'white',
+    fontSize: 18,
+    fontFamily: 'Inter-Medium',
+    marginLeft: 10,
   },
   followBtn: {
     borderColor: Colors.greyOut,
