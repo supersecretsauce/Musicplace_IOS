@@ -30,6 +30,7 @@ export default function App() {
   const [accessToken, setAccessToken] = useState('');
   const [username, setUsername] = useState('');
   const [currentPost, setCurrentPost] = useState();
+  const [hasSpotify, setHasSpotify] = useState(null);
   const appState = useRef(AppState.currentState);
 
   // AsyncStorage.clear();
@@ -117,6 +118,8 @@ export default function App() {
             setProfileScreenFocus,
             parentComments,
             setParentComments,
+            hasSpotify,
+            setHasSpotify,
           }}>
           {userLogin ? (
             <Tab.Navigator

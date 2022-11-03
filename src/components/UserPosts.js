@@ -10,9 +10,8 @@ import React, {useEffect, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import Colors from '../assets/utilities/Colors';
 const UserPosts = props => {
-  const {UID} = props;
+  const {UID, navigation} = props;
   const [userPosts, setUserPosts] = useState([]);
-  const [songID, setSongID] = useState();
 
   useEffect(() => {
     if (UID) {
@@ -36,18 +35,18 @@ const UserPosts = props => {
               <FlatList
                 data={userPosts}
                 numColumns={2}
-                contentContainerStyle={{paddingBottom: 10}}
-                style={{width: '100%', height: '100%', marginTop: 1}}
+                contentContainerStyle={{paddingBottom: '90%'}}
+                // style={{width: '100%', height: '100%', marginTop: 1}}
                 renderItem={({item, index}) => {
                   return (
                     <View style={styles.postContainer} key={index}>
                       <TouchableOpacity
                         onPress={() => {
-                          setSongID(item.id);
-                          // navigation.navigate('ViewPostsScreen', {
-                          //   userPosts: userPosts,
-                          //   selectedPostIndex: index,
-                          // });
+                          navigation.navigate('ViewPostsScreen2', {
+                            //making the song an array so it works with swiper package
+                            songInfo: [userPosts[index]],
+                            UID: UID,
+                          });
                         }}>
                         <Image
                           style={styles.songPhoto}

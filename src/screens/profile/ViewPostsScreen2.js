@@ -2,41 +2,63 @@ import {
   StyleSheet,
   Text,
   View,
+  SafeAreaView,
+  TouchableWithoutFeedback,
   TouchableOpacity,
   Image,
-  TouchableWithoutFeedback,
   Linking,
 } from 'react-native';
-import React, {useState, useEffect, useContext, useCallback} from 'react';
-import {useFocusEffect} from '@react-navigation/native';
+import React, {useEffect, useState, useCallback, useContext} from 'react';
+import {Context} from '../../context/Context';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import Spotify from '../../assets/img/spotify.svg';
+import SinglePostBottomSheet from '../../components/SinglePostBottomSheet';
 import Swiper from 'react-native-swiper';
 import Sound from 'react-native-sound';
-import Spotify from '../../assets/img/spotify.svg';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
-import BottomSheet2 from '../../components/BottomSheet2';
+import {useFocusEffect} from '@react-navigation/native';
 import HapticFeedback from 'react-native-haptic-feedback';
-import Toast from 'react-native-toast-message';
 import {authFetch} from '../../services/SpotifyService';
-import {Context} from '../../context/Context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {mixpanel} from '../../../mixpanel';
+import Toast from 'react-native-toast-message';
 
-const HomeScreen = () => {
+// USE MIXPANEL LISTENS
+
+const ViewPostsScreen2 = ({route}) => {
   Sound.setCategory('Playback');
-  const [feed, setFeed] = useState(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [currentTrack, setCurrentTrack] = useState(null);
+  const {songInfo, UID} = route.params;
   const [likedTracks, setLikedTracks] = useState([]);
-  const [UID, setUID] = useState(null);
+  const [currentTrack, setCurrentTrack] = useState(null);
   const {
     accessToken,
     refreshToken,
     setAccessToken,
     setRefreshToken,
-    setHasSpotify,
     hasSpotify,
   } = useContext(Context);
+
+  let playing = true;
+  let startTime = new Date();
+
+  function recordTime() {
+    let endTime = new Date();
+    let timeDiff = endTime - startTime;
+    startTime = new Date();
+    firestore()
+      .collection('users')
+      .doc(UID)
+      .collection('watches')
+      .add({
+        songID: songInfo[0].id,
+        duration: timeDiff,
+        date: new Date(),
+      })
+      .then(() => {
+        console.log('added watch document');
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
 
   useFocusEffect(
     useCallback(() => {
@@ -49,78 +71,13 @@ const HomeScreen = () => {
         if (currentTrack) {
           currentTrack.pause();
           playing = false;
+          recordTime();
+          console.log('user left screen');
         }
       };
     }, [currentTrack]),
   );
 
-  useEffect(() => {
-    async function getFeed() {
-      const docs = await firestore().collection('posts').get();
-      console.log(docs._docs);
-      setFeed(docs._docs);
-    }
-    getFeed();
-    async function checkSpotifyConnection() {
-      const spotifyBoolean = await AsyncStorage.getItem('hasSpotify');
-      const localRefresh = await AsyncStorage.getItem('spotRefreshToken');
-      const localAccess = await AsyncStorage.getItem('spotAccessToken');
-      const localUID = await AsyncStorage.getItem('UID');
-      if (spotifyBoolean === 'false') {
-        setHasSpotify(false);
-        setUID(localUID);
-      } else if (spotifyBoolean === 'true') {
-        setUID(localUID);
-        setHasSpotify(true);
-        setAccessToken(localAccess);
-        setRefreshToken(localRefresh);
-      }
-    }
-    checkSpotifyConnection();
-  }, []);
-
-  useEffect(() => {
-    if (feed) {
-      let newTrack = new Sound(
-        feed[currentIndex]._data.previewUrl,
-        null,
-        error => {
-          if (error) {
-            console.log('failed to load the sound', error);
-            return;
-          } else {
-            newTrack.play();
-            newTrack.setNumberOfLoops(-1);
-          }
-        },
-      );
-      setCurrentTrack(newTrack);
-    }
-  }, [currentIndex, feed]);
-
-  let startTime = new Date();
-  function recordTime() {
-    let endTime = new Date();
-    let timeDiff = endTime - startTime;
-    startTime = new Date();
-    firestore()
-      .collection('users')
-      .doc(UID)
-      .collection('watches')
-      .add({
-        songID: feed[currentIndex]._data.id,
-        duration: timeDiff,
-        date: new Date(),
-      })
-      .then(() => {
-        console.log('added watch document');
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  }
-
-  let playing = true;
   function pauseHandler() {
     if (playing) {
       currentTrack.pause();
@@ -131,13 +88,27 @@ const HomeScreen = () => {
     }
   }
 
+  useEffect(() => {
+    if (songInfo) {
+      console.log(songInfo);
+      let newTrack = new Sound(songInfo[0].previewUrl, null, error => {
+        if (error) {
+          console.log('failed to load the sound', error);
+          return;
+        } else {
+          newTrack.play();
+          newTrack.setNumberOfLoops(-1);
+        }
+      });
+      setCurrentTrack(newTrack);
+    }
+  }, [songInfo]);
+
   function likeHandler() {
     if (hasSpotify) {
-      if (likedTracks.includes(feed[currentIndex]._data.id)) {
+      if (likedTracks.includes(songInfo[0].id)) {
         HapticFeedback.trigger('impactLight');
-        setLikedTracks(
-          likedTracks.filter(id => id != feed[currentIndex]._data.id),
-        );
+        setLikedTracks(likedTracks.filter(id => id != songInfo[0].id));
         Toast.show({
           type: 'success',
           text1: 'Removed from liked songs',
@@ -145,7 +116,7 @@ const HomeScreen = () => {
           visibilityTime: 2000,
         });
         authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
-          .delete(`/me/tracks?ids=${feed[currentIndex]._data.id}`)
+          .delete(`/me/tracks?ids=${songInfo[0].id}`)
           .then(response => {
             console.log(response);
           })
@@ -155,7 +126,7 @@ const HomeScreen = () => {
           });
       } else {
         HapticFeedback.trigger('impactHeavy');
-        setLikedTracks(current => [...current, feed[currentIndex]._data.id]);
+        setLikedTracks(current => [...current, songInfo[0].id]);
         Toast.show({
           type: 'success',
           text1: 'Added to liked songs',
@@ -163,7 +134,7 @@ const HomeScreen = () => {
           visibilityTime: 2000,
         });
         authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
-          .put(`/me/tracks?ids=${feed[currentIndex]._data.id}`)
+          .put(`/me/tracks?ids=${songInfo[0].id}`)
           .then(response => {
             console.log(response);
           })
@@ -183,40 +154,38 @@ const HomeScreen = () => {
   }
 
   async function listenOnSpotify() {
-    await Linking.openURL(
-      `http://open.spotify.com/track/${feed[currentIndex]._data.id}`,
-    );
+    await Linking.openURL(`http://open.spotify.com/track/${songInfo[0].id}`);
   }
 
   return (
     <View style={styles.container}>
-      {feed ? (
+      {songInfo ? (
         <>
           <Swiper
             loadMinimal={true}
             onIndexChanged={index => {
-              currentTrack.stop();
-              setCurrentIndex(index);
-              mixpanel.track('New Listen');
-              recordTime();
+              //   currentTrack.stop();
+              //   setCurrentIndex(index);
+              //   mixpanel.track('New Listen');
+              //   recordTime();
             }}
             loop={false}
             showsButtons={false}>
-            {feed.map((post, index) => {
+            {songInfo.map((post, index) => {
               return (
                 <View key={index}>
                   <TouchableWithoutFeedback onPress={pauseHandler}>
                     <Image
                       style={styles.songPhoto}
                       source={{
-                        uri: post._data.songPhoto,
+                        uri: post.songPhoto,
                       }}
                       resizeMode="cover"
                     />
                   </TouchableWithoutFeedback>
                   <View style={styles.topRow}>
                     <Text numberOfLines={1} style={styles.songName}>
-                      {post._data.songName}
+                      {post.songName}
                     </Text>
                     <View style={styles.topRowRight}>
                       <Spotify />
@@ -224,14 +193,12 @@ const HomeScreen = () => {
                         <Ionicons
                           style={styles.likeIcon}
                           name={
-                            likedTracks.includes(post._data.id)
+                            likedTracks.includes(post.id)
                               ? 'heart'
                               : 'heart-outline'
                           }
                           color={
-                            likedTracks.includes(post._data.id)
-                              ? '#1DB954'
-                              : 'grey'
+                            likedTracks.includes(post.id) ? '#1DB954' : 'grey'
                           }
                           size={28}
                         />
@@ -240,7 +207,7 @@ const HomeScreen = () => {
                   </View>
                   <View style={styles.bottomRow}>
                     <Text numberOfLines={1} style={styles.artistName}>
-                      {post._data.artists
+                      {post.artists
                         .map(artist => {
                           return artist.name;
                         })
@@ -253,7 +220,7 @@ const HomeScreen = () => {
                       size={5}
                     />
                     <Text numberOfLines={1} style={styles.albumName}>
-                      {post._data.albumName}
+                      {post.albumName}
                     </Text>
                   </View>
                   <TouchableOpacity
@@ -268,7 +235,7 @@ const HomeScreen = () => {
               );
             })}
           </Swiper>
-          <BottomSheet2 UID={UID} feed={feed} currentIndex={currentIndex} />
+          <SinglePostBottomSheet UID={UID} songInfo={songInfo} />
         </>
       ) : (
         <>
@@ -281,7 +248,7 @@ const HomeScreen = () => {
   );
 };
 
-export default HomeScreen;
+export default ViewPostsScreen2;
 
 const styles = StyleSheet.create({
   container: {

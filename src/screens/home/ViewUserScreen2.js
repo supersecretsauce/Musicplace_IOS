@@ -185,7 +185,7 @@ const ViewUserScreen2 = ({route, navigation}) => {
               </TouchableOpacity>
             )}
           </View>
-          <UserPosts UID={UID} />
+          <UserPosts navigation={navigation} UID={UID} />
         </View>
       ) : (
         <></>
