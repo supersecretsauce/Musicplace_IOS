@@ -13,6 +13,7 @@ import {StyleSheet, StatusBar} from 'react-native';
 import Toast from 'react-native-toast-message';
 import HomeStackScreen from './src/routes/HomeStackScreen';
 import WelcomeStackScreen from './src/routes/WelcomeStackScreen';
+import ActivityStackScreen from './src/routes/ActivityStackScreen';
 import {mixpanel} from './mixpanel';
 
 mixpanel.init();
@@ -154,7 +155,7 @@ export default function App() {
               <Tab.Screen name="Home" component={HomeStackScreen} />
               {/* <Tab.Screen name="Discover" component={ActivityStackScreen} /> */}
               <Tab.Screen name="Post" component={PostStackScreen} />
-              {/* <Tab.Screen name="Activity" component={ActivityStackScreen} /> */}
+              <Tab.Screen name="Activity" component={ActivityStackScreen} />
               <Tab.Screen name="Profile" component={ProfileStackScreen} />
             </Tab.Navigator>
           ) : (
