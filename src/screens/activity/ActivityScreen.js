@@ -10,7 +10,7 @@ import React, {useEffect} from 'react';
 import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const ActivityScreen = () => {
+const ActivityScreen = ({navigation}) => {
   const defaultActivityText = [
     {
       top: 'No Activity Yet',
@@ -27,12 +27,11 @@ const ActivityScreen = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.activityContainer}>
         <Text style={styles.activityText}>Activity</Text>
-        <Ionicons
+        <TouchableOpacity
           style={styles.createIcon}
-          name={'create-outline'}
-          color={'white'}
-          size={32}
-        />
+          onPress={() => navigation.navigate('DirectMessagesScreen')}>
+          <Ionicons name={'create-outline'} color={'white'} size={32} />
+        </TouchableOpacity>
       </View>
       <View style={styles.line} />
       <View style={styles.newActivityContainer}>
