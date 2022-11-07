@@ -9,7 +9,16 @@ import {
 import React from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../assets/utilities/Colors';
+import algoliasearch from 'algoliasearch/lite';
+import {InstantSearch} from 'react-instantsearch-hooks';
+import SearchBox from '../../components/SearchBox';
+import InfiniteHits from '../../components/InfiniteHits';
 const AddFriends = ({navigation}) => {
+  const searchClient = algoliasearch(
+    'SXGPXOYWWU',
+    '292341a627acc8ce15aad830431be5ef',
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topContainer}>
@@ -20,14 +29,15 @@ const AddFriends = ({navigation}) => {
         </TouchableOpacity>
         <Text style={styles.addHeader}>Add Friends</Text>
       </View>
-      <View style={styles.searchOutline}>
-        <Ionicons name={'search'} color={Colors.greyOut} size={20} />
-        <TextInput
-          placeholderTextColor={Colors.greyOut}
-          style={styles.textInput}
-          placeholder="find your friends"
-        />
-      </View>
+      <InstantSearch
+        searchClient={searchClient}
+        indexName="search-user-collection">
+        <View style={styles.searchOutline}>
+          <Ionicons name={'search'} color={Colors.greyOut} size={20} />
+          <SearchBox />
+        </View>
+        <InfiniteHits />
+      </InstantSearch>
     </SafeAreaView>
   );
 };
@@ -66,9 +76,5 @@ const styles = StyleSheet.create({
     paddingLeft: '5%',
     width: '90%',
     borderRadius: 6,
-  },
-  textInput: {
-    marginLeft: '3%',
-    width: '90%',
   },
 });
