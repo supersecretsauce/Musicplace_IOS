@@ -98,9 +98,15 @@ const ActivityScreen = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.activityContainer}>
+        <TouchableOpacity
+          // style={styles.createIcon}
+          onPress={() => {
+            navigation.navigate('AddFriends');
+          }}>
+          <Ionicons name={'person-add-outline'} color={'white'} size={28} />
+        </TouchableOpacity>
         <Text style={styles.activityText}>Activity</Text>
         <TouchableOpacity
-          style={styles.createIcon}
           onPress={() => {
             navigation.navigate('NoMessagesScreen', {
               contacts: contacts,
@@ -185,16 +191,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     marginTop: '6%',
+    width: '90%',
+    justifyContent: 'space-between',
   },
   activityText: {
     fontFamily: 'Inter-Bold',
     color: 'white',
     fontSize: 18,
     alignSelf: 'center',
-  },
-  createIcon: {
-    position: 'absolute',
-    marginLeft: 175,
   },
   line: {
     borderColor: Colors.darkGrey,
