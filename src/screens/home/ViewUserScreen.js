@@ -9,7 +9,7 @@ import {firebase} from '@react-native-firebase/firestore';
 import HapticFeedback from 'react-native-haptic-feedback';
 
 const ViewUserScreen = ({route, navigation}) => {
-  const {profileID, UID} = route.params;
+  const {profileID, UID, prevRoute} = route.params;
   const [userProfile, setUserProfile] = useState(null);
   const [header, setHeader] = useState(null);
   const [profilePic, setProfilePic] = useState(null);
@@ -117,6 +117,14 @@ const ViewUserScreen = ({route, navigation}) => {
     }
   }
 
+  function handleNav() {
+    if (prevRoute === 'search') {
+      navigation.navigate('AddFriends');
+    } else {
+      navigation.navigate('HomeScreen');
+    }
+  }
+
   return (
     <View style={styles.container}>
       {userProfile ? (
@@ -131,9 +139,7 @@ const ViewUserScreen = ({route, navigation}) => {
           ) : (
             <View style={styles.header} />
           )}
-          <TouchableOpacity
-            style={styles.backBtn}
-            onPress={() => navigation.navigate('HomeScreen')}>
+          <TouchableOpacity style={styles.backBtn} onPress={handleNav}>
             <Ionicons name={'chevron-back'} color="white" size={40} />
           </TouchableOpacity>
           {profilePic ? (

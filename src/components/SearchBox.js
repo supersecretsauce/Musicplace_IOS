@@ -26,6 +26,7 @@ const SearchBox = props => {
       onChangeText={setQuery}
       placeholder="find your friends"
       autoCompleteType="off"
+      autoCapitalize="none"
     />
   );
 };
@@ -36,5 +37,6 @@ const styles = StyleSheet.create({
   textInput: {
     marginLeft: '3%',
     width: '90%',
+    color: 'white',
   },
 });

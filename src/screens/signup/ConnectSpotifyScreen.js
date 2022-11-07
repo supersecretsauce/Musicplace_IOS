@@ -17,7 +17,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
 import HapticFeedback from 'react-native-haptic-feedback';
 
-const ConnectSpotifyScreen = ({navigation}) => {
+const ConnectSpotifyScreen = ({navigation, route}) => {
+  const {contacts} = route.params;
   const userInfo = firebase.auth().currentUser;
   const {username} = useContext(Context);
 
@@ -66,6 +67,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
           autoPost: true,
           topSongs: [],
           userPosts: [],
+          handle: username,
         },
         {merge: true},
       );
@@ -101,6 +103,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
         autoPost: true,
         topSongs: [],
         userPosts: [],
+        handle: username,
       });
     } catch (error) {
       return;

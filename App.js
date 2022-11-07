@@ -32,6 +32,7 @@ export default function App() {
   const [username, setUsername] = useState('');
   const [currentPost, setCurrentPost] = useState();
   const [hasSpotify, setHasSpotify] = useState(null);
+  const [UID, setUID] = useState(null);
   const appState = useRef(AppState.currentState);
 
   // AsyncStorage.clear();
@@ -121,6 +122,8 @@ export default function App() {
             setParentComments,
             hasSpotify,
             setHasSpotify,
+            UID,
+            setUID,
           }}>
           {userLogin ? (
             <Tab.Navigator

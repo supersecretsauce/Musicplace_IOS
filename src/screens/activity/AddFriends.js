@@ -36,7 +36,7 @@ const AddFriends = ({navigation}) => {
           <Ionicons name={'search'} color={Colors.greyOut} size={20} />
           <SearchBox />
         </View>
-        <InfiniteHits />
+        <InfiniteHits navigation={navigation} />
       </InstantSearch>
     </SafeAreaView>
   );
@@ -76,5 +76,6 @@ const styles = StyleSheet.create({
     paddingLeft: '5%',
     width: '90%',
     borderRadius: 6,
+    marginBottom: 20,
   },
 });
