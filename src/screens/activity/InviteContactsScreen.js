@@ -10,8 +10,9 @@ import {
 } from 'react-native';
 import React from 'react';
 import Colors from '../../assets/utilities/Colors';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const InviteContactsScreen = ({route}) => {
+const InviteContactsScreen = ({route, navigation}) => {
   const {contacts} = route.params;
 
   const handleInvite = async number => {
@@ -25,6 +26,17 @@ const InviteContactsScreen = ({route}) => {
   }
   return (
     <SafeAreaView style={styles.container}>
+      <View style={styles.activityContainer}>
+        <TouchableOpacity
+          style={styles.createIcon}
+          onPress={() => {
+            navigation.navigate('ActivityScreen');
+          }}>
+          <Ionicons name={'chevron-back'} color={'white'} size={32} />
+        </TouchableOpacity>
+        <Text style={styles.activityText}>Invite</Text>
+      </View>
+      <View style={styles.line} />
       {contacts ? (
         <View style={styles.contactsContainer}>
           <Text style={styles.inviteText}>Invite friends</Text>
@@ -90,6 +102,29 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
+  },
+  activityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'center',
+    marginTop: '6%',
+  },
+  activityText: {
+    fontFamily: 'Inter-Bold',
+    color: 'white',
+    fontSize: 18,
+    alignSelf: 'center',
+  },
+  createIcon: {
+    position: 'absolute',
+    right: 175,
+  },
+  line: {
+    borderColor: Colors.darkGrey,
+    width: '100%',
+    borderWidth: 0.5,
+    alignSelf: 'center',
+    marginTop: '6%',
   },
   contactsContainer: {
     marginTop: '5%',

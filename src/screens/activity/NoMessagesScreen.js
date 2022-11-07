@@ -12,7 +12,7 @@ import React from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../assets/utilities/Colors';
 
-const NoMessagesScreen = ({route}) => {
+const NoMessagesScreen = ({route, navigation}) => {
   const {contacts} = route.params;
   const handleInvite = async number => {
     await Linking.openURL(
@@ -26,14 +26,13 @@ const NoMessagesScreen = ({route}) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topContainer}>
-        <TouchableOpacity style={styles.backIcon}>
+        <TouchableOpacity
+          style={styles.backIcon}
+          onPress={() => navigation.navigate('ActivityScreen')}>
           <Ionicons name={'chevron-back'} color={'white'} size={32} />
         </TouchableOpacity>
         <Text style={styles.activityText}>Messages</Text>
-        <TouchableOpacity
-          style={styles.backIcon}
-          //   onPress={() => navigation.navigate('DirectMessagesScreen')}
-        >
+        <TouchableOpacity style={styles.backIcon}>
           <Ionicons name={'add'} color={'white'} size={32} />
         </TouchableOpacity>
       </View>
