@@ -6,11 +6,70 @@ import {
   FlatList,
   TouchableOpacity,
 } from 'react-native';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import * as Contacts from 'expo-contacts';
+import firestore from '@react-native-firebase/firestore';
 
 const ActivityScreen = ({navigation}) => {
+  const [contacts, setContacts] = useState(null);
+  const [phoneNumbers, setPhoneNumbers] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      const {status} = await Contacts.requestPermissionsAsync();
+      if (status === 'granted') {
+        const {data} = await Contacts.getContactsAsync();
+
+        if (data.length > 0) {
+          const contacts = data;
+          setContacts(contacts);
+          let localPhoneNumbers = contacts.map(person => {
+            if (person.phoneNumbers) {
+              let ogNumber = person?.phoneNumbers[0]?.number;
+              let arr = ogNumber.split('');
+              let filteredNumber = arr.filter(n => n !== '(' && n !== ')');
+              return filteredNumber.join('');
+            } else {
+              return;
+            }
+          });
+          console.log(localPhoneNumbers);
+          setPhoneNumbers(localPhoneNumbers);
+        }
+      }
+    })();
+  }, []);
+
+  // useEffect(() => {
+  //   if (phoneNumbers) {
+  //     async function getExistingUsers() {
+  //       let results = [];
+  //       for (let i = 0; i < phoneNumbers.length; i += 10) {
+  //         let doc = await firestore()
+  //           .collection('users')
+  //           .where('phoneNumber', 'in', [
+  //             phoneNumbers[i],
+  //             phoneNumbers[i + 1],
+  //             phoneNumbers[i + 2],
+  //             phoneNumbers[i + 3],
+  //             phoneNumbers[i + 4],
+  //             phoneNumbers[i + 5],
+  //             phoneNumbers[i + 6],
+  //             phoneNumbers[i + 7],
+  //             phoneNumbers[i + 8],
+  //             phoneNumbers[i + 9],
+  //           ])
+  //           .get();
+  //         console.log(doc);
+  //       }
+  //       // console.log(results);
+  //     }
+  //     getExistingUsers();
+  //   }
+  // }, [phoneNumbers]);
+
   const defaultActivityText = [
     {
       top: 'No Activity Yet',
@@ -19,17 +78,34 @@ const ActivityScreen = ({navigation}) => {
   ];
   const defaultMessageText = [
     {
-      top: 'Add Friends',
+      top: 'Musicplace Team',
       bottom: 'Get started by adding your friends.',
+      nav: 'NoMessagesScreen',
+    },
+    {
+      top: 'Musicplace Team',
+      bottom: 'Invite your friends on to Musicplace.',
+      nav: 'InviteContactsScreen',
     },
   ];
+
+  function handleNav(nav) {
+    navigation.navigate(nav, {
+      contacts: contacts,
+    });
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.activityContainer}>
         <Text style={styles.activityText}>Activity</Text>
         <TouchableOpacity
           style={styles.createIcon}
-          onPress={() => navigation.navigate('DirectMessagesScreen')}>
+          onPress={() => {
+            navigation.navigate('NoMessagesScreen', {
+              contacts: contacts,
+            });
+          }}>
           <Ionicons name={'create-outline'} color={'white'} size={32} />
         </TouchableOpacity>
       </View>
@@ -69,7 +145,10 @@ const ActivityScreen = ({navigation}) => {
             data={defaultMessageText}
             renderItem={({item, index}) => {
               return (
-                <TouchableOpacity key={index} style={styles.itemContainer}>
+                <TouchableOpacity
+                  key={index}
+                  style={styles.itemContainer}
+                  onPress={() => handleNav(item.nav)}>
                   <View style={styles.itemLeft}>
                     <View style={styles.musicplaceLogo} />
                     <View style={styles.itemMiddle}>
