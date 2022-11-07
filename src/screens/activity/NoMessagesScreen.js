@@ -8,7 +8,7 @@ import {
   FlatList,
   Image,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../assets/utilities/Colors';
 
@@ -19,6 +19,10 @@ const NoMessagesScreen = ({route}) => {
       `sms:/open?addresses=${number}&body=download the Musicplace App!`,
     );
   };
+
+  async function handleSettings() {
+    await Linking.openSettings();
+  }
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topContainer}>
@@ -37,58 +41,66 @@ const NoMessagesScreen = ({route}) => {
       <Text style={styles.noMessages}>
         No messages yet. Follow your friends to get started.
       </Text>
-      <View style={styles.musicplaceContactsContainer}>
-        <Text style={styles.musicplaceContacts}>Accounts you might know</Text>
-      </View>
-      <View style={styles.contactsContainer}>
-        <Text style={styles.inviteText}>Invite friends</Text>
-        {contacts ? (
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            data={contacts}
-            renderItem={({item, index}) => {
-              return (
-                <View key={index} style={styles.localContactContainer}>
-                  <View style={styles.contactLeft}>
-                    {item.imageAvailable ? (
-                      <Image
-                        style={styles.localUserImage}
-                        source={{
-                          uri: item?.image?.uri,
-                        }}
-                      />
-                    ) : (
-                      <View style={styles.defaultImage}>
-                        {typeof item.firstName === 'string' ? (
-                          <Text style={styles.defaultName}>
-                            {item?.firstName?.slice(0, 1)}
-                          </Text>
-                        ) : (
-                          <></>
-                        )}
+      {contacts ? (
+        <>
+          <View style={styles.musicplaceContactsContainer}>
+            <Text style={styles.musicplaceContacts}>
+              Accounts you might know
+            </Text>
+          </View>
+          <View style={styles.contactsContainer}>
+            <Text style={styles.inviteText}>Invite friends</Text>
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              data={contacts}
+              renderItem={({item, index}) => {
+                return (
+                  <View key={index} style={styles.localContactContainer}>
+                    <View style={styles.contactLeft}>
+                      {item.imageAvailable ? (
+                        <Image
+                          style={styles.localUserImage}
+                          source={{
+                            uri: item?.image?.uri,
+                          }}
+                        />
+                      ) : (
+                        <View style={styles.defaultImage}>
+                          {typeof item.firstName === 'string' ? (
+                            <Text style={styles.defaultName}>
+                              {item?.firstName?.slice(0, 1)}
+                            </Text>
+                          ) : (
+                            <></>
+                          )}
+                        </View>
+                      )}
+                      <View style={styles.contactMiddle}>
+                        <Text numberOfLines={1} style={styles.localFirstName}>
+                          {item?.firstName}
+                        </Text>
+                        <Text numberOfLines={1} style={styles.localLastName}>
+                          {item?.lastName}
+                        </Text>
                       </View>
-                    )}
-                    <View style={styles.contactMiddle}>
-                      <Text numberOfLines={1} style={styles.localFirstName}>
-                        {item?.firstName}
-                      </Text>
-                      <Text numberOfLines={1} style={styles.localLastName}>
-                        {item?.lastName}
-                      </Text>
                     </View>
+                    <TouchableOpacity
+                      onPress={() => handleInvite(item.phoneNumbers[0].number)}>
+                      <Text style={styles.inviteContactText}>invite</Text>
+                    </TouchableOpacity>
                   </View>
-                  <TouchableOpacity
-                    onPress={() => handleInvite(item.phoneNumbers[0].number)}>
-                    <Text style={styles.inviteContactText}>invite</Text>
-                  </TouchableOpacity>
-                </View>
-              );
-            }}
-          />
-        ) : (
-          <></>
-        )}
-      </View>
+                );
+              }}
+            />
+          </View>
+        </>
+      ) : (
+        <View style={styles.accessBtnContainer}>
+          <TouchableOpacity onPress={handleSettings} style={styles.accessBtn}>
+            <Text style={styles.accessText}>Enable Access to Contacts</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -203,5 +215,27 @@ const styles = StyleSheet.create({
   inviteContactText: {
     color: Colors.greyOut,
     fontFamily: 'Inter-Regular',
+  },
+  accessBtnContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  accessBtn: {
+    paddingHorizontal: 25,
+    paddingVertical: 12,
+    borderRadius: 20,
+    backgroundColor: '#1F1F1F',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  accessText: {
+    alignSelf: 'center',
+    fontFamily: 'Inter-Bold',
+    fontSize: 16,
+    lineHeight: 30,
+    color: 'white',
+    textAlign: 'center',
   },
 });

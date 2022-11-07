@@ -9,7 +9,6 @@ import {
   SafeAreaView,
 } from 'react-native';
 import React from 'react';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../assets/utilities/Colors';
 
 const InviteContactsScreen = ({route}) => {
@@ -20,11 +19,15 @@ const InviteContactsScreen = ({route}) => {
       `sms:/open?addresses=${number}&body=download the Musicplace App!`,
     );
   };
+
+  async function handleSettings() {
+    await Linking.openSettings();
+  }
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.contactsContainer}>
-        <Text style={styles.inviteText}>Invite friends</Text>
-        {contacts ? (
+      {contacts ? (
+        <View style={styles.contactsContainer}>
+          <Text style={styles.inviteText}>Invite friends</Text>
           <FlatList
             showsVerticalScrollIndicator={false}
             data={contacts}
@@ -67,10 +70,16 @@ const InviteContactsScreen = ({route}) => {
               );
             }}
           />
-        ) : (
-          <></>
-        )}
-      </View>
+        </View>
+      ) : (
+        <>
+          <View style={styles.accessBtnContainer}>
+            <TouchableOpacity onPress={handleSettings} style={styles.accessBtn}>
+              <Text style={styles.accessText}>Enable Access to Contacts</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
     </SafeAreaView>
   );
 };
@@ -82,55 +91,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'black',
   },
-  topContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    alignSelf: 'center',
-    justifyContent: 'space-between',
-    marginTop: '6%',
-    width: '90%',
-  },
-  activityText: {
-    fontFamily: 'Inter-Bold',
-    color: 'white',
-    fontSize: 18,
-    alignSelf: 'center',
-  },
-  line: {
-    borderColor: Colors.darkGrey,
-    width: '100%',
-    borderWidth: 0.5,
-    alignSelf: 'center',
-    marginTop: '6%',
-  },
-  noMessages: {
-    color: Colors.greyOut,
-    fontFamily: 'Inter-Regular',
-    alignSelf: 'center',
-    width: '75%',
-    textAlign: 'center',
-    padding: 10,
-    lineHeight: 20,
-  },
-  musicplaceContactsContainer: {
-    marginTop: '5%',
-    // backgroundColor: 'red',
-    width: '90%',
-    flex: 0.5,
-    alignSelf: 'center',
-  },
-  musicplaceContacts: {
-    fontFamily: 'Inter-Medium',
-    color: 'white',
-    fontSize: 14,
-  },
   contactsContainer: {
     marginTop: '5%',
     width: '90%',
     flex: 1,
     alignSelf: 'center',
   },
-
   inviteText: {
     fontFamily: 'Inter-Medium',
     color: 'white',
@@ -185,5 +151,27 @@ const styles = StyleSheet.create({
   inviteContactText: {
     color: Colors.greyOut,
     fontFamily: 'Inter-Regular',
+  },
+  accessBtnContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  accessBtn: {
+    paddingHorizontal: 25,
+    paddingVertical: 12,
+    borderRadius: 20,
+    backgroundColor: '#1F1F1F',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  accessText: {
+    alignSelf: 'center',
+    fontFamily: 'Inter-Bold',
+    fontSize: 16,
+    lineHeight: 30,
+    color: 'white',
+    textAlign: 'center',
   },
 });
