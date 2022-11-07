@@ -63,6 +63,8 @@ const ProfileScreen = ({navigation}) => {
         .collection('users')
         .doc(UID)
         .onSnapshot(documentSnapshot => {
+          console.log(UID);
+          console.log(documentSnapshot.data());
           setUserProfile(documentSnapshot.data());
           setDisplayName(documentSnapshot.data().displayName);
           setBio(documentSnapshot.data().bio);
