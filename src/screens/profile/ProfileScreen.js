@@ -24,6 +24,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import {SPRING_CONFIG} from '../../assets/utilities/reanimated-2';
+
 const ProfileScreen = ({navigation}) => {
   const [userProfile, setUserProfile] = useState();
   const [username, setUsername] = useState();

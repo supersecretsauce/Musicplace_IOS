@@ -8,122 +8,89 @@ import {
   TextInput,
   KeyboardAvoidingView,
   FlatList,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Animated, {
+  useAnimatedGestureHandler,
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  runOnJS,
+} from 'react-native-reanimated';
+import {SPRING_CONFIG} from '../../assets/utilities/reanimated-2';
+import firestore from '@react-native-firebase/firestore';
+import {Context} from '../../context/Context';
+import EmptyChatUI from '../../components/EmptyChatUI';
 
 const DirectMessageScreen = ({route, navigation}) => {
+  const {UID} = useContext(Context);
   const {profileID, userProfile} = route.params;
+  const [chatDoc, setChatDoc] = useState(null);
+  const [messageText, setMessageText] = useState('');
+  const [chatEmpty, setChatEmpty] = useState(null);
 
   useEffect(() => {
-    if (userProfile) {
+    if (UID) {
       console.log(userProfile);
+      const subscriber = firestore()
+        .collection('chats')
+        .where('users', 'array-contains', UID)
+        .onSnapshot(documentSnapshot => {
+          console.log('User data: ', documentSnapshot);
+          if (documentSnapshot.empty) {
+            return;
+          } else {
+            setChatDoc(documentSnapshot._docs);
+          }
+        });
+
+      // Stop listening for updates when no longer required
+      return () => subscriber();
     }
-    if (profileID) {
-      console.log(profileID);
-    }
-  }, [userProfile, profileID]);
+  }, [UID]);
 
   const dummyData = [
     {
       test: 'test',
     },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
-    {
-      test: 'test',
-    },
   ];
 
+  //animation work
+  const flex = useSharedValue(0.9);
+  const style = useAnimatedStyle(() => {
+    return {
+      flex: flex.value,
+    };
+  });
+  function handleAnimation() {
+    flex.value = withSpring(0.5, SPRING_CONFIG);
+  }
+  function handleAnimationDown() {
+    flex.value = withSpring(0.9, SPRING_CONFIG);
+  }
+
+  function handleSendMessage() {
+    firestore()
+      .collection('chats')
+      .doc(chatDoc[0].id)
+      .collection('messages')
+      .add({
+        messageText: messageText,
+        sendAt: new Date(),
+      })
+      .then(() => {
+        console.log('User added!');
+      });
+  }
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={styles.container}
+      onTouchStart={() => Keyboard.dismiss()}>
       {userProfile ? (
         <>
           <View style={styles.header}>
@@ -157,22 +124,34 @@ const DirectMessageScreen = ({route, navigation}) => {
             </TouchableOpacity>
           </View>
           <View style={styles.line} />
-          <FlatList
-            data={dummyData}
-            renderItem={({item}) => {
-              return (
-                <View>
-                  <Text style={{color: 'white'}}>{item.test}</Text>
-                </View>
-              );
-            }}
-          />
-          <KeyboardAvoidingView behavior="position">
+          <Animated.View style={[style, styles.flatListContainer]}>
+            {chatDoc ? (
+              <FlatList
+                data={dummyData}
+                renderItem={({item}) => {
+                  return (
+                    <View>
+                      <Text style={{color: 'white'}}>{item.test}</Text>
+                    </View>
+                  );
+                }}
+              />
+            ) : (
+              <EmptyChatUI userProfile={userProfile} />
+            )}
+          </Animated.View>
+          <KeyboardAvoidingView
+            style={styles.keyboardContainer}
+            behavior="position">
             <View style={styles.inputContainer}>
               <TextInput
+                onFocus={handleAnimation}
+                onBlur={handleAnimationDown}
                 placeholder="send a message"
                 placeholderTextColor={Colors.greyOut}
                 style={styles.textInput}
+                onSubmitEditing={handleSendMessage}
+                onChangeText={text => setMessageText(text)}
               />
               <Ionicons name={'send'} color="white" size={18} />
             </View>
@@ -192,8 +171,7 @@ export default DirectMessageScreen;
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'black',
-    // flex: 1,
-    height: '100%',
+    flex: 1,
   },
   header: {
     flexDirection: 'row',
@@ -232,11 +210,23 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.darkGrey,
     borderWidth: 0.5,
   },
+  flatListContainer: {
+    // backgroundColor: 'red',
+  },
+
+  //keyboard and input UI
+  keyboardContainer: {
+    position: 'absolute',
+    bottom: 0,
+    paddingBottom: 10,
+    alignSelf: 'center',
+    width: '100%',
+  },
   inputContainer: {
     position: 'absolute',
     bottom: 0,
     backgroundColor: '#1F1F1F',
-    width: '90%',
+    width: '95%',
     alignSelf: 'center',
     alignItems: 'center',
     flexDirection: 'row',
@@ -248,6 +238,8 @@ const styles = StyleSheet.create({
   },
   textInput: {
     // backgroundColor: 'yellow',
+    width: 290,
     paddingLeft: 10,
+    color: 'white',
   },
 });
