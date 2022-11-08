@@ -6,6 +6,7 @@ import NoMessagesScreen from '../screens/activity/NoMessagesScreen';
 import InviteContactsScreen from '../screens/activity/InviteContactsScreen';
 import AddFriends from '../screens/activity/AddFriends';
 import ViewUserScreen from '../screens/home/ViewUserScreen';
+import DirectMessageScreen from '../screens/activity/DirectMessageScreen';
 
 const ActivityStackScreen = () => {
   const ActivityStack = createNativeStackNavigator();
@@ -23,6 +24,10 @@ const ActivityStackScreen = () => {
       />
       <ActivityStack.Screen name="AddFriends" component={AddFriends} />
       <ActivityStack.Screen name="ViewUserScreen" component={ViewUserScreen} />
+      {/* <ActivityStack.Screen
+        name="DirectMessageScreen"
+        component={DirectMessageScreen}
+      /> */}
     </ActivityStack.Navigator>
   );
 };

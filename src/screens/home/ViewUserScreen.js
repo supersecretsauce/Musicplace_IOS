@@ -184,13 +184,25 @@ const ViewUserScreen = ({route, navigation}) => {
               <Text style={styles.postText}>Posts</Text>
             </View>
             {UID !== profileID && (
-              <TouchableOpacity
-                style={styles.followBtn}
-                onPress={followHandler}>
-                <Text style={styles.followText}>
-                  {followersList?.includes(UID) ? 'Unfollow' : 'Follow'}
-                </Text>
-              </TouchableOpacity>
+              <View style={styles.btnRow}>
+                <TouchableOpacity
+                  style={styles.mailBtn}
+                  onPress={() => {
+                    navigation.navigate('DirectMessageScreen', {
+                      profileID: profileID,
+                      userProfile: userProfile,
+                    });
+                  }}>
+                  <Ionicons name={'mail-outline'} color="white" size={18} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.followBtn}
+                  onPress={followHandler}>
+                  <Text style={styles.followText}>
+                    {followersList?.includes(UID) ? 'Unfollow' : 'Follow'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             )}
           </View>
           <UserPosts navigation={navigation} profileID={profileID} UID={UID} />
@@ -296,14 +308,25 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Medium',
     marginLeft: 10,
   },
+  btnRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  mailBtn: {
+    padding: 6,
+    borderWidth: 0.5,
+    borderRadius: 20,
+    borderColor: Colors.greyOut,
+  },
   followBtn: {
     borderColor: Colors.greyOut,
     borderWidth: 0.5,
-    paddingVertical: 6,
+    paddingVertical: 7,
     paddingHorizontal: 40,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 9,
+    marginLeft: 10,
   },
   followText: {
     color: 'white',

@@ -20,7 +20,6 @@ mixpanel.init();
 
 export default function App() {
   const Stack = createNativeStackNavigator();
-  const Tab = createBottomTabNavigator();
   const [confirm, setConfirm] = useState(null);
   const [userLogin, setUserLogin] = useState(false);
   const [refreshToken, setRefreshToken] = useState('');
@@ -34,6 +33,7 @@ export default function App() {
   const [hasSpotify, setHasSpotify] = useState(null);
   const [UID, setUID] = useState(null);
   const appState = useRef(AppState.currentState);
+  const Tab = createBottomTabNavigator();
 
   // AsyncStorage.clear();
 
