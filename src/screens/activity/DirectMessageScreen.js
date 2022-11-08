@@ -11,7 +11,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from 'react-native';
-import React, {useEffect, useState, useContext} from 'react';
+import React, {useEffect, useState, useContext, useRef} from 'react';
 import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Animated, {
@@ -30,21 +30,22 @@ const DirectMessageScreen = ({route, navigation}) => {
   const {UID} = useContext(Context);
   const {profileID, userProfile} = route.params;
   const [chatDoc, setChatDoc] = useState(null);
+  const [messageDocs, setMessageDocs] = useState(null);
   const [messageText, setMessageText] = useState('');
-  const [chatEmpty, setChatEmpty] = useState(null);
+  const [chatDocID, setChatDocID] = useState(null);
+  const flatlistRef = useRef();
 
   useEffect(() => {
     if (UID) {
-      console.log(userProfile);
       const subscriber = firestore()
         .collection('chats')
-        .where('users', 'array-contains', UID)
+        .where('members', 'array-contains', UID && profileID)
         .onSnapshot(documentSnapshot => {
           console.log('User data: ', documentSnapshot);
           if (documentSnapshot.empty) {
             return;
           } else {
-            setChatDoc(documentSnapshot._docs);
+            setChatDoc(documentSnapshot._docs[0]);
           }
         });
 
@@ -53,14 +54,72 @@ const DirectMessageScreen = ({route, navigation}) => {
     }
   }, [UID]);
 
-  const dummyData = [
-    {
-      test: 'test',
-    },
-  ];
+  useEffect(() => {
+    if (chatDoc) {
+      const subscriber = firestore()
+        .collection('chats')
+        .doc(chatDoc.id)
+        .collection('messages')
+        .orderBy('sentAt', 'desc')
+        .onSnapshot(documentSnapshot => {
+          if (documentSnapshot.empty) {
+            console.log('no messages');
+          } else {
+            console.log('got messages', documentSnapshot._docs);
+            setMessageDocs(documentSnapshot._docs);
+          }
+        });
+      // Stop listening for updates when no longer required
+      return () => subscriber();
+    }
+  }, [chatDoc]);
+
+  function handleSendMessage() {
+    if (!chatDoc) {
+      firestore()
+        .collection('chats')
+        .add({
+          members: [profileID, UID],
+          createdAt: new Date(),
+        })
+        .then(resp => {
+          console.log('create chat doc', resp);
+          setChatDocID(resp.id);
+          firestore()
+            .collection('chats')
+            .doc(resp.id)
+            .collection('messages')
+            .add({
+              messageText: messageText,
+              sentAt: new Date(),
+              from: UID,
+            })
+            .then(() => {
+              console.log('message doc added!');
+              Keyboard.dismiss();
+              setMessageText('');
+            });
+        });
+    } else {
+      firestore()
+        .collection('chats')
+        .doc(chatDoc.id)
+        .collection('messages')
+        .add({
+          messageText: messageText,
+          sentAt: new Date(),
+          from: UID,
+        })
+        .then(() => {
+          console.log('message doc added!');
+          Keyboard.dismiss();
+          setMessageText('');
+        });
+    }
+  }
 
   //animation work
-  const flex = useSharedValue(0.9);
+  const flex = useSharedValue(0.86);
   const style = useAnimatedStyle(() => {
     return {
       flex: flex.value,
@@ -73,29 +132,22 @@ const DirectMessageScreen = ({route, navigation}) => {
     flex.value = withSpring(0.9, SPRING_CONFIG);
   }
 
-  function handleSendMessage() {
-    firestore()
-      .collection('chats')
-      .doc(chatDoc[0].id)
-      .collection('messages')
-      .add({
-        messageText: messageText,
-        sendAt: new Date(),
-      })
-      .then(() => {
-        console.log('User added!');
-      });
+  function handleNavigation() {
+    navigation.goBack();
   }
 
   return (
     <SafeAreaView
       style={styles.container}
-      onTouchStart={() => Keyboard.dismiss()}>
+      // onTouchStart={() => Keyboard.dismiss()}
+    >
       {userProfile ? (
         <>
           <View style={styles.header}>
             <View style={styles.headerLeft}>
-              <TouchableOpacity style={styles.backBtn}>
+              <TouchableOpacity
+                style={styles.backBtn}
+                onPress={handleNavigation}>
                 <Ionicons name={'chevron-back'} color="white" size={32} />
               </TouchableOpacity>
               {userProfile.pfpURL ? (
@@ -125,14 +177,29 @@ const DirectMessageScreen = ({route, navigation}) => {
           </View>
           <View style={styles.line} />
           <Animated.View style={[style, styles.flatListContainer]}>
-            {chatDoc ? (
+            {messageDocs ? (
               <FlatList
-                data={dummyData}
+                ref={flatlistRef}
+                data={messageDocs}
+                inverted
+                // onLayout={() => flatlistRef.scrollToEnd({animated: true})}
                 renderItem={({item}) => {
                   return (
-                    <View>
-                      <Text style={{color: 'white'}}>{item.test}</Text>
-                    </View>
+                    <>
+                      {item._data.from === profileID ? (
+                        <View style={styles.fromContainer}>
+                          <Text style={styles.messageText}>
+                            {item._data.messageText}
+                          </Text>
+                        </View>
+                      ) : (
+                        <View style={styles.myUserContainer}>
+                          <Text style={styles.messageText}>
+                            {item._data.messageText}
+                          </Text>
+                        </View>
+                      )}
+                    </>
                   );
                 }}
               />
@@ -152,8 +219,14 @@ const DirectMessageScreen = ({route, navigation}) => {
                 style={styles.textInput}
                 onSubmitEditing={handleSendMessage}
                 onChangeText={text => setMessageText(text)}
+                value={messageText}
               />
-              <Ionicons name={'send'} color="white" size={18} />
+              <Ionicons
+                name={'send'}
+                color="white"
+                size={18}
+                onPress={handleSendMessage}
+              />
             </View>
           </KeyboardAvoidingView>
         </>
@@ -212,6 +285,40 @@ const styles = StyleSheet.create({
   },
   flatListContainer: {
     // backgroundColor: 'red',
+    paddingTop: 10,
+  },
+
+  // from user
+  fromContainer: {
+    backgroundColor: '#1F1F1F',
+    textAlign: 'left',
+    alignItems: 'flex-start',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    maxWidth: '75%',
+    alignSelf: 'flex-start',
+    borderRadius: 20,
+    marginVertical: 5,
+    marginLeft: '5%',
+  },
+
+  // my user
+  myUserContainer: {
+    backgroundColor: 'rgba(255, 8, 0, 0.8);',
+    textAlign: 'right',
+    alignItems: 'flex-end',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    maxWidth: '75%',
+    alignSelf: 'flex-end',
+    borderRadius: 20,
+    marginVertical: 5,
+    marginRight: '5%',
+  },
+
+  messageText: {
+    color: 'white',
+    fontFamily: 'Inter-Regular',
   },
 
   //keyboard and input UI
