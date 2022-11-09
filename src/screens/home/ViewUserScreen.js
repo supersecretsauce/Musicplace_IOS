@@ -9,7 +9,7 @@ import {firebase} from '@react-native-firebase/firestore';
 import HapticFeedback from 'react-native-haptic-feedback';
 
 const ViewUserScreen = ({route, navigation}) => {
-  const {profileID, UID} = route.params;
+  const {profileID, UID, prevRoute, myUser} = route.params;
   const [userProfile, setUserProfile] = useState(null);
   const [header, setHeader] = useState(null);
   const [profilePic, setProfilePic] = useState(null);
@@ -117,6 +117,14 @@ const ViewUserScreen = ({route, navigation}) => {
     }
   }
 
+  function handleNav() {
+    if (prevRoute === 'search') {
+      navigation.navigate('AddFriends');
+    } else {
+      navigation.navigate('HomeScreen');
+    }
+  }
+
   return (
     <View style={styles.container}>
       {userProfile ? (
@@ -131,9 +139,7 @@ const ViewUserScreen = ({route, navigation}) => {
           ) : (
             <View style={styles.header} />
           )}
-          <TouchableOpacity
-            style={styles.backBtn}
-            onPress={() => navigation.navigate('HomeScreen')}>
+          <TouchableOpacity style={styles.backBtn} onPress={handleNav}>
             <Ionicons name={'chevron-back'} color="white" size={40} />
           </TouchableOpacity>
           {profilePic ? (
@@ -178,13 +184,26 @@ const ViewUserScreen = ({route, navigation}) => {
               <Text style={styles.postText}>Posts</Text>
             </View>
             {UID !== profileID && (
-              <TouchableOpacity
-                style={styles.followBtn}
-                onPress={followHandler}>
-                <Text style={styles.followText}>
-                  {followersList?.includes(UID) ? 'Unfollow' : 'Follow'}
-                </Text>
-              </TouchableOpacity>
+              <View style={styles.btnRow}>
+                <TouchableOpacity
+                  style={styles.mailBtn}
+                  onPress={() => {
+                    navigation.navigate('DirectMessageScreen', {
+                      profileID: profileID,
+                      userProfile: userProfile,
+                      myUser: myUser,
+                    });
+                  }}>
+                  <Ionicons name={'mail-outline'} color="white" size={18} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.followBtn}
+                  onPress={followHandler}>
+                  <Text style={styles.followText}>
+                    {followersList?.includes(UID) ? 'Unfollow' : 'Follow'}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             )}
           </View>
           <UserPosts navigation={navigation} profileID={profileID} UID={UID} />
@@ -290,14 +309,25 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Medium',
     marginLeft: 10,
   },
+  btnRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  mailBtn: {
+    padding: 6,
+    borderWidth: 0.5,
+    borderRadius: 20,
+    borderColor: Colors.greyOut,
+  },
   followBtn: {
     borderColor: Colors.greyOut,
     borderWidth: 0.5,
-    paddingVertical: 6,
+    paddingVertical: 7,
     paddingHorizontal: 40,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 9,
+    marginLeft: 10,
   },
   followText: {
     color: 'white',

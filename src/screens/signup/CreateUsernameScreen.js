@@ -87,7 +87,9 @@ const CreateUsernameScreen = ({navigation}) => {
         await firestore().collection('usernames').doc(username).set({
           UID: userInfo.uid,
         });
-        navigation.navigate('ConnectSpotifyScreen');
+        navigation.navigate('ConnectSpotifyScreen', {
+          username: username,
+        });
       } catch (error) {
         console.log('error uploading username to db');
         return;

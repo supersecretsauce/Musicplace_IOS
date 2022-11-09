@@ -13,6 +13,8 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		1CBF418F135AAE2105FCA32D /* Pods_musicplace_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 33A044EB61402716427A876A /* Pods_musicplace_ios.framework */; };
 		1D6654E0BA5946CEAE8796B9 /* Inter-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4287A011B76B4E2E90724E8D /* Inter-Black.ttf */; };
+		280CA47CC24D1785828238B4 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D9D6E279153A38D405EB9C /* ExpoModulesProvider.swift */; };
+		50FCB5FF3D0FFB6EBDB42E54 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 718936629CB98AF6D8A31DD4 /* ExpoModulesProvider.swift */; };
 		52D604539A194A888458C9D9 /* Inter-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 053EBED09F814467B09B5D21 /* Inter-Medium.ttf */; };
 		55086197ACC64500A367BCF8 /* Inter-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 58C2D8AED98C4A5DADD0ED04 /* Inter-ExtraLight.ttf */; };
 		6013502A5FDD4542B75CBBB3 /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7F70A953386041A5A8377206 /* Inter-Bold.ttf */; };
@@ -58,6 +60,7 @@
 		00E356F21AD99517003FC87E /* musicplace_iosTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = musicplace_iosTests.m; sourceTree = "<group>"; };
 		053EBED09F814467B09B5D21 /* Inter-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Medium.ttf"; path = "../src/assets/fonts/Inter-Medium.ttf"; sourceTree = "<group>"; };
 		05FF9C4D9A6C4BFBB3061863 /* Inter-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Thin.ttf"; path = "../src/assets/fonts/Inter-Thin.ttf"; sourceTree = "<group>"; };
+		07D9D6E279153A38D405EB9C /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-musicplace_ios/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* musicplace_ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = musicplace_ios.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = musicplace_ios/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = musicplace_ios/AppDelegate.mm; sourceTree = "<group>"; };
@@ -73,6 +76,7 @@
 		5709B34CF0A7D63546082F79 /* Pods-musicplace_ios.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-musicplace_ios.release.xcconfig"; path = "Target Support Files/Pods-musicplace_ios/Pods-musicplace_ios.release.xcconfig"; sourceTree = "<group>"; };
 		58C2D8AED98C4A5DADD0ED04 /* Inter-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ExtraLight.ttf"; path = "../src/assets/fonts/Inter-ExtraLight.ttf"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-musicplace_ios-musicplace_iosTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-musicplace_ios-musicplace_iosTests.debug.xcconfig"; path = "Target Support Files/Pods-musicplace_ios-musicplace_iosTests/Pods-musicplace_ios-musicplace_iosTests.debug.xcconfig"; sourceTree = "<group>"; };
+		718936629CB98AF6D8A31DD4 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-musicplace_ios-musicplace_iosTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		7F70A953386041A5A8377206 /* Inter-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Bold.ttf"; path = "../src/assets/fonts/Inter-Bold.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = musicplace_ios/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-musicplace_ios-musicplace_iosTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-musicplace_ios-musicplace_iosTests.release.xcconfig"; path = "Target Support Files/Pods-musicplace_ios-musicplace_iosTests/Pods-musicplace_ios-musicplace_iosTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -159,6 +163,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		4B3BB4FC6AE1EB86AEDA53BB /* musicplace_iosTests */ = {
+			isa = PBXGroup;
+			children = (
+				718936629CB98AF6D8A31DD4 /* ExpoModulesProvider.swift */,
+			);
+			name = musicplace_iosTests;
+			sourceTree = "<group>";
+		};
 		5230EAF8E1DD447290856F7F /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -173,6 +185,15 @@
 				05FF9C4D9A6C4BFBB3061863 /* Inter-Thin.ttf */,
 			);
 			name = Resources;
+			sourceTree = "<group>";
+		};
+		60A8E7CF26A8BB9F338CD8BD /* ExpoModulesProviders */ = {
+			isa = PBXGroup;
+			children = (
+				F28EE97C450A2E24BF360F8E /* musicplace_ios */,
+				4B3BB4FC6AE1EB86AEDA53BB /* musicplace_iosTests */,
+			);
+			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -193,6 +214,7 @@
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
 				5230EAF8E1DD447290856F7F /* Resources */,
+				60A8E7CF26A8BB9F338CD8BD /* ExpoModulesProviders */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -242,6 +264,14 @@
 			name = Fonts;
 			sourceTree = "<group>";
 		};
+		F28EE97C450A2E24BF360F8E /* musicplace_ios */ = {
+			isa = PBXGroup;
+			children = (
+				07D9D6E279153A38D405EB9C /* ExpoModulesProvider.swift */,
+			);
+			name = musicplace_ios;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -254,6 +284,7 @@
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
 				C59DA0FBD6956966B86A3779 /* [CP] Embed Pods Frameworks */,
+				CF8429A4B006013478CD9091 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -278,6 +309,7 @@
 				00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */,
 				2EE84D96C194203C1F347025 /* [CP-User] [RNFB] Core Configuration */,
 				B2F076338A71EF242BBB928C /* [CP-User] [RNFB] Crashlytics Configuration */,
+				FCB7A9C75E5D0395CCDFD775 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -491,6 +523,40 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-musicplace_ios-musicplace_iosTests/Pods-musicplace_ios-musicplace_iosTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		CF8429A4B006013478CD9091 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-musicplace_ios-musicplace_iosTests/Pods-musicplace_ios-musicplace_iosTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-musicplace_ios-musicplace_iosTests/Pods-musicplace_ios-musicplace_iosTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-musicplace_ios-musicplace_iosTests/Pods-musicplace_ios-musicplace_iosTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		FCB7A9C75E5D0395CCDFD775 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-musicplace_ios/Pods-musicplace_ios-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-musicplace_ios/Pods-musicplace_ios-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-musicplace_ios/Pods-musicplace_ios-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -518,6 +584,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				00E356F31AD99517003FC87E /* musicplace_iosTests.m in Sources */,
+				50FCB5FF3D0FFB6EBDB42E54 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -527,6 +594,7 @@
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				280CA47CC24D1785828238B4 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -563,6 +631,7 @@
 					"-lc++",
 					"$(inherited)",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/musicplace_ios.app/musicplace_ios";
@@ -588,6 +657,7 @@
 					"-lc++",
 					"$(inherited)",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/musicplace_ios.app/musicplace_ios";
@@ -605,7 +675,7 @@
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = musicplace_ios/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Musicplace;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -616,6 +686,7 @@
 					"-ObjC",
 					"-lc++",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = musicplace_ios;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -635,7 +706,7 @@
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = musicplace_ios/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Musicplace;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -646,6 +717,7 @@
 					"-ObjC",
 					"-lc++",
 				);
+				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = musicplace_ios;
 				SWIFT_VERSION = 5.0;

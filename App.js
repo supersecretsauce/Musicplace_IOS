@@ -13,13 +13,13 @@ import {StyleSheet, StatusBar} from 'react-native';
 import Toast from 'react-native-toast-message';
 import HomeStackScreen from './src/routes/HomeStackScreen';
 import WelcomeStackScreen from './src/routes/WelcomeStackScreen';
+import ActivityStackScreen from './src/routes/ActivityStackScreen';
 import {mixpanel} from './mixpanel';
 
 mixpanel.init();
 
 export default function App() {
   const Stack = createNativeStackNavigator();
-  const Tab = createBottomTabNavigator();
   const [confirm, setConfirm] = useState(null);
   const [userLogin, setUserLogin] = useState(false);
   const [refreshToken, setRefreshToken] = useState('');
@@ -31,7 +31,9 @@ export default function App() {
   const [username, setUsername] = useState('');
   const [currentPost, setCurrentPost] = useState();
   const [hasSpotify, setHasSpotify] = useState(null);
+  const [UID, setUID] = useState(null);
   const appState = useRef(AppState.currentState);
+  const Tab = createBottomTabNavigator();
 
   // AsyncStorage.clear();
 
@@ -120,6 +122,8 @@ export default function App() {
             setParentComments,
             hasSpotify,
             setHasSpotify,
+            UID,
+            setUID,
           }}>
           {userLogin ? (
             <Tab.Navigator
@@ -154,7 +158,7 @@ export default function App() {
               <Tab.Screen name="Home" component={HomeStackScreen} />
               {/* <Tab.Screen name="Discover" component={ActivityStackScreen} /> */}
               <Tab.Screen name="Post" component={PostStackScreen} />
-              {/* <Tab.Screen name="Activity" component={ActivityStackScreen} /> */}
+              <Tab.Screen name="Activity" component={ActivityStackScreen} />
               <Tab.Screen name="Profile" component={ProfileStackScreen} />
             </Tab.Navigator>
           ) : (

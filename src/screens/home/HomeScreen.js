@@ -29,7 +29,6 @@ const HomeScreen = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentTrack, setCurrentTrack] = useState(null);
   const [likedTracks, setLikedTracks] = useState([]);
-  const [UID, setUID] = useState(null);
   const {
     accessToken,
     refreshToken,
@@ -37,6 +36,8 @@ const HomeScreen = () => {
     setRefreshToken,
     setHasSpotify,
     hasSpotify,
+    setUID,
+    UID,
   } = useContext(Context);
 
   useFocusEffect(

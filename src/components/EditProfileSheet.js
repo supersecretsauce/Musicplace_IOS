@@ -126,10 +126,24 @@ const EditProfileSheet = props => {
       console.log('trying PFP');
       const reference = storage().ref(UID + 'PFP');
       const task = reference.putFile(PFP);
-      task.on('state_changed', taskSnapshot => {
-        console.log(
-          `${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`,
-        );
+      task.then(() => {
+        console.log('Image uploaded to the bucket!');
+        const url = storage()
+          .ref(UID + 'PFP')
+          .getDownloadURL();
+        url.then(resp => {
+          console.log('photo url is', resp);
+          firestore()
+            .collection('users')
+            .doc(UID)
+            .update({
+              pfpURL: resp,
+            })
+            .then(() => {
+              console.log('add photo to user doc');
+            })
+            .catch(e => console.log(e));
+        });
       });
     }
     if (header && userSelectedHeader) {
@@ -137,10 +151,24 @@ const EditProfileSheet = props => {
       console.log('trying header');
       const reference = storage().ref(UID + 'HEADER');
       const task = reference.putFile(header);
-      task.on('state_changed', taskSnapshot => {
-        console.log(
-          `${taskSnapshot.bytesTransferred} transferred out of ${taskSnapshot.totalBytes}`,
-        );
+      task.then(() => {
+        console.log('Image uploaded to the bucket!');
+        const url = storage()
+          .ref(UID + 'HEADER')
+          .getDownloadURL();
+        url.then(resp => {
+          console.log('header url is', resp);
+          firestore()
+            .collection('users')
+            .doc(UID)
+            .update({
+              headerURL: resp,
+            })
+            .then(() => {
+              console.log('add photo to user doc');
+            })
+            .catch(e => console.log(e));
+        });
       });
     }
   };

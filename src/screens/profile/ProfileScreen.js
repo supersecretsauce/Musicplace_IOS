@@ -24,6 +24,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import {SPRING_CONFIG} from '../../assets/utilities/reanimated-2';
+
 const ProfileScreen = ({navigation}) => {
   const [userProfile, setUserProfile] = useState();
   const [username, setUsername] = useState();
@@ -63,6 +64,8 @@ const ProfileScreen = ({navigation}) => {
         .collection('users')
         .doc(UID)
         .onSnapshot(documentSnapshot => {
+          console.log(UID);
+          console.log(documentSnapshot.data());
           setUserProfile(documentSnapshot.data());
           setDisplayName(documentSnapshot.data().displayName);
           setBio(documentSnapshot.data().bio);
