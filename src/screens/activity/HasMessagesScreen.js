@@ -14,23 +14,9 @@ import Colors from '../../assets/utilities/Colors';
 import firestore from '@react-native-firebase/firestore';
 
 const HasMessagesScreen = ({route, navigation}) => {
-  const {messages} = route.params;
+  const {messages, myUser} = route.params;
   const {UID} = useContext(Context);
   const [memberInfo, setMemberInfo] = useState(null);
-  const [myUser, setMyUser] = useState(null);
-
-  useEffect(() => {
-    if (UID) {
-      firestore()
-        .collection('users')
-        .doc(UID)
-        .get()
-        .then(resp => {
-          console.log('my user', resp._data);
-          setMyUser(resp._data);
-        });
-    }
-  }, [UID]);
 
   useEffect(() => {
     if (messages && UID) {

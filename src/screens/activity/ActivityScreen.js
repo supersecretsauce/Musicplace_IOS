@@ -5,6 +5,7 @@ import {
   SafeAreaView,
   FlatList,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import React, {useEffect, useState, useContext} from 'react';
 import Colors from '../../assets/utilities/Colors';
@@ -18,6 +19,8 @@ const ActivityScreen = ({navigation}) => {
   const [phoneNumbers, setPhoneNumbers] = useState(null);
   // const [followingList, setFollowingList] = useState(null);
   const [messages, setMessages] = useState(null);
+  const [memberInfo, setMemberInfo] = useState(null);
+  const [myUser, setMyUser] = useState(null);
   const {UID} = useContext(Context);
 
   useEffect(() => {
@@ -63,18 +66,37 @@ const ActivityScreen = ({navigation}) => {
 
   useEffect(() => {
     if (UID) {
+      firestore()
+        .collection('users')
+        .doc(UID)
+        .get()
+        .then(resp => {
+          console.log('my user', resp._data);
+          setMyUser(resp._data);
+        });
+    }
+  }, [UID]);
+
+  useEffect(() => {
+    if (UID) {
       // check if a user has messages
       const subscriber = firestore()
         .collection('chats')
         .where('members', 'array-contains', UID)
         .onSnapshot(documentSnapshot => {
-          let emptyArr = [];
+          let messageDocs = [];
           console.log('User data: ', documentSnapshot._docs);
           documentSnapshot._docs.forEach(doc => {
-            emptyArr.push(doc._data);
+            messageDocs.push(doc._data);
           });
-          console.log(emptyArr);
-          setMessages(emptyArr);
+          setMessages(messageDocs);
+          let filteredMemberInfo = messageDocs.map(doc => {
+            return doc.memberInfo.filter(member => {
+              return member.UID !== UID;
+            });
+          });
+          console.log(filteredMemberInfo);
+          setMemberInfo(filteredMemberInfo);
         });
 
       // Stop listening for updates when no longer required
@@ -83,12 +105,6 @@ const ActivityScreen = ({navigation}) => {
   }, [UID]);
 
   const defaultActivityText = [
-    {
-      top: 'No Activity Yet',
-      bottom: 'Get started by posting a song.',
-    },
-  ];
-  const defaultMessageText = [
     {
       top: 'Musicplace Team',
       bottom: 'Get started by adding your friends.',
@@ -107,10 +123,21 @@ const ActivityScreen = ({navigation}) => {
     });
   }
 
+  function handleMessageNav(item) {
+    if (item && myUser) {
+      navigation.navigate('DirectMessageScreen', {
+        profileID: item.UID,
+        userProfile: item,
+        myUser: myUser,
+      });
+    }
+  }
+
   function newMessageNav() {
-    if (messages.length > 0) {
+    if (messages.length > 0 && myUser) {
       navigation.navigate('HasMessagesScreen', {
         messages: messages,
+        myUser: myUser,
       });
     } else {
       navigation.navigate('NoMessagesScreen');
@@ -140,7 +167,10 @@ const ActivityScreen = ({navigation}) => {
             data={defaultActivityText}
             renderItem={({item, index}) => {
               return (
-                <TouchableOpacity key={index} style={styles.itemContainer}>
+                <TouchableOpacity
+                  key={index}
+                  style={styles.itemContainer}
+                  onPress={() => handleNav(item.nav)}>
                   <View style={styles.itemLeft}>
                     <View style={styles.musicplaceLogo} />
                     <View style={styles.itemMiddle}>
@@ -165,18 +195,27 @@ const ActivityScreen = ({navigation}) => {
         <Text style={styles.messagesText}>Messages</Text>
         <View style={styles.messagesFlatListContainer}>
           <FlatList
-            data={defaultMessageText}
+            data={memberInfo}
             renderItem={({item, index}) => {
               return (
                 <TouchableOpacity
                   key={index}
                   style={styles.itemContainer}
-                  onPress={() => handleNav(item.nav)}>
+                  onPress={() => handleMessageNav(item[0])}>
                   <View style={styles.itemLeft}>
-                    <View style={styles.musicplaceLogo} />
+                    {item[0].pfpURL ? (
+                      <Image
+                        style={styles.musicplaceLogo}
+                        source={{
+                          uri: item[0].pfpURL,
+                        }}
+                      />
+                    ) : (
+                      <View style={styles.musicplaceLogo} />
+                    )}
                     <View style={styles.itemMiddle}>
-                      <Text style={styles.topText}>{item.top}</Text>
-                      <Text style={styles.bottomText}>{item.bottom}</Text>
+                      <Text style={styles.topText}>{item[0].displayName}</Text>
+                      <Text style={styles.bottomText}>@{item[0].handle}</Text>
                     </View>
                   </View>
                   <View>
