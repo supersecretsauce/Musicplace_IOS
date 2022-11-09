@@ -313,6 +313,7 @@ const BottomSheet = props => {
                                   navigate('ViewUserScreen', {
                                     profileID: item._data.UID,
                                     UID: UID,
+                                    myUser: userDoc,
                                   });
                                 }}>
                                 <Image

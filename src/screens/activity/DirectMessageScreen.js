@@ -28,14 +28,13 @@ import EmptyChatUI from '../../components/EmptyChatUI';
 
 const DirectMessageScreen = ({route, navigation}) => {
   const {UID} = useContext(Context);
-  const {profileID, userProfile} = route.params;
+  const {profileID, userProfile, myUser} = route.params;
   const [chatDoc, setChatDoc] = useState(null);
   const [messageDocs, setMessageDocs] = useState(null);
   const [messageText, setMessageText] = useState('');
   const [chatDocID, setChatDocID] = useState(null);
   const flatlistRef = useRef();
 
-  console.log(userProfile);
   useEffect(() => {
     if (UID) {
       const subscriber = firestore()
@@ -76,12 +75,29 @@ const DirectMessageScreen = ({route, navigation}) => {
   }, [chatDoc]);
 
   function handleSendMessage() {
+    Keyboard.dismiss();
+    setMessageText('');
     if (!chatDoc) {
       firestore()
         .collection('chats')
         .add({
-          members: [profileID, UID],
+          members: [UID, profileID],
+          memberInfo: [
+            {
+              UID: profileID,
+              pfpURL: userProfile.pfpURL,
+              displayName: userProfile.displayName,
+              handle: userProfile.handle,
+            },
+            {
+              UID: UID,
+              pfpURL: myUser.pfpURL,
+              displayName: myUser.displayName,
+              handle: myUser.handle,
+            },
+          ],
           createdAt: new Date(),
+          lastMessageAt: new Date(),
         })
         .then(resp => {
           console.log('create chat doc', resp);
@@ -97,8 +113,6 @@ const DirectMessageScreen = ({route, navigation}) => {
             })
             .then(() => {
               console.log('message doc added!');
-              Keyboard.dismiss();
-              setMessageText('');
             });
         });
     } else {
@@ -113,8 +127,16 @@ const DirectMessageScreen = ({route, navigation}) => {
         })
         .then(() => {
           console.log('message doc added!');
-          Keyboard.dismiss();
-          setMessageText('');
+        });
+      firestore()
+        .collection('chats')
+        .doc(chatDoc.id)
+
+        .update({
+          lastMessageAt: new Date(),
+        })
+        .then(() => {
+          console.log('updated lastMessageAt!');
         });
     }
   }

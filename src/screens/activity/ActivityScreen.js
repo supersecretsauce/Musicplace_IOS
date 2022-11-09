@@ -6,15 +6,19 @@ import {
   FlatList,
   TouchableOpacity,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as Contacts from 'expo-contacts';
 import firestore from '@react-native-firebase/firestore';
+import {Context} from '../../context/Context';
 
 const ActivityScreen = ({navigation}) => {
   const [contacts, setContacts] = useState(null);
   const [phoneNumbers, setPhoneNumbers] = useState(null);
+  // const [followingList, setFollowingList] = useState(null);
+  const [messages, setMessages] = useState(null);
+  const {UID} = useContext(Context);
 
   useEffect(() => {
     (async () => {
@@ -43,32 +47,40 @@ const ActivityScreen = ({navigation}) => {
   }, []);
 
   // useEffect(() => {
-  //   if (phoneNumbers) {
-  //     async function getExistingUsers() {
-  //       let results = [];
-  //       for (let i = 0; i < phoneNumbers.length; i += 10) {
-  //         let doc = await firestore()
-  //           .collection('users')
-  //           .where('phoneNumber', 'in', [
-  //             phoneNumbers[i],
-  //             phoneNumbers[i + 1],
-  //             phoneNumbers[i + 2],
-  //             phoneNumbers[i + 3],
-  //             phoneNumbers[i + 4],
-  //             phoneNumbers[i + 5],
-  //             phoneNumbers[i + 6],
-  //             phoneNumbers[i + 7],
-  //             phoneNumbers[i + 8],
-  //             phoneNumbers[i + 9],
-  //           ])
-  //           .get();
-  //         console.log(doc);
-  //       }
-  //       // console.log(results);
-  //     }
-  //     getExistingUsers();
+  //   if (UID) {
+  //     const subscriber = firestore()
+  //       .collection('users')
+  //       .doc(UID)
+  //       .onSnapshot(documentSnapshot => {
+  //         console.log('User data: ', documentSnapshot.data());
+  //         setFollowingList(documentSnapshot.data().followingList);
+  //       });
+
+  //     // Stop listening for updates when no longer required
+  //     return () => subscriber();
   //   }
-  // }, [phoneNumbers]);
+  // }, [UID]);
+
+  useEffect(() => {
+    if (UID) {
+      // check if a user has messages
+      const subscriber = firestore()
+        .collection('chats')
+        .where('members', 'array-contains', UID)
+        .onSnapshot(documentSnapshot => {
+          let emptyArr = [];
+          console.log('User data: ', documentSnapshot._docs);
+          documentSnapshot._docs.forEach(doc => {
+            emptyArr.push(doc._data);
+          });
+          console.log(emptyArr);
+          setMessages(emptyArr);
+        });
+
+      // Stop listening for updates when no longer required
+      return () => subscriber();
+    }
+  }, [UID]);
 
   const defaultActivityText = [
     {
@@ -95,6 +107,16 @@ const ActivityScreen = ({navigation}) => {
     });
   }
 
+  function newMessageNav() {
+    if (messages.length > 0) {
+      navigation.navigate('HasMessagesScreen', {
+        messages: messages,
+      });
+    } else {
+      navigation.navigate('NoMessagesScreen');
+    }
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.activityContainer}>
@@ -106,12 +128,7 @@ const ActivityScreen = ({navigation}) => {
           <Ionicons name={'person-add-outline'} color={'white'} size={28} />
         </TouchableOpacity>
         <Text style={styles.activityText}>Activity</Text>
-        <TouchableOpacity
-          onPress={() => {
-            navigation.navigate('NoMessagesScreen', {
-              contacts: contacts,
-            });
-          }}>
+        <TouchableOpacity onPress={newMessageNav}>
           <Ionicons name={'create-outline'} color={'white'} size={32} />
         </TouchableOpacity>
       </View>

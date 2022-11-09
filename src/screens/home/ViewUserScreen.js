@@ -9,7 +9,7 @@ import {firebase} from '@react-native-firebase/firestore';
 import HapticFeedback from 'react-native-haptic-feedback';
 
 const ViewUserScreen = ({route, navigation}) => {
-  const {profileID, UID, prevRoute} = route.params;
+  const {profileID, UID, prevRoute, myUser} = route.params;
   const [userProfile, setUserProfile] = useState(null);
   const [header, setHeader] = useState(null);
   const [profilePic, setProfilePic] = useState(null);
@@ -191,6 +191,7 @@ const ViewUserScreen = ({route, navigation}) => {
                     navigation.navigate('DirectMessageScreen', {
                       profileID: profileID,
                       userProfile: userProfile,
+                      myUser: myUser,
                     });
                   }}>
                   <Ionicons name={'mail-outline'} color="white" size={18} />
