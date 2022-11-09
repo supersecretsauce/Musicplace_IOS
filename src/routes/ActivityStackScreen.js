@@ -29,6 +29,10 @@ const ActivityStackScreen = () => {
       />
       <ActivityStack.Screen name="AddFriends" component={AddFriends} />
       <ActivityStack.Screen name="ViewUserScreen" component={ViewUserScreen} />
+      <ActivityStack.Screen
+        name="DirectMessageScreen"
+        component={DirectMessageScreen}
+      />
     </ActivityStack.Navigator>
   );
 };
