@@ -35,6 +35,7 @@ const DirectMessageScreen = ({route, navigation}) => {
   const [chatDocID, setChatDocID] = useState(null);
   const flatlistRef = useRef();
 
+  console.log(userProfile);
   useEffect(() => {
     if (UID) {
       const subscriber = firestore()
@@ -154,7 +155,7 @@ const DirectMessageScreen = ({route, navigation}) => {
                 <Image
                   style={styles.pfp}
                   source={{
-                    uri: userProfile.profilePic,
+                    uri: userProfile.pfpURL,
                   }}
                 />
               ) : (
@@ -220,6 +221,7 @@ const DirectMessageScreen = ({route, navigation}) => {
                 onSubmitEditing={handleSendMessage}
                 onChangeText={text => setMessageText(text)}
                 value={messageText}
+                keyboardAppearance="dark"
               />
               <Ionicons
                 name={'send'}
