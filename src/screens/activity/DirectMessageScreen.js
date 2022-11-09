@@ -129,7 +129,7 @@ const DirectMessageScreen = ({route, navigation}) => {
     flex.value = withSpring(0.5, SPRING_CONFIG);
   }
   function handleAnimationDown() {
-    flex.value = withSpring(0.9, SPRING_CONFIG);
+    flex.value = withSpring(0.86, SPRING_CONFIG);
   }
 
   function handleNavigation() {
@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
   },
   flatListContainer: {
     // backgroundColor: 'red',
-    paddingTop: 10,
+    // paddingTop: 10,
   },
 
   // from user
@@ -325,9 +325,11 @@ const styles = StyleSheet.create({
   keyboardContainer: {
     position: 'absolute',
     bottom: 0,
-    paddingBottom: 10,
+    paddingBottom: '5%',
+    paddingTop: '5%',
     alignSelf: 'center',
     width: '100%',
+    // backgroundColor: 'red',
   },
   inputContainer: {
     position: 'absolute',
