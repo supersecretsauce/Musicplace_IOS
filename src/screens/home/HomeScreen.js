@@ -22,6 +22,7 @@ import {Context} from '../../context/Context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {mixpanel} from '../../../mixpanel';
 import {firebase} from '@react-native-firebase/firestore';
+import messaging from '@react-native-firebase/messaging';
 
 const HomeScreen = () => {
   Sound.setCategory('Playback');
@@ -80,6 +81,35 @@ const HomeScreen = () => {
     }
     checkSpotifyConnection();
   }, []);
+
+  //get notification token and push to user doc
+  useEffect(() => {
+    if (UID) {
+      async function requestUserPermission() {
+        const authStatus = await messaging().requestPermission();
+        const enabled =
+          authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+          authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+        if (enabled) {
+          console.log('Authorization status:', authStatus);
+          messaging()
+            .getToken()
+            .then(token => {
+              firestore()
+                .collection('users')
+                .doc(UID)
+                .update({
+                  notificationToken: token,
+                })
+                .then(() => {
+                  console.log('token pushed!');
+                });
+            });
+        }
+      }
+      requestUserPermission();
+    }
+  }, [UID]);
 
   useEffect(() => {
     if (feed) {
