@@ -105,6 +105,8 @@ const HomeScreen = () => {
                   console.log('token pushed!');
                 });
             });
+        } else {
+          console.log(authStatus);
         }
       }
       requestUserPermission();
