@@ -14,7 +14,7 @@ import HomeStackScreen from './src/routes/HomeStackScreen';
 import WelcomeStackScreen from './src/routes/WelcomeStackScreen';
 import ActivityStackScreen from './src/routes/ActivityStackScreen';
 import {mixpanel} from './mixpanel';
-import notifee from '@notifee/react-native';
+import notifee, {EventType} from '@notifee/react-native';
 import {AppState} from 'react-native';
 mixpanel.init();
 
@@ -43,6 +43,7 @@ export default function App() {
     const initialNotification = await notifee.getInitialNotification();
 
     if (initialNotification) {
+      console.log(initialNotification);
       navigationRef.current.navigate('Activity', {screen: 'ActivityScreen'});
     }
   }
@@ -63,6 +64,23 @@ export default function App() {
     return () => {
       subscription.remove();
     };
+  }, []);
+
+  useEffect(() => {
+    return notifee.onForegroundEvent(({type, detail}) => {
+      switch (type) {
+        case EventType.DISMISSED:
+          console.log('User dismissed notification', detail.notification);
+          break;
+        case EventType.PRESS:
+          console.log('User pressed notification', detail.notification);
+          navigationRef.current.navigate('Activity', {
+            screen: 'ActivityScreen',
+          });
+
+          break;
+      }
+    });
   }, []);
 
   useEffect(() => {
