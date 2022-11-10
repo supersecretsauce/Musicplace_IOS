@@ -14,7 +14,8 @@ import HomeStackScreen from './src/routes/HomeStackScreen';
 import WelcomeStackScreen from './src/routes/WelcomeStackScreen';
 import ActivityStackScreen from './src/routes/ActivityStackScreen';
 import {mixpanel} from './mixpanel';
-
+import notifee from '@notifee/react-native';
+import {AppState} from 'react-native';
 mixpanel.init();
 
 export default function App() {
@@ -32,8 +33,37 @@ export default function App() {
   const [hasSpotify, setHasSpotify] = useState(null);
   const [UID, setUID] = useState(null);
   const Tab = createBottomTabNavigator();
+  const appState = useRef(AppState.currentState);
+  const navigationRef = useRef();
 
   // AsyncStorage.clear();
+
+  // Bootstrap sequence function
+  async function bootstrap() {
+    const initialNotification = await notifee.getInitialNotification();
+
+    if (initialNotification) {
+      navigationRef.current.navigate('Activity', {screen: 'ActivityScreen'});
+    }
+  }
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        console.log('App has come to the foreground!');
+        bootstrap();
+      }
+
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   useEffect(() => {
     const checkUserLogin = async () => {
@@ -52,20 +82,9 @@ export default function App() {
     checkUserLogin();
   }, []);
 
-  useEffect(() => {
-    if (currentPost) {
-      if (profileScreenFocus === false) {
-        currentPost.pause();
-      }
-      if (profileScreenFocus === true) {
-        currentPost.play();
-      }
-    }
-  }, [currentPost, profileScreenFocus]);
-
   return (
     <GestureHandlerRootView style={{flex: 1}}>
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef}>
         <StatusBar barStyle="light-content" />
         <Context.Provider
           value={{

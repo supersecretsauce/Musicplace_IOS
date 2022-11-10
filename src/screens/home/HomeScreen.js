@@ -23,7 +23,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {mixpanel} from '../../../mixpanel';
 import {firebase} from '@react-native-firebase/firestore';
 import messaging from '@react-native-firebase/messaging';
-
 const HomeScreen = () => {
   Sound.setCategory('Playback');
   const [feed, setFeed] = useState(null);

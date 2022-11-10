@@ -14,5 +14,6 @@ function onMessageReceived(message) {
 }
 
 messaging().setBackgroundMessageHandler(onMessageReceived);
+messaging().onMessage(onMessageReceived);
 
 AppRegistry.registerComponent(appName, () => App);
