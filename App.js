@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {AppState} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import PostStackScreen from './src/routes/PostStackScreen';
@@ -32,29 +31,9 @@ export default function App() {
   const [currentPost, setCurrentPost] = useState();
   const [hasSpotify, setHasSpotify] = useState(null);
   const [UID, setUID] = useState(null);
-  const appState = useRef(AppState.currentState);
   const Tab = createBottomTabNavigator();
 
   // AsyncStorage.clear();
-
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', nextAppState => {
-      if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === 'active'
-      ) {
-        console.log('App has come to the foreground!');
-      } else {
-        console.log('App is in the background!');
-      }
-
-      appState.current = nextAppState;
-    });
-
-    return () => {
-      subscription.remove();
-    };
-  }, []);
 
   useEffect(() => {
     const checkUserLogin = async () => {
@@ -72,17 +51,6 @@ export default function App() {
 
     checkUserLogin();
   }, []);
-
-  // useEffect(() => {
-  //   if (currentTrack) {
-  //     if (homeScreenFocus === false) {
-  //       currentTrack.pause();
-  //     }
-  //     if (homeScreenFocus === true) {
-  //       currentTrack.play();
-  //     }
-  //   }
-  // }, [currentTrack, homeScreenFocus]);
 
   useEffect(() => {
     if (currentPost) {
