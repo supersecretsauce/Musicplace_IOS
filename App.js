@@ -74,6 +74,7 @@ export default function App() {
           break;
         case EventType.PRESS:
           console.log('User pressed notification', detail.notification);
+          mixpanel.track('Open From Notification');
           navigationRef.current.navigate('Activity', {
             screen: 'ActivityScreen',
           });
@@ -183,4 +184,3 @@ export default function App() {
     </GestureHandlerRootView>
   );
 }
-const styles = StyleSheet.create({});
