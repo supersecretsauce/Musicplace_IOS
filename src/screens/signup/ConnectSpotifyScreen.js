@@ -50,6 +50,7 @@ const ConnectSpotifyScreen = ({navigation, route}) => {
     try {
       await firestore().collection('users').doc(userInfo.uid).set(
         {
+          UID: userInfo.uid,
           phoneNumber: userInfo.phoneNumber,
           createdAt: userInfo.metadata.creationTime,
           lastSignIn: userInfo.metadata.lastSignInTime,
@@ -90,6 +91,7 @@ const ConnectSpotifyScreen = ({navigation, route}) => {
     HapticFeedback.trigger('impactHeavy');
     try {
       await firestore().collection('users').doc(userInfo.uid).set({
+        UID: userInfo.uid,
         phoneNumber: userInfo.phoneNumber,
         createdAt: userInfo.metadata.creationTime,
         lastSignIn: userInfo.metadata.lastSignInTime,

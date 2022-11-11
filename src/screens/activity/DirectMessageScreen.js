@@ -28,7 +28,7 @@ import EmptyChatUI from '../../components/EmptyChatUI';
 
 const DirectMessageScreen = ({route, navigation}) => {
   const {UID} = useContext(Context);
-  const {profileID, userProfile, myUser} = route.params;
+  const {profileID, userProfile, myUser, prevRoute} = route.params;
   const [chatDoc, setChatDoc] = useState(null);
   const [messageDocs, setMessageDocs] = useState(null);
   const [messageText, setMessageText] = useState('');
@@ -37,9 +37,11 @@ const DirectMessageScreen = ({route, navigation}) => {
 
   useEffect(() => {
     if (UID) {
+      console.log(UID);
       const subscriber = firestore()
         .collection('chats')
-        .where('members', 'array-contains', UID && profileID)
+        .where(`members.${profileID}`, '==', true)
+        .where(`members.${UID}`, '==', true)
         .onSnapshot(documentSnapshot => {
           console.log('User data: ', documentSnapshot);
           if (documentSnapshot.empty) {
@@ -81,23 +83,26 @@ const DirectMessageScreen = ({route, navigation}) => {
       firestore()
         .collection('chats')
         .add({
-          members: [UID, profileID],
+          members: {
+            [profileID]: true,
+            [UID]: true,
+          },
+          createdAt: new Date(),
+          lastMessageAt: new Date(),
           memberInfo: [
             {
               UID: profileID,
-              pfpURL: userProfile.pfpURL,
               displayName: userProfile.displayName,
               handle: userProfile.handle,
+              pfpURL: userProfile?.pfpURL ? userProfile?.pfpURL : false,
             },
             {
-              UID: UID,
-              pfpURL: myUser.pfpURL,
+              UID: myUser.UID,
               displayName: myUser.displayName,
               handle: myUser.handle,
+              pfpURL: myUser?.pfpURL ? myUser?.pfpURL : false,
             },
           ],
-          createdAt: new Date(),
-          lastMessageAt: new Date(),
         })
         .then(resp => {
           console.log('create chat doc', resp);
@@ -158,7 +163,20 @@ const DirectMessageScreen = ({route, navigation}) => {
   }
 
   function handleNavigation() {
-    navigation.goBack();
+    if (prevRoute === 'ActivityScreen') {
+      navigation.navigate('ActivityScreen');
+    } else if (prevRoute === 'HasMessagesScreen') {
+      navigation.goBack();
+    } else if (prevRoute === 'IsFollowingScreen') {
+      navigation.goBack();
+    } else {
+      navigation.navigate('ViewUserScreen', {
+        profileID: profileID,
+        myUser: myUser,
+        userProfile: userProfile,
+        prevRoute: prevRoute,
+      });
+    }
   }
 
   return (
@@ -246,6 +264,7 @@ const DirectMessageScreen = ({route, navigation}) => {
                 onChangeText={text => setMessageText(text)}
                 value={messageText}
                 keyboardAppearance="dark"
+                returnKeyType="send"
               />
               <Ionicons
                 name={'send'}

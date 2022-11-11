@@ -21,6 +21,7 @@ const ActivityScreen = ({navigation}) => {
   const [messages, setMessages] = useState(null);
   const [memberInfo, setMemberInfo] = useState(null);
   const [myUser, setMyUser] = useState(null);
+  const [messagingUIDS, setMessagingUIDS] = useState([]);
   const {UID} = useContext(Context);
 
   useEffect(() => {
@@ -42,7 +43,6 @@ const ActivityScreen = ({navigation}) => {
               return;
             }
           });
-          console.log(localPhoneNumbers);
           setPhoneNumbers(localPhoneNumbers);
         }
       }
@@ -71,7 +71,6 @@ const ActivityScreen = ({navigation}) => {
         .doc(UID)
         .get()
         .then(resp => {
-          console.log('my user', resp._data);
           setMyUser(resp._data);
         });
     }
@@ -82,23 +81,27 @@ const ActivityScreen = ({navigation}) => {
       // check if a user has messages
       const subscriber = firestore()
         .collection('chats')
-        .where('members', 'array-contains', UID)
-        .onSnapshot(documentSnapshot => {
-          let messageDocs = [];
-          console.log('User data: ', documentSnapshot._docs);
-          documentSnapshot._docs.forEach(doc => {
-            messageDocs.push(doc._data);
+        .where(`members.${UID}`, '==', true)
+        .onSnapshot(snapshot => {
+          let allMemberInfo = [];
+          let allMessages = [];
+          snapshot._docs.forEach(doc => {
+            allMemberInfo.push(doc._data.memberInfo);
+            allMessages.push(doc._data);
           });
-          setMessages(messageDocs);
-          let filteredMemberInfo = messageDocs.map(doc => {
-            return doc.memberInfo.filter(member => {
-              return member.UID !== UID;
+          setMessages(allMessages);
+
+          let filteredMemberInfo = [];
+          allMemberInfo.forEach(memberInfoDoc => {
+            memberInfoDoc.forEach(member => {
+              if (member.UID !== UID) {
+                filteredMemberInfo.push(member);
+              }
             });
           });
           console.log(filteredMemberInfo);
           setMemberInfo(filteredMemberInfo);
         });
-
       // Stop listening for updates when no longer required
       return () => subscriber();
     }
@@ -129,19 +132,17 @@ const ActivityScreen = ({navigation}) => {
         profileID: item.UID,
         userProfile: item,
         myUser: myUser,
+        prevRoute: 'ActivityScreen',
       });
     }
   }
 
   function newMessageNav() {
-    if (messages.length > 0 && myUser) {
-      navigation.navigate('HasMessagesScreen', {
-        messages: messages,
-        myUser: myUser,
-      });
-    } else {
-      navigation.navigate('NoMessagesScreen');
-    }
+    navigation.navigate('IsFollowingScreen', {
+      myUser: myUser,
+    });
+
+    // navigation.navigate('NoMessagesScreen');
   }
 
   return (
@@ -150,7 +151,9 @@ const ActivityScreen = ({navigation}) => {
         <TouchableOpacity
           // style={styles.createIcon}
           onPress={() => {
-            navigation.navigate('AddFriends');
+            navigation.navigate('AddFriends', {
+              myUser: myUser,
+            });
           }}>
           <Ionicons name={'person-add-outline'} color={'white'} size={28} />
         </TouchableOpacity>
@@ -201,21 +204,21 @@ const ActivityScreen = ({navigation}) => {
                 <TouchableOpacity
                   key={index}
                   style={styles.itemContainer}
-                  onPress={() => handleMessageNav(item[0])}>
+                  onPress={() => handleMessageNav(item)}>
                   <View style={styles.itemLeft}>
-                    {item[0].pfpURL ? (
+                    {item.pfpURL ? (
                       <Image
                         style={styles.musicplaceLogo}
                         source={{
-                          uri: item[0].pfpURL,
+                          uri: item.pfpURL,
                         }}
                       />
                     ) : (
                       <View style={styles.musicplaceLogo} />
                     )}
                     <View style={styles.itemMiddle}>
-                      <Text style={styles.topText}>{item[0].displayName}</Text>
-                      <Text style={styles.bottomText}>@{item[0].handle}</Text>
+                      <Text style={styles.topText}>{item.displayName}</Text>
+                      <Text style={styles.bottomText}>@{item.handle}</Text>
                     </View>
                   </View>
                   <View>

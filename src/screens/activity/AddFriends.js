@@ -13,7 +13,8 @@ import algoliasearch from 'algoliasearch/lite';
 import {InstantSearch} from 'react-instantsearch-hooks';
 import SearchBox from '../../components/SearchBox';
 import InfiniteHits from '../../components/InfiniteHits';
-const AddFriends = ({navigation}) => {
+const AddFriends = ({navigation, route}) => {
+  const {myUser} = route.params;
   const searchClient = algoliasearch(
     'SXGPXOYWWU',
     '292341a627acc8ce15aad830431be5ef',
@@ -36,7 +37,7 @@ const AddFriends = ({navigation}) => {
           <Ionicons name={'search'} color={Colors.greyOut} size={20} />
           <SearchBox />
         </View>
-        <InfiniteHits navigation={navigation} />
+        <InfiniteHits myUser={myUser} navigation={navigation} />
       </InstantSearch>
     </SafeAreaView>
   );
