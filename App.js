@@ -14,7 +14,8 @@ import HomeStackScreen from './src/routes/HomeStackScreen';
 import WelcomeStackScreen from './src/routes/WelcomeStackScreen';
 import ActivityStackScreen from './src/routes/ActivityStackScreen';
 import {mixpanel} from './mixpanel';
-
+import notifee, {EventType} from '@notifee/react-native';
+import {AppState} from 'react-native';
 mixpanel.init();
 
 export default function App() {
@@ -32,8 +33,55 @@ export default function App() {
   const [hasSpotify, setHasSpotify] = useState(null);
   const [UID, setUID] = useState(null);
   const Tab = createBottomTabNavigator();
+  const appState = useRef(AppState.currentState);
+  const navigationRef = useRef();
 
   // AsyncStorage.clear();
+
+  // Bootstrap sequence function
+  async function bootstrap() {
+    const initialNotification = await notifee.getInitialNotification();
+
+    if (initialNotification) {
+      console.log(initialNotification);
+      navigationRef.current.navigate('Activity', {screen: 'ActivityScreen'});
+    }
+  }
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        console.log('App has come to the foreground!');
+        bootstrap();
+      }
+
+      appState.current = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  useEffect(() => {
+    return notifee.onForegroundEvent(({type, detail}) => {
+      switch (type) {
+        case EventType.DISMISSED:
+          console.log('User dismissed notification', detail.notification);
+          break;
+        case EventType.PRESS:
+          console.log('User pressed notification', detail.notification);
+          navigationRef.current.navigate('Activity', {
+            screen: 'ActivityScreen',
+          });
+
+          break;
+      }
+    });
+  }, []);
 
   useEffect(() => {
     const checkUserLogin = async () => {
@@ -52,20 +100,9 @@ export default function App() {
     checkUserLogin();
   }, []);
 
-  useEffect(() => {
-    if (currentPost) {
-      if (profileScreenFocus === false) {
-        currentPost.pause();
-      }
-      if (profileScreenFocus === true) {
-        currentPost.play();
-      }
-    }
-  }, [currentPost, profileScreenFocus]);
-
   return (
     <GestureHandlerRootView style={{flex: 1}}>
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef}>
         <StatusBar barStyle="light-content" />
         <Context.Provider
           value={{

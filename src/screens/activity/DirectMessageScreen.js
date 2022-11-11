@@ -110,6 +110,7 @@ const DirectMessageScreen = ({route, navigation}) => {
               messageText: messageText,
               sentAt: new Date(),
               from: UID,
+              to: profileID,
             })
             .then(() => {
               console.log('message doc added!');
@@ -124,6 +125,7 @@ const DirectMessageScreen = ({route, navigation}) => {
           messageText: messageText,
           sentAt: new Date(),
           from: UID,
+          to: profileID,
         })
         .then(() => {
           console.log('message doc added!');
