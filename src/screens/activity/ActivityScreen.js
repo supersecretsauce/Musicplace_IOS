@@ -81,14 +81,23 @@ const ActivityScreen = ({navigation}) => {
       // check if a user has messages
       const subscriber = firestore()
         .collection('chats')
-        .where('members', 'array-contains', UID)
+        .where(`members.${UID}`, '==', true)
         .onSnapshot(snapshot => {
           let allMemberInfo = [];
+          let allMessages = [];
           snapshot._docs.forEach(doc => {
             allMemberInfo.push(doc._data.memberInfo);
+            allMessages.push(doc._data);
           });
-          let filteredMemberInfo = allMemberInfo.map(info => {
-            return info.filter(ids => ids.UID !== UID);
+          setMessages(allMessages);
+
+          let filteredMemberInfo = [];
+          allMemberInfo.forEach(memberInfoDoc => {
+            memberInfoDoc.forEach(member => {
+              if (member.UID !== UID) {
+                filteredMemberInfo.push(member);
+              }
+            });
           });
           console.log(filteredMemberInfo);
           setMemberInfo(filteredMemberInfo);
@@ -123,6 +132,7 @@ const ActivityScreen = ({navigation}) => {
         profileID: item.UID,
         userProfile: item,
         myUser: myUser,
+        prevRoute: 'ActivityScreen',
       });
     }
   }
@@ -130,7 +140,7 @@ const ActivityScreen = ({navigation}) => {
   function newMessageNav() {
     if (messages.length > 0 && myUser) {
       navigation.navigate('HasMessagesScreen', {
-        messages: messages,
+        memberInfo: memberInfo,
         myUser: myUser,
       });
     } else {
@@ -197,21 +207,21 @@ const ActivityScreen = ({navigation}) => {
                 <TouchableOpacity
                   key={index}
                   style={styles.itemContainer}
-                  onPress={() => handleMessageNav(item[0])}>
+                  onPress={() => handleMessageNav(item)}>
                   <View style={styles.itemLeft}>
-                    {item[0].pfpURL ? (
+                    {item.pfpURL ? (
                       <Image
                         style={styles.musicplaceLogo}
                         source={{
-                          uri: item[0].pfpURL,
+                          uri: item.pfpURL,
                         }}
                       />
                     ) : (
                       <View style={styles.musicplaceLogo} />
                     )}
                     <View style={styles.itemMiddle}>
-                      <Text style={styles.topText}>{item[0].displayName}</Text>
-                      <Text style={styles.bottomText}>@{item[0].handle}</Text>
+                      <Text style={styles.topText}>{item.displayName}</Text>
+                      <Text style={styles.bottomText}>@{item.handle}</Text>
                     </View>
                   </View>
                   <View>

@@ -14,21 +14,22 @@ import Colors from '../../assets/utilities/Colors';
 import firestore from '@react-native-firebase/firestore';
 
 const HasMessagesScreen = ({route, navigation}) => {
-  const {messages, myUser} = route.params;
+  const {memberInfo, myUser} = route.params;
   const {UID} = useContext(Context);
-  const [memberInfo, setMemberInfo] = useState(null);
+  // const [memberInfo, setMemberInfo] = useState(null);
 
   useEffect(() => {
-    if (messages && UID) {
-      let filteredMemberInfo = messages.map(messageDoc => {
-        return messageDoc.memberInfo.filter(member => {
-          return member.UID !== UID;
-        });
-      });
-      console.log(filteredMemberInfo);
-      setMemberInfo(filteredMemberInfo);
+    if (memberInfo && UID) {
+      console.log(memberInfo);
+      // let filteredMemberInfo = messages.map(messageDoc => {
+      //   return messageDoc.memberInfo.filter(member => {
+      //     return member.UID !== UID;
+      //   });
+      // });
+      // console.log(filteredMemberInfo);
+      // setMemberInfo(filteredMemberInfo);
     }
-  }, [messages, UID]);
+  }, [memberInfo, UID]);
 
   function handleNav(item) {
     if (item && myUser) {
@@ -36,6 +37,7 @@ const HasMessagesScreen = ({route, navigation}) => {
         profileID: item.UID,
         userProfile: item,
         myUser: myUser,
+        prevRoute: 'HasMessagesScreen',
       });
     } else {
       return;
@@ -52,7 +54,7 @@ const HasMessagesScreen = ({route, navigation}) => {
         </TouchableOpacity>
         <Text style={styles.newChatText}>New Chat</Text>
       </View>
-      {messages && (
+      {memberInfo && (
         <View style={styles.flatListContainer}>
           <FlatList
             data={memberInfo}
@@ -60,19 +62,21 @@ const HasMessagesScreen = ({route, navigation}) => {
               return (
                 <TouchableOpacity
                   style={styles.itemContainer}
-                  onPress={() => handleNav(item[0])}>
+                  onPress={() => handleNav(item)}>
                   <View style={styles.itemLeft}>
-                    <Image
-                      style={styles.pfp}
-                      source={{
-                        uri: item[0].pfpURL,
-                      }}
-                    />
+                    {item.pfpURL ? (
+                      <Image
+                        style={styles.pfp}
+                        source={{
+                          uri: item.pfpURL,
+                        }}
+                      />
+                    ) : (
+                      <View style={styles.pfp} />
+                    )}
                     <View style={styles.middleContainer}>
-                      <Text style={styles.handle}>{item[0].handle}</Text>
-                      <Text style={styles.displayName}>
-                        {item[0].displayName}
-                      </Text>
+                      <Text style={styles.handle}>{item.handle}</Text>
+                      <Text style={styles.displayName}>{item.displayName}</Text>
                     </View>
                   </View>
                   <Ionicons
@@ -135,6 +139,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 50,
     marginLeft: 5,
+    backgroundColor: Colors.red,
   },
   middleContainer: {
     marginLeft: '10%',

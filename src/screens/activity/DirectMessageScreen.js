@@ -37,9 +37,11 @@ const DirectMessageScreen = ({route, navigation}) => {
 
   useEffect(() => {
     if (UID) {
+      console.log(UID);
       const subscriber = firestore()
         .collection('chats')
-        .where('members', 'array-contains', UID && profileID)
+        .where(`members.${profileID}`, '==', true)
+        .where(`members.${UID}`, '==', true)
         .onSnapshot(documentSnapshot => {
           console.log('User data: ', documentSnapshot);
           if (documentSnapshot.empty) {
@@ -81,7 +83,10 @@ const DirectMessageScreen = ({route, navigation}) => {
       firestore()
         .collection('chats')
         .add({
-          members: [UID, profileID],
+          members: {
+            [profileID]: true,
+            [UID]: true,
+          },
           createdAt: new Date(),
           lastMessageAt: new Date(),
           memberInfo: [
@@ -158,12 +163,18 @@ const DirectMessageScreen = ({route, navigation}) => {
   }
 
   function handleNavigation() {
-    navigation.navigate('ViewUserScreen', {
-      profileID: profileID,
-      myUser: myUser,
-      userProfile: userProfile,
-      prevRoute: prevRoute,
-    });
+    if (prevRoute === 'ActivityScreen') {
+      navigation.navigate('ActivityScreen');
+    } else if (prevRoute === 'HasMessagesScreen') {
+      navigation.goBack();
+    } else {
+      navigation.navigate('ViewUserScreen', {
+        profileID: profileID,
+        myUser: myUser,
+        userProfile: userProfile,
+        prevRoute: prevRoute,
+      });
+    }
   }
 
   return (
