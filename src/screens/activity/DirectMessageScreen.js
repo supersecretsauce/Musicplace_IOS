@@ -264,6 +264,7 @@ const DirectMessageScreen = ({route, navigation}) => {
                 onChangeText={text => setMessageText(text)}
                 value={messageText}
                 keyboardAppearance="dark"
+                returnKeyType="send"
               />
               <Ionicons
                 name={'send'}
