@@ -82,20 +82,6 @@ const DirectMessageScreen = ({route, navigation}) => {
         .collection('chats')
         .add({
           members: [UID, profileID],
-          memberInfo: [
-            {
-              UID: profileID,
-              pfpURL: userProfile.pfpURL,
-              displayName: userProfile.displayName,
-              handle: userProfile.handle,
-            },
-            {
-              UID: UID,
-              pfpURL: myUser.pfpURL,
-              displayName: myUser.displayName,
-              handle: myUser.handle,
-            },
-          ],
           createdAt: new Date(),
           lastMessageAt: new Date(),
         })

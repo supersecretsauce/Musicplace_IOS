@@ -95,7 +95,7 @@ const ActivityScreen = ({navigation}) => {
               return member.UID !== UID;
             });
           });
-          console.log(filteredMemberInfo);
+          console.log('filtered member info', filteredMemberInfo);
           setMemberInfo(filteredMemberInfo);
         });
 
