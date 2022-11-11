@@ -21,6 +21,7 @@ const ActivityScreen = ({navigation}) => {
   const [messages, setMessages] = useState(null);
   const [memberInfo, setMemberInfo] = useState(null);
   const [myUser, setMyUser] = useState(null);
+  const [messagingUIDS, setMessagingUIDS] = useState([]);
   const {UID} = useContext(Context);
 
   useEffect(() => {
@@ -42,7 +43,6 @@ const ActivityScreen = ({navigation}) => {
               return;
             }
           });
-          console.log(localPhoneNumbers);
           setPhoneNumbers(localPhoneNumbers);
         }
       }
@@ -71,7 +71,6 @@ const ActivityScreen = ({navigation}) => {
         .doc(UID)
         .get()
         .then(resp => {
-          console.log('my user', resp._data);
           setMyUser(resp._data);
         });
     }
@@ -83,22 +82,17 @@ const ActivityScreen = ({navigation}) => {
       const subscriber = firestore()
         .collection('chats')
         .where('members', 'array-contains', UID)
-        .onSnapshot(documentSnapshot => {
-          let messageDocs = [];
-          console.log('User data: ', documentSnapshot._docs);
-          documentSnapshot._docs.forEach(doc => {
-            messageDocs.push(doc._data);
+        .onSnapshot(snapshot => {
+          let allMemberInfo = [];
+          snapshot._docs.forEach(doc => {
+            allMemberInfo.push(doc._data.memberInfo);
           });
-          setMessages(messageDocs);
-          let filteredMemberInfo = messageDocs.map(doc => {
-            return doc.memberInfo.filter(member => {
-              return member.UID !== UID;
-            });
+          let filteredMemberInfo = allMemberInfo.map(info => {
+            return info.filter(ids => ids.UID !== UID);
           });
-          console.log('filtered member info', filteredMemberInfo);
+          console.log(filteredMemberInfo);
           setMemberInfo(filteredMemberInfo);
         });
-
       // Stop listening for updates when no longer required
       return () => subscriber();
     }
@@ -150,7 +144,9 @@ const ActivityScreen = ({navigation}) => {
         <TouchableOpacity
           // style={styles.createIcon}
           onPress={() => {
-            navigation.navigate('AddFriends');
+            navigation.navigate('AddFriends', {
+              myUser: myUser,
+            });
           }}>
           <Ionicons name={'person-add-outline'} color={'white'} size={28} />
         </TouchableOpacity>

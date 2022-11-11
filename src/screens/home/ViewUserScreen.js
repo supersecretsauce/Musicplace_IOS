@@ -119,7 +119,9 @@ const ViewUserScreen = ({route, navigation}) => {
 
   function handleNav() {
     if (prevRoute === 'search') {
-      navigation.navigate('AddFriends');
+      navigation.navigate('AddFriends', {
+        myUser: myUser,
+      });
     } else {
       navigation.navigate('HomeScreen');
     }
@@ -192,6 +194,7 @@ const ViewUserScreen = ({route, navigation}) => {
                       profileID: profileID,
                       userProfile: userProfile,
                       myUser: myUser,
+                      prevRoute: prevRoute,
                     });
                   }}>
                   <Ionicons name={'mail-outline'} color="white" size={18} />

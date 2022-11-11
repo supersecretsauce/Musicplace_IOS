@@ -28,7 +28,7 @@ import EmptyChatUI from '../../components/EmptyChatUI';
 
 const DirectMessageScreen = ({route, navigation}) => {
   const {UID} = useContext(Context);
-  const {profileID, userProfile, myUser} = route.params;
+  const {profileID, userProfile, myUser, prevRoute} = route.params;
   const [chatDoc, setChatDoc] = useState(null);
   const [messageDocs, setMessageDocs] = useState(null);
   const [messageText, setMessageText] = useState('');
@@ -84,6 +84,20 @@ const DirectMessageScreen = ({route, navigation}) => {
           members: [UID, profileID],
           createdAt: new Date(),
           lastMessageAt: new Date(),
+          memberInfo: [
+            {
+              UID: profileID,
+              displayName: userProfile.displayName,
+              handle: userProfile.handle,
+              pfpURL: userProfile?.pfpURL ? userProfile?.pfpURL : false,
+            },
+            {
+              UID: myUser.UID,
+              displayName: myUser.displayName,
+              handle: myUser.handle,
+              pfpURL: myUser?.pfpURL ? myUser?.pfpURL : false,
+            },
+          ],
         })
         .then(resp => {
           console.log('create chat doc', resp);
@@ -144,7 +158,12 @@ const DirectMessageScreen = ({route, navigation}) => {
   }
 
   function handleNavigation() {
-    navigation.goBack();
+    navigation.navigate('ViewUserScreen', {
+      profileID: profileID,
+      myUser: myUser,
+      userProfile: userProfile,
+      prevRoute: prevRoute,
+    });
   }
 
   return (

@@ -13,7 +13,7 @@ import Colors from '../assets/utilities/Colors';
 import {Context} from '../context/Context';
 const InfiniteHits = ({...props}) => {
   const {hits, isLastPage, showMore} = useInfiniteHits(props);
-  const {navigation} = props;
+  const {navigation, myUser} = props;
   const {UID} = useContext(Context);
 
   useEffect(() => {
@@ -25,6 +25,7 @@ const InfiniteHits = ({...props}) => {
     navigation.navigate('ViewUserScreen', {
       profileID: item.objectID,
       UID: UID,
+      myUser: myUser,
       prevRoute: 'search',
     });
   }
