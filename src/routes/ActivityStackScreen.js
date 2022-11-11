@@ -7,7 +7,7 @@ import InviteContactsScreen from '../screens/activity/InviteContactsScreen';
 import AddFriends from '../screens/activity/AddFriends';
 import ViewUserScreen from '../screens/home/ViewUserScreen';
 import DirectMessageScreen from '../screens/activity/DirectMessageScreen';
-import HasMessagesScreen from '../screens/activity/HasMessagesScreen';
+import IsFollowingScreen from '../screens/activity/IsFollowingScreen';
 
 const ActivityStackScreen = () => {
   const ActivityStack = createNativeStackNavigator();
@@ -20,8 +20,8 @@ const ActivityStackScreen = () => {
         component={NoMessagesScreen}
       />
       <ActivityStack.Screen
-        name="HasMessagesScreen"
-        component={HasMessagesScreen}
+        name="IsFollowingScreen"
+        component={IsFollowingScreen}
       />
       <ActivityStack.Screen
         name="InviteContactsScreen"

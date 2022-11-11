@@ -13,23 +13,46 @@ import {Context} from '../../context/Context';
 import Colors from '../../assets/utilities/Colors';
 import firestore from '@react-native-firebase/firestore';
 
-const HasMessagesScreen = ({route, navigation}) => {
-  const {memberInfo, myUser} = route.params;
+const IsFollowingScreen = ({route, navigation}) => {
+  const {myUser} = route.params;
   const {UID} = useContext(Context);
-  // const [memberInfo, setMemberInfo] = useState(null);
+  const [followingList, setFollowingList] = useState(null);
+  const [followingData, setFollowingData] = useState(null);
 
   useEffect(() => {
-    if (memberInfo && UID) {
-      console.log(memberInfo);
-      // let filteredMemberInfo = messages.map(messageDoc => {
-      //   return messageDoc.memberInfo.filter(member => {
-      //     return member.UID !== UID;
-      //   });
-      // });
-      // console.log(filteredMemberInfo);
-      // setMemberInfo(filteredMemberInfo);
+    if (UID) {
+      firestore()
+        .collection('users')
+        .doc(UID)
+        .get()
+        .then(resp => {
+          console.log(resp._data.followingList);
+          setFollowingList(resp._data.followingList);
+        });
     }
-  }, [memberInfo, UID]);
+  }, [UID]);
+
+  useEffect(() => {
+    if (followingList?.length > 0) {
+      async function getDocs() {
+        let docsArray = [];
+        for (let i = 0; i < followingList.length; i += 10) {
+          await firestore()
+            .collection('users')
+            .where('UID', 'in', followingList.slice(i, i + 10))
+            .get()
+            .then(resp => {
+              resp._docs.forEach(doc => {
+                docsArray.push(doc._data);
+              });
+            });
+        }
+        console.log(docsArray);
+        setFollowingData(docsArray);
+      }
+      getDocs();
+    }
+  }, [followingList]);
 
   function handleNav(item) {
     if (item && myUser) {
@@ -37,7 +60,7 @@ const HasMessagesScreen = ({route, navigation}) => {
         profileID: item.UID,
         userProfile: item,
         myUser: myUser,
-        prevRoute: 'HasMessagesScreen',
+        prevRoute: 'IsFollowingScreen',
       });
     } else {
       return;
@@ -54,10 +77,11 @@ const HasMessagesScreen = ({route, navigation}) => {
         </TouchableOpacity>
         <Text style={styles.newChatText}>New Chat</Text>
       </View>
-      {memberInfo && (
+      {followingData && (
         <View style={styles.flatListContainer}>
+          <Text style={styles.followingText}>Following</Text>
           <FlatList
-            data={memberInfo}
+            data={followingData}
             renderItem={({item}) => {
               return (
                 <TouchableOpacity
@@ -94,7 +118,7 @@ const HasMessagesScreen = ({route, navigation}) => {
   );
 };
 
-export default HasMessagesScreen;
+export default IsFollowingScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -121,7 +145,12 @@ const styles = StyleSheet.create({
     width: '90%',
     flex: 1,
     alignSelf: 'center',
-    paddingTop: '5%',
+  },
+  followingText: {
+    fontFamily: 'Inter-Bold',
+    color: Colors.greyOut,
+    marginTop: 20,
+    marginBottom: 10,
   },
   itemContainer: {
     width: '100%',

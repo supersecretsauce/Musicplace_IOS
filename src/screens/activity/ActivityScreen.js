@@ -138,14 +138,11 @@ const ActivityScreen = ({navigation}) => {
   }
 
   function newMessageNav() {
-    if (messages.length > 0 && myUser) {
-      navigation.navigate('HasMessagesScreen', {
-        memberInfo: memberInfo,
-        myUser: myUser,
-      });
-    } else {
-      navigation.navigate('NoMessagesScreen');
-    }
+    navigation.navigate('IsFollowingScreen', {
+      myUser: myUser,
+    });
+
+    // navigation.navigate('NoMessagesScreen');
   }
 
   return (

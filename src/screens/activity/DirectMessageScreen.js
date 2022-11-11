@@ -167,6 +167,8 @@ const DirectMessageScreen = ({route, navigation}) => {
       navigation.navigate('ActivityScreen');
     } else if (prevRoute === 'HasMessagesScreen') {
       navigation.goBack();
+    } else if (prevRoute === 'IsFollowingScreen') {
+      navigation.goBack();
     } else {
       navigation.navigate('ViewUserScreen', {
         profileID: profileID,
