@@ -47,21 +47,6 @@ const ActivityScreen = ({navigation}) => {
     })();
   }, []);
 
-  // useEffect(() => {
-  //   if (UID) {
-  //     const subscriber = firestore()
-  //       .collection('users')
-  //       .doc(UID)
-  //       .onSnapshot(documentSnapshot => {
-  //         console.log('User data: ', documentSnapshot.data());
-  //         setFollowingList(documentSnapshot.data().followingList);
-  //       });
-
-  //     // Stop listening for updates when no longer required
-  //     return () => subscriber();
-  //   }
-  // }, [UID]);
-
   useEffect(() => {
     if (UID) {
       firestore()
@@ -113,7 +98,7 @@ const ActivityScreen = ({navigation}) => {
     {
       top: 'Musicplace Team',
       bottom: 'Get started by adding your friends.',
-      nav: 'NoMessagesScreen',
+      nav: 'AddFriends',
     },
     {
       top: 'Musicplace Team',
