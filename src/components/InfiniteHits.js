@@ -60,7 +60,7 @@ const InfiniteHits = ({...props}) => {
                     )}
                     <View style={styles.itemMiddle}>
                       <Text style={styles.displayName}>{item.displayName}</Text>
-                      <Text style={styles.handle}>{item.handle}</Text>
+                      <Text style={styles.handle}>@{item.handle}</Text>
                     </View>
                   </View>
                   <Ionicons
