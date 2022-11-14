@@ -90,11 +90,13 @@ const DirectMessageScreen = ({route, navigation}) => {
           createdAt: new Date(),
           lastMessageAt: new Date(),
           [profileID]: {
+            UID: profileID,
             displayName: userProfile.displayName,
             handle: userProfile.handle,
             pfpURL: userProfile?.pfpURL ? userProfile?.pfpURL : false,
           },
           [UID]: {
+            UID: UID,
             displayName: myUser.displayName,
             handle: myUser.handle,
             pfpURL: myUser?.pfpURL ? myUser?.pfpURL : false,
