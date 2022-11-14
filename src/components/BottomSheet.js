@@ -156,7 +156,7 @@ const BottomSheet = props => {
         .add({
           comment: userText,
           displayName: userDoc.displayName,
-          profilePicURL: profilePicURL,
+          pfpURL: profilePicURL,
           hasReplies: 'no',
           likeAmount: 0,
           parent: replyInfo.id,
@@ -191,7 +191,7 @@ const BottomSheet = props => {
         .add({
           comment: userText,
           displayName: userDoc.displayName,
-          profilePicURL: profilePicURL,
+          pfpURL: profilePicURL,
           hasReplies: false,
           likeAmount: 0,
           parent: 'none',
@@ -319,7 +319,7 @@ const BottomSheet = props => {
                                 <Image
                                   style={styles.profilePic}
                                   source={{
-                                    uri: item._data.profilePicURL,
+                                    uri: item._data.pfpURL,
                                   }}
                                 />
                               </TouchableOpacity>

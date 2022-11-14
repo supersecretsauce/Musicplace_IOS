@@ -39,7 +39,7 @@ const InviteContactsScreen = ({route, navigation}) => {
       <View style={styles.line} />
       {contacts ? (
         <View style={styles.contactsContainer}>
-          <Text style={styles.inviteText}>Invite friends</Text>
+          <Text style={styles.inviteText}>My contacts</Text>
           <FlatList
             showsVerticalScrollIndicator={false}
             data={contacts}
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     marginTop: '6%',
   },
   contactsContainer: {
-    marginTop: '5%',
+    // marginTop: '5%',
     width: '90%',
     flex: 1,
     alignSelf: 'center',
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Medium',
     color: 'white',
     fontSize: 14,
-    marginBottom: '1%',
+    paddingVertical: 16,
   },
   localContactContainer: {
     flexDirection: 'row',

@@ -48,6 +48,16 @@ const DirectMessageScreen = ({route, navigation}) => {
             return;
           } else {
             setChatDoc(documentSnapshot._docs[0]);
+            console.log(documentSnapshot._docs[0].id);
+            firestore()
+              .collection('chats')
+              .doc(documentSnapshot._docs[0].id)
+              .update({
+                [profileID + '.messageRead']: true,
+              })
+              .then(() => {
+                console.log('marked msg as read');
+              });
           }
         });
 
@@ -94,12 +104,16 @@ const DirectMessageScreen = ({route, navigation}) => {
             displayName: userProfile.displayName,
             handle: userProfile.handle,
             pfpURL: userProfile?.pfpURL ? userProfile?.pfpURL : false,
+            sentLastMessage: false,
+            messageRead: false,
           },
           [UID]: {
             UID: UID,
             displayName: myUser.displayName,
             handle: myUser.handle,
             pfpURL: myUser?.pfpURL ? myUser?.pfpURL : false,
+            sentLastMessage: true,
+            messageRead: false,
           },
         })
         .then(resp => {
@@ -136,9 +150,12 @@ const DirectMessageScreen = ({route, navigation}) => {
       firestore()
         .collection('chats')
         .doc(chatDoc.id)
-
         .update({
           lastMessageAt: new Date(),
+          [profileID + '.messageRead']: false,
+          [profileID + '.sentLastMessage']: false,
+          [UID + '.messageRead']: false,
+          [UID + '.sentLastMessage']: true,
         })
         .then(() => {
           console.log('updated lastMessageAt!');

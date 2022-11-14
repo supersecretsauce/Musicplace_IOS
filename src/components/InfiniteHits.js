@@ -51,15 +51,15 @@ const InfiniteHits = ({...props}) => {
               <View style={styles.pfp} />
             )}
             <View style={styles.itemMiddle}>
-              <Text style={styles.handle}>{item.handle}</Text>
               <Text style={styles.displayName}>{item.displayName}</Text>
+              <Text style={styles.handle}>{item.handle}</Text>
             </View>
           </View>
           <Ionicons
             style={styles.socialIcon}
             name={'chevron-forward'}
-            color={'grey'}
-            size={16}
+            color={'white'}
+            size={20}
           />
         </TouchableOpacity>
       )}
@@ -89,16 +89,17 @@ const styles = StyleSheet.create({
     borderRadius: 40,
   },
   itemMiddle: {
-    marginLeft: 5,
+    marginLeft: 10,
   },
   displayName: {
-    color: Colors.greyOut,
-    fontSize: 11,
-    fontFamily: 'Inter-Regular',
+    fontFamily: 'Inter-SemiBold',
+    color: 'white',
+    fontSize: 14,
   },
   handle: {
-    fontSize: 13,
     color: 'white',
-    fontFamily: 'Inter-SemiBold',
+    fontSize: 11,
+    marginTop: 5,
+    fontFamily: 'Inter-Regular',
   },
 });

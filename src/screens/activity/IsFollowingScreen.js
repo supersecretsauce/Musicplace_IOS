@@ -99,14 +99,14 @@ const IsFollowingScreen = ({route, navigation}) => {
                       <View style={styles.pfp} />
                     )}
                     <View style={styles.middleContainer}>
-                      <Text style={styles.handle}>{item.handle}</Text>
                       <Text style={styles.displayName}>{item.displayName}</Text>
+                      <Text style={styles.handle}>@{item.handle}</Text>
                     </View>
                   </View>
                   <Ionicons
                     name={'chevron-forward'}
                     color={'white'}
-                    size={28}
+                    size={20}
                   />
                 </TouchableOpacity>
               );
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   followingText: {
-    fontFamily: 'Inter-Bold',
+    fontFamily: 'Inter-MEdium',
     color: Colors.greyOut,
     marginTop: 20,
     marginBottom: 10,
@@ -164,23 +164,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   pfp: {
-    width: 50,
-    height: 50,
-    borderRadius: 50,
-    marginLeft: 5,
+    width: 40,
+    height: 40,
+    borderRadius: 40,
     backgroundColor: Colors.red,
   },
   middleContainer: {
-    marginLeft: '10%',
-  },
-  handle: {
-    fontFamily: 'Inter-Bold',
-    color: 'white',
-    fontSize: 16,
+    marginLeft: 10,
   },
   displayName: {
-    fontFamily: 'Inter-Regular',
-    color: Colors.greyOut,
+    fontFamily: 'Inter-SemiBold',
+    color: 'white',
+    fontSize: 14,
+  },
+  handle: {
+    color: 'white',
+    fontSize: 11,
     marginTop: 5,
+    fontFamily: 'Inter-Regular',
   },
 });
