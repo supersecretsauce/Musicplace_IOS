@@ -122,6 +122,14 @@ const ViewUserScreen = ({route, navigation}) => {
       navigation.navigate('AddFriends', {
         myUser: myUser,
       });
+    } else if (prevRoute === 'DirectMessageScreen') {
+      navigation.navigate('DirectMessageScreen', {
+        profileID: profileID,
+        UID: UID,
+        myUser: myUser,
+        userProfile: userProfile,
+        prevRoute: 'ViewUserScreen',
+      });
     } else {
       navigation.navigate('HomeScreen');
     }

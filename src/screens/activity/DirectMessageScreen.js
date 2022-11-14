@@ -184,6 +184,8 @@ const DirectMessageScreen = ({route, navigation}) => {
       navigation.goBack();
     } else if (prevRoute === 'IsFollowingScreen') {
       navigation.goBack();
+    } else if (prevRoute === 'ViewUserScreen') {
+      navigation.goBack();
     } else {
       navigation.navigate('ViewUserScreen', {
         profileID: profileID,
@@ -192,6 +194,15 @@ const DirectMessageScreen = ({route, navigation}) => {
         prevRoute: prevRoute,
       });
     }
+  }
+
+  function handleUserNav() {
+    navigation.navigate('ViewUserScreen', {
+      profileID: profileID,
+      myUser: myUser,
+      UID: UID,
+      prevRoute: 'DirectMessageScreen',
+    });
   }
 
   return (
@@ -208,22 +219,26 @@ const DirectMessageScreen = ({route, navigation}) => {
                 onPress={handleNavigation}>
                 <Ionicons name={'chevron-back'} color="white" size={32} />
               </TouchableOpacity>
-              {userProfile.pfpURL ? (
-                <Image
-                  style={styles.pfp}
-                  source={{
-                    uri: userProfile.pfpURL,
-                  }}
-                />
-              ) : (
-                <View style={styles.pfp} />
-              )}
-              <View style={styles.headerMiddle}>
-                <Text style={styles.displayName}>
-                  {userProfile.displayName}
-                </Text>
-                <Text style={styles.handle}>{userProfile.handle}</Text>
-              </View>
+              <TouchableOpacity
+                style={styles.headerUserContainer}
+                onPress={handleUserNav}>
+                {userProfile.pfpURL ? (
+                  <Image
+                    style={styles.pfp}
+                    source={{
+                      uri: userProfile.pfpURL,
+                    }}
+                  />
+                ) : (
+                  <View style={styles.pfp} />
+                )}
+                <View style={styles.headerMiddle}>
+                  <Text style={styles.displayName}>
+                    {userProfile.displayName}
+                  </Text>
+                  <Text style={styles.handle}>@{userProfile.handle}</Text>
+                </View>
+              </TouchableOpacity>
             </View>
             <TouchableOpacity>
               <Ionicons
@@ -240,7 +255,6 @@ const DirectMessageScreen = ({route, navigation}) => {
                 ref={flatlistRef}
                 data={messageDocs}
                 inverted
-                // onLayout={() => flatlistRef.scrollToEnd({animated: true})}
                 renderItem={({item}) => {
                   return (
                     <>
@@ -311,10 +325,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '90%',
     alignSelf: 'center',
-    paddingVertical: 14,
+    paddingVertical: 16,
     justifyContent: 'space-between',
   },
-
+  headerUserContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 10,
+  },
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -327,17 +345,17 @@ const styles = StyleSheet.create({
     marginLeft: '7%',
   },
   headerMiddle: {
-    marginLeft: '6%',
+    marginLeft: 14,
   },
   displayName: {
     color: 'white',
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: 'Inter-bold',
   },
   handle: {
     color: 'white',
     fontFamily: 'Inter-Regular',
-    fontSize: 12,
+    fontSize: 10,
   },
   line: {
     borderBottomColor: Colors.darkGrey,
