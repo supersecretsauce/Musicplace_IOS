@@ -36,12 +36,6 @@ const DirectMessageScreen = ({route, navigation}) => {
   const flatlistRef = useRef();
 
   useEffect(() => {
-    if (userProfile) {
-      console.log(userProfile);
-    }
-  }, [userProfile]);
-
-  useEffect(() => {
     if (UID) {
       console.log(UID);
       const subscriber = firestore()
@@ -54,7 +48,8 @@ const DirectMessageScreen = ({route, navigation}) => {
             return;
           } else {
             setChatDoc(documentSnapshot._docs[0]);
-            if (userProfile.sentLastMessage && !userProfile.messageRead) {
+            let memberInfo = documentSnapshot._docs[0]._data[profileID];
+            if (memberInfo.sentLastMessage && !memberInfo.messageRead) {
               firestore()
                 .collection('chats')
                 .doc(documentSnapshot._docs[0].id)
