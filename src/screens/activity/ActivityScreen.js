@@ -83,23 +83,27 @@ const ActivityScreen = ({navigation}) => {
         .collection('chats')
         .where(`members.${UID}`, '==', true)
         .onSnapshot(snapshot => {
-          let allMemberInfo = [];
-          let allMessages = [];
-          snapshot._docs.forEach(doc => {
-            allMemberInfo.push(doc._data.memberInfo);
-            allMessages.push(doc._data);
-          });
-          setMessages(allMessages);
-
+          let allMessageDocs = [];
+          let allIDs = [];
           let filteredMemberInfo = [];
-          allMemberInfo.forEach(memberInfoDoc => {
-            memberInfoDoc.forEach(member => {
-              if (member.UID !== UID) {
-                filteredMemberInfo.push(member);
+          snapshot._docs.forEach(doc => {
+            console.log(doc);
+            allMessageDocs.push(doc._data);
+            Object.keys(doc._data.members).forEach(key => {
+              if (key !== UID) {
+                allIDs.push(key);
+              } else {
+                return;
               }
             });
+            for (let i = 0; i < allMessageDocs.length; i++) {
+              let IdNumber = allIDs[i];
+              let messageDoc = allMessageDocs[i];
+              let memberData = messageDoc[IdNumber];
+              filteredMemberInfo.push(memberData);
+            }
+            console.log(filteredMemberInfo);
           });
-          console.log(filteredMemberInfo);
           setMemberInfo(filteredMemberInfo);
         });
       // Stop listening for updates when no longer required
