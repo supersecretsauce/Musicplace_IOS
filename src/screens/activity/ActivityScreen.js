@@ -94,14 +94,14 @@ const ActivityScreen = ({navigation}) => {
                 return;
               }
             });
-            for (let i = 0; i < allMessageDocs.length; i++) {
-              let IdNumber = allIDs[i];
-              let messageDoc = allMessageDocs[i];
-              let memberData = messageDoc[IdNumber];
-              filteredMemberInfo.push(memberData);
-            }
-            console.log(filteredMemberInfo);
           });
+          for (let i = 0; i < allMessageDocs.length; i++) {
+            let IdNumber = allIDs[i];
+            let messageDoc = allMessageDocs[i];
+            let memberData = messageDoc[IdNumber];
+            filteredMemberInfo.push(memberData);
+          }
+          console.log(filteredMemberInfo);
           setMemberInfo(filteredMemberInfo);
         });
       // Stop listening for updates when no longer required
