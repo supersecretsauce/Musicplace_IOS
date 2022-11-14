@@ -18,10 +18,8 @@ const ActivityScreen = ({navigation}) => {
   const [contacts, setContacts] = useState(null);
   const [phoneNumbers, setPhoneNumbers] = useState(null);
   // const [followingList, setFollowingList] = useState(null);
-  const [messages, setMessages] = useState(null);
   const [memberInfo, setMemberInfo] = useState(null);
   const [myUser, setMyUser] = useState(null);
-  const [messagingUIDS, setMessagingUIDS] = useState([]);
   const {UID} = useContext(Context);
 
   useEffect(() => {
@@ -225,7 +223,12 @@ const ActivityScreen = ({navigation}) => {
                       <Text style={styles.bottomText}>@{item?.handle}</Text>
                     </View>
                   </View>
-                  <View>
+                  <View style={styles.notiContainer}>
+                    {item?.sentLastMessage && !item.messageRead ? (
+                      <View style={styles.notificationDot} />
+                    ) : (
+                      <></>
+                    )}
                     <Ionicons
                       name={'chevron-forward'}
                       color={'white'}
@@ -338,5 +341,16 @@ const styles = StyleSheet.create({
     // backgroundColor: 'grey',
     flex: 1,
     marginTop: '3%',
+  },
+  notiContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  notificationDot: {
+    height: 10,
+    width: 10,
+    borderRadius: 10,
+    backgroundColor: Colors.red,
+    marginRight: 10,
   },
 });
