@@ -9,8 +9,9 @@ import messaging from '@react-native-firebase/messaging';
 import notifee from '@notifee/react-native';
 // Register background handler
 
-function onMessageReceived(message) {
+async function onMessageReceived(message) {
   notifee.displayNotification(JSON.parse(message.data.notifee));
+  await notifee.incrementBadgeCount();
 }
 
 messaging().setBackgroundMessageHandler(onMessageReceived);

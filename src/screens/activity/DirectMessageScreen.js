@@ -36,6 +36,12 @@ const DirectMessageScreen = ({route, navigation}) => {
   const flatlistRef = useRef();
 
   useEffect(() => {
+    if (userProfile) {
+      console.log(userProfile);
+    }
+  }, [userProfile]);
+
+  useEffect(() => {
     if (UID) {
       console.log(UID);
       const subscriber = firestore()
@@ -48,16 +54,17 @@ const DirectMessageScreen = ({route, navigation}) => {
             return;
           } else {
             setChatDoc(documentSnapshot._docs[0]);
-            console.log(documentSnapshot._docs[0].id);
-            firestore()
-              .collection('chats')
-              .doc(documentSnapshot._docs[0].id)
-              .update({
-                [profileID + '.messageRead']: true,
-              })
-              .then(() => {
-                console.log('marked msg as read');
-              });
+            if (userProfile.sentLastMessage && !userProfile.messageRead) {
+              firestore()
+                .collection('chats')
+                .doc(documentSnapshot._docs[0].id)
+                .update({
+                  [profileID + '.messageRead']: true,
+                })
+                .then(() => {
+                  console.log('marked msg as read');
+                });
+            }
           }
         });
 

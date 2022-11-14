@@ -45,6 +45,7 @@ export default function App() {
     if (initialNotification) {
       console.log(initialNotification);
       navigationRef.current.navigate('Activity', {screen: 'ActivityScreen'});
+      notifee.setBadgeCount(0).then(() => console.log('Badge count removed'));
     }
   }
 
@@ -55,6 +56,7 @@ export default function App() {
         nextAppState === 'active'
       ) {
         console.log('App has come to the foreground!');
+        notifee.setBadgeCount(0).then(() => console.log('Badge count removed'));
         bootstrap();
       }
 
