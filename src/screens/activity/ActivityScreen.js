@@ -210,7 +210,7 @@ const ActivityScreen = ({navigation}) => {
                   style={styles.itemContainer}
                   onPress={() => handleMessageNav(item)}>
                   <View style={styles.itemLeft}>
-                    {item.pfpURL ? (
+                    {item?.pfpURL ? (
                       <Image
                         style={styles.musicplaceLogo}
                         source={{
@@ -221,8 +221,8 @@ const ActivityScreen = ({navigation}) => {
                       <View style={styles.musicplaceLogo} />
                     )}
                     <View style={styles.itemMiddle}>
-                      <Text style={styles.topText}>{item.displayName}</Text>
-                      <Text style={styles.bottomText}>@{item.handle}</Text>
+                      <Text style={styles.topText}>{item?.displayName}</Text>
+                      <Text style={styles.bottomText}>@{item?.handle}</Text>
                     </View>
                   </View>
                   <View>
