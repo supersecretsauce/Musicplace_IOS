@@ -30,40 +30,54 @@ const InfiniteHits = ({...props}) => {
     });
   }
   return (
-    <FlatList
-      data={hits}
-      onEndReached={() => {
-        if (!isLastPage) {
-          showMore();
-        }
-      }}
-      renderItem={({item}) => (
-        <TouchableOpacity onPress={() => handleNav(item)} style={styles.item}>
-          <View style={styles.itemLeft}>
-            {item.pfpURL ? (
-              <Image
-                style={styles.pfp}
-                source={{
-                  uri: item.pfpURL,
-                }}
-              />
-            ) : (
-              <View style={styles.pfp} />
-            )}
-            <View style={styles.itemMiddle}>
-              <Text style={styles.displayName}>{item.displayName}</Text>
-              <Text style={styles.handle}>{item.handle}</Text>
-            </View>
-          </View>
-          <Ionicons
-            style={styles.socialIcon}
-            name={'chevron-forward'}
-            color={'white'}
-            size={20}
-          />
-        </TouchableOpacity>
+    <>
+      {UID ? (
+        <FlatList
+          data={hits}
+          onEndReached={() => {
+            if (!isLastPage) {
+              showMore();
+            }
+          }}
+          renderItem={({item}) => (
+            <>
+              {item.objectID === UID ? (
+                <></>
+              ) : (
+                <TouchableOpacity
+                  onPress={() => handleNav(item)}
+                  style={styles.item}>
+                  <View style={styles.itemLeft}>
+                    {item.pfpURL ? (
+                      <Image
+                        style={styles.pfp}
+                        source={{
+                          uri: item.pfpURL,
+                        }}
+                      />
+                    ) : (
+                      <View style={styles.pfp} />
+                    )}
+                    <View style={styles.itemMiddle}>
+                      <Text style={styles.displayName}>{item.displayName}</Text>
+                      <Text style={styles.handle}>{item.handle}</Text>
+                    </View>
+                  </View>
+                  <Ionicons
+                    style={styles.socialIcon}
+                    name={'chevron-forward'}
+                    color={'white'}
+                    size={20}
+                  />
+                </TouchableOpacity>
+              )}
+            </>
+          )}
+        />
+      ) : (
+        <></>
       )}
-    />
+    </>
   );
 };
 
