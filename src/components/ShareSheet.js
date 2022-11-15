@@ -116,7 +116,8 @@ const ShareSheet = props => {
 
   async function handleShare(item) {
     // firestore().collection("chats")
-    console.log(item);
+    setShowShareSheet(false);
+    top.value = withSpring(1000, SPRING_CONFIG);
     for (let i = 0; i < userItemSelections.length; i++) {
       let doc = await firestore()
         .collection('chats')
@@ -169,6 +170,9 @@ const ShareSheet = props => {
                 })
                 .then(() => {
                   console.log('message doc added!');
+                  setMessageText(null);
+                  setUserDisplayNameSelections([]);
+                  setUserItemSelections([]);
                 });
             } else {
               firestore()
@@ -183,6 +187,9 @@ const ShareSheet = props => {
                 })
                 .then(() => {
                   console.log('message doc added!');
+                  setMessageText(null);
+                  setUserDisplayNameSelections([]);
+                  setUserItemSelections([]);
                 });
             }
           });
@@ -201,6 +208,9 @@ const ShareSheet = props => {
             })
             .then(() => {
               console.log('message added');
+              setMessageText(null);
+              setUserDisplayNameSelections([]);
+              setUserItemSelections([]);
             });
         } else {
           await firestore()
@@ -215,6 +225,9 @@ const ShareSheet = props => {
             })
             .then(() => {
               console.log('message added without text!');
+              setMessageText(null);
+              setUserDisplayNameSelections([]);
+              setUserItemSelections([]);
             });
         }
         await firestore()
@@ -229,6 +242,9 @@ const ShareSheet = props => {
           })
           .then(() => {
             console.log('updated lastMessageAt!');
+            setMessageText(null);
+            setUserDisplayNameSelections([]);
+            setUserItemSelections([]);
           });
       }
     }

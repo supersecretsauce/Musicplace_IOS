@@ -208,6 +208,16 @@ const DirectMessageScreen = ({route, navigation}) => {
     });
   }
 
+  function handleSongNav(item) {
+    let songArr = [];
+    songArr.push(item);
+    console.log(songArr);
+    navigation.navigate('ViewPostsScreen', {
+      UID: UID,
+      songInfo: songArr,
+    });
+  }
+
   return (
     <SafeAreaView
       style={styles.container}
@@ -265,12 +275,17 @@ const DirectMessageScreen = ({route, navigation}) => {
                         <>
                           {item?._data.from === profileID ? (
                             <View style={styles.fromSongContainer}>
-                              <Image
-                                style={styles.songPhoto}
-                                source={{
-                                  uri: item?._data?.songInfo?.songPhoto,
-                                }}
-                              />
+                              <TouchableOpacity
+                                onPress={() =>
+                                  handleSongNav(item?._data?.songInfo)
+                                }>
+                                <Image
+                                  style={styles.songPhoto}
+                                  source={{
+                                    uri: item?._data?.songInfo?.songPhoto,
+                                  }}
+                                />
+                              </TouchableOpacity>
                               <View style={styles.fromSongInfoContainer}>
                                 <View style={styles.songTop}>
                                   {/* <Spotify height={20} /> */}
@@ -319,12 +334,17 @@ const DirectMessageScreen = ({route, navigation}) => {
                             </View>
                           ) : (
                             <View style={styles.mySongContainer}>
-                              <Image
-                                style={styles.songPhoto}
-                                source={{
-                                  uri: item?._data?.songInfo?.songPhoto,
-                                }}
-                              />
+                              <TouchableOpacity
+                                onPress={() =>
+                                  handleSongNav(item?._data?.songInfo)
+                                }>
+                                <Image
+                                  style={styles.songPhoto}
+                                  source={{
+                                    uri: item?._data?.songInfo?.songPhoto,
+                                  }}
+                                />
+                              </TouchableOpacity>
                               <View style={styles.fromSongInfoContainer}>
                                 <View style={styles.songTop}>
                                   {/* <Spotify height={20} /> */}

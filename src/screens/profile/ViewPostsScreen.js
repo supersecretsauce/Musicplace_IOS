@@ -35,6 +35,10 @@ const ViewPostsScreen = ({route}) => {
     hasSpotify,
   } = useContext(Context);
 
+  useEffect(() => {
+    console.log(songInfo);
+  }, [songInfo]);
+
   let playing = true;
   let startTime = new Date();
 
@@ -211,9 +215,9 @@ const ViewPostsScreen = ({route}) => {
                   </View>
                   <View style={styles.bottomRow}>
                     <Text numberOfLines={1} style={styles.artistName}>
-                      {post.artists
-                        .map(artist => {
-                          return artist.name;
+                      {post?.artists
+                        ?.map(artist => {
+                          return artist?.name;
                         })
                         .join(', ')}
                     </Text>
