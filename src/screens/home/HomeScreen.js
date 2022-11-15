@@ -23,12 +23,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {mixpanel} from '../../../mixpanel';
 import {firebase} from '@react-native-firebase/firestore';
 import messaging from '@react-native-firebase/messaging';
+import ShareSheet from '../../components/ShareSheet';
 const HomeScreen = () => {
   Sound.setCategory('Playback');
   const [feed, setFeed] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentTrack, setCurrentTrack] = useState(null);
   const [likedTracks, setLikedTracks] = useState([]);
+  const [showShareSheet, setShowShareSheet] = useState(false);
   const {
     accessToken,
     refreshToken,
@@ -268,7 +270,9 @@ const HomeScreen = () => {
                       </Text>
                     </View>
                     <View style={styles.topRowRight}>
-                      <TouchableOpacity style={styles.shareBtn}>
+                      <TouchableOpacity
+                        style={styles.shareBtn}
+                        onPress={() => setShowShareSheet(true)}>
                         <Ionicons name="share-outline" color="grey" size={28} />
                       </TouchableOpacity>
                       <TouchableOpacity onPress={likeHandler}>
@@ -320,6 +324,7 @@ const HomeScreen = () => {
             })}
           </Swiper>
           <BottomSheet UID={UID} feed={feed} currentIndex={currentIndex} />
+          <ShareSheet showShareSheet={showShareSheet} />
         </>
       ) : (
         <>
