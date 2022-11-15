@@ -155,19 +155,6 @@ const HomeScreen = () => {
       .catch(error => {
         console.log(error);
       });
-    firestore()
-      .collection('posts')
-      .doc(feed[currentIndex].id)
-      .update({
-        totalMSListened: increment,
-        numberOfWatches: watchIncrement,
-      })
-      .then(() => {
-        console.log('updated duration!');
-      })
-      .catch(error => {
-        console.log(error);
-      });
   }
 
   let playing = true;
