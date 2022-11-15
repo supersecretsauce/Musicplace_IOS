@@ -139,6 +139,7 @@ const HomeScreen = () => {
     let timeDiff = endTime - startTime;
     startTime = new Date();
     const increment = firebase.firestore.FieldValue.increment(timeDiff);
+    const watchIncrement = firebase.firestore.FieldValue.increment(1);
     firestore()
       .collection('posts')
       .doc(feed[currentIndex].id)
@@ -159,6 +160,7 @@ const HomeScreen = () => {
       .doc(feed[currentIndex].id)
       .update({
         totalMSListened: increment,
+        numberOfWatches: watchIncrement,
       })
       .then(() => {
         console.log('updated duration!');
@@ -324,7 +326,11 @@ const HomeScreen = () => {
             })}
           </Swiper>
           <BottomSheet UID={UID} feed={feed} currentIndex={currentIndex} />
-          <ShareSheet UID={UID} showShareSheet={showShareSheet} />
+          <ShareSheet
+            UID={UID}
+            setShowShareSheet={setShowShareSheet}
+            showShareSheet={showShareSheet}
+          />
         </>
       ) : (
         <>

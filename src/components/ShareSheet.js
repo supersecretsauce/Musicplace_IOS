@@ -24,9 +24,10 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../assets/utilities/Colors';
 
 const ShareSheet = props => {
-  const {showShareSheet, UID} = props;
+  const {showShareSheet, setShowShareSheet, UID} = props;
   const dimensions = useWindowDimensions();
   const [followingData, setFollowingData] = useState(null);
+  const [userSelections, setUserSelections] = useState([]);
 
   function getFollowing() {
     firestore()
@@ -79,16 +80,62 @@ const ShareSheet = props => {
     onActive(event, context) {
       top.value = context.startTop + event.translationY;
     },
+    onEnd() {
+      if (top.value > dimensions.height / 7) {
+        top.value = withSpring(1000, SPRING_CONFIG);
+        runOnJS(setShowShareSheet)(false);
+      }
+    },
   });
+
+  function handleSelections(item) {
+    if (userSelections.includes(item)) {
+      console.log('already got it');
+      setUserSelections(userSelections.filter(name => name != item));
+    } else {
+      console.log('new name');
+      setUserSelections([...userSelections, item]);
+    }
+  }
+
+  useEffect(() => {
+    console.log(userSelections);
+  }, [userSelections]);
 
   return (
     <>
       <PanGestureHandler onGestureEvent={gestureHandler}>
         <Animated.View style={[styles.shareSheet, style]}>
           <View style={styles.tab} />
-          <Text style={styles.shareText}>send via direct message</Text>
+          <Text style={styles.shareText}>
+            {userSelections.length > 0
+              ? 'send separately'
+              : 'send via direct message'}
+          </Text>
           <View style={styles.toContainer}>
-            <Text style={styles.toText}>to:</Text>
+            <Text style={styles.toText}>To:</Text>
+
+            {userSelections.length > 0 ? (
+              <View style={styles.toFlatListContainer}>
+                <FlatList
+                  contentContainerStyle={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}
+                  horizontal
+                  data={userSelections}
+                  renderItem={({item, index}) => {
+                    return (
+                      <View style={styles.toItemContainer}>
+                        <Text style={styles.toName}>{item}</Text>
+                      </View>
+                    );
+                  }}
+                />
+              </View>
+            ) : (
+              <></>
+            )}
           </View>
           {followingData && (
             <View style={styles.flatListContainer}>
@@ -115,11 +162,22 @@ const ShareSheet = props => {
                           <Text style={styles.handle}>@{item?.handle}</Text>
                         </View>
                       </View>
-                      <Ionicons
-                        name={'radio-button-off'}
-                        color={Colors.greyOut}
-                        size={28}
-                      />
+                      <TouchableOpacity
+                        onPress={() => handleSelections(item.displayName)}>
+                        {userSelections.includes(item.displayName) ? (
+                          <Ionicons
+                            name={'radio-button-on'}
+                            color={'white'}
+                            size={28}
+                          />
+                        ) : (
+                          <Ionicons
+                            name={'radio-button-off'}
+                            color={Colors.greyOut}
+                            size={28}
+                          />
+                        )}
+                      </TouchableOpacity>
                     </View>
                   );
                 }}
@@ -128,20 +186,22 @@ const ShareSheet = props => {
           )}
         </Animated.View>
       </PanGestureHandler>
-      <KeyboardAvoidingView behavior="position">
-        <View style={styles.btnsContainer}>
-          <TextInput
-            style={styles.textInput}
-            placeholder="add a comment"
-            placeholderTextColor={Colors.greyOut}
-            keyboardAppearance="dark"
-            autoCapitalize={'none'}
-          />
-          <TouchableOpacity style={styles.sendBtn}>
-            <Text style={styles.sendText}>send</Text>
-          </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView>
+      {showShareSheet && (
+        <KeyboardAvoidingView behavior="position">
+          <View style={styles.btnsContainer}>
+            <TextInput
+              style={styles.textInput}
+              placeholder="add a comment"
+              placeholderTextColor={Colors.greyOut}
+              keyboardAppearance="dark"
+              autoCapitalize={'none'}
+            />
+            <TouchableOpacity style={styles.sendBtn}>
+              <Text style={styles.sendText}>send</Text>
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      )}
     </>
   );
 };
@@ -171,21 +231,42 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: 'white',
     alignSelf: 'center',
-    marginTop: 10,
+    paddingVertical: 10,
   },
   toContainer: {
-    backgroundColor: 'white',
     width: '90%',
     alignSelf: 'center',
-    paddingVertical: 10,
+    height: 30,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   toText: {
     color: Colors.greyOut,
     marginLeft: 5,
+    fontFamily: 'Inter-bold',
+  },
+  toFlatListContainer: {
+    marginLeft: 10,
+    width: '90%',
+  },
+  toItemContainer: {
+    marginRight: 10,
+    padding: 5,
+    paddingHorizontal: 10,
+    borderColor: Colors.greyOut,
+    borderWidth: 0.5,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  toName: {
+    fontFamily: 'Inter-Regular',
+    fontSize: 12,
+    color: 'white',
   },
   //flatlist
   flatListContainer: {
-    marginTop: 80,
+    marginTop: 90,
     position: 'absolute',
     // backgroundColor: 'white',
     height: '60%',
@@ -209,7 +290,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'red',
   },
   itemMiddle: {
-    marginLeft: 14,
+    marginLeft: 10,
   },
   displayName: {
     fontFamily: 'Inter-SemiBold',
@@ -229,7 +310,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
-    paddingVertical: 10,
+    paddingVertical: 20,
   },
   textInput: {
     backgroundColor: '#1F1F1F',
@@ -237,6 +318,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 20,
     paddingLeft: 15,
+    color: 'white',
   },
   sendBtn: {
     // backgroundColor: 'red',
