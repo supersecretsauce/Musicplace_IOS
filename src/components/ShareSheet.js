@@ -24,10 +24,15 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../assets/utilities/Colors';
 
 const ShareSheet = props => {
-  const {showShareSheet, setShowShareSheet, UID} = props;
+  const {showShareSheet, setShowShareSheet, UID, post} = props;
   const dimensions = useWindowDimensions();
+  const [myUser, setMyUser] = useState(null);
   const [followingData, setFollowingData] = useState(null);
-  const [userSelections, setUserSelections] = useState([]);
+  const [messageText, setMessageText] = useState(null);
+  const [userItemSelections, setUserItemSelections] = useState([]);
+  const [userDisplayNameSelections, setUserDisplayNameSelections] = useState(
+    [],
+  );
 
   function getFollowing() {
     firestore()
@@ -36,6 +41,7 @@ const ShareSheet = props => {
       .get()
       .then(resp => {
         console.log(resp._data.followingList);
+        setMyUser(resp._data);
         let followingList = resp._data.followingList;
         if (followingList.length > 0) {
           async function getFollowingDocs() {
@@ -89,18 +95,144 @@ const ShareSheet = props => {
   });
 
   function handleSelections(item) {
-    if (userSelections.includes(item)) {
-      console.log('already got it');
-      setUserSelections(userSelections.filter(name => name != item));
+    if (userDisplayNameSelections.includes(item.displayName)) {
+      setUserDisplayNameSelections(
+        userDisplayNameSelections.filter(name => name != item.displayName),
+      );
+      setUserItemSelections(
+        userItemSelections.filter(user => user.UID != item.UID),
+      );
     } else {
-      console.log('new name');
-      setUserSelections([...userSelections, item]);
+      setUserDisplayNameSelections([
+        ...userDisplayNameSelections,
+        item.displayName,
+      ]);
+      setUserItemSelections([...userItemSelections, item]);
     }
   }
 
-  useEffect(() => {
-    console.log(userSelections);
-  }, [userSelections]);
+  //first get all documents where my user is a member of with selected user
+  //then for each docID, add to the messages subcollection
+
+  async function handleShare(item) {
+    // firestore().collection("chats")
+    console.log(item);
+    for (let i = 0; i < userItemSelections.length; i++) {
+      let doc = await firestore()
+        .collection('chats')
+        .where(`members.${userItemSelections[i].UID}`, '==', true)
+        .where(`members.${UID}`, '==', true)
+        .get();
+      if (doc.empty) {
+        await firestore()
+          .collection('chats')
+          .add({
+            members: {
+              [userItemSelections[i].UID]: true,
+              [UID]: true,
+            },
+            createdAt: new Date(),
+            lastMessageAt: new Date(),
+            [userItemSelections[i].UID]: {
+              UID: userItemSelections[i].UID,
+              displayName: userItemSelections[i].displayName,
+              handle: userItemSelections[i].handle,
+              pfpURL: userItemSelections[i]?.pfpURL
+                ? userItemSelections[i]?.pfpURL
+                : false,
+              sentLastMessage: false,
+              messageRead: false,
+            },
+            [UID]: {
+              UID: UID,
+              displayName: myUser.displayName,
+              handle: myUser.handle,
+              pfpURL: myUser?.pfpURL ? myUser?.pfpURL : false,
+              sentLastMessage: true,
+              messageRead: false,
+            },
+          })
+          .then(resp => {
+            console.log('create chat doc', resp);
+            // setChatDocID(resp.id);
+            if (messageText) {
+              firestore()
+                .collection('chats')
+                .doc(resp.id)
+                .collection('messages')
+                .add({
+                  messageText: messageText,
+                  songInfo: post._data,
+                  sentAt: new Date(),
+                  from: UID,
+                  to: userItemSelections[i].UID,
+                })
+                .then(() => {
+                  console.log('message doc added!');
+                });
+            } else {
+              firestore()
+                .collection('chats')
+                .doc(resp.id)
+                .collection('messages')
+                .add({
+                  songInfo: post._data,
+                  sentAt: new Date(),
+                  from: UID,
+                  to: userItemSelections[i].UID,
+                })
+                .then(() => {
+                  console.log('message doc added!');
+                });
+            }
+          });
+      } else {
+        if (messageText) {
+          await firestore()
+            .collection('chats')
+            .doc(doc._docs[0].id)
+            .collection('messages')
+            .add({
+              sentAt: new Date(),
+              from: UID,
+              to: userItemSelections[i].UID,
+              messageText: messageText,
+              songInfo: post._data,
+            })
+            .then(() => {
+              console.log('message added');
+            });
+        } else {
+          await firestore()
+            .collection('chats')
+            .doc(doc._docs[0].id)
+            .collection('messages')
+            .add({
+              sentAt: new Date(),
+              from: UID,
+              to: userItemSelections[i].UID,
+              songInfo: post._data,
+            })
+            .then(() => {
+              console.log('message added without text!');
+            });
+        }
+        await firestore()
+          .collection('chats')
+          .doc(doc._docs[0].id)
+          .update({
+            lastMessageAt: new Date(),
+            [userItemSelections[i].UID + '.messageRead']: false,
+            [userItemSelections[i].UID + '.sentLastMessage']: false,
+            [UID + '.messageRead']: false,
+            [UID + '.sentLastMessage']: true,
+          })
+          .then(() => {
+            console.log('updated lastMessageAt!');
+          });
+      }
+    }
+  }
 
   return (
     <>
@@ -108,14 +240,14 @@ const ShareSheet = props => {
         <Animated.View style={[styles.shareSheet, style]}>
           <View style={styles.tab} />
           <Text style={styles.shareText}>
-            {userSelections.length > 0
+            {userDisplayNameSelections.length > 0
               ? 'send separately'
               : 'send via direct message'}
           </Text>
           <View style={styles.toContainer}>
             <Text style={styles.toText}>To:</Text>
 
-            {userSelections.length > 0 ? (
+            {userDisplayNameSelections.length > 0 ? (
               <View style={styles.toFlatListContainer}>
                 <FlatList
                   contentContainerStyle={{
@@ -123,10 +255,10 @@ const ShareSheet = props => {
                     alignItems: 'center',
                   }}
                   horizontal
-                  data={userSelections}
+                  data={userDisplayNameSelections}
                   renderItem={({item, index}) => {
                     return (
-                      <View style={styles.toItemContainer}>
+                      <View style={styles.toItemContainer} key={index}>
                         <Text style={styles.toName}>{item}</Text>
                       </View>
                     );
@@ -162,9 +294,10 @@ const ShareSheet = props => {
                           <Text style={styles.handle}>@{item?.handle}</Text>
                         </View>
                       </View>
-                      <TouchableOpacity
-                        onPress={() => handleSelections(item.displayName)}>
-                        {userSelections.includes(item.displayName) ? (
+                      <TouchableOpacity onPress={() => handleSelections(item)}>
+                        {userDisplayNameSelections.includes(
+                          item.displayName,
+                        ) ? (
                           <Ionicons
                             name={'radio-button-on'}
                             color={'white'}
@@ -191,12 +324,13 @@ const ShareSheet = props => {
           <View style={styles.btnsContainer}>
             <TextInput
               style={styles.textInput}
-              placeholder="add a comment"
+              placeholder="add a comment..."
               placeholderTextColor={Colors.greyOut}
               keyboardAppearance="dark"
               autoCapitalize={'none'}
+              onChangeText={text => setMessageText(text)}
             />
-            <TouchableOpacity style={styles.sendBtn}>
+            <TouchableOpacity style={styles.sendBtn} onPress={handleShare}>
               <Text style={styles.sendText}>send</Text>
             </TouchableOpacity>
           </View>
