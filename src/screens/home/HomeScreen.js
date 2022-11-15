@@ -324,7 +324,7 @@ const HomeScreen = () => {
             })}
           </Swiper>
           <BottomSheet UID={UID} feed={feed} currentIndex={currentIndex} />
-          <ShareSheet showShareSheet={showShareSheet} />
+          <ShareSheet UID={UID} showShareSheet={showShareSheet} />
         </>
       ) : (
         <>
