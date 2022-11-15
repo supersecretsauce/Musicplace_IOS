@@ -138,8 +138,7 @@ const HomeScreen = () => {
     let endTime = new Date();
     let timeDiff = endTime - startTime;
     startTime = new Date();
-    const increment = firebase.firestore.FieldValue.increment(timeDiff);
-    const watchIncrement = firebase.firestore.FieldValue.increment(1);
+
     firestore()
       .collection('posts')
       .doc(feed[currentIndex].id)
