@@ -104,6 +104,7 @@ const ActivityScreen = ({navigation}) => {
         .orderBy('timestamp', 'desc')
         .onSnapshot(snapshot => {
           let docArr = [];
+          console.log(snapshot);
           snapshot.docs.forEach(doc => {
             docArr.push(doc.data());
           });

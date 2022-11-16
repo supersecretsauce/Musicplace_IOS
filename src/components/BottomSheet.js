@@ -61,6 +61,7 @@ const BottomSheet = props => {
     } else {
       console.log('comments exist!');
       setComments(commentDocs._docs);
+      console.log(commentDocs);
     }
   }
 
@@ -337,12 +338,16 @@ const BottomSheet = props => {
                                     myUser: userDoc,
                                   });
                                 }}>
-                                <Image
-                                  style={styles.profilePic}
-                                  source={{
-                                    uri: item._data.pfpURL,
-                                  }}
-                                />
+                                {item?._data?.pfpURL ? (
+                                  <Image
+                                    style={styles.profilePic}
+                                    source={{
+                                      uri: item._data.pfpURL,
+                                    }}
+                                  />
+                                ) : (
+                                  <View style={styles.profilePic} />
+                                )}
                               </TouchableOpacity>
                               <View style={styles.commentMiddle}>
                                 <Text style={styles.displayName}>
@@ -524,6 +529,7 @@ const styles = StyleSheet.create({
     height: 32,
     width: 32,
     borderRadius: 32,
+    backgroundColor: Colors.red,
   },
   commentMiddle: {
     marginLeft: 15,

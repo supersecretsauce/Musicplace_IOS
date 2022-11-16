@@ -334,12 +334,16 @@ const SinglePostBottomSheet = props => {
                                     UID: UID,
                                   });
                                 }}>
-                                <Image
-                                  style={styles.profilePic}
-                                  source={{
-                                    uri: item._data.profilePicURL,
-                                  }}
-                                />
+                                {item?._data?.pfpURL ? (
+                                  <Image
+                                    style={styles.profilePic}
+                                    source={{
+                                      uri: item._data.pfpURL,
+                                    }}
+                                  />
+                                ) : (
+                                  <View style={styles.profilePic} />
+                                )}
                               </TouchableOpacity>
                               <View style={styles.commentMiddle}>
                                 <Text style={styles.displayName}>
@@ -520,6 +524,7 @@ const styles = StyleSheet.create({
     height: 32,
     width: 32,
     borderRadius: 32,
+    backgroundColor: Colors.red,
   },
   commentMiddle: {
     marginLeft: 15,
