@@ -224,6 +224,7 @@ const ActivityScreen = ({navigation}) => {
                             <View style={styles.itemLeft}>
                               {item.pfpURL ? (
                                 <Image
+                                  style={styles.musicplaceLogo}
                                   source={{
                                     uri: item.pfpURL,
                                   }}
