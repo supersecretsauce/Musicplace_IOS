@@ -106,7 +106,7 @@ const ActivityScreen = ({navigation}) => {
           let docArr = [];
           console.log(snapshot);
           snapshot.docs.forEach(doc => {
-            docArr.push(doc.data());
+            docArr.push(doc);
           });
           docArr.unshift({
             top: 'Musicplace Team',
@@ -122,19 +122,6 @@ const ActivityScreen = ({navigation}) => {
       return () => subscriber();
     }
   }, [UID]);
-
-  const defaultActivityText = [
-    {
-      top: 'Musicplace Team',
-      bottom: 'Get started by adding your friends.',
-      nav: 'AddFriends',
-    },
-    {
-      top: 'Musicplace Team',
-      bottom: 'Invite your friends on to Musicplace.',
-      nav: 'InviteContactsScreen',
-    },
-  ];
 
   function handleNav(nav) {
     navigation.navigate(nav, {
@@ -159,6 +146,25 @@ const ActivityScreen = ({navigation}) => {
     });
 
     // navigation.navigate('NoMessagesScreen');
+  }
+
+  function viewLikeNav(item) {
+    console.log(item);
+    navigation.navigate('ViewPostsScreen', {
+      songInfo: [item?._data?.songInfo],
+      UID: UID,
+      openSheet: true,
+      commentDocID: item?._data?.commentDocID,
+    });
+
+    firestore()
+      .collection('users')
+      .doc(UID)
+      .collection('activity')
+      .doc(item.id)
+      .update({
+        notificationRead: true,
+      });
   }
 
   return (
@@ -210,23 +216,16 @@ const ActivityScreen = ({navigation}) => {
                       </TouchableOpacity>
                     ) : (
                       <>
-                        {item.type === 'like' ? (
+                        {item?._data?.type === 'like' ? (
                           <TouchableOpacity
                             style={styles.itemContainer}
-                            onPress={() =>
-                              navigation.navigate('ViewPostsScreen', {
-                                songInfo: [item.songInfo],
-                                UID: UID,
-                                openSheet: true,
-                                commentDocID: item.commentDocID,
-                              })
-                            }>
+                            onPress={() => viewLikeNav(item)}>
                             <View style={styles.itemLeft}>
-                              {item.pfpURL ? (
+                              {item?._data?.pfpURL ? (
                                 <Image
                                   style={styles.musicplaceLogo}
                                   source={{
-                                    uri: item.pfpURL,
+                                    uri: item?._data?.pfpURL,
                                   }}
                                 />
                               ) : (
@@ -235,11 +234,17 @@ const ActivityScreen = ({navigation}) => {
                               <View style={styles.itemMiddle}>
                                 <Text style={styles.topText}>New Like</Text>
                                 <Text style={styles.bottomText}>
-                                  {`${item.displayName} liked your comment.`}
+                                  {`${item?._data?.displayName} liked your comment.`}
                                 </Text>
                               </View>
                             </View>
-                            <View>
+                            <View style={styles.notiContainer}>
+                              {item?._data?.notificationRead ? (
+                                <></>
+                              ) : (
+                                <View style={styles.notificationDot} />
+                              )}
+
                               <Ionicons
                                 name={'chevron-forward'}
                                 color={'white'}

@@ -298,6 +298,7 @@ const SinglePostBottomSheet = props => {
           displayName: userDoc.displayName,
           pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
           commentDocID: item.id,
+          notificationRead: false,
         })
         .then(() => {
           console.log('added doc to parent user');
