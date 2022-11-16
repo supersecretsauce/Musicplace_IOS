@@ -266,6 +266,7 @@ const SinglePostBottomSheet = props => {
         .doc(itemID)
         .update({
           likeAmount: decrement,
+          likesArray: firestore.FieldValue.arrayRemove(UID),
         })
         .then(() => {
           console.log('Like removed :(');
@@ -280,6 +281,7 @@ const SinglePostBottomSheet = props => {
         .doc(itemID)
         .update({
           likeAmount: increment,
+          likesArray: firestore.FieldValue.arrayUnion(UID),
         })
         .then(() => {
           console.log('Like added!');
