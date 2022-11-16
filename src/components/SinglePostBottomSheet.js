@@ -33,7 +33,6 @@ const SinglePostBottomSheet = props => {
   const [containerUp, setContainerUp] = useState(false);
   const [containerSmall, setContainerSmall] = useState(false);
   const [comments, setComments] = useState(false);
-  const [profilePicURL, setProfilePicURL] = useState(null);
   const [userDoc, setUserDoc] = useState(null);
   const [userText, setUserText] = useState(null);
   const [replyInfo, setReplyInfo] = useState(null);
@@ -83,18 +82,6 @@ const SinglePostBottomSheet = props => {
   // get current user's profile picture and their user document
   useEffect(() => {
     if (UID) {
-      const getProfilePicURL = async () => {
-        const url = await storage()
-          .ref(UID + 'PFP')
-          .getDownloadURL()
-          .catch(error => {
-            console.log(error);
-          });
-        if (url) {
-          console.log(url);
-          setProfilePicURL(url);
-        }
-      };
       const getUserDoc = async () => {
         const doc = await firestore().collection('users').doc(UID).get();
         if (doc) {
@@ -102,7 +89,6 @@ const SinglePostBottomSheet = props => {
           setUserDoc(doc._data);
         }
       };
-      getProfilePicURL();
       getUserDoc();
     }
   }, [UID]);
@@ -168,7 +154,7 @@ const SinglePostBottomSheet = props => {
         .add({
           comment: userText,
           displayName: userDoc.displayName,
-          profilePicURL: profilePicURL,
+          pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
           hasReplies: 'no',
           likeAmount: 0,
           parent: replyInfo.id,
@@ -203,7 +189,7 @@ const SinglePostBottomSheet = props => {
         .add({
           comment: userText,
           displayName: userDoc.displayName,
-          profilePicURL: profilePicURL,
+          pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
           hasReplies: false,
           likeAmount: 0,
           parent: 'none',
@@ -467,13 +453,15 @@ const SinglePostBottomSheet = props => {
       {containerUp && (
         <KeyboardAvoidingView behavior="position">
           <View style={styles.myUserContainer}>
-            {profilePicURL && (
+            {userDoc?.pfpURL ? (
               <Image
                 style={styles.myProfilePic}
                 source={{
-                  uri: profilePicURL,
+                  uri: userDoc?.pfpURL,
                 }}
               />
+            ) : (
+              <View style={styles.myProfilePic} />
             )}
             <View style={styles.inputBackground}>
               <TextInput
@@ -624,6 +612,7 @@ const styles = StyleSheet.create({
     height: 48,
     width: 48,
     borderRadius: 48,
+    backgroundColor: Colors.red,
   },
   inputBackground: {
     backgroundColor: '#1F1F1F',
