@@ -72,7 +72,7 @@ const ViewPostsScreen = ({route}) => {
           playing = false;
           recordTime();
           mixpanel.track('New Listen');
-          console.log('user left screen');
+          // console.log('user left screen');
         }
       };
     }, [currentTrack]),

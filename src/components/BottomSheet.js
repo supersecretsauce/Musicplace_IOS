@@ -297,7 +297,7 @@ const BottomSheet = props => {
           from: 'user',
           type: 'like',
           timestamp: firestore.FieldValue.serverTimestamp(),
-          postID: feed[currentIndex].id,
+          songInfo: feed[currentIndex]._data,
           handle: userDoc.handle,
           displayName: userDoc.displayName,
           pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,

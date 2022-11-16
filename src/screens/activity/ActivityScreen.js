@@ -211,7 +211,14 @@ const ActivityScreen = ({navigation}) => {
                     ) : (
                       <>
                         {item.type === 'like' ? (
-                          <TouchableOpacity style={styles.itemContainer}>
+                          <TouchableOpacity
+                            style={styles.itemContainer}
+                            onPress={() =>
+                              navigation.navigate('ViewPostsScreen', {
+                                songInfo: [item.songInfo],
+                                UID: UID,
+                              })
+                            }>
                             <View style={styles.itemLeft}>
                               {item.pfpURL ? (
                                 <Image
@@ -225,7 +232,7 @@ const ActivityScreen = ({navigation}) => {
                               <View style={styles.itemMiddle}>
                                 <Text style={styles.topText}>New Like</Text>
                                 <Text style={styles.bottomText}>
-                                  {`${item.displayName} liked your comment`}
+                                  {`${item.displayName} liked your comment.`}
                                 </Text>
                               </View>
                             </View>
