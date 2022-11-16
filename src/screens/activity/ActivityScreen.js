@@ -94,6 +94,20 @@ const ActivityScreen = ({navigation}) => {
     }
   }, [UID]);
 
+  useEffect(() => {
+    if (UID) {
+      const subscriber = firestore()
+        .collectionGroup('comments')
+        .where('UID', '==', UID)
+        .onSnapshot(snapshot => {
+          console.log(snapshot);
+        });
+
+      // Stop listening for updates when no longer required
+      return () => subscriber();
+    }
+  }, [UID]);
+
   const defaultActivityText = [
     {
       top: 'Musicplace Team',

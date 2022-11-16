@@ -252,18 +252,18 @@ const BottomSheet = props => {
   }
 
   //handle liked comment logic
-  async function likeComment(itemID) {
+  async function likeComment(item) {
     HapticFeedback.trigger('selection');
     const increment = firebase.firestore.FieldValue.increment(1);
     const decrement = firebase.firestore.FieldValue.increment(-1);
-
-    if (likedComments.includes(itemID)) {
-      setLikedComments(likedComments.filter(comment => comment !== itemID));
+    console.log(userDoc);
+    if (likedComments.includes(item.id)) {
+      setLikedComments(likedComments.filter(comment => comment !== item.id));
       firestore()
         .collection('posts')
         .doc(feed[currentIndex].id)
         .collection('comments')
-        .doc(itemID)
+        .doc(item.id)
         .update({
           likeAmount: decrement,
           likesArray: firestore.FieldValue.arrayRemove(UID),
@@ -273,12 +273,12 @@ const BottomSheet = props => {
         });
       setLikeValue(-1);
     } else {
-      setLikedComments([...likedComments, itemID]);
+      setLikedComments([...likedComments, item.id]);
       firestore()
         .collection('posts')
         .doc(feed[currentIndex].id)
         .collection('comments')
-        .doc(itemID)
+        .doc(item.id)
         .update({
           likeAmount: increment,
           likesArray: firestore.FieldValue.arrayUnion(UID),
@@ -286,6 +286,24 @@ const BottomSheet = props => {
         .then(() => {
           console.log('Like added!');
         });
+
+      firestore()
+        .collection('users')
+        .doc(item._data.UID)
+        .collection('activity')
+        .add({
+          UID: UID,
+          type: 'like',
+          timestamp: firestore.FieldValue.serverTimestamp(),
+          postID: feed[currentIndex].id,
+          handle: userDoc.handle,
+          displayName: userDoc.displayName,
+          pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
+        })
+        .then(() => {
+          console.log('added doc to parent user');
+        });
+
       setLikeValue(1);
     }
   }
@@ -360,7 +378,7 @@ const BottomSheet = props => {
                             <View style={styles.commentRight}>
                               <TouchableOpacity
                                 style={styles.likeContainer}
-                                onPress={() => likeComment(item.id)}>
+                                onPress={() => likeComment(item)}>
                                 <Ionicons
                                   style={styles.socialIcon}
                                   name={

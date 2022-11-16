@@ -252,18 +252,18 @@ const SinglePostBottomSheet = props => {
   }
 
   //handle liked comment logic
-  async function likeComment(itemID) {
+  async function likeComment(item) {
     HapticFeedback.trigger('selection');
     const increment = firebase.firestore.FieldValue.increment(1);
     const decrement = firebase.firestore.FieldValue.increment(-1);
 
-    if (likedComments.includes(itemID)) {
-      setLikedComments(likedComments.filter(comment => comment !== itemID));
+    if (likedComments.includes(item.id)) {
+      setLikedComments(likedComments.filter(comment => comment !== item.id));
       firestore()
         .collection('posts')
         .doc(songInfo[0].id)
         .collection('comments')
-        .doc(itemID)
+        .doc(item.id)
         .update({
           likeAmount: decrement,
           likesArray: firestore.FieldValue.arrayRemove(UID),
@@ -273,18 +273,34 @@ const SinglePostBottomSheet = props => {
         });
       setLikeValue(-1);
     } else {
-      setLikedComments([...likedComments, itemID]);
+      setLikedComments([...likedComments, item.id]);
       firestore()
         .collection('posts')
         .doc(songInfo[0].id)
         .collection('comments')
-        .doc(itemID)
+        .doc(item.id)
         .update({
           likeAmount: increment,
           likesArray: firestore.FieldValue.arrayUnion(UID),
         })
         .then(() => {
           console.log('Like added!');
+        });
+      firestore()
+        .collection('users')
+        .doc(item._data.UID)
+        .collection('activity')
+        .add({
+          UID: UID,
+          type: 'like',
+          timestamp: firestore.FieldValue.serverTimestamp(),
+          postID: songInfo[0].id,
+          handle: userDoc.handle,
+          displayName: userDoc.displayName,
+          pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
+        })
+        .then(() => {
+          console.log('added doc to parent user');
         });
       setLikeValue(1);
     }
@@ -358,7 +374,7 @@ const SinglePostBottomSheet = props => {
                             </View>
                             <View style={styles.commentRight}>
                               <TouchableOpacity
-                                onPress={() => likeComment(item.id)}>
+                                onPress={() => likeComment(item)}>
                                 <Ionicons
                                   style={styles.socialIcon}
                                   name={
