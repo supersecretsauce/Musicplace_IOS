@@ -293,6 +293,7 @@ const BottomSheet = props => {
         .collection('activity')
         .add({
           UID: UID,
+          from: 'user',
           type: 'like',
           timestamp: firestore.FieldValue.serverTimestamp(),
           postID: feed[currentIndex].id,

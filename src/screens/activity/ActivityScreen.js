@@ -20,6 +20,7 @@ const ActivityScreen = ({navigation}) => {
   // const [followingList, setFollowingList] = useState(null);
   const [memberInfo, setMemberInfo] = useState(null);
   const [myUser, setMyUser] = useState(null);
+  const [activity, setActivity] = useState(null);
   const {UID} = useContext(Context);
 
   useEffect(() => {
@@ -97,10 +98,23 @@ const ActivityScreen = ({navigation}) => {
   useEffect(() => {
     if (UID) {
       const subscriber = firestore()
-        .collectionGroup('comments')
-        .where('UID', '==', UID)
+        .collection('users')
+        .doc(UID)
+        .collection('activity')
+        .orderBy('timestamp', 'desc')
         .onSnapshot(snapshot => {
-          console.log(snapshot);
+          let docArr = [];
+          snapshot.docs.forEach(doc => {
+            docArr.push(doc.data());
+          });
+          docArr.unshift({
+            top: 'Musicplace Team',
+            bottom: 'Invite your friends on to Musicplace.',
+            nav: 'InviteContactsScreen',
+            from: 'musicplace',
+          });
+          console.log(docArr);
+          setActivity(docArr);
         });
 
       // Stop listening for updates when no longer required
@@ -167,32 +181,71 @@ const ActivityScreen = ({navigation}) => {
       <View style={styles.newActivityContainer}>
         <Text style={styles.newActivity}>New Activity</Text>
         <View style={styles.activityFlatListContainer}>
-          <FlatList
-            data={defaultActivityText}
-            renderItem={({item, index}) => {
-              return (
-                <TouchableOpacity
-                  key={index}
-                  style={styles.itemContainer}
-                  onPress={() => handleNav(item.nav)}>
-                  <View style={styles.itemLeft}>
-                    <View style={styles.musicplaceLogo} />
-                    <View style={styles.itemMiddle}>
-                      <Text style={styles.topText}>{item.top}</Text>
-                      <Text style={styles.bottomText}>{item.bottom}</Text>
-                    </View>
-                  </View>
-                  <View>
-                    <Ionicons
-                      name={'chevron-forward'}
-                      color={'white'}
-                      size={20}
-                    />
-                  </View>
-                </TouchableOpacity>
-              );
-            }}
-          />
+          {activity && (
+            <FlatList
+              data={activity}
+              renderItem={({item, index}) => {
+                return (
+                  <>
+                    {item.from === 'musicplace' ? (
+                      <TouchableOpacity
+                        key={index}
+                        style={styles.itemContainer}
+                        onPress={() => handleNav(item.nav)}>
+                        <View style={styles.itemLeft}>
+                          <View style={styles.musicplaceLogo} />
+                          <View style={styles.itemMiddle}>
+                            <Text style={styles.topText}>{item.top}</Text>
+                            <Text style={styles.bottomText}>{item.bottom}</Text>
+                          </View>
+                        </View>
+                        <View>
+                          <Ionicons
+                            name={'chevron-forward'}
+                            color={'white'}
+                            size={20}
+                          />
+                        </View>
+                      </TouchableOpacity>
+                    ) : (
+                      <>
+                        {item.type === 'like' ? (
+                          <TouchableOpacity style={styles.itemContainer}>
+                            <View style={styles.itemLeft}>
+                              {item.pfpURL ? (
+                                <Image
+                                  source={{
+                                    uri: item.pfpURL,
+                                  }}
+                                />
+                              ) : (
+                                <View style={styles.musicplaceLogo} />
+                              )}
+                              <View style={styles.itemMiddle}>
+                                <Text style={styles.topText}>New Like</Text>
+                                <Text style={styles.bottomText}>
+                                  {`${item.displayName} liked your comment`}
+                                </Text>
+                              </View>
+                            </View>
+                            <View>
+                              <Ionicons
+                                name={'chevron-forward'}
+                                color={'white'}
+                                size={20}
+                              />
+                            </View>
+                          </TouchableOpacity>
+                        ) : (
+                          <></>
+                        )}
+                      </>
+                    )}
+                  </>
+                );
+              }}
+            />
+          )}
         </View>
       </View>
       <View style={styles.messagesContainer}>
