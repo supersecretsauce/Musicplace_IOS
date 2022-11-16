@@ -29,7 +29,7 @@ import {useNavigation} from '@react-navigation/native';
 import HapticFeedback from 'react-native-haptic-feedback';
 
 const SinglePostBottomSheet = props => {
-  const {songInfo, UID} = props;
+  const {songInfo, UID, openSheet, commentDocID} = props;
   const [containerUp, setContainerUp] = useState(false);
   const [containerSmall, setContainerSmall] = useState(false);
   const [comments, setComments] = useState(false);
@@ -43,7 +43,18 @@ const SinglePostBottomSheet = props => {
   const [likedComments, setLikedComments] = useState([]);
   const [likeValue, setLikeValue] = useState(0);
   const inputRef = useRef();
+  const flatListRef = useRef();
   const {navigate} = useNavigation();
+
+  useEffect(() => {
+    if (openSheet && commentDocID && comments) {
+      top.value = withSpring(200, SPRING_CONFIG);
+      runOnJS(setContainerUp)(true);
+      let index = comments.findIndex(comment => comment.id === commentDocID);
+      console.log(index);
+      flatListRef?.current?.scrollToIndex({animated: true, index: index});
+    }
+  }, [openSheet, commentDocID, comments]);
 
   // get comments
   async function getComments() {
@@ -60,6 +71,7 @@ const SinglePostBottomSheet = props => {
       return;
     } else {
       console.log('comments exist!');
+      console.log(commentDocs._docs);
       setComments(commentDocs._docs);
     }
   }
@@ -299,6 +311,7 @@ const SinglePostBottomSheet = props => {
           handle: userDoc.handle,
           displayName: userDoc.displayName,
           pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
+          commentDocID: item.id,
         })
         .then(() => {
           console.log('added doc to parent user');
@@ -322,6 +335,19 @@ const SinglePostBottomSheet = props => {
                   <FlatList
                     contentContainerStyle={{paddingBottom: '20%'}}
                     data={comments}
+                    ref={flatListRef}
+                    initialScrollIndex={0}
+                    onScrollToIndexFailed={info => {
+                      const wait = new Promise(resolve =>
+                        setTimeout(resolve, 100),
+                      );
+                      wait.then(() => {
+                        flatListRef.current?.scrollToIndex({
+                          index: info.index,
+                          animated: true,
+                        });
+                      });
+                    }}
                     renderItem={({item}) => (
                       <>
                         <View style={styles.commentAndReplyContainer}>

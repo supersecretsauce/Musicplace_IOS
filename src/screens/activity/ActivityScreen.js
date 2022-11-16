@@ -217,6 +217,8 @@ const ActivityScreen = ({navigation}) => {
                               navigation.navigate('ViewPostsScreen', {
                                 songInfo: [item.songInfo],
                                 UID: UID,
+                                openSheet: true,
+                                commentDocID: item.commentDocID,
                               })
                             }>
                             <View style={styles.itemLeft}>

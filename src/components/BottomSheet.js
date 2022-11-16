@@ -301,6 +301,7 @@ const BottomSheet = props => {
           handle: userDoc.handle,
           displayName: userDoc.displayName,
           pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
+          commentDocID: item.id,
         })
         .then(() => {
           console.log('added doc to parent user');
