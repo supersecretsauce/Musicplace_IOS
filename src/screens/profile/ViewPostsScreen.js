@@ -35,10 +35,6 @@ const ViewPostsScreen = ({route}) => {
     hasSpotify,
   } = useContext(Context);
 
-  useEffect(() => {
-    console.log(songInfo);
-  }, [songInfo]);
-
   let playing = true;
   let startTime = new Date();
 
@@ -46,7 +42,6 @@ const ViewPostsScreen = ({route}) => {
     let endTime = new Date();
     let timeDiff = endTime - startTime;
     startTime = new Date();
-    const increment = firebase.firestore.FieldValue.increment(timeDiff);
     firestore()
       .collection('posts')
       .doc(songInfo[0].id)
@@ -58,18 +53,6 @@ const ViewPostsScreen = ({route}) => {
       })
       .then(() => {
         console.log('added watch document');
-      })
-      .catch(error => {
-        console.log(error);
-      });
-    firestore()
-      .collection('posts')
-      .doc(songInfo[0].id)
-      .update({
-        totalMSListened: increment,
-      })
-      .then(() => {
-        console.log('updated duration!');
       })
       .catch(error => {
         console.log(error);
