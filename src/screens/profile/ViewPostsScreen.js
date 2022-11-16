@@ -42,7 +42,6 @@ const ViewPostsScreen = ({route}) => {
     let endTime = new Date();
     let timeDiff = endTime - startTime;
     startTime = new Date();
-    const increment = firebase.firestore.FieldValue.increment(timeDiff);
     firestore()
       .collection('posts')
       .doc(songInfo[0].id)
@@ -54,18 +53,6 @@ const ViewPostsScreen = ({route}) => {
       })
       .then(() => {
         console.log('added watch document');
-      })
-      .catch(error => {
-        console.log(error);
-      });
-    firestore()
-      .collection('posts')
-      .doc(songInfo[0].id)
-      .update({
-        totalMSListened: increment,
-      })
-      .then(() => {
-        console.log('updated duration!');
       })
       .catch(error => {
         console.log(error);
@@ -211,9 +198,9 @@ const ViewPostsScreen = ({route}) => {
                   </View>
                   <View style={styles.bottomRow}>
                     <Text numberOfLines={1} style={styles.artistName}>
-                      {post.artists
-                        .map(artist => {
-                          return artist.name;
+                      {post?.artists
+                        ?.map(artist => {
+                          return artist?.name;
                         })
                         .join(', ')}
                     </Text>

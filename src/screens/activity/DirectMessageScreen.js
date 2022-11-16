@@ -10,6 +10,7 @@ import {
   FlatList,
   Keyboard,
   TouchableWithoutFeedback,
+  Linking,
 } from 'react-native';
 import React, {useEffect, useState, useContext, useRef} from 'react';
 import Colors from '../../assets/utilities/Colors';
@@ -25,6 +26,7 @@ import {SPRING_CONFIG} from '../../assets/utilities/reanimated-2';
 import firestore from '@react-native-firebase/firestore';
 import {Context} from '../../context/Context';
 import EmptyChatUI from '../../components/EmptyChatUI';
+import Spotify from '../../assets/img/spotify.svg';
 
 const DirectMessageScreen = ({route, navigation}) => {
   const {UID} = useContext(Context);
@@ -207,6 +209,20 @@ const DirectMessageScreen = ({route, navigation}) => {
     });
   }
 
+  function handleSongNav(item) {
+    let songArr = [];
+    songArr.push(item);
+    console.log(songArr);
+    navigation.navigate('ViewPostsScreen', {
+      UID: UID,
+      songInfo: songArr,
+    });
+  }
+
+  async function handleDeepLinking(item) {
+    await Linking.openURL(`http://open.spotify.com/track/${item}`);
+  }
+
   return (
     <SafeAreaView
       style={styles.container}
@@ -260,18 +276,156 @@ const DirectMessageScreen = ({route, navigation}) => {
                 renderItem={({item}) => {
                   return (
                     <>
-                      {item._data.from === profileID ? (
-                        <View style={styles.fromContainer}>
-                          <Text style={styles.messageText}>
-                            {item._data.messageText}
-                          </Text>
-                        </View>
+                      {item?._data?.songInfo ? (
+                        <>
+                          {item?._data.from === profileID ? (
+                            <View style={styles.fromSongContainer}>
+                              <TouchableOpacity
+                                onPress={() =>
+                                  handleSongNav(item?._data?.songInfo)
+                                }>
+                                <Image
+                                  style={styles.songPhoto}
+                                  source={{
+                                    uri: item?._data?.songInfo?.songPhoto,
+                                  }}
+                                />
+                              </TouchableOpacity>
+                              <View style={styles.fromSongInfoContainer}>
+                                <View style={styles.songTop}>
+                                  {/* <Spotify height={20} /> */}
+                                  <Text style={styles.songName}>
+                                    {item?._data?.songInfo?.songName}
+                                  </Text>
+                                </View>
+                                <View style={styles.songMiddle}>
+                                  <Text
+                                    numberOfLines={1}
+                                    style={styles.artistName}>
+                                    {item?._data?.songInfo?.artists
+                                      .map(artist => {
+                                        return artist.name;
+                                      })
+                                      .join(', ')}
+                                  </Text>
+                                  <Ionicons
+                                    style={styles.smallDot}
+                                    name="ellipse"
+                                    color="white"
+                                    size={3}
+                                  />
+                                  <Text
+                                    numberOfLines={1}
+                                    style={styles.albumName}>
+                                    {item?._data?.songInfo?.albumName}
+                                  </Text>
+                                </View>
+                                <View>
+                                  <TouchableOpacity
+                                    style={styles.spotifyBtn}
+                                    onPress={() => {
+                                      handleDeepLinking(
+                                        item?._data?.songInfo?.id,
+                                      );
+                                    }}>
+                                    <Spotify height={16} />
+                                    <Text style={styles.spotifyText}>
+                                      LISTEN ON SPOTIFY
+                                    </Text>
+                                  </TouchableOpacity>
+                                </View>
+                              </View>
+                              {item?._data?.messageText && (
+                                <View style={styles.fromSongTextContainer}>
+                                  <Text style={styles.messageText}>
+                                    {item._data.messageText}
+                                  </Text>
+                                </View>
+                              )}
+                            </View>
+                          ) : (
+                            <View style={styles.mySongContainer}>
+                              <TouchableOpacity
+                                onPress={() =>
+                                  handleSongNav(item?._data?.songInfo)
+                                }>
+                                <Image
+                                  style={styles.songPhoto}
+                                  source={{
+                                    uri: item?._data?.songInfo?.songPhoto,
+                                  }}
+                                />
+                              </TouchableOpacity>
+                              <View style={styles.fromSongInfoContainer}>
+                                <View style={styles.songTop}>
+                                  {/* <Spotify height={20} /> */}
+                                  <Text style={styles.songName}>
+                                    {item?._data?.songInfo?.songName}
+                                  </Text>
+                                </View>
+                                <View style={styles.songMiddle}>
+                                  <Text
+                                    numberOfLines={1}
+                                    style={styles.artistName}>
+                                    {item?._data?.songInfo?.artists
+                                      .map(artist => {
+                                        return artist.name;
+                                      })
+                                      .join(', ')}
+                                  </Text>
+                                  <Ionicons
+                                    style={styles.smallDot}
+                                    name="ellipse"
+                                    color="white"
+                                    size={3}
+                                  />
+                                  <Text
+                                    numberOfLines={1}
+                                    style={styles.albumName}>
+                                    {item?._data?.songInfo?.albumName}
+                                  </Text>
+                                </View>
+                                <View>
+                                  <TouchableOpacity
+                                    style={styles.spotifyBtn}
+                                    onPress={() => {
+                                      handleDeepLinking(
+                                        item?._data?.songInfo?.id,
+                                      );
+                                    }}>
+                                    <Spotify height={16} />
+                                    <Text style={styles.spotifyText}>
+                                      LISTEN ON SPOTIFY
+                                    </Text>
+                                  </TouchableOpacity>
+                                </View>
+                              </View>
+                              {item?._data?.messageText && (
+                                <View style={styles.mySongTextContainer}>
+                                  <Text style={styles.messageText}>
+                                    {item._data.messageText}
+                                  </Text>
+                                </View>
+                              )}
+                            </View>
+                          )}
+                        </>
                       ) : (
-                        <View style={styles.myUserContainer}>
-                          <Text style={styles.messageText}>
-                            {item._data.messageText}
-                          </Text>
-                        </View>
+                        <>
+                          {item._data.from === profileID ? (
+                            <View style={styles.fromContainer}>
+                              <Text style={styles.messageText}>
+                                {item._data.messageText}
+                              </Text>
+                            </View>
+                          ) : (
+                            <View style={styles.myUserContainer}>
+                              <Text style={styles.messageText}>
+                                {item._data.messageText}
+                              </Text>
+                            </View>
+                          )}
+                        </>
                       )}
                     </>
                   );
@@ -363,11 +517,104 @@ const styles = StyleSheet.create({
     borderBottomColor: Colors.darkGrey,
     borderWidth: 0.5,
   },
-  flatListContainer: {
-    // backgroundColor: 'red',
-    // paddingTop: 10,
-  },
 
+  // if a song was shared:
+  fromSongContainer: {
+    alignItems: 'flex-start',
+    alignSelf: 'flex-start',
+    marginLeft: '5%',
+    marginVertical: 5,
+  },
+  mySongContainer: {
+    alignItems: 'flex-end',
+    alignSelf: 'flex-end',
+    marginRight: '5%',
+    marginVertical: 5,
+  },
+  songPhoto: {
+    height: 250,
+    width: 250,
+  },
+  fromSongInfoContainer: {
+    height: 100,
+    width: 250,
+    backgroundColor: '#1F1F1F',
+    borderBottomRightRadius: 10,
+    borderBottomLeftRadius: 10,
+    paddingLeft: 8,
+    paddingVertical: 10,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  songTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  songName: {
+    color: 'white',
+    fontFamily: 'Inter-bold',
+    fontSize: 16,
+    marginLeft: 5,
+  },
+  songMiddle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 5,
+  },
+  artistName: {
+    color: 'white',
+    fontFamily: 'Inter-regular',
+    fontSize: 13,
+    maxWidth: 120,
+  },
+  smallDot: {
+    marginHorizontal: 5,
+  },
+  albumName: {
+    color: 'white',
+    fontFamily: 'Inter-regular',
+    fontSize: 13,
+    maxWidth: 120,
+  },
+  spotifyBtn: {
+    backgroundColor: '#303030',
+    width: 175,
+    alignItems: 'center',
+    paddingVertical: 6,
+    borderRadius: 8,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  spotifyText: {
+    fontFamily: 'Inter-Bold',
+    color: 'white',
+    fontSize: 12,
+    marginLeft: 5,
+    marginRight: 10,
+  },
+  fromSongTextContainer: {
+    backgroundColor: '#1F1F1F',
+    textAlign: 'left',
+    alignItems: 'flex-start',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    maxWidth: '75%',
+    alignSelf: 'flex-start',
+    borderRadius: 20,
+    marginVertical: 5,
+  },
+  mySongTextContainer: {
+    backgroundColor: 'rgba(255, 8, 0, 0.8);',
+    textAlign: 'left',
+    alignItems: 'flex-end',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    maxWidth: '75%',
+    alignSelf: 'flex-end',
+    borderRadius: 20,
+    marginVertical: 5,
+  },
   // from user
   fromContainer: {
     backgroundColor: '#1F1F1F',

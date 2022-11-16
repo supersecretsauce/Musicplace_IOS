@@ -17,8 +17,10 @@ const InfiniteHits = ({...props}) => {
   const {UID} = useContext(Context);
 
   useEffect(() => {
-    console.log(hits);
-  }, [hits]);
+    if (UID) {
+      console.log(UID);
+    }
+  }, [UID]);
 
   function handleNav(item) {
     console.log(item);
