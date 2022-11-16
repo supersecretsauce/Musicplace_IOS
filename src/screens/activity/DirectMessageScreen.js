@@ -10,6 +10,7 @@ import {
   FlatList,
   Keyboard,
   TouchableWithoutFeedback,
+  Linking,
 } from 'react-native';
 import React, {useEffect, useState, useContext, useRef} from 'react';
 import Colors from '../../assets/utilities/Colors';
@@ -218,6 +219,10 @@ const DirectMessageScreen = ({route, navigation}) => {
     });
   }
 
+  async function handleDeepLinking(item) {
+    await Linking.openURL(`http://open.spotify.com/track/${item}`);
+  }
+
   return (
     <SafeAreaView
       style={styles.container}
@@ -316,7 +321,13 @@ const DirectMessageScreen = ({route, navigation}) => {
                                   </Text>
                                 </View>
                                 <View>
-                                  <TouchableOpacity style={styles.spotifyBtn}>
+                                  <TouchableOpacity
+                                    style={styles.spotifyBtn}
+                                    onPress={() => {
+                                      handleDeepLinking(
+                                        item?._data?.songInfo?.id,
+                                      );
+                                    }}>
                                     <Spotify height={16} />
                                     <Text style={styles.spotifyText}>
                                       LISTEN ON SPOTIFY
@@ -375,7 +386,13 @@ const DirectMessageScreen = ({route, navigation}) => {
                                   </Text>
                                 </View>
                                 <View>
-                                  <TouchableOpacity style={styles.spotifyBtn}>
+                                  <TouchableOpacity
+                                    style={styles.spotifyBtn}
+                                    onPress={() => {
+                                      handleDeepLinking(
+                                        item?._data?.songInfo?.id,
+                                      );
+                                    }}>
                                     <Spotify height={16} />
                                     <Text style={styles.spotifyText}>
                                       LISTEN ON SPOTIFY
