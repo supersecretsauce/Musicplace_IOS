@@ -6,17 +6,21 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 const ReplyComments = props => {
   const {replies} = props;
   return (
-    <View>
+    <View style={styles.replyContainer}>
       {replies.map((reply, index) => {
         return (
           <View style={styles.replyCommentContainer} key={index}>
             <View style={styles.replyCommentLeft}>
-              <Image
-                style={styles.replyProfilePic}
-                source={{
-                  uri: reply._data.profilePicURL,
-                }}
-              />
+              {reply?._data?.pfpURL ? (
+                <Image
+                  style={styles.replyProfilePic}
+                  source={{
+                    uri: reply._data.pfpURL,
+                  }}
+                />
+              ) : (
+                <View style={styles.replyProfilePic} />
+              )}
               <View style={styles.replyCommentMiddle}>
                 <Text style={styles.replyDisplayName}>
                   {reply._data.displayName}
@@ -45,9 +49,12 @@ const ReplyComments = props => {
 export default ReplyComments;
 
 const styles = StyleSheet.create({
+  replyContainer: {
+    marginVertical: 5,
+  },
   replyCommentContainer: {
     flexDirection: 'row',
-    paddingVertical: 16,
+    paddingVertical: 10,
     justifyContent: 'space-between',
     width: '90%',
     alignSelf: 'flex-end',
@@ -60,6 +67,7 @@ const styles = StyleSheet.create({
     height: 28,
     width: 28,
     borderRadius: 28,
+    backgroundColor: Colors.red,
   },
   replyCommentMiddle: {
     marginLeft: 12,
