@@ -50,7 +50,7 @@ const BottomSheet = props => {
       .collection('posts')
       .doc(feed[currentIndex].id)
       .collection('comments')
-      .where('parent', '==', 'none')
+      .where('parent', '==', false)
       .orderBy('likeAmount', 'desc')
       .get();
     console.log('comment documents', commentDocs);
@@ -140,7 +140,7 @@ const BottomSheet = props => {
 
   // handle logic when a user posts a comment
   function handleCommentSubmit() {
-    console.log(userText);
+    console.log(replyInfo);
 
     if (replyInfo) {
       firestore()
@@ -151,10 +151,12 @@ const BottomSheet = props => {
           comment: userText,
           displayName: userDoc.displayName,
           pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
-          hasReplies: 'no',
+          handle: userDoc?.handle,
+          hasReplies: false,
           likeAmount: 0,
           likesArray: [],
           parent: replyInfo.id,
+          parentUID: replyInfo._data.UID,
           UID: UID,
         })
         .then(() => {
@@ -178,6 +180,28 @@ const BottomSheet = props => {
               console.log('comment added!');
             });
         });
+
+      // get the user ID of the parent and put doc info inside activity collection
+      firestore()
+        .collection('users')
+        .doc(replyInfo._data.UID)
+        .collection('activity')
+        .add({
+          UID: UID,
+          from: 'user',
+          type: 'reply',
+          timestamp: firestore.FieldValue.serverTimestamp(),
+          songInfo: feed[currentIndex]._data,
+          handle: userDoc.handle,
+          displayName: userDoc.displayName,
+          pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
+          commentDocID: replyInfo.id,
+          notificationRead: false,
+        })
+        .then(() => {
+          console.log('added reply doc to parent user');
+        })
+        .catch(e => console.log(e));
     } else {
       firestore()
         .collection('posts')
@@ -189,7 +213,7 @@ const BottomSheet = props => {
           pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
           hasReplies: false,
           likeAmount: 0,
-          parent: 'none',
+          parent: false,
           likesArray: [],
           UID: UID,
         })

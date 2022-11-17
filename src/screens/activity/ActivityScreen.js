@@ -251,7 +251,41 @@ const ActivityScreen = ({navigation}) => {
                             </View>
                           </TouchableOpacity>
                         ) : (
-                          <></>
+                          <TouchableOpacity
+                            style={styles.itemContainer}
+                            onPress={() => viewLikeNav(item)}>
+                            <View style={styles.itemLeft}>
+                              {item?._data?.pfpURL ? (
+                                <Image
+                                  style={styles.musicplaceLogo}
+                                  source={{
+                                    uri: item?._data?.pfpURL,
+                                  }}
+                                />
+                              ) : (
+                                <View style={styles.musicplaceLogo} />
+                              )}
+                              <View style={styles.itemMiddle}>
+                                <Text style={styles.topText}>New Reply</Text>
+                                <Text style={styles.bottomText}>
+                                  {`${item?._data?.displayName} replied to your comment.`}
+                                </Text>
+                              </View>
+                            </View>
+                            <View style={styles.notiContainer}>
+                              {item?._data?.notificationRead ? (
+                                <></>
+                              ) : (
+                                <View style={styles.notificationDot} />
+                              )}
+
+                              <Ionicons
+                                name={'chevron-forward'}
+                                color={'white'}
+                                size={20}
+                              />
+                            </View>
+                          </TouchableOpacity>
                         )}
                       </>
                     )}
