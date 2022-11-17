@@ -140,7 +140,7 @@ const BottomSheet = props => {
 
   // handle logic when a user posts a comment
   function handleCommentSubmit() {
-    console.log(userText);
+    console.log(replyInfo);
 
     if (replyInfo) {
       firestore()
@@ -151,10 +151,12 @@ const BottomSheet = props => {
           comment: userText,
           displayName: userDoc.displayName,
           pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
+          handle: userDoc?.handle,
           hasReplies: 'no',
           likeAmount: 0,
           likesArray: [],
           parent: replyInfo.id,
+          parentUID: replyInfo._data.UID,
           UID: UID,
         })
         .then(() => {

@@ -162,10 +162,12 @@ const SinglePostBottomSheet = props => {
           comment: userText,
           displayName: userDoc.displayName,
           pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
+          handle: userDoc?.handle,
           hasReplies: 'no',
           likeAmount: 0,
           likesArray: [],
           parent: replyInfo.id,
+          parentUID: replyInfo._data.UID,
           UID: UID,
         })
         .then(() => {
