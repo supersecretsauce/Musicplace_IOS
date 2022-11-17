@@ -78,14 +78,15 @@ const BottomSheet = props => {
   // get current user's profile picture and their user document
   useEffect(() => {
     if (UID) {
-      const getUserDoc = async () => {
-        const doc = await firestore().collection('users').doc(UID).get();
-        if (doc) {
-          console.log(doc._data);
-          setUserDoc(doc._data);
-        }
-      };
-      getUserDoc();
+      const subscriber = firestore()
+        .collection('users')
+        .doc(UID)
+        .onSnapshot(snapshot => {
+          console.log('snapy', snapshot.data());
+          setUserDoc(snapshot.data());
+        });
+
+      return () => subscriber();
     }
   }, [UID]);
 
