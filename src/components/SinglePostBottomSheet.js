@@ -29,11 +29,10 @@ import {useNavigation} from '@react-navigation/native';
 import HapticFeedback from 'react-native-haptic-feedback';
 
 const SinglePostBottomSheet = props => {
-  const {songInfo, UID} = props;
+  const {songInfo, UID, openSheet, commentDocID} = props;
   const [containerUp, setContainerUp] = useState(false);
   const [containerSmall, setContainerSmall] = useState(false);
   const [comments, setComments] = useState(false);
-  const [profilePicURL, setProfilePicURL] = useState(null);
   const [userDoc, setUserDoc] = useState(null);
   const [userText, setUserText] = useState(null);
   const [replyInfo, setReplyInfo] = useState(null);
@@ -43,7 +42,18 @@ const SinglePostBottomSheet = props => {
   const [likedComments, setLikedComments] = useState([]);
   const [likeValue, setLikeValue] = useState(0);
   const inputRef = useRef();
+  const flatListRef = useRef();
   const {navigate} = useNavigation();
+
+  useEffect(() => {
+    if (openSheet && commentDocID && comments) {
+      top.value = withSpring(200, SPRING_CONFIG);
+      runOnJS(setContainerUp)(true);
+      let index = comments.findIndex(comment => comment.id === commentDocID);
+      console.log(index);
+      flatListRef?.current?.scrollToIndex({animated: true, index: index});
+    }
+  }, [openSheet, commentDocID, comments]);
 
   // get comments
   async function getComments() {
@@ -60,6 +70,7 @@ const SinglePostBottomSheet = props => {
       return;
     } else {
       console.log('comments exist!');
+      console.log(commentDocs._docs);
       setComments(commentDocs._docs);
     }
   }
@@ -71,18 +82,6 @@ const SinglePostBottomSheet = props => {
   // get current user's profile picture and their user document
   useEffect(() => {
     if (UID) {
-      const getProfilePicURL = async () => {
-        const url = await storage()
-          .ref(UID + 'PFP')
-          .getDownloadURL()
-          .catch(error => {
-            console.log(error);
-          });
-        if (url) {
-          console.log(url);
-          setProfilePicURL(url);
-        }
-      };
       const getUserDoc = async () => {
         const doc = await firestore().collection('users').doc(UID).get();
         if (doc) {
@@ -90,7 +89,6 @@ const SinglePostBottomSheet = props => {
           setUserDoc(doc._data);
         }
       };
-      getProfilePicURL();
       getUserDoc();
     }
   }, [UID]);
@@ -156,9 +154,10 @@ const SinglePostBottomSheet = props => {
         .add({
           comment: userText,
           displayName: userDoc.displayName,
-          profilePicURL: profilePicURL,
+          pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
           hasReplies: 'no',
           likeAmount: 0,
+          likesArray: [],
           parent: replyInfo.id,
           UID: UID,
         })
@@ -191,9 +190,10 @@ const SinglePostBottomSheet = props => {
         .add({
           comment: userText,
           displayName: userDoc.displayName,
-          profilePicURL: profilePicURL,
+          pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
           hasReplies: false,
           likeAmount: 0,
+          likesArray: [],
           parent: 'none',
           UID: UID,
         })
@@ -252,37 +252,58 @@ const SinglePostBottomSheet = props => {
   }
 
   //handle liked comment logic
-  async function likeComment(itemID) {
+  async function likeComment(item) {
     HapticFeedback.trigger('selection');
     const increment = firebase.firestore.FieldValue.increment(1);
     const decrement = firebase.firestore.FieldValue.increment(-1);
 
-    if (likedComments.includes(itemID)) {
-      setLikedComments(likedComments.filter(comment => comment !== itemID));
+    if (likedComments.includes(item.id)) {
+      setLikedComments(likedComments.filter(comment => comment !== item.id));
       firestore()
         .collection('posts')
         .doc(songInfo[0].id)
         .collection('comments')
-        .doc(itemID)
+        .doc(item.id)
         .update({
           likeAmount: decrement,
+          likesArray: firestore.FieldValue.arrayRemove(UID),
         })
         .then(() => {
           console.log('Like removed :(');
         });
       setLikeValue(-1);
     } else {
-      setLikedComments([...likedComments, itemID]);
+      setLikedComments([...likedComments, item.id]);
       firestore()
         .collection('posts')
         .doc(songInfo[0].id)
         .collection('comments')
-        .doc(itemID)
+        .doc(item.id)
         .update({
           likeAmount: increment,
+          likesArray: firestore.FieldValue.arrayUnion(UID),
         })
         .then(() => {
           console.log('Like added!');
+        });
+      firestore()
+        .collection('users')
+        .doc(item._data.UID)
+        .collection('activity')
+        .add({
+          UID: UID,
+          from: 'user',
+          type: 'like',
+          timestamp: firestore.FieldValue.serverTimestamp(),
+          songInfo: songInfo[0]._data,
+          handle: userDoc.handle,
+          displayName: userDoc.displayName,
+          pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
+          commentDocID: item.id,
+          notificationRead: false,
+        })
+        .then(() => {
+          console.log('added doc to parent user');
         });
       setLikeValue(1);
     }
@@ -303,6 +324,19 @@ const SinglePostBottomSheet = props => {
                   <FlatList
                     contentContainerStyle={{paddingBottom: '20%'}}
                     data={comments}
+                    ref={flatListRef}
+                    initialScrollIndex={0}
+                    onScrollToIndexFailed={info => {
+                      const wait = new Promise(resolve =>
+                        setTimeout(resolve, 100),
+                      );
+                      wait.then(() => {
+                        flatListRef.current?.scrollToIndex({
+                          index: info.index,
+                          animated: true,
+                        });
+                      });
+                    }}
                     renderItem={({item}) => (
                       <>
                         <View style={styles.commentAndReplyContainer}>
@@ -315,12 +349,16 @@ const SinglePostBottomSheet = props => {
                                     UID: UID,
                                   });
                                 }}>
-                                <Image
-                                  style={styles.profilePic}
-                                  source={{
-                                    uri: item._data.profilePicURL,
-                                  }}
-                                />
+                                {item?._data?.pfpURL ? (
+                                  <Image
+                                    style={styles.profilePic}
+                                    source={{
+                                      uri: item._data.pfpURL,
+                                    }}
+                                  />
+                                ) : (
+                                  <View style={styles.profilePic} />
+                                )}
                               </TouchableOpacity>
                               <View style={styles.commentMiddle}>
                                 <Text style={styles.displayName}>
@@ -356,7 +394,7 @@ const SinglePostBottomSheet = props => {
                             </View>
                             <View style={styles.commentRight}>
                               <TouchableOpacity
-                                onPress={() => likeComment(item.id)}>
+                                onPress={() => likeComment(item)}>
                                 <Ionicons
                                   style={styles.socialIcon}
                                   name={
@@ -418,13 +456,15 @@ const SinglePostBottomSheet = props => {
       {containerUp && (
         <KeyboardAvoidingView behavior="position">
           <View style={styles.myUserContainer}>
-            {profilePicURL && (
+            {userDoc?.pfpURL ? (
               <Image
                 style={styles.myProfilePic}
                 source={{
-                  uri: profilePicURL,
+                  uri: userDoc?.pfpURL,
                 }}
               />
+            ) : (
+              <View style={styles.myProfilePic} />
             )}
             <View style={styles.inputBackground}>
               <TextInput
@@ -501,6 +541,7 @@ const styles = StyleSheet.create({
     height: 32,
     width: 32,
     borderRadius: 32,
+    backgroundColor: Colors.red,
   },
   commentMiddle: {
     marginLeft: 15,
@@ -574,6 +615,7 @@ const styles = StyleSheet.create({
     height: 48,
     width: 48,
     borderRadius: 48,
+    backgroundColor: Colors.red,
   },
   inputBackground: {
     backgroundColor: '#1F1F1F',

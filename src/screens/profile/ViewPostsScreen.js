@@ -24,7 +24,7 @@ import {mixpanel} from '../../../mixpanel';
 
 const ViewPostsScreen = ({route}) => {
   Sound.setCategory('Playback');
-  const {songInfo, UID} = route.params;
+  const {songInfo, UID, openSheet, commentDocID} = route.params;
   const [likedTracks, setLikedTracks] = useState([]);
   const [currentTrack, setCurrentTrack] = useState(null);
   const {
@@ -72,7 +72,7 @@ const ViewPostsScreen = ({route}) => {
           playing = false;
           recordTime();
           mixpanel.track('New Listen');
-          console.log('user left screen');
+          // console.log('user left screen');
         }
       };
     }, [currentTrack]),
@@ -226,7 +226,12 @@ const ViewPostsScreen = ({route}) => {
               );
             })}
           </Swiper>
-          <SinglePostBottomSheet UID={UID} songInfo={songInfo} />
+          <SinglePostBottomSheet
+            UID={UID}
+            songInfo={songInfo}
+            openSheet={openSheet}
+            commentDocID={commentDocID}
+          />
         </>
       ) : (
         <>

@@ -101,8 +101,8 @@ const DirectMessageScreen = ({route, navigation}) => {
             [profileID]: true,
             [UID]: true,
           },
-          createdAt: new Date(),
-          lastMessageAt: new Date(),
+          createdAt: firestore.FieldValue.serverTimestamp(),
+          lastMessageAt: firestore.FieldValue.serverTimestamp(),
           [profileID]: {
             UID: profileID,
             displayName: userProfile.displayName,
@@ -128,8 +128,8 @@ const DirectMessageScreen = ({route, navigation}) => {
             .doc(resp.id)
             .collection('messages')
             .add({
-              messageText: messageText,
-              sentAt: new Date(),
+              messageText: firestore.FieldValue.serverTimestamp(),
+              sentAt: firestore.FieldValue.serverTimestamp(),
               from: UID,
               to: profileID,
             })
@@ -144,7 +144,7 @@ const DirectMessageScreen = ({route, navigation}) => {
         .collection('messages')
         .add({
           messageText: messageText,
-          sentAt: new Date(),
+          sentAt: firestore.FieldValue.serverTimestamp(),
           from: UID,
           to: profileID,
         })
@@ -155,7 +155,7 @@ const DirectMessageScreen = ({route, navigation}) => {
         .collection('chats')
         .doc(chatDoc.id)
         .update({
-          lastMessageAt: new Date(),
+          lastMessageAt: firestore.FieldValue.serverTimestamp(),
           [profileID + '.messageRead']: false,
           [profileID + '.sentLastMessage']: false,
           [UID + '.messageRead']: false,
