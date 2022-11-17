@@ -60,7 +60,14 @@ const BottomSheet = props => {
     } else {
       console.log('comments exist!');
       setComments(commentDocs._docs);
-      console.log(commentDocs);
+      let likeUIDs = [];
+      commentDocs.docs.forEach(doc => {
+        doc.data().likesArray.forEach(uid => {
+          likeUIDs.push(uid);
+        });
+      });
+      console.log(likeUIDs);
+      setLikedComments(likeUIDs);
     }
   }
 
@@ -246,8 +253,8 @@ const BottomSheet = props => {
     const increment = firebase.firestore.FieldValue.increment(1);
     const decrement = firebase.firestore.FieldValue.increment(-1);
     console.log(userDoc);
-    if (likedComments.includes(item.id)) {
-      setLikedComments(likedComments.filter(comment => comment !== item.id));
+    if (likedComments.includes(UID)) {
+      setLikedComments(likedComments.filter(id => id !== UID));
       firestore()
         .collection('posts')
         .doc(feed[currentIndex].id)
@@ -262,7 +269,7 @@ const BottomSheet = props => {
         });
       setLikeValue(-1);
     } else {
-      setLikedComments([...likedComments, item.id]);
+      setLikedComments([...likedComments, UID]);
       firestore()
         .collection('posts')
         .doc(feed[currentIndex].id)
@@ -378,23 +385,19 @@ const BottomSheet = props => {
                                 <Ionicons
                                   style={styles.socialIcon}
                                   name={
-                                    likedComments.includes(item.id)
+                                    likedComments.includes(UID)
                                       ? 'heart'
                                       : 'heart-outline'
                                   }
                                   color={
-                                    likedComments.includes(item.id)
+                                    likedComments.includes(UID)
                                       ? Colors.red
                                       : 'grey'
                                   }
                                   size={18}
                                 />
                                 <Text style={styles.likeAmount}>
-                                  {likedComments.includes(item.id)
-                                    ? likeValue === 1
-                                      ? item._data.likeAmount + 1
-                                      : item._data.likeAmount - 1
-                                    : item._data.likeAmount}
+                                  {likedComments.length}
                                 </Text>
                               </TouchableOpacity>
                             </View>

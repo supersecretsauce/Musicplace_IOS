@@ -70,8 +70,15 @@ const SinglePostBottomSheet = props => {
       return;
     } else {
       console.log('comments exist!');
-      console.log(commentDocs._docs);
       setComments(commentDocs._docs);
+      let likeUIDs = [];
+      commentDocs.docs.forEach(doc => {
+        doc.data().likesArray.forEach(uid => {
+          likeUIDs.push(uid);
+        });
+      });
+      console.log(likeUIDs);
+      setLikedComments(likeUIDs);
     }
   }
 
@@ -256,9 +263,8 @@ const SinglePostBottomSheet = props => {
     HapticFeedback.trigger('selection');
     const increment = firebase.firestore.FieldValue.increment(1);
     const decrement = firebase.firestore.FieldValue.increment(-1);
-
-    if (likedComments.includes(item.id)) {
-      setLikedComments(likedComments.filter(comment => comment !== item.id));
+    if (likedComments.includes(UID)) {
+      setLikedComments(likedComments.filter(id => id !== UID));
       firestore()
         .collection('posts')
         .doc(songInfo[0].id)
@@ -270,10 +276,11 @@ const SinglePostBottomSheet = props => {
         })
         .then(() => {
           console.log('Like removed :(');
-        });
+        })
+        .catch(e => console.log(e));
       setLikeValue(-1);
     } else {
-      setLikedComments([...likedComments, item.id]);
+      setLikedComments([...likedComments, UID]);
       firestore()
         .collection('posts')
         .doc(songInfo[0].id)
@@ -285,7 +292,9 @@ const SinglePostBottomSheet = props => {
         })
         .then(() => {
           console.log('Like added!');
-        });
+        })
+        .catch(e => console.log(e));
+
       firestore()
         .collection('users')
         .doc(item._data.UID)
@@ -295,7 +304,7 @@ const SinglePostBottomSheet = props => {
           from: 'user',
           type: 'like',
           timestamp: firestore.FieldValue.serverTimestamp(),
-          songInfo: songInfo[0]._data,
+          songInfo: songInfo[0],
           handle: userDoc.handle,
           displayName: userDoc.displayName,
           pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
@@ -304,7 +313,8 @@ const SinglePostBottomSheet = props => {
         })
         .then(() => {
           console.log('added doc to parent user');
-        });
+        })
+        .catch(e => console.log(e));
       setLikeValue(1);
     }
   }
@@ -398,12 +408,12 @@ const SinglePostBottomSheet = props => {
                                 <Ionicons
                                   style={styles.socialIcon}
                                   name={
-                                    likedComments.includes(item.id)
+                                    likedComments.includes(UID)
                                       ? 'heart'
                                       : 'heart-outline'
                                   }
                                   color={
-                                    likedComments.includes(item.id)
+                                    likedComments.includes(UID)
                                       ? Colors.red
                                       : 'grey'
                                   }
@@ -411,11 +421,7 @@ const SinglePostBottomSheet = props => {
                                 />
                               </TouchableOpacity>
                               <Text style={styles.likeAmount}>
-                                {likedComments.includes(item.id)
-                                  ? likeValue === 1
-                                    ? item._data.likeAmount + 1
-                                    : item._data.likeAmount - 1
-                                  : item._data.likeAmount}
+                                {likedComments.length}
                               </Text>
                             </View>
                           </View>
