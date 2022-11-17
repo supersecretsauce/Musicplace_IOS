@@ -17,7 +17,6 @@ import {Context} from '../../context/Context';
 const ActivityScreen = ({navigation}) => {
   const [contacts, setContacts] = useState(null);
   const [phoneNumbers, setPhoneNumbers] = useState(null);
-  // const [followingList, setFollowingList] = useState(null);
   const [memberInfo, setMemberInfo] = useState(null);
   const [myUser, setMyUser] = useState(null);
   const [activity, setActivity] = useState(null);
@@ -67,11 +66,13 @@ const ActivityScreen = ({navigation}) => {
         .collection('chats')
         .where(`members.${UID}`, '==', true)
         .onSnapshot(snapshot => {
+          let sortedMsgs = snapshot.docs.sort((a, z) => {
+            return z.data().lastMessageAt - a.data().lastMessageAt;
+          });
           let allMessageDocs = [];
           let allIDs = [];
           let filteredMemberInfo = [];
-          snapshot._docs.forEach(doc => {
-            console.log(doc);
+          sortedMsgs.forEach(doc => {
             allMessageDocs.push(doc._data);
             Object.keys(doc._data.members).forEach(key => {
               if (key !== UID) {
@@ -87,7 +88,6 @@ const ActivityScreen = ({navigation}) => {
             let memberData = messageDoc[IdNumber];
             filteredMemberInfo.push(memberData);
           }
-          console.log(filteredMemberInfo);
           setMemberInfo(filteredMemberInfo);
         });
       // Stop listening for updates when no longer required
@@ -104,7 +104,6 @@ const ActivityScreen = ({navigation}) => {
         .orderBy('timestamp', 'desc')
         .onSnapshot(snapshot => {
           let docArr = [];
-          console.log(snapshot);
           snapshot.docs.forEach(doc => {
             docArr.push(doc);
           });
@@ -114,7 +113,6 @@ const ActivityScreen = ({navigation}) => {
             nav: 'InviteContactsScreen',
             from: 'musicplace',
           });
-          console.log(docArr);
           setActivity(docArr);
         });
 
