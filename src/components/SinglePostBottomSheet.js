@@ -71,14 +71,14 @@ const SinglePostBottomSheet = props => {
     } else {
       console.log('comments exist!');
       setComments(commentDocs._docs);
-      let likeUIDs = [];
-      commentDocs.docs.forEach(doc => {
-        doc.data().likesArray.forEach(uid => {
-          likeUIDs.push(uid);
-        });
+      let myLikes = commentDocs.docs.filter(doc => {
+        return doc.data().likesArray.includes(UID);
       });
-      console.log(likeUIDs);
-      setLikedComments(likeUIDs);
+      let filteredLikes = myLikes.map(likeDoc => {
+        return likeDoc.id;
+      });
+      console.log(filteredLikes);
+      setLikedComments(filteredLikes);
     }
   }
 
@@ -286,8 +286,8 @@ const SinglePostBottomSheet = props => {
     HapticFeedback.trigger('selection');
     const increment = firebase.firestore.FieldValue.increment(1);
     const decrement = firebase.firestore.FieldValue.increment(-1);
-    if (likedComments.includes(UID)) {
-      setLikedComments(likedComments.filter(id => id !== UID));
+    if (likedComments.includes(item.id)) {
+      setLikedComments(likedComments.filter(id => id !== item.id));
       firestore()
         .collection('posts')
         .doc(songInfo[0].id)
@@ -303,7 +303,7 @@ const SinglePostBottomSheet = props => {
         .catch(e => console.log(e));
       setLikeValue(-1);
     } else {
-      setLikedComments([...likedComments, UID]);
+      setLikedComments([...likedComments, item.id]);
       firestore()
         .collection('posts')
         .doc(songInfo[0].id)
@@ -431,12 +431,12 @@ const SinglePostBottomSheet = props => {
                                 <Ionicons
                                   style={styles.socialIcon}
                                   name={
-                                    likedComments.includes(UID)
+                                    likedComments.includes(item.id)
                                       ? 'heart'
                                       : 'heart-outline'
                                   }
                                   color={
-                                    likedComments.includes(UID)
+                                    likedComments.includes(item.id)
                                       ? Colors.red
                                       : 'grey'
                                   }
@@ -444,7 +444,11 @@ const SinglePostBottomSheet = props => {
                                 />
                               </TouchableOpacity>
                               <Text style={styles.likeAmount}>
-                                {likedComments.length}
+                                {likedComments.includes(item.id)
+                                  ? likeValue === 1
+                                    ? item._data.likeAmount + 1
+                                    : item._data.likeAmount - 1
+                                  : item._data.likeAmount}
                               </Text>
                             </View>
                           </View>

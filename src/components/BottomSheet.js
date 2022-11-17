@@ -40,7 +40,7 @@ const BottomSheet = props => {
   const [parentCommentID, setParentCommentID] = useState([]);
   const [replies, setReplies] = useState(null);
   const [likedComments, setLikedComments] = useState([]);
-  const [likeValue, setLikeValue] = useState(0);
+  const [likeValue, setLikeValue] = useState(null);
   const inputRef = useRef();
   const {navigate} = useNavigation();
 
@@ -60,14 +60,15 @@ const BottomSheet = props => {
     } else {
       console.log('comments exist!');
       setComments(commentDocs._docs);
-      let likeUIDs = [];
-      commentDocs.docs.forEach(doc => {
-        doc.data().likesArray.forEach(uid => {
-          likeUIDs.push(uid);
-        });
+
+      let myLikes = commentDocs.docs.filter(doc => {
+        return doc.data().likesArray.includes(UID);
       });
-      console.log(likeUIDs);
-      setLikedComments(likeUIDs);
+      let filteredLikes = myLikes.map(likeDoc => {
+        return likeDoc.id;
+      });
+      console.log(filteredLikes);
+      setLikedComments(filteredLikes);
     }
   }
 
@@ -277,9 +278,9 @@ const BottomSheet = props => {
     HapticFeedback.trigger('selection');
     const increment = firebase.firestore.FieldValue.increment(1);
     const decrement = firebase.firestore.FieldValue.increment(-1);
-    console.log(userDoc);
-    if (likedComments.includes(UID)) {
-      setLikedComments(likedComments.filter(id => id !== UID));
+    console.log(item);
+    if (likedComments.includes(item.id)) {
+      setLikedComments(likedComments.filter(id => id !== item.id));
       firestore()
         .collection('posts')
         .doc(feed[currentIndex].id)
@@ -294,7 +295,7 @@ const BottomSheet = props => {
         });
       setLikeValue(-1);
     } else {
-      setLikedComments([...likedComments, UID]);
+      setLikedComments([...likedComments, item.id]);
       firestore()
         .collection('posts')
         .doc(feed[currentIndex].id)
@@ -410,19 +411,23 @@ const BottomSheet = props => {
                                 <Ionicons
                                   style={styles.socialIcon}
                                   name={
-                                    likedComments.includes(UID)
+                                    likedComments.includes(item.id)
                                       ? 'heart'
                                       : 'heart-outline'
                                   }
                                   color={
-                                    likedComments.includes(UID)
+                                    likedComments.includes(item.id)
                                       ? Colors.red
                                       : 'grey'
                                   }
                                   size={18}
                                 />
                                 <Text style={styles.likeAmount}>
-                                  {likedComments.length}
+                                  {likedComments.includes(item.id)
+                                    ? likeValue === 1
+                                      ? item._data.likeAmount + 1
+                                      : item._data.likeAmount - 1
+                                    : item._data.likeAmount}
                                 </Text>
                               </TouchableOpacity>
                             </View>
