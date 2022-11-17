@@ -180,6 +180,28 @@ const BottomSheet = props => {
               console.log('comment added!');
             });
         });
+
+      // get the user ID of the parent and put doc info inside activity collection
+      firestore()
+        .collection('users')
+        .doc(replyInfo._data.UID)
+        .collection('activity')
+        .add({
+          UID: UID,
+          from: 'user',
+          type: 'reply',
+          timestamp: firestore.FieldValue.serverTimestamp(),
+          songInfo: feed[currentIndex]._data,
+          handle: userDoc.handle,
+          displayName: userDoc.displayName,
+          pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
+          commentDocID: replyInfo.id,
+          notificationRead: false,
+        })
+        .then(() => {
+          console.log('added reply doc to parent user');
+        })
+        .catch(e => console.log(e));
     } else {
       firestore()
         .collection('posts')

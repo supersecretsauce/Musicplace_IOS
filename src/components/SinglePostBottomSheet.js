@@ -151,7 +151,7 @@ const SinglePostBottomSheet = props => {
 
   // handle logic when a user posts a comment
   function handleCommentSubmit() {
-    console.log(userText);
+    console.log(replyInfo);
 
     if (replyInfo) {
       firestore()
@@ -191,6 +191,26 @@ const SinglePostBottomSheet = props => {
               console.log('comment added!');
             });
         });
+      firestore()
+        .collection('users')
+        .doc(replyInfo._data.UID)
+        .collection('activity')
+        .add({
+          UID: UID,
+          from: 'user',
+          type: 'reply',
+          timestamp: firestore.FieldValue.serverTimestamp(),
+          songInfo: songInfo[0],
+          handle: userDoc.handle,
+          displayName: userDoc.displayName,
+          pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
+          commentDocID: replyInfo.id,
+          notificationRead: false,
+        })
+        .then(() => {
+          console.log('added doc to parent user');
+        })
+        .catch(e => console.log(e));
     } else {
       firestore()
         .collection('posts')
