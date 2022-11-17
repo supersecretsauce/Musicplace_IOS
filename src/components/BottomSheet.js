@@ -146,6 +146,7 @@ const BottomSheet = props => {
           pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
           hasReplies: 'no',
           likeAmount: 0,
+          likesArray: [],
           parent: replyInfo.id,
           UID: UID,
         })
@@ -182,6 +183,7 @@ const BottomSheet = props => {
           hasReplies: false,
           likeAmount: 0,
           parent: 'none',
+          likesArray: [],
           UID: UID,
         })
         .then(() => {

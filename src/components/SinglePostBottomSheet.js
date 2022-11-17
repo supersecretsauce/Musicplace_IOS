@@ -157,6 +157,7 @@ const SinglePostBottomSheet = props => {
           pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
           hasReplies: 'no',
           likeAmount: 0,
+          likesArray: [],
           parent: replyInfo.id,
           UID: UID,
         })
@@ -192,6 +193,7 @@ const SinglePostBottomSheet = props => {
           pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
           hasReplies: false,
           likeAmount: 0,
+          likesArray: [],
           parent: 'none',
           UID: UID,
         })
