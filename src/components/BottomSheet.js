@@ -50,7 +50,7 @@ const BottomSheet = props => {
       .collection('posts')
       .doc(feed[currentIndex].id)
       .collection('comments')
-      .where('parent', '==', 'none')
+      .where('parent', '==', false)
       .orderBy('likeAmount', 'desc')
       .get();
     console.log('comment documents', commentDocs);
@@ -152,7 +152,7 @@ const BottomSheet = props => {
           displayName: userDoc.displayName,
           pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
           handle: userDoc?.handle,
-          hasReplies: 'no',
+          hasReplies: false,
           likeAmount: 0,
           likesArray: [],
           parent: replyInfo.id,
@@ -191,7 +191,7 @@ const BottomSheet = props => {
           pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
           hasReplies: false,
           likeAmount: 0,
-          parent: 'none',
+          parent: false,
           likesArray: [],
           UID: UID,
         })

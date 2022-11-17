@@ -61,7 +61,7 @@ const SinglePostBottomSheet = props => {
       .collection('posts')
       .doc(songInfo[0].id)
       .collection('comments')
-      .where('parent', '==', 'none')
+      .where('parent', '==', false)
       .orderBy('likeAmount', 'desc')
       .get();
     console.log('comment documents', commentDocs);
@@ -163,7 +163,7 @@ const SinglePostBottomSheet = props => {
           displayName: userDoc.displayName,
           pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
           handle: userDoc?.handle,
-          hasReplies: 'no',
+          hasReplies: false,
           likeAmount: 0,
           likesArray: [],
           parent: replyInfo.id,
@@ -203,7 +203,7 @@ const SinglePostBottomSheet = props => {
           hasReplies: false,
           likeAmount: 0,
           likesArray: [],
-          parent: 'none',
+          parent: false,
           UID: UID,
         })
         .then(() => {
