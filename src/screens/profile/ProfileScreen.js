@@ -64,8 +64,6 @@ const ProfileScreen = ({navigation}) => {
         .collection('users')
         .doc(UID)
         .onSnapshot(documentSnapshot => {
-          console.log(UID);
-          console.log(documentSnapshot.data());
           setUserProfile(documentSnapshot.data());
           setDisplayName(documentSnapshot.data().displayName);
           setBio(documentSnapshot.data().bio);
@@ -212,7 +210,7 @@ const ProfileScreen = ({navigation}) => {
           <View style={styles.dividerContainer}>
             <View style={styles.iconContainer}>
               <Ionicons name={'albums'} color="white" size={28} />
-              <Text style={styles.postText}>Posts</Text>
+              <Text style={styles.postText}>Top Songs</Text>
               <TouchableOpacity
                 style={styles.helpIcon}
                 onPress={() => setShowModal(!showModal)}>
@@ -225,7 +223,11 @@ const ProfileScreen = ({navigation}) => {
               <Text style={styles.editProfileText}>Edit profile</Text>
             </TouchableOpacity>
           </View>
-          <MyPosts UID={UID} navigation={navigation} />
+          <MyPosts
+            userProfile={userProfile}
+            UID={UID}
+            navigation={navigation}
+          />
           <Modal isVisible={showModal}>
             <View style={styles.modalContainer}>
               <Text style={styles.modalTop}>
@@ -401,8 +403,8 @@ const styles = StyleSheet.create({
   postText: {
     color: 'white',
     fontSize: 18,
-    fontFamily: 'Inter-Medium',
-    marginLeft: 10,
+    fontFamily: 'Inter-Bold',
+    marginLeft: 5,
   },
   helpIcon: {
     left: 6,

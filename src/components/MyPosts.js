@@ -6,23 +6,25 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import Colors from '../assets/utilities/Colors';
+import {Context} from '../context/Context';
 const MyPosts = props => {
-  const {UID, navigation} = props;
-  const [userPosts, setUserPosts] = useState([]);
+  const {UID, navigation, userProfile} = props;
+  const {hasSpotify} = useContext(Context);
+  const [userPosts, setUserPosts] = useState(null);
 
   useEffect(() => {
     if (UID) {
-      async function getTracks() {
-        const posts = await firestore().collection('users').doc(UID).get();
-        if (posts.exists) {
-          console.log(posts._data.userPosts);
-          setUserPosts(posts._data.userPosts);
-        }
-      }
-      getTracks();
+      const subscriber = firestore()
+        .collection('posts')
+        .where('users', 'array-contains', UID)
+        .get()
+        .then(resp => {
+          setUserPosts(resp.docs);
+        });
+      return () => subscriber;
     }
   }, [UID]);
 
@@ -51,15 +53,15 @@ const MyPosts = props => {
                         <Image
                           style={styles.songPhoto}
                           source={{
-                            uri: item.songPhoto,
+                            uri: item._data.songPhoto,
                           }}
                         />
                         <Text numberOfLines={1} style={styles.songName}>
-                          {item.songName}
+                          {item._data.songName}
                         </Text>
                         <View>
                           <Text numberOfLines={1} style={styles.artistName}>
-                            {item.artists
+                            {item._data.artists
                               ?.map(artist => {
                                 return artist.name;
                               })
@@ -74,7 +76,23 @@ const MyPosts = props => {
             </View>
           </>
         ) : (
-          <></>
+          <>
+            {hasSpotify ? (
+              <View style={styles.loadingContainer}>
+                <Image
+                  style={styles.loadingGif}
+                  source={require('../assets/img/pacman.gif')}
+                />
+                <Text style={styles.loadingText}>
+                  Getting your top songs from Spotify.
+                </Text>
+              </View>
+            ) : (
+              <>
+                <Text> Connect to Spotify to get your top songs.</Text>
+              </>
+            )}
+          </>
         )}
       </>
     </View>
@@ -114,5 +132,20 @@ const styles = StyleSheet.create({
     fontSize: 12,
     maxWidth: 140,
     marginTop: '2%',
+  },
+  loadingContainer: {
+    alignSelf: 'center',
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginTop: 60,
+  },
+  loadingGif: {
+    height: 100,
+    width: 100,
+  },
+  loadingText: {
+    color: 'white',
+    fontFamily: 'Inter-Regular',
+    fontSize: 14,
   },
 });
