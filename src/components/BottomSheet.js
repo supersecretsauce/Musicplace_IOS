@@ -423,7 +423,7 @@ const BottomSheet = props => {
                                   size={18}
                                 />
                                 <Text style={styles.likeAmount}>
-                                  {likedComments.includes(item.id)
+                                  {likeValue && likedComments.includes(item.id)
                                     ? likeValue === 1
                                       ? item._data.likeAmount + 1
                                       : item._data.likeAmount - 1
