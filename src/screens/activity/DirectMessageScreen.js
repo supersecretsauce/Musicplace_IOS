@@ -566,7 +566,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'Inter-regular',
     fontSize: 13,
-    maxWidth: 120,
+    maxWidth: 110,
   },
   smallDot: {
     marginHorizontal: 5,
@@ -575,7 +575,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'Inter-regular',
     fontSize: 13,
-    maxWidth: 120,
+    maxWidth: 110,
   },
   spotifyBtn: {
     backgroundColor: '#303030',
