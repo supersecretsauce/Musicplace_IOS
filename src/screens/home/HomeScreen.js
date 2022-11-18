@@ -25,6 +25,7 @@ import {firebase} from '@react-native-firebase/firestore';
 import messaging from '@react-native-firebase/messaging';
 import ShareSheet from '../../components/ShareSheet';
 import axios from 'axios';
+import LoadingPost from '../../components/LoadingPost';
 const HomeScreen = () => {
   Sound.setCategory('Playback');
   const [feed, setFeed] = useState(null);
@@ -318,9 +319,7 @@ const HomeScreen = () => {
         </>
       ) : (
         <>
-          <View>
-            <Text>loading</Text>
-          </View>
+          <LoadingPost />
         </>
       )}
     </View>
