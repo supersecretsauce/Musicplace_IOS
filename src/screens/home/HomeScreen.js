@@ -165,8 +165,8 @@ const HomeScreen = () => {
     startTime = new Date();
 
     firestore()
-      .collection('posts')
-      .doc(feed[currentIndex].id)
+      .collection('users')
+      .doc(UID)
       .collection('watches')
       .add({
         UID: UID,
