@@ -10,13 +10,23 @@ import React, {useEffect, useState, useContext} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import Colors from '../assets/utilities/Colors';
 import {Context} from '../context/Context';
+import Spotify from '../assets/img/spotify.svg';
+import {spotConfig} from '../../SpotifyConfig';
+import {authorize} from 'react-native-app-auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 const MyPosts = props => {
   const {UID, navigation, userProfile} = props;
-  const {hasSpotify} = useContext(Context);
+  const {
+    hasSpotify,
+    setHasSpotify,
+    doneFetchingTopSongs,
+    setDoneFetchingTopSongs,
+  } = useContext(Context);
   const [userPosts, setUserPosts] = useState(null);
 
   useEffect(() => {
-    if (UID) {
+    if (UID && doneFetchingTopSongs) {
       const subscriber = firestore()
         .collection('posts')
         .where('users', 'array-contains', UID)
@@ -26,7 +36,48 @@ const MyPosts = props => {
         });
       return () => subscriber;
     }
-  }, [UID]);
+  }, [UID, doneFetchingTopSongs]);
+
+  const connectSpotify = async () => {
+    if (UID) {
+      try {
+        const authState = await authorize(spotConfig);
+        console.log(authState);
+        firestore()
+          .collection('users')
+          .doc(UID)
+          .update({
+            spotifyAccessToken: authState.accessToken,
+            spotifyAccessTokenExpirationDate:
+              authState.accessTokenExpirationDate,
+            spotifyRefreshToken: authState.refreshToken,
+            spotifyTokenType: authState.tokenType,
+            connectedWithSpotify: true,
+          })
+          .then(resp => {
+            console.log(resp);
+            setHasSpotify(true);
+            AsyncStorage.setItem('hasSpotify', 'true');
+            AsyncStorage.setItem('spotAccessToken', authState.accessToken);
+            AsyncStorage.setItem('spotRefreshToken', authState.refreshToken);
+            axios
+              .get(
+                `https://reccomendation-api-pmtku.ondigitalocean.app/updates/${userInfo.uid}`,
+              )
+              .then(resp => {
+                if (resp.status === 200) {
+                  setDoneFetchingTopSongs(true);
+                }
+              })
+              .catch(e => {
+                console.log(e);
+              });
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -89,7 +140,16 @@ const MyPosts = props => {
               </View>
             ) : (
               <>
-                <Text> Connect to Spotify to get your top songs.</Text>
+                <View style={styles.loadingContainer}>
+                  <TouchableOpacity
+                    style={styles.listenOnSpotifyBtn}
+                    onPress={connectSpotify}>
+                    <Spotify />
+                    <Text style={styles.listenOnSpotifyText}>
+                      CONNECT WITH SPOTIFY
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </>
             )}
           </>
@@ -137,7 +197,8 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     flexDirection: 'column',
     alignItems: 'center',
-    marginTop: 60,
+    justifyContent: 'center',
+    height: '75%',
   },
   loadingGif: {
     height: 100,
@@ -147,5 +208,21 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'Inter-Regular',
     fontSize: 14,
+  },
+  listenOnSpotifyBtn: {
+    paddingHorizontal: 25,
+    paddingVertical: 12,
+    borderRadius: 20,
+    backgroundColor: '#1F1F1F',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  listenOnSpotifyText: {
+    color: 'white',
+    fontFamily: 'Inter-Bold',
+    fontSize: 16,
+    marginLeft: 10,
   },
 });

@@ -24,6 +24,7 @@ import {mixpanel} from '../../../mixpanel';
 import {firebase} from '@react-native-firebase/firestore';
 import messaging from '@react-native-firebase/messaging';
 import ShareSheet from '../../components/ShareSheet';
+
 const HomeScreen = () => {
   Sound.setCategory('Playback');
   const [feed, setFeed] = useState(null);

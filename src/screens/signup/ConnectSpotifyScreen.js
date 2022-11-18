@@ -21,7 +21,7 @@ import axios from 'axios';
 const ConnectSpotifyScreen = ({navigation, route}) => {
   const {contacts} = route.params;
   const userInfo = firebase.auth().currentUser;
-  const {username} = useContext(Context);
+  const {username, setDoneFetchingTopSongs} = useContext(Context);
 
   const goBack = () => {
     navigation.navigate('CreateUsernameScreen');
@@ -48,6 +48,7 @@ const ConnectSpotifyScreen = ({navigation, route}) => {
   const connectSpotify = async () => {
     HapticFeedback.trigger('impactHeavy');
     const authState = await authorize(config);
+    console.log(userInfo.uid);
     try {
       firestore()
         .collection('users')
@@ -83,7 +84,12 @@ const ConnectSpotifyScreen = ({navigation, route}) => {
               `https://reccomendation-api-pmtku.ondigitalocean.app/updates/${userInfo.uid}`,
             )
             .then(resp => {
-              console.log(resp);
+              if (resp.status === 200) {
+                setDoneFetchingTopSongs(true);
+              }
+            })
+            .catch(e => {
+              console.log(e);
             });
         });
     } catch (error) {
