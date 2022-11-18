@@ -21,7 +21,8 @@ import axios from 'axios';
 const ConnectSpotifyScreen = ({navigation, route}) => {
   const {contacts} = route.params;
   const userInfo = firebase.auth().currentUser;
-  const {username, setDoneFetchingTopSongs} = useContext(Context);
+  const {username, setDoneFetchingTopSongs, setInitialFeed} =
+    useContext(Context);
 
   const goBack = () => {
     navigation.navigate('CreateUsernameScreen');
@@ -49,52 +50,61 @@ const ConnectSpotifyScreen = ({navigation, route}) => {
     HapticFeedback.trigger('impactHeavy');
     const authState = await authorize(config);
     console.log(userInfo.uid);
-    try {
-      firestore()
-        .collection('users')
-        .doc(userInfo.uid)
-        .set(
-          {
-            UID: userInfo.uid,
-            phoneNumber: userInfo.phoneNumber,
-            createdAt: userInfo.metadata.creationTime,
-            lastSignIn: userInfo.metadata.lastSignInTime,
-            connectedWithSpotify: true,
-            spotifyAccessToken: authState.accessToken,
-            spotifyAccessTokenExpirationDate:
-              authState.accessTokenExpirationDate,
-            spotifyRefreshToken: authState.refreshToken,
-            spotifyTokenType: authState.tokenType,
-            bio: null,
-            followers: 0,
-            following: 0,
-            displayName: username,
-            followersList: [],
-            followingList: [],
-            autoPost: true,
-            topSongs: [],
-            userPosts: [],
-            handle: username,
-          },
-          {merge: true},
-        )
-        .then(() => {
-          axios
-            .get(
-              `https://reccomendation-api-pmtku.ondigitalocean.app/updates/${userInfo.uid}`,
-            )
-            .then(resp => {
-              if (resp.status === 200) {
-                setDoneFetchingTopSongs(true);
-              }
-            })
-            .catch(e => {
-              console.log(e);
-            });
-        });
-    } catch (error) {
-      console.log(error);
-    }
+
+    let data = {
+      UID: userInfo.uid,
+      phoneNumber: userInfo.phoneNumber,
+      createdAt: userInfo.metadata.creationTime,
+      lastSignIn: userInfo.metadata.lastSignInTime,
+      connectedWithSpotify: true,
+      spotifyAccessToken: authState.accessToken,
+      spotifyAccessTokenExpirationDate: authState.accessTokenExpirationDate,
+      spotifyRefreshToken: authState.refreshToken,
+      spotifyTokenType: authState.tokenType,
+      bio: null,
+      followers: 0,
+      following: 0,
+      displayName: username,
+      followersList: [],
+      followingList: [],
+      autoPost: true,
+      topSongs: [],
+      userPosts: [],
+      handle: username,
+    };
+
+    const docRef = firestore().collection('users').doc(userInfo.uid);
+
+    docRef.set(data, {merge: true}).then(() => {
+      docRef.get().then(resp => {
+        console.log(resp);
+        axios
+          .get(
+            `https://reccomendation-api-pmtku.ondigitalocean.app/recommendations/${userInfo.uid}`,
+          )
+          .then(resp => {
+            console.log(resp);
+            console.log(resp.data.data);
+            setInitialFeed(resp.data.data);
+          })
+          .catch(e => {
+            console.log(e);
+          });
+        axios
+          .get(
+            `https://reccomendation-api-pmtku.ondigitalocean.app/updates/${userInfo.uid}`,
+          )
+          .then(resp => {
+            if (resp.status === 200) {
+              setDoneFetchingTopSongs(true);
+            }
+          })
+          .catch(e => {
+            console.log(e);
+          });
+      });
+    });
+
     try {
       await AsyncStorage.setItem('user', 'true');
       await AsyncStorage.setItem('hasSpotify', 'true');

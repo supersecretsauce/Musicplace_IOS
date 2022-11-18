@@ -33,6 +33,7 @@ const HomeScreen = () => {
   const [currentTrack, setCurrentTrack] = useState(null);
   const [likedTracks, setLikedTracks] = useState([]);
   const [showShareSheet, setShowShareSheet] = useState(false);
+  const [apiResponse, setApiResponse] = useState(null);
   const {
     accessToken,
     refreshToken,
@@ -42,6 +43,7 @@ const HomeScreen = () => {
     hasSpotify,
     setUID,
     UID,
+    initialFeed,
   } = useContext(Context);
 
   useFocusEffect(
@@ -79,19 +81,17 @@ const HomeScreen = () => {
     checkSpotifyConnection();
   }, []);
 
+  useEffect(() => {
+    if (initialFeed) {
+      setFeed(initialFeed);
+    }
+  }, [initialFeed]);
+
   //get notification token and get feed
   useEffect(() => {
     if (UID) {
-      async function getFeed() {
-        let feedAlgo = await axios.get(
-          `https://reccomendation-api-pmtku.ondigitalocean.app/recommendations/${UID}`,
-        );
-        console.log(feedAlgo);
-        setFeed(feedAlgo.data.data);
-      }
-      getFeed();
-
       //get noti token
+
       async function requestUserPermission() {
         const authStatus = await messaging().requestPermission();
         const enabled =
@@ -119,6 +119,29 @@ const HomeScreen = () => {
       requestUserPermission();
     }
   }, [UID]);
+
+  //get updated feed
+
+  // useEffect(() => {
+  //   if (currentIndex === 0) {
+  //     return;
+  //   }
+
+  //   if (currentIndex % 7 === 0) {
+  //     axios
+  //       .get(
+  //         `https://reccomendation-api-pmtku.ondigitalocean.app/recommendations/${UID}`,
+  //       )
+  //       .then(resp => {
+  //         console.log(resp);
+  //         setApiResponse(resp.data.data);
+  //       });
+  //   }
+
+  //   if (currentIndex % 9 === 0) {
+  //     setFeed([...feed, apiResponse]);
+  //   }
+  // }, [currentIndex]);
 
   useEffect(() => {
     if (feed) {
