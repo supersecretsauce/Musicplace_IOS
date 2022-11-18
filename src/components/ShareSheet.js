@@ -163,7 +163,7 @@ const ShareSheet = props => {
                 .collection('messages')
                 .add({
                   messageText: messageText,
-                  songInfo: post._data,
+                  songInfo: post,
                   sentAt: new Date(),
                   from: UID,
                   to: userItemSelections[i].UID,
@@ -180,7 +180,7 @@ const ShareSheet = props => {
                 .doc(resp.id)
                 .collection('messages')
                 .add({
-                  songInfo: post._data,
+                  songInfo: post,
                   sentAt: new Date(),
                   from: UID,
                   to: userItemSelections[i].UID,
@@ -204,7 +204,7 @@ const ShareSheet = props => {
               from: UID,
               to: userItemSelections[i].UID,
               messageText: messageText,
-              songInfo: post._data,
+              songInfo: post,
             })
             .then(() => {
               console.log('message added');
@@ -221,7 +221,7 @@ const ShareSheet = props => {
               sentAt: new Date(),
               from: UID,
               to: userItemSelections[i].UID,
-              songInfo: post._data,
+              songInfo: post,
             })
             .then(() => {
               console.log('message added without text!');

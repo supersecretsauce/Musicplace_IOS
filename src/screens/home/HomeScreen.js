@@ -24,7 +24,7 @@ import {mixpanel} from '../../../mixpanel';
 import {firebase} from '@react-native-firebase/firestore';
 import messaging from '@react-native-firebase/messaging';
 import ShareSheet from '../../components/ShareSheet';
-
+import axios from 'axios';
 const HomeScreen = () => {
   Sound.setCategory('Playback');
   const [feed, setFeed] = useState(null);
@@ -60,12 +60,6 @@ const HomeScreen = () => {
   );
 
   useEffect(() => {
-    async function getFeed() {
-      const docs = await firestore().collection('posts').get();
-      console.log(docs._docs);
-      setFeed(docs._docs);
-    }
-    getFeed();
     async function checkSpotifyConnection() {
       const spotifyBoolean = await AsyncStorage.getItem('hasSpotify');
       const localRefresh = await AsyncStorage.getItem('spotRefreshToken');
@@ -84,9 +78,19 @@ const HomeScreen = () => {
     checkSpotifyConnection();
   }, []);
 
-  //get notification token and push to user doc
+  //get notification token and get feed
   useEffect(() => {
     if (UID) {
+      async function getFeed() {
+        let feedAlgo = await axios.get(
+          `https://reccomendation-api-pmtku.ondigitalocean.app/recommendations/${UID}`,
+        );
+        console.log(feedAlgo);
+        setFeed(feedAlgo.data.data);
+      }
+      getFeed();
+
+      //get noti token
       async function requestUserPermission() {
         const authStatus = await messaging().requestPermission();
         const enabled =
@@ -117,19 +121,15 @@ const HomeScreen = () => {
 
   useEffect(() => {
     if (feed) {
-      let newTrack = new Sound(
-        feed[currentIndex]._data.previewUrl,
-        null,
-        error => {
-          if (error) {
-            console.log('failed to load the sound', error);
-            return;
-          } else {
-            newTrack.play();
-            newTrack.setNumberOfLoops(-1);
-          }
-        },
-      );
+      let newTrack = new Sound(feed[currentIndex].previewUrl, null, error => {
+        if (error) {
+          console.log('failed to load the sound', error);
+          return;
+        } else {
+          newTrack.play();
+          newTrack.setNumberOfLoops(-1);
+        }
+      });
       setCurrentTrack(newTrack);
     }
   }, [currentIndex, feed]);
@@ -170,11 +170,9 @@ const HomeScreen = () => {
 
   function likeHandler() {
     if (hasSpotify) {
-      if (likedTracks.includes(feed[currentIndex]._data.id)) {
+      if (likedTracks.includes(feed[currentIndex].id)) {
         HapticFeedback.trigger('impactLight');
-        setLikedTracks(
-          likedTracks.filter(id => id != feed[currentIndex]._data.id),
-        );
+        setLikedTracks(likedTracks.filter(id => id != feed[currentIndex].id));
         Toast.show({
           type: 'success',
           text1: 'Removed from liked songs',
@@ -182,7 +180,7 @@ const HomeScreen = () => {
           visibilityTime: 2000,
         });
         authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
-          .delete(`/me/tracks?ids=${feed[currentIndex]._data.id}`)
+          .delete(`/me/tracks?ids=${feed[currentIndex].id}`)
           .then(response => {
             console.log(response);
           })
@@ -192,7 +190,7 @@ const HomeScreen = () => {
           });
       } else {
         HapticFeedback.trigger('impactHeavy');
-        setLikedTracks(current => [...current, feed[currentIndex]._data.id]);
+        setLikedTracks(current => [...current, feed[currentIndex].id]);
         Toast.show({
           type: 'success',
           text1: 'Added to liked songs',
@@ -200,7 +198,7 @@ const HomeScreen = () => {
           visibilityTime: 2000,
         });
         authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
-          .put(`/me/tracks?ids=${feed[currentIndex]._data.id}`)
+          .put(`/me/tracks?ids=${feed[currentIndex].id}`)
           .then(response => {
             console.log(response);
           })
@@ -221,7 +219,7 @@ const HomeScreen = () => {
 
   async function listenOnSpotify() {
     await Linking.openURL(
-      `http://open.spotify.com/track/${feed[currentIndex]._data.id}`,
+      `http://open.spotify.com/track/${feed[currentIndex].id}`,
     );
   }
 
@@ -246,7 +244,7 @@ const HomeScreen = () => {
                     <Image
                       style={styles.songPhoto}
                       source={{
-                        uri: post._data.songPhoto,
+                        uri: post.songPhoto,
                       }}
                       resizeMode="cover"
                     />
@@ -255,7 +253,7 @@ const HomeScreen = () => {
                     <View style={styles.topRowLeft}>
                       <Spotify />
                       <Text numberOfLines={1} style={styles.songName}>
-                        {post._data.songName}
+                        {post.songName}
                       </Text>
                     </View>
                     <View style={styles.topRowRight}>
@@ -268,14 +266,12 @@ const HomeScreen = () => {
                         <Ionicons
                           style={styles.likeIcon}
                           name={
-                            likedTracks.includes(post._data.id)
+                            likedTracks.includes(post.id)
                               ? 'heart'
                               : 'heart-outline'
                           }
                           color={
-                            likedTracks.includes(post._data.id)
-                              ? '#1DB954'
-                              : 'grey'
+                            likedTracks.includes(post.id) ? '#1DB954' : 'grey'
                           }
                           size={28}
                         />
@@ -284,7 +280,7 @@ const HomeScreen = () => {
                   </View>
                   <View style={styles.bottomRow}>
                     <Text numberOfLines={1} style={styles.artistName}>
-                      {post._data.artists
+                      {post.artists
                         .map(artist => {
                           return artist.name;
                         })
@@ -297,7 +293,7 @@ const HomeScreen = () => {
                       size={5}
                     />
                     <Text numberOfLines={1} style={styles.albumName}>
-                      {post._data.albumName}
+                      {post.albumName}
                     </Text>
                   </View>
                   <TouchableOpacity
