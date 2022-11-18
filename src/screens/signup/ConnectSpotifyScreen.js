@@ -16,11 +16,12 @@ import {firebase} from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
 import HapticFeedback from 'react-native-haptic-feedback';
+import axios from 'axios';
 
 const ConnectSpotifyScreen = ({navigation, route}) => {
   const {contacts} = route.params;
   const userInfo = firebase.auth().currentUser;
-  const {username} = useContext(Context);
+  const {username, setDoneFetchingTopSongs} = useContext(Context);
 
   const goBack = () => {
     navigation.navigate('CreateUsernameScreen');
@@ -47,31 +48,50 @@ const ConnectSpotifyScreen = ({navigation, route}) => {
   const connectSpotify = async () => {
     HapticFeedback.trigger('impactHeavy');
     const authState = await authorize(config);
+    console.log(userInfo.uid);
     try {
-      await firestore().collection('users').doc(userInfo.uid).set(
-        {
-          UID: userInfo.uid,
-          phoneNumber: userInfo.phoneNumber,
-          createdAt: userInfo.metadata.creationTime,
-          lastSignIn: userInfo.metadata.lastSignInTime,
-          connectedWithSpotify: true,
-          spotifyAccessToken: authState.accessToken,
-          spotifyAccessTokenExpirationDate: authState.accessTokenExpirationDate,
-          spotifyRefreshToken: authState.refreshToken,
-          spotifyTokenType: authState.tokenType,
-          bio: null,
-          followers: 0,
-          following: 0,
-          displayName: username,
-          followersList: [],
-          followingList: [],
-          autoPost: true,
-          topSongs: [],
-          userPosts: [],
-          handle: username,
-        },
-        {merge: true},
-      );
+      firestore()
+        .collection('users')
+        .doc(userInfo.uid)
+        .set(
+          {
+            UID: userInfo.uid,
+            phoneNumber: userInfo.phoneNumber,
+            createdAt: userInfo.metadata.creationTime,
+            lastSignIn: userInfo.metadata.lastSignInTime,
+            connectedWithSpotify: true,
+            spotifyAccessToken: authState.accessToken,
+            spotifyAccessTokenExpirationDate:
+              authState.accessTokenExpirationDate,
+            spotifyRefreshToken: authState.refreshToken,
+            spotifyTokenType: authState.tokenType,
+            bio: null,
+            followers: 0,
+            following: 0,
+            displayName: username,
+            followersList: [],
+            followingList: [],
+            autoPost: true,
+            topSongs: [],
+            userPosts: [],
+            handle: username,
+          },
+          {merge: true},
+        )
+        .then(() => {
+          axios
+            .get(
+              `https://reccomendation-api-pmtku.ondigitalocean.app/updates/${userInfo.uid}`,
+            )
+            .then(resp => {
+              if (resp.status === 200) {
+                setDoneFetchingTopSongs(true);
+              }
+            })
+            .catch(e => {
+              console.log(e);
+            });
+        });
     } catch (error) {
       console.log(error);
     }
