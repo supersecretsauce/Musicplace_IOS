@@ -43,8 +43,8 @@ const ViewPostsScreen = ({route}) => {
     let timeDiff = endTime - startTime;
     startTime = new Date();
     firestore()
-      .collection('posts')
-      .doc(songInfo[0].id)
+      .collection('users')
+      .doc(UID)
       .collection('watches')
       .add({
         UID: UID,
