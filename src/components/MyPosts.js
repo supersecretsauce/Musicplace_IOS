@@ -16,7 +16,7 @@ import {authorize} from 'react-native-app-auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 const MyPosts = props => {
-  const {UID, navigation, userProfile} = props;
+  const {UID, navigation} = props;
   const {
     hasSpotify,
     setHasSpotify,
@@ -32,7 +32,11 @@ const MyPosts = props => {
         .where('users', 'array-contains', UID)
         .get()
         .then(resp => {
-          setUserPosts(resp.docs);
+          let songDocs = [];
+          resp.docs.forEach(doc => {
+            songDocs.push(doc._data);
+          });
+          setUserPosts(songDocs);
         });
       return () => subscriber;
     }
@@ -104,15 +108,15 @@ const MyPosts = props => {
                         <Image
                           style={styles.songPhoto}
                           source={{
-                            uri: item._data.songPhoto,
+                            uri: item.songPhoto,
                           }}
                         />
                         <Text numberOfLines={1} style={styles.songName}>
-                          {item._data.songName}
+                          {item.songName}
                         </Text>
                         <View>
                           <Text numberOfLines={1} style={styles.artistName}>
-                            {item._data.artists
+                            {item.artists
                               ?.map(artist => {
                                 return artist.name;
                               })
