@@ -2,7 +2,6 @@ import React, {useState, useEffect, useRef} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import PostStackScreen from './src/routes/PostStackScreen';
 import ProfileStackScreen from './src/routes/ProfileStackScreen';
 import {Context} from './src/context/Context';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -15,6 +14,7 @@ import WelcomeStackScreen from './src/routes/WelcomeStackScreen';
 import ActivityStackScreen from './src/routes/ActivityStackScreen';
 import {mixpanel} from './mixpanel';
 import notifee, {EventType} from '@notifee/react-native';
+import DiscoverStackScreen from './src/routes/DiscoverStackScreen';
 import {AppState} from 'react-native';
 mixpanel.init();
 
@@ -146,7 +146,7 @@ export default function App() {
                     iconName = focused ? 'home-sharp' : 'home-outline';
                   } else if (route.name === 'Discover') {
                     iconName = focused ? 'ear-sharp' : 'ear-outline';
-                  } else if (route.name === 'Post') {
+                  } else if (route.name === 'Discover') {
                     iconName = focused ? 'add-sharp' : 'add-outline';
                   } else if (route.name === 'Activity') {
                     iconName = focused
@@ -168,7 +168,7 @@ export default function App() {
               })}>
               <Tab.Screen name="Home" component={HomeStackScreen} />
               {/* <Tab.Screen name="Discover" component={ActivityStackScreen} /> */}
-              <Tab.Screen name="Post" component={PostStackScreen} />
+              <Tab.Screen name="Discover" component={DiscoverStackScreen} />
               <Tab.Screen name="Activity" component={ActivityStackScreen} />
               <Tab.Screen name="Profile" component={ProfileStackScreen} />
             </Tab.Navigator>
