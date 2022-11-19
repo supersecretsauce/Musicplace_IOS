@@ -31,7 +31,7 @@ import Animated, {
 import {SPRING_CONFIG} from '../../assets/utilities/reanimated-2';
 import Toast from 'react-native-toast-message';
 
-const DiscoverScreen = () => {
+const DiscoverScreen = ({navigation}) => {
   const {
     accessToken,
     refreshToken,
@@ -71,6 +71,7 @@ const DiscoverScreen = () => {
       )
       .then(resp => {
         if (resp.status == 200) {
+          console.log(resp.data.tracks.items);
           setResults(resp.data.tracks.items);
         }
       });
@@ -136,7 +137,15 @@ const DiscoverScreen = () => {
             data={results}
             renderItem={({item, index}) => {
               return (
-                <View style={styles.songItem} key={index}>
+                <TouchableOpacity
+                  style={styles.songItem}
+                  key={index}
+                  onPress={() =>
+                    navigation.navigate('HomeScreen', {
+                      prevScreen: 'DiscoverScreen',
+                      trackID: item.id,
+                    })
+                  }>
                   <View style={styles.songItemLeft}>
                     <Image
                       style={styles.songPhoto}
@@ -162,7 +171,7 @@ const DiscoverScreen = () => {
                     color={Colors.greyOut}
                     size={20}
                   />
-                </View>
+                </TouchableOpacity>
               );
             }}
           />
