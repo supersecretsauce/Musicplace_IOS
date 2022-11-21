@@ -30,6 +30,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import {SPRING_CONFIG} from '../../assets/utilities/reanimated-2';
 import Toast from 'react-native-toast-message';
+import firestore from '@react-native-firebase/firestore';
 
 const DiscoverScreen = ({navigation}) => {
   const {
@@ -42,31 +43,92 @@ const DiscoverScreen = ({navigation}) => {
   const [results, setResults] = useState(null);
   const [searchFocused, setSearchFocused] = useState(false);
   const [playlists, setPlaylists] = useState(null);
-  const genres = [
-    {
-      name: 'rap',
-      color: Colors.red,
-    },
-    {
-      name: 'House',
-      color: '#FF5733',
-    },
-    {
-      name: 'pop',
-      color: '#FF8FB1',
-    },
-    {
-      name: 'R&B',
-      color: '#852999',
-    },
-  ];
+
+  // useEffect(() => {
+  //   authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
+  //     .get('/browse/featured-playlists?limit=50')
+  //     .then(resp => {
+  // setPlaylists(resp.data.playlists.items);
+
+  // async function uploadPlaylists() {
+  //   let trackHREF = resp.data.playlists.items[9].tracks.href;
+  //   let docID = resp.data.playlists.items[9].id;
+  //   await firestore()
+  //     .collection('playlists')
+  //     .doc(resp.data.playlists.items[9].id)
+  //     .set({
+  //       name: resp.data.playlists.items[9].name,
+  //       playlistImage: resp.data.playlists.items[9].images[0].url,
+  //       playlistID: resp.data.playlists.items[9].id,
+  //       href: resp.data.playlists.items[9].href,
+  //       description: resp.data.playlists.items[9].description,
+  //       externalURL: resp.data.playlists.items[9].external_urls.spotify,
+  //     })
+  //     .then(resp => {
+  //       authFetch(
+  //         accessToken,
+  //         refreshToken,
+  //         setAccessToken,
+  //         setRefreshToken,
+  //       )
+  //         .get(trackHREF)
+  //         .then(resp => {
+  //           console.log(resp);
+  //           async function uploadPlaylistTracks() {
+  //             for (let i = 0; i < resp.data.items.length; i++) {
+  //               // use song id as doc id
+  //               await firestore()
+  //                 .collection('playlists')
+  //                 .doc(docID)
+  //                 .collection('tracks')
+  //                 .doc(resp.data.items[i].track.id)
+  //                 .set({
+  //                   albumId: resp.data.items[i].track.album.id,
+  //                   albumName: resp.data.items[i].track.album.name,
+  //                   artists: resp.data.items[i].track.artists,
+  //                   availableMarkets:
+  //                     resp.data.items[i].track.available_markets,
+  //                   durationInMs: resp.data.items[i].track.duration_ms,
+  //                   id: resp.data.items[i].track.id,
+  //                   isExplicit: resp.data.items[i].track.explicit,
+  //                   popularity: resp.data.items[i].track.popularity,
+  //                   previewUrl: resp.data.items[i].track.preview_url,
+  //                   releaseDate:
+  //                     resp.data.items[i].track.album.release_date,
+  //                   songName: resp.data.items[i].track.name,
+  //                   songPhoto:
+  //                     resp.data.items[i].track.album.images[0].url,
+  //                 })
+  //                 .then(() => {
+  //                   console.log('doc added');
+  //                 })
+  //                 .catch(e => {
+  //                   console.log(e);
+  //                 });
+  //             }
+  //           }
+  //           uploadPlaylistTracks();
+  //         });
+  //     })
+  //     .catch(e => {
+  //       console.log(e);
+  //     });
+  // }
+  // uploadPlaylists();
+  //     });
+  // }, []);
 
   useEffect(() => {
-    authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
-      .get('/browse/featured-playlists?limit=50')
+    firestore()
+      .collection('playlists')
+      .get()
       .then(resp => {
-        console.log(resp.data);
-        setPlaylists(resp.data.playlists.items);
+        let playlistArr = [];
+        resp.docs.forEach(doc => {
+          playlistArr.push(doc.data());
+        });
+        console.log(playlistArr);
+        setPlaylists(playlistArr);
       });
   }, []);
 
@@ -196,14 +258,19 @@ const DiscoverScreen = ({navigation}) => {
             numColumns={2}
             renderItem={({item, index}) => {
               return (
-                <TouchableOpacity style={styles.itemContainer}>
+                <TouchableOpacity
+                  style={styles.itemContainer}
+                  onPress={() => {
+                    navigation.navigate('PlaylistTracksScreen', {
+                      playlistID: item.playlistID,
+                    });
+                  }}>
                   <Image
                     style={styles.playlistPhoto}
                     source={{
-                      uri: item?.images[0]?.url,
+                      uri: item.playlistImage,
                     }}
                   />
-                  <View style={styles.playlistInfoContainer}></View>
                 </TouchableOpacity>
               );
             }}
@@ -317,10 +384,7 @@ const styles = StyleSheet.create({
     height: 135,
     width: 135,
     marginHorizontal: '5%',
-    marginVertical: 100,
-    borderRadius: 9,
-    alignItems: 'flex-start',
-    justifyContent: 'flex-end',
+    // marginVertical: 100,
   },
   playlistPhoto: {
     height: 135,
