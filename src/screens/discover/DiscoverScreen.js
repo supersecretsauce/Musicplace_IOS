@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
     height: 135,
     width: 135,
     marginHorizontal: '5%',
-    // marginVertical: 100,
+    marginVertical: '5%',
   },
   playlistPhoto: {
     height: 135,

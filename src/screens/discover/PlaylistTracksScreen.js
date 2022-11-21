@@ -197,7 +197,7 @@ const PlaylistTracksScreen = ({route}) => {
               setCurrentIndex(index);
               mixpanel.track('New Listen');
             }}
-            loop={false}
+            loop={true}
             showsButtons={false}>
             {feed.map((post, index) => {
               return (
