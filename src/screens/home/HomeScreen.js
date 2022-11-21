@@ -25,6 +25,7 @@ import {firebase} from '@react-native-firebase/firestore';
 import messaging from '@react-native-firebase/messaging';
 import ShareSheet from '../../components/ShareSheet';
 import axios from 'axios';
+import LoadingPost from '../../components/LoadingPost';
 
 const HomeScreen = ({route}) => {
   Sound.setCategory('Playback');
@@ -34,6 +35,7 @@ const HomeScreen = ({route}) => {
   const [currentTrack, setCurrentTrack] = useState(null);
   const [likedTracks, setLikedTracks] = useState([]);
   const [showShareSheet, setShowShareSheet] = useState(false);
+  const [apiResponse, setApiResponse] = useState(null);
   const {
     accessToken,
     refreshToken,
@@ -43,6 +45,7 @@ const HomeScreen = ({route}) => {
     hasSpotify,
     setUID,
     UID,
+    initialFeed,
   } = useContext(Context);
 
   useFocusEffect(
@@ -109,9 +112,17 @@ const HomeScreen = ({route}) => {
     checkSpotifyConnection();
   }, []);
 
-  //get notification token and push to user doc
+  useEffect(() => {
+    if (initialFeed) {
+      setFeed(initialFeed);
+    }
+  }, [initialFeed]);
+
+  //get notification token and get feed
   useEffect(() => {
     if (UID) {
+      //get noti token
+
       async function requestUserPermission() {
         const authStatus = await messaging().requestPermission();
         const enabled =
@@ -140,21 +151,40 @@ const HomeScreen = ({route}) => {
     }
   }, [UID]);
 
+  //get updated feed
+
+  // useEffect(() => {
+  //   if (currentIndex === 0) {
+  //     return;
+  //   }
+
+  //   if (currentIndex % 7 === 0) {
+  //     axios
+  //       .get(
+  //         `https://reccomendation-api-pmtku.ondigitalocean.app/recommendations/${UID}`,
+  //       )
+  //       .then(resp => {
+  //         console.log(resp);
+  //         setApiResponse(resp.data.data);
+  //       });
+  //   }
+
+  //   if (currentIndex % 9 === 0) {
+  //     setFeed([...feed, apiResponse]);
+  //   }
+  // }, [currentIndex]);
+
   useEffect(() => {
     if (feed) {
-      let newTrack = new Sound(
-        feed[currentIndex]._data.previewUrl,
-        null,
-        error => {
-          if (error) {
-            console.log('failed to load the sound', error);
-            return;
-          } else {
-            newTrack.play();
-            newTrack.setNumberOfLoops(-1);
-          }
-        },
-      );
+      let newTrack = new Sound(feed[currentIndex].previewUrl, null, error => {
+        if (error) {
+          console.log('failed to load the sound', error);
+          return;
+        } else {
+          newTrack.play();
+          newTrack.setNumberOfLoops(-1);
+        }
+      });
       setCurrentTrack(newTrack);
     }
   }, [currentIndex, feed]);
@@ -195,11 +225,9 @@ const HomeScreen = ({route}) => {
 
   function likeHandler() {
     if (hasSpotify) {
-      if (likedTracks.includes(feed[currentIndex]._data.id)) {
+      if (likedTracks.includes(feed[currentIndex].id)) {
         HapticFeedback.trigger('impactLight');
-        setLikedTracks(
-          likedTracks.filter(id => id != feed[currentIndex]._data.id),
-        );
+        setLikedTracks(likedTracks.filter(id => id != feed[currentIndex].id));
         Toast.show({
           type: 'success',
           text1: 'Removed from liked songs',
@@ -207,7 +235,7 @@ const HomeScreen = ({route}) => {
           visibilityTime: 2000,
         });
         authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
-          .delete(`/me/tracks?ids=${feed[currentIndex]._data.id}`)
+          .delete(`/me/tracks?ids=${feed[currentIndex].id}`)
           .then(response => {
             console.log(response);
           })
@@ -217,7 +245,7 @@ const HomeScreen = ({route}) => {
           });
       } else {
         HapticFeedback.trigger('impactHeavy');
-        setLikedTracks(current => [...current, feed[currentIndex]._data.id]);
+        setLikedTracks(current => [...current, feed[currentIndex].id]);
         Toast.show({
           type: 'success',
           text1: 'Added to liked songs',
@@ -225,7 +253,7 @@ const HomeScreen = ({route}) => {
           visibilityTime: 2000,
         });
         authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
-          .put(`/me/tracks?ids=${feed[currentIndex]._data.id}`)
+          .put(`/me/tracks?ids=${feed[currentIndex].id}`)
           .then(response => {
             console.log(response);
           })
@@ -246,7 +274,7 @@ const HomeScreen = ({route}) => {
 
   async function listenOnSpotify() {
     await Linking.openURL(
-      `http://open.spotify.com/track/${feed[currentIndex]._data.id}`,
+      `http://open.spotify.com/track/${feed[currentIndex].id}`,
     );
   }
 
@@ -271,7 +299,7 @@ const HomeScreen = ({route}) => {
                     <Image
                       style={styles.songPhoto}
                       source={{
-                        uri: post._data.songPhoto,
+                        uri: post.songPhoto,
                       }}
                       resizeMode="cover"
                     />
@@ -280,7 +308,7 @@ const HomeScreen = ({route}) => {
                     <View style={styles.topRowLeft}>
                       <Spotify />
                       <Text numberOfLines={1} style={styles.songName}>
-                        {post._data.songName}
+                        {post.songName}
                       </Text>
                     </View>
                     <View style={styles.topRowRight}>
@@ -293,14 +321,12 @@ const HomeScreen = ({route}) => {
                         <Ionicons
                           style={styles.likeIcon}
                           name={
-                            likedTracks.includes(post._data.id)
+                            likedTracks.includes(post.id)
                               ? 'heart'
                               : 'heart-outline'
                           }
                           color={
-                            likedTracks.includes(post._data.id)
-                              ? '#1DB954'
-                              : 'grey'
+                            likedTracks.includes(post.id) ? '#1DB954' : 'grey'
                           }
                           size={28}
                         />
@@ -309,7 +335,7 @@ const HomeScreen = ({route}) => {
                   </View>
                   <View style={styles.bottomRow}>
                     <Text numberOfLines={1} style={styles.artistName}>
-                      {post._data.artists
+                      {post.artists
                         .map(artist => {
                           return artist.name;
                         })
@@ -322,7 +348,7 @@ const HomeScreen = ({route}) => {
                       size={5}
                     />
                     <Text numberOfLines={1} style={styles.albumName}>
-                      {post._data.albumName}
+                      {post.albumName}
                     </Text>
                   </View>
                   <TouchableOpacity
@@ -347,9 +373,7 @@ const HomeScreen = ({route}) => {
         </>
       ) : (
         <>
-          <View>
-            <Text>loading</Text>
-          </View>
+          <LoadingPost />
         </>
       )}
     </View>

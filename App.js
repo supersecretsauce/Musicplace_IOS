@@ -33,6 +33,7 @@ export default function App() {
   const [hasSpotify, setHasSpotify] = useState(null);
   const [doneFetchingTopSongs, setDoneFetchingTopSongs] = useState(false);
   const [UID, setUID] = useState(null);
+  const [initialFeed, setInitialFeed] = useState(null);
   const Tab = createBottomTabNavigator();
   const appState = useRef(AppState.currentState);
   const navigationRef = useRef();
@@ -135,6 +136,8 @@ export default function App() {
             setUID,
             setDoneFetchingTopSongs,
             doneFetchingTopSongs,
+            initialFeed,
+            setInitialFeed,
           }}>
           {userLogin ? (
             <Tab.Navigator
