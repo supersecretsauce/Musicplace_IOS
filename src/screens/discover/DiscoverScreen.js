@@ -41,6 +41,7 @@ const DiscoverScreen = ({navigation}) => {
   } = useContext(Context);
   const [results, setResults] = useState(null);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [playlists, setPlaylists] = useState(null);
   const genres = [
     {
       name: 'rap',
@@ -59,6 +60,15 @@ const DiscoverScreen = ({navigation}) => {
       color: '#852999',
     },
   ];
+
+  useEffect(() => {
+    authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
+      .get('/browse/featured-playlists?limit=50')
+      .then(resp => {
+        console.log(resp.data);
+        setPlaylists(resp.data.playlists.items);
+      });
+  }, []);
 
   const handleDebounce = debounce(value => {
     getData(value);
@@ -179,21 +189,28 @@ const DiscoverScreen = ({navigation}) => {
       ) : (
         <></>
       )}
-      {!searchFocused && (
+      {!searchFocused && playlists ? (
         <View style={styles.flatListContainer}>
           <FlatList
-            data={genres}
+            data={playlists}
             numColumns={2}
             renderItem={({item, index}) => {
               return (
-                <TouchableOpacity
-                  style={[styles.itemContainer, {backgroundColor: item.color}]}>
-                  <Text style={styles.name}>{item.name}</Text>
+                <TouchableOpacity style={styles.itemContainer}>
+                  <Image
+                    style={styles.playlistPhoto}
+                    source={{
+                      uri: item?.images[0]?.url,
+                    }}
+                  />
+                  <View style={styles.playlistInfoContainer}></View>
                 </TouchableOpacity>
               );
             }}
           />
         </View>
+      ) : (
+        <></>
       )}
     </SafeAreaView>
   );
@@ -300,15 +317,18 @@ const styles = StyleSheet.create({
     height: 135,
     width: 135,
     marginHorizontal: '5%',
-    marginVertical: '5%',
+    marginVertical: 100,
     borderRadius: 9,
     alignItems: 'flex-start',
     justifyContent: 'flex-end',
   },
-  name: {
-    fontFamily: 'Inter-Bold',
-    color: 'white',
-    padding: 10,
-    fontSize: 23,
+  playlistPhoto: {
+    height: 135,
+    width: 135,
+  },
+  playlistInfoContainer: {
+    width: 135,
+    height: 135,
+    backgroundColor: 'grey',
   },
 });
