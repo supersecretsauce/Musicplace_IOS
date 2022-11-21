@@ -26,8 +26,10 @@ import messaging from '@react-native-firebase/messaging';
 import ShareSheet from '../../components/ShareSheet';
 import axios from 'axios';
 import LoadingPost from '../../components/LoadingPost';
-const HomeScreen = () => {
+
+const HomeScreen = ({route}) => {
   Sound.setCategory('Playback');
+  const {prevScreen, trackID} = route.params ?? {};
   const [feed, setFeed] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentTrack, setCurrentTrack] = useState(null);
@@ -61,6 +63,35 @@ const HomeScreen = () => {
       };
     }, [currentTrack]),
   );
+
+  useEffect(() => {
+    if (UID) {
+      if (prevScreen && trackID) {
+        async function getFeed() {
+          console.log(UID);
+          console.log(trackID);
+          axios
+            .get(
+              `https://reccomendation-api-pmtku.ondigitalocean.app/track/${trackID}/${UID}`,
+            )
+            .then(resp => {
+              console.log(resp);
+            })
+            .catch(e => {
+              console.log(e);
+            });
+        }
+        getFeed();
+      } else {
+        async function getFeed() {
+          const docs = await firestore().collection('posts').get();
+          console.log(docs._docs);
+          setFeed(docs._docs);
+        }
+        getFeed();
+      }
+    }
+  }, [UID, prevScreen, trackID]);
 
   useEffect(() => {
     async function checkSpotifyConnection() {
