@@ -27,15 +27,14 @@ import ShareSheet from '../../components/ShareSheet';
 import axios from 'axios';
 import LoadingPost from '../../components/LoadingPost';
 
-const HomeScreen = ({route}) => {
+const PlaylistTracksScreen = ({route}) => {
   Sound.setCategory('Playback');
-  const {prevScreen, trackID} = route.params ?? {};
+  const {playlistID} = route.params ?? {};
   const [feed, setFeed] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentTrack, setCurrentTrack] = useState(null);
   const [likedTracks, setLikedTracks] = useState([]);
   const [showShareSheet, setShowShareSheet] = useState(false);
-  const [apiResponse, setApiResponse] = useState(null);
   const {
     accessToken,
     refreshToken,
@@ -64,109 +63,23 @@ const HomeScreen = ({route}) => {
     }, [currentTrack]),
   );
 
-  // useEffect(() => {
-  //   if (UID) {
-  //     if (prevScreen && trackID) {
-  //       async function getFeed() {
-  //         console.log(UID);
-  //         console.log(trackID);
-  //         axios
-  //           .get(
-  //             `https://reccomendation-api-pmtku.ondigitalocean.app/track/${trackID}/${UID}`,
-  //           )
-  //           .then(resp => {
-  //             console.log(resp);
-  //           })
-  //           .catch(e => {
-  //             console.log(e);
-  //           });
-  //       }
-  //       getFeed();
-  //     } else {
-  //       async function getFeed() {
-  //         const docs = await firestore().collection('posts').get();
-  //         console.log(docs._docs);
-  //         setFeed(docs._docs);
-  //       }
-  //       getFeed();
-  //     }
-  //   }
-  // }, [UID, prevScreen, trackID]);
-
   useEffect(() => {
-    async function checkSpotifyConnection() {
-      const spotifyBoolean = await AsyncStorage.getItem('hasSpotify');
-      const localRefresh = await AsyncStorage.getItem('spotRefreshToken');
-      const localAccess = await AsyncStorage.getItem('spotAccessToken');
-      const localUID = await AsyncStorage.getItem('UID');
-      if (spotifyBoolean === 'false') {
-        setHasSpotify(false);
-        setUID(localUID);
-      } else if (spotifyBoolean === 'true') {
-        setUID(localUID);
-        setHasSpotify(true);
-        setAccessToken(localAccess);
-        setRefreshToken(localRefresh);
-      }
-    }
-    checkSpotifyConnection();
-  }, []);
-
-  useEffect(() => {
-    if (initialFeed) {
-      setFeed(initialFeed);
-    }
-  }, [initialFeed]);
-
-  //get notification token and get feed
-  useEffect(() => {
-    if (UID) {
-      //get noti token
-
-      async function requestUserPermission() {
-        const authStatus = await messaging().requestPermission();
-        const enabled =
-          authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-          authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-        if (enabled) {
-          console.log('Authorization status:', authStatus);
-          messaging()
-            .getToken()
-            .then(token => {
-              firestore()
-                .collection('users')
-                .doc(UID)
-                .update({
-                  notificationToken: token,
-                })
-                .then(() => {
-                  console.log('token pushed!');
-                });
-            });
-        } else {
-          console.log(authStatus);
-        }
-      }
-      requestUserPermission();
-    }
-  }, [UID]);
-
-  //get updated feed
-
-  useEffect(() => {
-    if (UID) {
-      axios
-        .get(
-          `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${UID}`,
-        )
+    if (playlistID) {
+      firestore()
+        .collection('playlists')
+        .doc(playlistID)
+        .collection('tracks')
+        .get()
         .then(resp => {
+          let tracksDocs = [];
           console.log(resp);
-        })
-        .catch(e => {
-          console.log(e);
+          resp.docs.forEach(doc => {
+            tracksDocs.push(doc.data());
+          });
+          setFeed(tracksDocs);
         });
     }
-  }, [UID]);
+  }, [playlistID]);
 
   useEffect(() => {
     if (feed) {
@@ -284,7 +197,7 @@ const HomeScreen = ({route}) => {
               setCurrentIndex(index);
               mixpanel.track('New Listen');
             }}
-            loop={false}
+            loop={true}
             showsButtons={false}>
             {feed.map((post, index) => {
               return (
@@ -374,7 +287,7 @@ const HomeScreen = ({route}) => {
   );
 };
 
-export default HomeScreen;
+export default PlaylistTracksScreen;
 
 const styles = StyleSheet.create({
   container: {
