@@ -84,12 +84,19 @@ const HomeScreen = ({route}) => {
         }
         getFeed();
       } else {
-        // async function getFeed() {
-        //   const docs = await firestore().collection('posts').get();
-        //   console.log(docs._docs);
-        //   setFeed(docs._docs);
-        // }
-        // getFeed();
+        async function getFeed() {
+          axios
+            .get(
+              `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${UID}`,
+            )
+            .then(resp => {
+              console.log(resp);
+            })
+            .catch(e => {
+              console.log(e);
+            });
+        }
+        getFeed();
       }
     }
   }, [UID, prevScreen, trackID]);
