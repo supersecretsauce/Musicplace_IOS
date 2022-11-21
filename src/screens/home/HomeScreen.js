@@ -64,34 +64,35 @@ const HomeScreen = ({route}) => {
     }, [currentTrack]),
   );
 
-  // useEffect(() => {
-  //   if (UID) {
-  //     if (prevScreen && trackID) {
-  //       async function getFeed() {
-  //         console.log(UID);
-  //         console.log(trackID);
-  //         axios
-  //           .get(
-  //             `https://reccomendation-api-pmtku.ondigitalocean.app/track/${trackID}/${UID}`,
-  //           )
-  //           .then(resp => {
-  //             console.log(resp);
-  //           })
-  //           .catch(e => {
-  //             console.log(e);
-  //           });
-  //       }
-  //       getFeed();
-  //     } else {
-  //       async function getFeed() {
-  //         const docs = await firestore().collection('posts').get();
-  //         console.log(docs._docs);
-  //         setFeed(docs._docs);
-  //       }
-  //       getFeed();
-  //     }
-  //   }
-  // }, [UID, prevScreen, trackID]);
+  useEffect(() => {
+    if (UID) {
+      if (prevScreen && trackID) {
+        async function getFeed() {
+          console.log(UID);
+          console.log(trackID);
+          axios
+            .get(
+              `https://reccomendation-api-pmtku.ondigitalocean.app/flow/track/${trackID}/user/${UID}`,
+            )
+            .then(resp => {
+              console.log(resp);
+              setFeed(resp.data);
+            })
+            .catch(e => {
+              console.log(e);
+            });
+        }
+        getFeed();
+      } else {
+        // async function getFeed() {
+        //   const docs = await firestore().collection('posts').get();
+        //   console.log(docs._docs);
+        //   setFeed(docs._docs);
+        // }
+        // getFeed();
+      }
+    }
+  }, [UID, prevScreen, trackID]);
 
   useEffect(() => {
     async function checkSpotifyConnection() {
@@ -118,7 +119,7 @@ const HomeScreen = ({route}) => {
     }
   }, [initialFeed]);
 
-  //get notification token and get feed
+  //get notification token
   useEffect(() => {
     if (UID) {
       //get noti token
@@ -153,20 +154,20 @@ const HomeScreen = ({route}) => {
 
   //get updated feed
 
-  useEffect(() => {
-    if (UID) {
-      axios
-        .get(
-          `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${UID}`,
-        )
-        .then(resp => {
-          console.log(resp);
-        })
-        .catch(e => {
-          console.log(e);
-        });
-    }
-  }, [UID]);
+  // useEffect(() => {
+  //   if (UID) {
+  //     axios
+  //       .get(
+  //         `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${UID}`,
+  //       )
+  //       .then(resp => {
+  //         console.log(resp);
+  //       })
+  //       .catch(e => {
+  //         console.log(e);
+  //       });
+  //   }
+  // }, [UID]);
 
   useEffect(() => {
     if (feed) {

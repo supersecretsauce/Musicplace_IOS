@@ -19,7 +19,7 @@ import React, {
 import {Context} from '../../context/Context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../assets/utilities/Colors';
-import {authFetch} from '../../services/SpotifyService2';
+// import {authFetch} from '../../services/SpotifyService2';
 import {debounce} from 'lodash';
 import Animated, {
   useAnimatedGestureHandler,
@@ -31,7 +31,7 @@ import Animated, {
 import {SPRING_CONFIG} from '../../assets/utilities/reanimated-2';
 import Toast from 'react-native-toast-message';
 import firestore from '@react-native-firebase/firestore';
-
+import {useSpotifyService} from '../../hooks/useSpotifyService';
 const DiscoverScreen = ({navigation}) => {
   const {
     accessToken,
@@ -43,7 +43,7 @@ const DiscoverScreen = ({navigation}) => {
   const [results, setResults] = useState(null);
   const [searchFocused, setSearchFocused] = useState(false);
   const [playlists, setPlaylists] = useState(null);
-
+  const {authFetch} = useSpotifyService();
   // useEffect(() => {
   //   authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
   //     .get('/browse/featured-playlists?limit=50')
@@ -117,7 +117,6 @@ const DiscoverScreen = ({navigation}) => {
   // uploadPlaylists();
   //     });
   // }, []);
-
   useEffect(() => {
     firestore()
       .collection('playlists')
@@ -137,12 +136,12 @@ const DiscoverScreen = ({navigation}) => {
   }, 500);
 
   function getData(value) {
-    authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
+    authFetch(value)
       .get(
         `https://api.spotify.com/v1/search?type=track&include_external=audio&q=${value}`,
       )
       .then(resp => {
-        if (resp.status == 200) {
+        if (resp && resp.status == 200) {
           console.log(resp.data.tracks.items);
           setResults(resp.data.tracks.items);
         }
@@ -254,6 +253,7 @@ const DiscoverScreen = ({navigation}) => {
       {!searchFocused && playlists ? (
         <View style={styles.flatListContainer}>
           <FlatList
+            contentContainerStyle={{alignSelf: 'center'}}
             data={playlists}
             numColumns={2}
             renderItem={({item, index}) => {
@@ -377,6 +377,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
     // backgroundColor: 'red',
+    justifyContent: 'center',
     flex: 1,
     marginTop: '5%',
   },

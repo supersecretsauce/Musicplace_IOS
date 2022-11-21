@@ -16,6 +16,8 @@ import {mixpanel} from './mixpanel';
 import notifee, {EventType} from '@notifee/react-native';
 import DiscoverStackScreen from './src/routes/DiscoverStackScreen';
 import {AppState} from 'react-native';
+import firestore from '@react-native-firebase/firestore';
+
 mixpanel.init();
 
 export default function App() {
@@ -39,6 +41,23 @@ export default function App() {
   const navigationRef = useRef();
 
   // AsyncStorage.clear();
+
+  // look for changes to access and refresh token
+  useEffect(() => {
+    if (UID) {
+      const subscriber = firestore()
+        .collection('users')
+        .doc(UID)
+        .onSnapshot(snapshot => {
+          console.log(snapshot.data());
+          setAccessToken(snapshot.data().spotifyAccessToken);
+          setRefreshToken(snapshot.data().spotifyRefreshToken);
+        });
+
+      // Stop listening for updates when no longer required
+      return () => subscriber();
+    }
+  }, []);
 
   // Bootstrap sequence function
   async function bootstrap() {
