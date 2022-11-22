@@ -85,7 +85,11 @@ const HomeScreen = ({route}) => {
         }
         getFeed();
       } else {
+        // if (initialFeed) {
+        //   setFeed(initialFeed);
+        // }
         async function getFeed() {
+          console.log(UID);
           axios
             .get(
               `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${UID}`,
@@ -100,7 +104,7 @@ const HomeScreen = ({route}) => {
         getFeed();
       }
     }
-  }, [UID, prevScreen, trackID]);
+  }, [UID, prevScreen, trackID, initialFeed]);
 
   useEffect(() => {
     async function checkSpotifyConnection() {
@@ -120,12 +124,6 @@ const HomeScreen = ({route}) => {
     }
     checkSpotifyConnection();
   }, []);
-
-  useEffect(() => {
-    if (initialFeed) {
-      setFeed(initialFeed);
-    }
-  }, [initialFeed]);
 
   //get notification token
   useEffect(() => {
@@ -203,6 +201,7 @@ const HomeScreen = ({route}) => {
       .doc(UID)
       .collection('watches')
       .add({
+        songID: feed[currentIndex].id,
         UID: UID,
         duration: timeDiff,
         date: new Date(),

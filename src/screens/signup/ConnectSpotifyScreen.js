@@ -80,23 +80,24 @@ const ConnectSpotifyScreen = ({navigation, route}) => {
         console.log(resp);
         axios
           .get(
-            `https://reccomendation-api-pmtku.ondigitalocean.app/recommendations/${userInfo.uid}`,
+            `https://reccomendation-api-pmtku.ondigitalocean.app/updates/${userInfo.uid}`,
           )
           .then(resp => {
-            console.log(resp);
-            console.log(resp.data.data);
-            setInitialFeed(resp.data.data);
+            if (resp.status === 200) {
+              setDoneFetchingTopSongs(true);
+            }
           })
           .catch(e => {
             console.log(e);
           });
         axios
           .get(
-            `https://reccomendation-api-pmtku.ondigitalocean.app/updates/${userInfo.uid}`,
+            `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${userInfo.uid}`,
           )
           .then(resp => {
             if (resp.status === 200) {
-              setDoneFetchingTopSongs(true);
+              console.log('successfull response from recco:', resp);
+              setInitialFeed(true);
             }
           })
           .catch(e => {
