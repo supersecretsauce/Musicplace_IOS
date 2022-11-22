@@ -145,6 +145,9 @@ const DiscoverScreen = ({navigation}) => {
           console.log(resp.data.tracks.items);
           setResults(resp.data.tracks.items);
         }
+      })
+      .catch(e => {
+        console.log(e);
       });
   }
 

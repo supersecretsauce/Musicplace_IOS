@@ -10,7 +10,6 @@ export const useSpotifyService = () => {
     useContext(Context);
 
   const authFetch = value => {
-    console.log('value', value);
     const axiosInstance = axios.create({
       baseURL: 'https://api.spotify.com/v1',
       headers: {
@@ -27,7 +26,7 @@ export const useSpotifyService = () => {
           grant_type: 'refresh_token',
           refresh_token: refreshToken,
         });
-        console.log(error.response);
+        console.log(error.config);
         if (error.response.status == 401) {
           console.log('401 error');
           axios
@@ -53,14 +52,25 @@ export const useSpotifyService = () => {
                 })
                 .then(() => {
                   console.log('new token added');
+                  error.config.headers = {
+                    Authorization: 'Bearer ' + response.data.access_token,
+                    'Content-Type': 'application/json',
+                  };
+                  console.log(error.config);
+                  return axiosInstance(error.config)
+                    .then(resp => {
+                      return Promise.resolve(resp);
+                    })
+                    .catch(e => console.log(e));
                 });
             })
             .catch(e => {
               console.log(e);
             });
         } else {
-          console.log(error);
+          console.log('not 401', error.response);
         }
+        return Promise.reject(error);
       },
     );
     return axiosInstance;
