@@ -17,7 +17,6 @@ import firestore from '@react-native-firebase/firestore';
 import BottomSheet from '../../components/BottomSheet';
 import HapticFeedback from 'react-native-haptic-feedback';
 import Toast from 'react-native-toast-message';
-import {authFetch} from '../../services/SpotifyService';
 import {Context} from '../../context/Context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {mixpanel} from '../../../mixpanel';
@@ -26,9 +25,11 @@ import messaging from '@react-native-firebase/messaging';
 import ShareSheet from '../../components/ShareSheet';
 import axios from 'axios';
 import LoadingPost from '../../components/LoadingPost';
+import {useSpotifyService} from '../../hooks/useSpotifyService';
 
 const HomeScreen = ({route}) => {
   Sound.setCategory('Playback');
+  const {authFetch} = useSpotifyService();
   const {prevScreen, trackID} = route.params ?? {};
   const [feed, setFeed] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -236,7 +237,7 @@ const HomeScreen = ({route}) => {
           text2: 'Well that was quick.',
           visibilityTime: 2000,
         });
-        authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
+        authFetch()
           .delete(`/me/tracks?ids=${feed[currentIndex].id}`)
           .then(response => {
             console.log(response);
@@ -254,7 +255,7 @@ const HomeScreen = ({route}) => {
           text2: "Don't believe us? Check your spotify library.",
           visibilityTime: 2000,
         });
-        authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
+        authFetch()
           .put(`/me/tracks?ids=${feed[currentIndex].id}`)
           .then(response => {
             console.log(response);

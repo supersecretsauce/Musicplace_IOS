@@ -17,13 +17,14 @@ import Sound from 'react-native-sound';
 import firestore from '@react-native-firebase/firestore';
 import {useFocusEffect} from '@react-navigation/native';
 import HapticFeedback from 'react-native-haptic-feedback';
-import {authFetch} from '../../services/SpotifyService';
 import Toast from 'react-native-toast-message';
 import {firebase} from '@react-native-firebase/firestore';
 import {mixpanel} from '../../../mixpanel';
+import {useSpotifyService} from '../../hooks/useSpotifyService';
 
 const ViewPostsScreen = ({route}) => {
   Sound.setCategory('Playback');
+  const {authFetch} = useSpotifyService();
   const {songInfo, UID, openSheet, commentDocID} = route.params;
   const [likedTracks, setLikedTracks] = useState([]);
   const [currentTrack, setCurrentTrack] = useState(null);
@@ -115,7 +116,7 @@ const ViewPostsScreen = ({route}) => {
           text2: 'Well that was quick.',
           visibilityTime: 2000,
         });
-        authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
+        authFetch()
           .delete(`/me/tracks?ids=${songInfo[0].id}`)
           .then(response => {
             console.log(response);
@@ -133,7 +134,7 @@ const ViewPostsScreen = ({route}) => {
           text2: "Don't believe us? Check your spotify library.",
           visibilityTime: 2000,
         });
-        authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
+        authFetch()
           .put(`/me/tracks?ids=${songInfo[0].id}`)
           .then(response => {
             console.log(response);
