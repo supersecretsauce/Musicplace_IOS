@@ -107,6 +107,7 @@ const PlaylistTracksScreen = ({route}) => {
       .doc(UID)
       .collection('watches')
       .add({
+        songID: feed[currentIndex].id,
         UID: UID,
         duration: timeDiff,
         date: new Date(),

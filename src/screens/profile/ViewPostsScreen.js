@@ -48,6 +48,7 @@ const ViewPostsScreen = ({route}) => {
       .doc(UID)
       .collection('watches')
       .add({
+        songID: songInfo[0].id,
         UID: UID,
         duration: timeDiff,
         date: new Date(),
