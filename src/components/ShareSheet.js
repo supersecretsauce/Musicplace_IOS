@@ -285,7 +285,7 @@ const ShareSheet = props => {
               <></>
             )}
           </View>
-          {followingData && (
+          {followingData ? (
             <View style={styles.flatListContainer}>
               <FlatList
                 data={followingData}
@@ -331,6 +331,15 @@ const ShareSheet = props => {
                   );
                 }}
               />
+            </View>
+          ) : (
+            <View style={styles.notFollowingContainer}>
+              <Text style={styles.notFollowingText}>
+                You must be following someone in order to send a direct message.
+              </Text>
+              <TouchableOpacity style={styles.addContainer}>
+                <Text style={styles.addText}>add friends</Text>
+              </TouchableOpacity>
             </View>
           )}
         </Animated.View>
@@ -454,6 +463,36 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
   },
 
+  notFollowingContainer: {
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 0.5,
+    width: '90%',
+  },
+  notFollowingText: {
+    fontFamily: 'Inter-Regular',
+    color: 'white',
+    textAlign: 'center',
+    lineHeight: 20,
+    width: '80%',
+  },
+  addContainer: {
+    marginTop: 25,
+    paddingHorizontal: 50,
+    paddingVertical: 12,
+    borderRadius: 20,
+    backgroundColor: '#1F1F1F',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  addText: {
+    color: 'white',
+    fontFamily: 'Inter-Bold',
+    fontSize: 16,
+  },
   btnsContainer: {
     backgroundColor: 'black',
     alignSelf: 'center',
