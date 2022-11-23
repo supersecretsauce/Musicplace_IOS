@@ -22,8 +22,10 @@ import {SPRING_CONFIG} from '../assets/utilities/reanimated-2';
 import firestore from '@react-native-firebase/firestore';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../assets/utilities/Colors';
+import {useNavigation} from '@react-navigation/native';
 
 const ShareSheet = props => {
+  const {navigate} = useNavigation();
   const {showShareSheet, setShowShareSheet, UID, post} = props;
   const dimensions = useWindowDimensions();
   const [myUser, setMyUser] = useState(null);
@@ -337,7 +339,13 @@ const ShareSheet = props => {
               <Text style={styles.notFollowingText}>
                 You must be following someone in order to send a direct message.
               </Text>
-              <TouchableOpacity style={styles.addContainer}>
+              <TouchableOpacity
+                style={styles.addContainer}
+                onPress={() => {
+                  navigate('AddFriends', {
+                    myUser: myUser,
+                  });
+                }}>
                 <Text style={styles.addText}>add friends</Text>
               </TouchableOpacity>
             </View>

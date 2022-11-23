@@ -25,7 +25,7 @@ const AddFriends = ({navigation, route}) => {
       <View style={styles.topContainer}>
         <TouchableOpacity
           style={styles.backIcon}
-          onPress={() => navigation.navigate('ActivityScreen')}>
+          onPress={() => navigation.goBack()}>
           <Ionicons name={'chevron-back'} color={'white'} size={32} />
         </TouchableOpacity>
         <Text style={styles.addHeader}>Add Friends</Text>
