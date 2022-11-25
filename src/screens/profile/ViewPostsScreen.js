@@ -21,13 +21,15 @@ import Toast from 'react-native-toast-message';
 import {firebase} from '@react-native-firebase/firestore';
 import {mixpanel} from '../../../mixpanel';
 import {useSpotifyService} from '../../hooks/useSpotifyService';
-
+import ShareSheet from '../../components/ShareSheet';
 const ViewPostsScreen = ({route}) => {
   Sound.setCategory('Playback');
   const {authFetch} = useSpotifyService();
   const {songInfo, UID, openSheet, commentDocID} = route.params;
   const [likedTracks, setLikedTracks] = useState([]);
   const [currentTrack, setCurrentTrack] = useState(null);
+  const [showShareSheet, setShowShareSheet] = useState(false);
+
   const {
     accessToken,
     refreshToken,
@@ -177,11 +179,18 @@ const ViewPostsScreen = ({route}) => {
                     />
                   </TouchableWithoutFeedback>
                   <View style={styles.topRow}>
-                    <Text numberOfLines={1} style={styles.songName}>
-                      {post.songName}
-                    </Text>
-                    <View style={styles.topRowRight}>
+                    <View style={styles.topRowLeft}>
                       <Spotify />
+                      <Text numberOfLines={1} style={styles.songName}>
+                        {post.songName}
+                      </Text>
+                    </View>
+                    <View style={styles.topRowRight}>
+                      <TouchableOpacity
+                        style={styles.shareBtn}
+                        onPress={() => setShowShareSheet(true)}>
+                        <Ionicons name="share-outline" color="grey" size={28} />
+                      </TouchableOpacity>
                       <TouchableOpacity onPress={likeHandler}>
                         <Ionicons
                           style={styles.likeIcon}
@@ -234,6 +243,12 @@ const ViewPostsScreen = ({route}) => {
             openSheet={openSheet}
             commentDocID={commentDocID}
           />
+          <ShareSheet
+            post={songInfo[0]}
+            UID={UID}
+            setShowShareSheet={setShowShareSheet}
+            showShareSheet={showShareSheet}
+          />
         </>
       ) : (
         <>
@@ -267,15 +282,23 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: 15,
   },
+  topRowLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   songName: {
     color: 'white',
     fontFamily: 'Inter-bold',
     fontSize: 24,
-    width: 275,
+    maxWidth: 250,
+    marginLeft: 6,
   },
   topRowRight: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  shareBtn: {
+    marginBottom: 4,
   },
   likeIcon: {
     marginLeft: 10,
