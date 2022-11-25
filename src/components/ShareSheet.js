@@ -22,8 +22,10 @@ import {SPRING_CONFIG} from '../assets/utilities/reanimated-2';
 import firestore from '@react-native-firebase/firestore';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../assets/utilities/Colors';
+import {useNavigation} from '@react-navigation/native';
 
 const ShareSheet = props => {
+  const {navigate} = useNavigation();
   const {showShareSheet, setShowShareSheet, UID, post} = props;
   const dimensions = useWindowDimensions();
   const [myUser, setMyUser] = useState(null);
@@ -34,15 +36,14 @@ const ShareSheet = props => {
     [],
   );
 
-  function getFollowing() {
-    firestore()
+  async function getFollowingList() {
+    const subscriber = firestore()
       .collection('users')
       .doc(UID)
-      .get()
-      .then(resp => {
-        console.log(resp._data.followingList);
-        setMyUser(resp._data);
-        let followingList = resp._data.followingList;
+      .onSnapshot(documentSnapshot => {
+        console.log('User data: ', documentSnapshot.data());
+        setMyUser(documentSnapshot.data());
+        let followingList = documentSnapshot.data().followingList;
         if (followingList.length > 0) {
           async function getFollowingDocs() {
             let docsArray = [];
@@ -63,12 +64,15 @@ const ShareSheet = props => {
           getFollowingDocs();
         }
       });
+
+    // Stop listening for updates when no longer required
+    return () => subscriber();
   }
 
   useEffect(() => {
     if (showShareSheet) {
       top.value = withSpring(dimensions.height / 7, SPRING_CONFIG);
-      getFollowing();
+      getFollowingList();
     }
   }, [showShareSheet]);
 
@@ -285,7 +289,7 @@ const ShareSheet = props => {
               <></>
             )}
           </View>
-          {followingData && (
+          {followingData ? (
             <View style={styles.flatListContainer}>
               <FlatList
                 data={followingData}
@@ -332,10 +336,26 @@ const ShareSheet = props => {
                 }}
               />
             </View>
+          ) : (
+            <View style={styles.notFollowingContainer}>
+              <Text style={styles.notFollowingText}>
+                You must be following someone in order to send a direct message.
+              </Text>
+              <TouchableOpacity
+                style={styles.addContainer}
+                onPress={() => {
+                  navigate('AddFriends', {
+                    myUser: myUser,
+                    prevRoute: 'PlaylistTracksScreen',
+                  });
+                }}>
+                <Text style={styles.addText}>add friends</Text>
+              </TouchableOpacity>
+            </View>
           )}
         </Animated.View>
       </PanGestureHandler>
-      {showShareSheet && (
+      {showShareSheet && followingData ? (
         <KeyboardAvoidingView behavior="position">
           <View style={styles.btnsContainer}>
             <TextInput
@@ -351,6 +371,8 @@ const ShareSheet = props => {
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
+      ) : (
+        <></>
       )}
     </>
   );
@@ -454,6 +476,36 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
   },
 
+  notFollowingContainer: {
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 0.7,
+    width: '90%',
+  },
+  notFollowingText: {
+    fontFamily: 'Inter-Regular',
+    color: 'white',
+    textAlign: 'center',
+    lineHeight: 20,
+    width: '80%',
+  },
+  addContainer: {
+    marginTop: 25,
+    paddingHorizontal: 50,
+    paddingVertical: 12,
+    borderRadius: 20,
+    backgroundColor: '#1F1F1F',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  addText: {
+    color: 'white',
+    fontFamily: 'Inter-Bold',
+    fontSize: 16,
+  },
   btnsContainer: {
     backgroundColor: 'black',
     alignSelf: 'center',

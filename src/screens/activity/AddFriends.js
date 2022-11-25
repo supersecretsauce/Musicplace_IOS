@@ -14,7 +14,7 @@ import {InstantSearch} from 'react-instantsearch-hooks';
 import SearchBox from '../../components/SearchBox';
 import InfiniteHits from '../../components/InfiniteHits';
 const AddFriends = ({navigation, route}) => {
-  const {myUser} = route.params;
+  const {myUser, prevRoute} = route.params;
   const searchClient = algoliasearch(
     'SXGPXOYWWU',
     '292341a627acc8ce15aad830431be5ef',
@@ -25,7 +25,7 @@ const AddFriends = ({navigation, route}) => {
       <View style={styles.topContainer}>
         <TouchableOpacity
           style={styles.backIcon}
-          onPress={() => navigation.navigate('ActivityScreen')}>
+          onPress={() => navigation.goBack()}>
           <Ionicons name={'chevron-back'} color={'white'} size={32} />
         </TouchableOpacity>
         <Text style={styles.addHeader}>Add Friends</Text>
@@ -37,7 +37,11 @@ const AddFriends = ({navigation, route}) => {
           <Ionicons name={'search'} color={Colors.greyOut} size={20} />
           <SearchBox />
         </View>
-        <InfiniteHits myUser={myUser} navigation={navigation} />
+        <InfiniteHits
+          prevRoute={prevRoute}
+          myUser={myUser}
+          navigation={navigation}
+        />
       </InstantSearch>
     </SafeAreaView>
   );

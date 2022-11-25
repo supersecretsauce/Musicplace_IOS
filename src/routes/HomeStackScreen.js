@@ -6,6 +6,7 @@ import ViewUserScreen from '../screens/home/ViewUserScreen';
 import HomeScreen from '../screens/home/HomeScreen';
 import ViewPostsScreen from '../screens/profile/ViewPostsScreen';
 import DirectMessageScreen from '../screens/activity/DirectMessageScreen';
+import AddFriends from '../screens/activity/AddFriends';
 const HomeStackScreen = () => {
   const PostStack = createNativeStackNavigator();
 
@@ -18,6 +19,7 @@ const HomeStackScreen = () => {
         name="DirectMessageScreen"
         component={DirectMessageScreen}
       />
+      <PostStack.Screen name="AddFriends" component={AddFriends} />
     </PostStack.Navigator>
   );
 };

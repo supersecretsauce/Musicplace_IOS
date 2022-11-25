@@ -4,6 +4,8 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import DiscoverScreen from '../screens/discover/DiscoverScreen';
 import HomeScreen from '../screens/home/HomeScreen';
 import PlaylistTracksScreen from '../screens/discover/PlaylistTracksScreen';
+import AddFriends from '../screens/activity/AddFriends';
+import ViewUserScreen from '../screens/home/ViewUserScreen';
 const DiscoverStackScreen = () => {
   const ActivityStack = createNativeStackNavigator();
 
@@ -15,6 +17,8 @@ const DiscoverStackScreen = () => {
         component={PlaylistTracksScreen}
       />
       <ActivityStack.Screen name="HomeScreen" component={HomeScreen} />
+      <ActivityStack.Screen name="AddFriends" component={AddFriends} />
+      <ActivityStack.Screen name="ViewUserScreen" component={ViewUserScreen} />
     </ActivityStack.Navigator>
   );
 };

@@ -6,21 +6,16 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
-import React, {useEffect, useContext} from 'react';
+import React, {useEffect, useContext, useState} from 'react';
 import {useInfiniteHits} from 'react-instantsearch-hooks';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../assets/utilities/Colors';
 import {Context} from '../context/Context';
 const InfiniteHits = ({...props}) => {
   const {hits, isLastPage, showMore} = useInfiniteHits(props);
-  const {navigation, myUser} = props;
+  const {navigation, myUser, prevRoute} = props;
   const {UID} = useContext(Context);
-
-  useEffect(() => {
-    if (UID) {
-      console.log(UID);
-    }
-  }, [UID]);
+  const [userIDs, setUserIDs] = useState(null);
 
   function handleNav(item) {
     console.log(item);
@@ -117,5 +112,11 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginTop: 5,
     fontFamily: 'Inter-Regular',
+  },
+  followButton: {
+    marginRight: 10,
+  },
+  followText: {
+    color: 'white',
   },
 });
