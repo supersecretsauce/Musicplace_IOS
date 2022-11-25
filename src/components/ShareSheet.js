@@ -36,15 +36,14 @@ const ShareSheet = props => {
     [],
   );
 
-  function getFollowing() {
-    firestore()
+  async function getFollowingList() {
+    const subscriber = firestore()
       .collection('users')
       .doc(UID)
-      .get()
-      .then(resp => {
-        console.log(resp._data.followingList);
-        setMyUser(resp._data);
-        let followingList = resp._data.followingList;
+      .onSnapshot(documentSnapshot => {
+        console.log('User data: ', documentSnapshot.data());
+        setMyUser(documentSnapshot.data());
+        let followingList = documentSnapshot.data().followingList;
         if (followingList.length > 0) {
           async function getFollowingDocs() {
             let docsArray = [];
@@ -65,12 +64,15 @@ const ShareSheet = props => {
           getFollowingDocs();
         }
       });
+
+    // Stop listening for updates when no longer required
+    return () => subscriber();
   }
 
   useEffect(() => {
     if (showShareSheet) {
       top.value = withSpring(dimensions.height / 7, SPRING_CONFIG);
-      getFollowing();
+      getFollowingList();
     }
   }, [showShareSheet]);
 
@@ -344,6 +346,7 @@ const ShareSheet = props => {
                 onPress={() => {
                   navigate('AddFriends', {
                     myUser: myUser,
+                    prevRoute: 'PlaylistTracksScreen',
                   });
                 }}>
                 <Text style={styles.addText}>add friends</Text>
@@ -352,7 +355,7 @@ const ShareSheet = props => {
           )}
         </Animated.View>
       </PanGestureHandler>
-      {showShareSheet && (
+      {showShareSheet && followingData ? (
         <KeyboardAvoidingView behavior="position">
           <View style={styles.btnsContainer}>
             <TextInput
@@ -368,6 +371,8 @@ const ShareSheet = props => {
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
+      ) : (
+        <></>
       )}
     </>
   );
@@ -475,7 +480,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-    flex: 0.5,
+    flex: 0.7,
     width: '90%',
   },
   notFollowingText: {

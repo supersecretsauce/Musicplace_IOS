@@ -173,6 +173,7 @@ const ActivityScreen = ({navigation}) => {
           onPress={() => {
             navigation.navigate('AddFriends', {
               myUser: myUser,
+              prevRoute: 'ActivityScreen',
             });
           }}>
           <Ionicons name={'person-add-outline'} color={'white'} size={28} />
