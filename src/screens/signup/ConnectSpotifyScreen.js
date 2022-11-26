@@ -148,7 +148,7 @@ const ConnectSpotifyScreen = ({navigation, route}) => {
     } catch (e) {
       console.log(e);
     }
-    navigation.navigate('SwipeUpScreen');
+    navigation.navigate('SelectGenresScreen');
   };
 
   return (
@@ -163,7 +163,7 @@ const ConnectSpotifyScreen = ({navigation, route}) => {
       </TouchableWithoutFeedback>
       <Musicplace style={styles.musicplace} />
       <Text style={styles.desc}>
-        Connect with Spotify to save songs right to your library.{' '}
+        Connect with Spotify to find music based off of your listening history.
       </Text>
       <View style={styles.inputContainer}>
         <View style={styles.spotifyBtnContainer}>
@@ -173,7 +173,7 @@ const ConnectSpotifyScreen = ({navigation, route}) => {
         </View>
         <View style={styles.laterBtnContainer}>
           <TouchableOpacity onPress={maybeLater} style={styles.laterBtn}>
-            <Text style={styles.laterText}>Maybe Later</Text>
+            <Text style={styles.laterText}>I don't have Spotify</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'Inter-semibold',
     fontSize: 18,
-    width: 300,
+    width: 310,
     textAlign: 'center',
     alignSelf: 'center',
     marginTop: '8%',
