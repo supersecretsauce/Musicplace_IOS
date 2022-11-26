@@ -66,9 +66,8 @@ const PlaylistTracksScreen = ({route}) => {
   useEffect(() => {
     if (playlistID) {
       firestore()
-        .collection('playlists')
-        .doc(playlistID)
-        .collection('tracks')
+        .collection('posts')
+        .where('playlistID', '==', playlistID)
         .get()
         .then(resp => {
           let tracksDocs = [];
