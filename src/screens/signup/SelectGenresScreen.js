@@ -22,6 +22,7 @@ import Rock from '../../assets/img/rock.svg';
 import Colors from '../../assets/utilities/Colors';
 import Electronic from '../../assets/img/electronic.svg';
 import Latin from '../../assets/img/latin.svg';
+import HapticFeedback from 'react-native-haptic-feedback';
 
 const SelectGenresScreen = ({navigation}) => {
   const [selections, setSelections] = useState([]);
@@ -30,6 +31,7 @@ const SelectGenresScreen = ({navigation}) => {
   }
 
   function handleSelections(genre) {
+    HapticFeedback.trigger('selection');
     if (selections.includes(genre)) {
       setSelections(selections.filter(genreName => genreName !== genre));
     } else {
@@ -38,6 +40,7 @@ const SelectGenresScreen = ({navigation}) => {
   }
 
   function handleSubmit() {
+    HapticFeedback.trigger('impactHeavy');
     if (selections.length === 0) {
       return;
     } else {
