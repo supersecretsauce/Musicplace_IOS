@@ -33,7 +33,6 @@ const ProfileScreen = ({navigation}) => {
   const [header, setHeader] = useState(null);
   const [PFP, setPFP] = useState(null);
   const [displayName, setDisplayName] = useState(null);
-  const [showModal, setShowModal] = useState(false);
   const dimensions = useWindowDimensions();
   const top = useSharedValue(dimensions.height);
   const top2 = useSharedValue(dimensions.height);
@@ -111,13 +110,6 @@ const ProfileScreen = ({navigation}) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [UID]);
-
-  const removeAutoPost = () => {
-    firestore().collection('users').doc(UID).update({
-      autoPost: false,
-    });
-    setShowModal(false);
-  };
 
   //animations for profile settings
   const gestureHandler = useAnimatedGestureHandler({
@@ -212,11 +204,6 @@ const ProfileScreen = ({navigation}) => {
             <View style={styles.iconContainer}>
               <Ionicons name={'albums'} color="white" size={28} />
               <Text style={styles.postText}>Top Songs</Text>
-              <TouchableOpacity
-                style={styles.helpIcon}
-                onPress={() => setShowModal(!showModal)}>
-                <Ionicons name={'help-circle-outline'} color="grey" size={19} />
-              </TouchableOpacity>
             </View>
             <TouchableOpacity
               onPress={handleSpring2}
@@ -225,31 +212,7 @@ const ProfileScreen = ({navigation}) => {
             </TouchableOpacity>
           </View>
           <MyPosts UID={UID} navigation={navigation} />
-          <Modal isVisible={showModal}>
-            <View style={styles.modalContainer}>
-              <Text style={styles.modalTop}>
-                I don’t remember posting any of the tracks below, what’s up with
-                that?{' '}
-              </Text>
-              <Text style={styles.modalMiddle}>
-                By default, Musicplace posts the songs you listen to the most -
-                updated daily. If you’d like to opt out of this service and only
-                post songs manually, you can opt out below.
-              </Text>
-              <View style={styles.btnContainer}>
-                <TouchableOpacity
-                  onPress={removeAutoPost}
-                  style={styles.optOut}>
-                  <Text style={styles.optOutText}>Opt out</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => setShowModal(false)}
-                  style={styles.rock}>
-                  <Text style={styles.rockText}>Let it rock</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </Modal>
+
           <PanGestureHandler onGestureEvent={gestureHandler2}>
             <Animated.View
               style={[
@@ -419,56 +382,5 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 12,
     fontFamily: 'Inter-Medium',
-  },
-  modalContainer: {
-    height: 240,
-    width: '95%',
-    backgroundColor: '#333333',
-    paddingVertical: 24,
-    borderRadius: 9,
-    alignSelf: 'center',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  modalTop: {
-    fontFamily: 'Inter-Bold',
-    fontSize: 14,
-    textAlign: 'center',
-    color: 'white',
-    width: '80%',
-  },
-  modalMiddle: {
-    fontSize: 12,
-    fontFamily: 'Inter-Regular',
-    width: '80%',
-    textAlign: 'center',
-    color: 'white',
-    lineHeight: 18,
-  },
-  btnContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: '3%',
-    width: '80%',
-  },
-  optOut: {
-    backgroundColor: 'rgba(255, 8, 0, .5)',
-    paddingHorizontal: 30,
-    paddingVertical: 6,
-    borderRadius: 6,
-  },
-  optOutText: {
-    color: 'white',
-    fontFamily: 'inter-bold',
-  },
-  rock: {
-    backgroundColor: Colors.red,
-    paddingHorizontal: 30,
-    paddingVertical: 6,
-    borderRadius: 6,
-  },
-  rockText: {
-    color: 'white',
-    fontFamily: 'inter-bold',
   },
 });
