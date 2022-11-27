@@ -34,7 +34,7 @@ const CreateUsernameScreen = ({navigation}) => {
 
   const formatName = text => {
     const removeExtraStuff = text.replace(
-      /([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,
+      /([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&\s])/g,
       '',
     );
     const nameLength = removeExtraStuff.length;
@@ -127,7 +127,9 @@ const CreateUsernameScreen = ({navigation}) => {
             placeholderTextColor="grey"
             value={username}
             autoCapitalize="none"
-            onChangeText={text => handleText(text)}
+            onChangeText={text => {
+              handleText(text);
+            }}
             keyboardAppearance="dark"
             autoFocus="true"
             textContentType="username"
