@@ -5,6 +5,7 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useEffect, useState, useContext} from 'react';
 import firestore from '@react-native-firebase/firestore';
@@ -14,6 +15,7 @@ import Spotify from '../assets/img/spotify.svg';
 import {spotConfig} from '../../SpotifyConfig';
 import {authorize} from 'react-native-app-auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import axios from 'axios';
 const MyPosts = props => {
   const {UID, navigation} = props;
@@ -134,10 +136,7 @@ const MyPosts = props => {
           <>
             {hasSpotify ? (
               <View style={styles.loadingContainer}>
-                <Image
-                  style={styles.loadingGif}
-                  source={require('../assets/img/pacman.gif')}
-                />
+                <ActivityIndicator color={'white'} />
                 <Text style={styles.loadingText}>
                   Getting your top songs from Spotify.
                 </Text>
@@ -204,14 +203,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: '75%',
   },
-  loadingGif: {
-    height: 100,
-    width: 100,
-  },
+
   loadingText: {
     color: 'white',
     fontFamily: 'Inter-Regular',
     fontSize: 14,
+    marginTop: '5%',
   },
   listenOnSpotifyBtn: {
     paddingHorizontal: 25,
