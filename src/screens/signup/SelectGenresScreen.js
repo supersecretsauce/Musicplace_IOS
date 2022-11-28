@@ -321,6 +321,7 @@ const styles = StyleSheet.create({
     marginTop: '5%',
     width: '90%',
     alignSelf: 'center',
+    bottom: 15,
   },
   nextTextEmpty: {
     color: 'white',
@@ -336,6 +337,7 @@ const styles = StyleSheet.create({
     marginTop: '5%',
     width: '90%',
     alignSelf: 'center',
+    bottom: 15,
   },
   nextText: {
     color: 'white',
