@@ -23,6 +23,7 @@ import firestore from '@react-native-firebase/firestore';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../assets/utilities/Colors';
 import {useNavigation} from '@react-navigation/native';
+import ShareOptions from './ShareOptions';
 
 const ShareSheet = props => {
   const {navigate} = useNavigation();
@@ -32,6 +33,7 @@ const ShareSheet = props => {
   const [followingData, setFollowingData] = useState(null);
   const [messageText, setMessageText] = useState(null);
   const [userItemSelections, setUserItemSelections] = useState([]);
+  const [showDirectMessages, setShowDirectMessages] = useState(false);
   const [userDisplayNameSelections, setUserDisplayNameSelections] = useState(
     [],
   );
@@ -71,10 +73,16 @@ const ShareSheet = props => {
 
   useEffect(() => {
     if (showShareSheet) {
-      top.value = withSpring(dimensions.height / 7, SPRING_CONFIG);
+      top.value = withSpring(dimensions.height / 1.7, SPRING_CONFIG);
       getFollowingList();
     }
   }, [showShareSheet]);
+
+  useEffect(() => {
+    if (showDirectMessages) {
+      top.value = withSpring(dimensions.height / 7, SPRING_CONFIG);
+    }
+  }, [showDirectMessages]);
 
   const top = useSharedValue(1000);
   const style = useAnimatedStyle(() => {
@@ -94,6 +102,7 @@ const ShareSheet = props => {
       if (top.value > dimensions.height / 7) {
         top.value = withSpring(1000, SPRING_CONFIG);
         runOnJS(setShowShareSheet)(false);
+        runOnJS(setShowDirectMessages)(false);
       }
     },
   });
@@ -258,100 +267,112 @@ const ShareSheet = props => {
     <>
       <PanGestureHandler onGestureEvent={gestureHandler}>
         <Animated.View style={[styles.shareSheet, style]}>
-          <View style={styles.tab} />
-          <Text style={styles.shareText}>
-            {userDisplayNameSelections.length > 0
-              ? 'send separately'
-              : 'send via direct message'}
-          </Text>
-          <View style={styles.toContainer}>
-            <Text style={styles.toText}>To:</Text>
-
-            {userDisplayNameSelections.length > 0 ? (
-              <View style={styles.toFlatListContainer}>
-                <FlatList
-                  contentContainerStyle={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                  }}
-                  horizontal
-                  data={userDisplayNameSelections}
-                  renderItem={({item, index}) => {
-                    return (
-                      <View style={styles.toItemContainer} key={index}>
-                        <Text style={styles.toName}>{item}</Text>
-                      </View>
-                    );
-                  }}
-                />
-              </View>
-            ) : (
-              <></>
-            )}
-          </View>
-          {followingData ? (
-            <View style={styles.flatListContainer}>
-              <FlatList
-                data={followingData}
-                renderItem={({item, index}) => {
-                  return (
-                    <View style={styles.item} key={index}>
-                      <View style={styles.itemLeft}>
-                        {item?.pfpURL ? (
-                          <Image
-                            style={styles.pfp}
-                            source={{
-                              uri: item.pfpURL,
-                            }}
-                          />
-                        ) : (
-                          <View style={styles.pfp} />
-                        )}
-                        <View style={styles.itemMiddle}>
-                          <Text style={styles.displayName}>
-                            {item?.displayName}
-                          </Text>
-                          <Text style={styles.handle}>@{item?.handle}</Text>
-                        </View>
-                      </View>
-                      <TouchableOpacity onPress={() => handleSelections(item)}>
-                        {userDisplayNameSelections.includes(
-                          item.displayName,
-                        ) ? (
-                          <Ionicons
-                            name={'radio-button-on'}
-                            color={'white'}
-                            size={28}
-                          />
-                        ) : (
-                          <Ionicons
-                            name={'radio-button-off'}
-                            color={Colors.greyOut}
-                            size={28}
-                          />
-                        )}
-                      </TouchableOpacity>
-                    </View>
-                  );
-                }}
-              />
-            </View>
-          ) : (
-            <View style={styles.notFollowingContainer}>
-              <Text style={styles.notFollowingText}>
-                You must be following someone in order to send a direct message.
+          {showDirectMessages ? (
+            <>
+              <View style={styles.tab} />
+              <Text style={styles.shareText}>
+                {userDisplayNameSelections.length > 0
+                  ? 'send separately'
+                  : 'send via direct message'}
               </Text>
-              <TouchableOpacity
-                style={styles.addContainer}
-                onPress={() => {
-                  navigate('AddFriends', {
-                    myUser: myUser,
-                    prevRoute: 'PlaylistTracksScreen',
-                  });
-                }}>
-                <Text style={styles.addText}>add friends</Text>
-              </TouchableOpacity>
-            </View>
+              <View style={styles.toContainer}>
+                <Text style={styles.toText}>To:</Text>
+
+                {userDisplayNameSelections.length > 0 ? (
+                  <View style={styles.toFlatListContainer}>
+                    <FlatList
+                      contentContainerStyle={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                      }}
+                      horizontal
+                      data={userDisplayNameSelections}
+                      renderItem={({item, index}) => {
+                        return (
+                          <View style={styles.toItemContainer} key={index}>
+                            <Text style={styles.toName}>{item}</Text>
+                          </View>
+                        );
+                      }}
+                    />
+                  </View>
+                ) : (
+                  <></>
+                )}
+              </View>
+              {followingData ? (
+                <View style={styles.flatListContainer}>
+                  <FlatList
+                    data={followingData}
+                    renderItem={({item, index}) => {
+                      return (
+                        <View style={styles.item} key={index}>
+                          <View style={styles.itemLeft}>
+                            {item?.pfpURL ? (
+                              <Image
+                                style={styles.pfp}
+                                source={{
+                                  uri: item.pfpURL,
+                                }}
+                              />
+                            ) : (
+                              <View style={styles.pfp} />
+                            )}
+                            <View style={styles.itemMiddle}>
+                              <Text style={styles.displayName}>
+                                {item?.displayName}
+                              </Text>
+                              <Text style={styles.handle}>@{item?.handle}</Text>
+                            </View>
+                          </View>
+                          <TouchableOpacity
+                            onPress={() => handleSelections(item)}>
+                            {userDisplayNameSelections.includes(
+                              item.displayName,
+                            ) ? (
+                              <Ionicons
+                                name={'radio-button-on'}
+                                color={'white'}
+                                size={28}
+                              />
+                            ) : (
+                              <Ionicons
+                                name={'radio-button-off'}
+                                color={Colors.greyOut}
+                                size={28}
+                              />
+                            )}
+                          </TouchableOpacity>
+                        </View>
+                      );
+                    }}
+                  />
+                </View>
+              ) : (
+                <View style={styles.notFollowingContainer}>
+                  <Text style={styles.notFollowingText}>
+                    You must be following someone in order to send a direct
+                    message.
+                  </Text>
+                  <TouchableOpacity
+                    style={styles.addContainer}
+                    onPress={() => {
+                      navigate('AddFriends', {
+                        myUser: myUser,
+                        prevRoute: 'PlaylistTracksScreen',
+                      });
+                    }}>
+                    <Text style={styles.addText}>add friends</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </>
+          ) : (
+            <ShareOptions
+              top={top}
+              setShowDirectMessages={setShowDirectMessages}
+              setShowShareSheet={setShowShareSheet}
+            />
           )}
         </Animated.View>
       </PanGestureHandler>
