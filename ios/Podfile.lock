@@ -608,6 +608,7 @@ PODS:
   - BoringSSL-GRPC/Implementation (0.0.24):
     - BoringSSL-GRPC/Interface (= 0.0.24)
   - BoringSSL-GRPC/Interface (0.0.24)
+  - Branch (1.43.1)
   - BVLinearGradient (2.6.2):
     - React-Core
   - DoubleConversion (1.1.6)
@@ -1016,6 +1017,9 @@ PODS:
   - react-native-app-auth (6.4.3):
     - AppAuth (= 1.4.0)
     - React-Core
+  - react-native-branch (5.5.0):
+    - Branch (= 1.43.1)
+    - React-Core
   - react-native-safe-area-context (4.3.1):
     - RCT-Folly
     - RCTRequired
@@ -1208,6 +1212,7 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - react-native-app-auth (from `../node_modules/react-native-app-auth`)
+  - react-native-branch (from `../node_modules/react-native-branch`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -1243,6 +1248,7 @@ SPEC REPOS:
     - abseil
     - AppAuth
     - BoringSSL-GRPC
+    - Branch
     - Firebase
     - FirebaseAppCheckInterop
     - FirebaseAuth
@@ -1331,6 +1337,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/logger"
   react-native-app-auth:
     :path: "../node_modules/react-native-app-auth"
+  react-native-branch:
+    :path: "../node_modules/react-native-branch"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   React-perflogger:
@@ -1395,6 +1403,7 @@ SPEC CHECKSUMS:
   AppAuth: 31bcec809a638d7bd2f86ea8a52bd45f6e81e7c7
   boost: a7c83b31436843459a1961bfd74b96033dc77234
   BoringSSL-GRPC: 3175b25143e648463a56daeaaa499c6cb86dad33
+  Branch: b5b57fc2e6f098916fd2ea26c9b66f52ffe7e293
   BVLinearGradient: 34a999fda29036898a09c6a6b728b0b4189e1a44
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EXApplication: e418d737a036e788510f2c4ad6c10a7d54d18586
@@ -1448,6 +1457,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 55605caf04e02f9b0e05842b786f1c12dde08f4b
   React-logger: ca970551cb7eea2fd814d0d5f6fc1a471eb53b76
   react-native-app-auth: fd1eaa667c0bc014199456d14a6440cb74de814e
+  react-native-branch: a655936d3cb08e238ace630f7067a3a7058c06a5
   react-native-safe-area-context: 6c12e3859b6f27b25de4fee8201cfb858432d8de
   React-perflogger: c9161ff0f1c769993cd11d2751e4331ff4ceb7cd
   React-RCTActionSheet: 2d885b0bea76a5254ef852939273edd8de116180
