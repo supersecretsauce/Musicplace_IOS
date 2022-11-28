@@ -56,8 +56,6 @@ const ShareOptions = props => {
   );
 };
 
-('accomadate');
-
 export default ShareOptions;
 
 const styles = StyleSheet.create({
