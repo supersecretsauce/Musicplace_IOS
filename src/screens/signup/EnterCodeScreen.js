@@ -15,6 +15,7 @@ import Musicplace from '../../assets/img/musicplace-signup.svg';
 import HapticFeedback from 'react-native-haptic-feedback';
 import Toast from 'react-native-toast-message';
 import {mixpanel} from '../../../mixpanel';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const EnterCodeScreen = ({navigation}) => {
   const [showEnterDone, setShowEnterDone] = useState(false);
@@ -66,15 +67,19 @@ const EnterCodeScreen = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableWithoutFeedback onPress={goBack}>
-        <View style={styles.touchContainer}>
-          <Image
+      <View style={styles.topContainer}>
+        <TouchableWithoutFeedback
+          onPress={goBack}
+          style={styles.touchContainer}>
+          <Ionicons
             style={styles.chevron}
-            source={require('../../assets/img/ChevronLeft.jpg')}
+            name="chevron-back"
+            color="white"
+            size={40}
           />
-        </View>
-      </TouchableWithoutFeedback>
-      <Musicplace style={styles.musicplace} />
+        </TouchableWithoutFeedback>
+        <Musicplace style={styles.musicplace} />
+      </View>
       <Text style={styles.desc}>Enter your confirmation code.</Text>
       <View style={styles.inputContainer}>
         <View style={styles.rectangle}>
@@ -114,13 +119,18 @@ const styles = StyleSheet.create({
   touchContainer: {
     width: '15%',
   },
+  topContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 25,
+  },
   chevron: {
-    marginTop: '1%',
+    position: 'absolute',
+    left: 20,
   },
   musicplace: {
-    position: 'absolute',
     alignSelf: 'center',
-    top: '8.75%',
   },
   desc: {
     color: 'white',
@@ -129,7 +139,7 @@ const styles = StyleSheet.create({
     width: 250,
     textAlign: 'center',
     alignSelf: 'center',
-    marginTop: '8%',
+    marginTop: '3%',
   },
   inputContainer: {
     alignItems: 'center',

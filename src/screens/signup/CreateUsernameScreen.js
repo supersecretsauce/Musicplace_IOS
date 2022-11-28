@@ -16,6 +16,7 @@ import {firebase} from '@react-native-firebase/firestore';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
 import HapticFeedback from 'react-native-haptic-feedback';
 import Toast from 'react-native-toast-message';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const CreateUsernameScreen = ({navigation}) => {
   const [submitDone, setSubmitDone] = useState(false);
@@ -104,15 +105,19 @@ const CreateUsernameScreen = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableWithoutFeedback onPress={goBack}>
-        <View style={styles.touchContainer}>
-          <Image
+      <View style={styles.topContainer}>
+        <TouchableWithoutFeedback
+          onPress={goBack}
+          style={styles.touchContainer}>
+          <Ionicons
             style={styles.chevron}
-            source={require('../../assets/img/ChevronLeft.jpg')}
+            name="chevron-back"
+            color="white"
+            size={40}
           />
-        </View>
-      </TouchableWithoutFeedback>
-      <Musicplace style={styles.musicplace} />
+        </TouchableWithoutFeedback>
+        <Musicplace style={styles.musicplace} />
+      </View>
       <Text style={styles.desc}>
         Create a username so everyone knows it’s you.
       </Text>
@@ -159,13 +164,18 @@ const styles = StyleSheet.create({
   touchContainer: {
     width: '15%',
   },
+  topContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 25,
+  },
   chevron: {
-    marginTop: '1%',
+    position: 'absolute',
+    left: 20,
   },
   musicplace: {
-    position: 'absolute',
     alignSelf: 'center',
-    top: '8.2%',
   },
   desc: {
     color: 'white',
@@ -174,7 +184,7 @@ const styles = StyleSheet.create({
     width: 300,
     textAlign: 'center',
     alignSelf: 'center',
-    marginTop: '8%',
+    marginTop: '3%',
   },
   blurb: {
     color: Color.greyOut,

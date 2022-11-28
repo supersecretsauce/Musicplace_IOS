@@ -17,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
 import HapticFeedback from 'react-native-haptic-feedback';
 import axios from 'axios';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const ConnectSpotifyScreen = ({navigation, route}) => {
   const {contacts} = route.params;
@@ -153,15 +154,19 @@ const ConnectSpotifyScreen = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableWithoutFeedback onPress={goBack}>
-        <View style={styles.touchContainer}>
-          <Image
+      <View style={styles.topContainer}>
+        <TouchableWithoutFeedback
+          onPress={goBack}
+          style={styles.touchContainer}>
+          <Ionicons
             style={styles.chevron}
-            source={require('../../assets/img/ChevronLeft.jpg')}
+            name="chevron-back"
+            color="white"
+            size={40}
           />
-        </View>
-      </TouchableWithoutFeedback>
-      <Musicplace style={styles.musicplace} />
+        </TouchableWithoutFeedback>
+        <Musicplace style={styles.musicplace} />
+      </View>
       <Text style={styles.desc}>
         Connect with Spotify to find music based off of your listening history.
       </Text>
@@ -191,13 +196,18 @@ const styles = StyleSheet.create({
   touchContainer: {
     width: '15%',
   },
+  topContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 25,
+  },
   chevron: {
-    marginTop: '1%',
+    position: 'absolute',
+    left: 20,
   },
   musicplace: {
-    position: 'absolute',
     alignSelf: 'center',
-    top: '8.2%',
   },
   desc: {
     color: 'white',
@@ -206,7 +216,7 @@ const styles = StyleSheet.create({
     width: 310,
     textAlign: 'center',
     alignSelf: 'center',
-    marginTop: '8%',
+    marginTop: '3%',
   },
   inputContainer: {
     marginTop: '7%',

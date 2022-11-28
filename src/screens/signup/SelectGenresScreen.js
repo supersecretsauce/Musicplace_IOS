@@ -53,15 +53,19 @@ const SelectGenresScreen = ({navigation}) => {
   }, [selections]);
   return (
     <SafeAreaView style={styles.container}>
-      <TouchableWithoutFeedback onPress={goBack}>
-        <View style={styles.touchContainer}>
-          <Image
+      <View style={styles.topContainer}>
+        <TouchableWithoutFeedback
+          onPress={goBack}
+          style={styles.touchContainer}>
+          <Ionicons
             style={styles.chevron}
-            source={require('../../assets/img/ChevronLeft.jpg')}
+            name="chevron-back"
+            color="white"
+            size={40}
           />
-        </View>
-      </TouchableWithoutFeedback>
-      <Musicplace style={styles.musicplace} />
+        </TouchableWithoutFeedback>
+        <Musicplace style={styles.musicplace} />
+      </View>
       <Text style={styles.desc}>
         Select your favorite genres so we can get to know you better.
       </Text>
@@ -263,13 +267,18 @@ const styles = StyleSheet.create({
   touchContainer: {
     width: '15%',
   },
+  topContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 25,
+  },
   chevron: {
-    marginTop: '1%',
+    position: 'absolute',
+    left: 20,
   },
   musicplace: {
-    position: 'absolute',
     alignSelf: 'center',
-    top: '8.2%',
   },
   desc: {
     color: 'white',
@@ -278,7 +287,7 @@ const styles = StyleSheet.create({
     width: 320,
     textAlign: 'center',
     alignSelf: 'center',
-    marginTop: '8%',
+    marginTop: '3%',
   },
   scrollViewContainer: {
     height: '70%',
