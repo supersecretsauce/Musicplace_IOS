@@ -16,6 +16,7 @@ import HapticFeedback from 'react-native-haptic-feedback';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {firebase} from '@react-native-firebase/firestore';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import firestore from '@react-native-firebase/firestore';
 
 const ExistingCodeScreen = ({navigation}) => {
   const [showEnterDone, setShowEnterDone] = useState(false);
@@ -51,10 +52,33 @@ const ExistingCodeScreen = ({navigation}) => {
   let enterCode = async () => {
     try {
       HapticFeedback.trigger('impactHeavy');
+
       await confirm.confirm(verificationCode);
-      setUserLogin(true);
-      await AsyncStorage.setItem('user', 'true');
-      await AsyncStorage.setItem('UID', userInfo.uid);
+      let userDoc = await firestore()
+        .collection('users')
+        .doc(userInfo.uid)
+        .get();
+      console.log(userDoc);
+      if (userDoc.data().connectedWithSpotify) {
+        console.log('has spotify');
+        await AsyncStorage.setItem('user', 'true');
+        await AsyncStorage.setItem('UID', userInfo.uid);
+        await AsyncStorage.setItem('hasSpotify', 'true');
+        await AsyncStorage.setItem(
+          'spotAccessToken',
+          userDoc.data().spotifyAccessToken,
+        );
+        await AsyncStorage.setItem(
+          'spotRefreshToken',
+          userDoc.data().spotifyRefreshToken,
+        );
+        setUserLogin(true);
+      } else {
+        await AsyncStorage.setItem('user', 'true');
+        await AsyncStorage.setItem('UID', userInfo.uid);
+        await AsyncStorage.setItem('hasSpotify', 'false');
+        setUserLogin(true);
+      }
     } catch (error) {
       console.log('Invalid code.');
       return;
