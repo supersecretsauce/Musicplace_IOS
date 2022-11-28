@@ -1,6 +1,6 @@
 #import <Firebase.h>
 #import "AppDelegate.h"
-
+#import <RNBranch/RNBranch.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
@@ -34,9 +34,10 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 {
   [FIRApp configure];
   RCTAppSetupPrepareApp(application);
-
+  [RNBranch initSessionWithLaunchOptions:launchOptions isReferrable:YES];
+  NSURL *jsCodeLocation;
   RCTBridge *bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];
-
+  
 #if RCT_NEW_ARCH_ENABLED
   _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
   _reactNativeConfig = std::make_shared<facebook::react::EmptyReactNativeConfig const>();
@@ -62,6 +63,17 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   [super application:application didFinishLaunchingWithOptions:launchOptions];
   return YES;
 }
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+    [RNBranch application:app openURL:url options:options];
+    return YES;
+}
+
+- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler {
+   [RNBranch continueUserActivity:userActivity];
+   return YES;
+}
+
 
 /// This method controls whether the `concurrentRoot`feature of React18 is turned on or off.
 ///
@@ -130,6 +142,8 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 {
   return RCTAppSetupDefaultModuleFromClass(moduleClass);
 }
+
+
 
 #endif
 

@@ -36,6 +36,7 @@
     "react-instantsearch-hooks": "^6.38.0",
     "react-native": "0.69.1",
     "react-native-app-auth": "^6.4.3",
+    "react-native-branch": "^5.5.0",
     "react-native-cli": "^2.0.1",
     "react-native-gesture-handler": "^2.8.0",
     "react-native-haptic-feedback": "^1.14.0",
