@@ -15,34 +15,34 @@ import Spotify from '../assets/img/spotify.svg';
 import {spotConfig} from '../../SpotifyConfig';
 import {authorize} from 'react-native-app-auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import axios from 'axios';
 const MyPosts = props => {
   const {UID, navigation} = props;
-  const {
-    hasSpotify,
-    setHasSpotify,
-    doneFetchingTopSongs,
-    setDoneFetchingTopSongs,
-  } = useContext(Context);
+  const {hasSpotify, setHasSpotify} = useContext(Context);
   const [userPosts, setUserPosts] = useState(null);
 
   useEffect(() => {
-    if (UID && doneFetchingTopSongs) {
+    if (UID) {
+      //this will change
       const subscriber = firestore()
         .collection('posts')
         .where('users', 'array-contains', UID)
         .get()
         .then(resp => {
-          let songDocs = [];
-          resp.docs.forEach(doc => {
-            songDocs.push(doc._data);
-          });
-          setUserPosts(songDocs);
+          console.log(resp);
+          if (resp.empty) {
+            return;
+          } else {
+            let songDocs = [];
+            resp.docs.forEach(doc => {
+              songDocs.push(doc._data);
+            });
+            setUserPosts(songDocs);
+          }
         });
       return () => subscriber;
     }
-  }, [UID, doneFetchingTopSongs]);
+  }, [UID]);
 
   const connectSpotify = async () => {
     if (UID) {
@@ -72,7 +72,7 @@ const MyPosts = props => {
               )
               .then(resp => {
                 if (resp.status === 200) {
-                  setDoneFetchingTopSongs(true);
+                  console.log('done fetching top songs');
                 }
               })
               .catch(e => {

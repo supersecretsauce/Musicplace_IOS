@@ -22,8 +22,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 const ConnectSpotifyScreen = ({navigation, route}) => {
   const {contacts} = route.params;
   const userInfo = firebase.auth().currentUser;
-  const {username, setDoneFetchingTopSongs, setInitialFeed} =
-    useContext(Context);
+  const {username, setInitialFeed} = useContext(Context);
 
   const goBack = () => {
     navigation.navigate('CreateUsernameScreen');
@@ -85,7 +84,7 @@ const ConnectSpotifyScreen = ({navigation, route}) => {
           )
           .then(resp => {
             if (resp.status === 200) {
-              setDoneFetchingTopSongs(true);
+              console.log('finished fetching top songs');
             }
           })
           .catch(e => {
