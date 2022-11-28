@@ -13,7 +13,7 @@ import {Context} from '../../context/Context';
 import Colors from '../../assets/utilities/Colors';
 import firestore from '@react-native-firebase/firestore';
 
-const IsFollowingScreen = ({route, navigation}) => {
+const NewChatScreen = ({route, navigation}) => {
   const {myUser} = route.params;
   const {UID} = useContext(Context);
   const [followingList, setFollowingList] = useState(null);
@@ -77,7 +77,7 @@ const IsFollowingScreen = ({route, navigation}) => {
         </TouchableOpacity>
         <Text style={styles.newChatText}>New Chat</Text>
       </View>
-      {followingData && (
+      {followingData ? (
         <View style={styles.flatListContainer}>
           <Text style={styles.followingText}>Following</Text>
           <FlatList
@@ -113,12 +113,27 @@ const IsFollowingScreen = ({route, navigation}) => {
             }}
           />
         </View>
+      ) : (
+        <View style={styles.notFollowingContainer}>
+          <Text style={styles.notFollowingText}>
+            You must be following someone in order to send a direct message.
+          </Text>
+          <TouchableOpacity
+            style={styles.addContainer}
+            onPress={() => {
+              navigation.navigate('AddFriends', {
+                myUser: myUser,
+              });
+            }}>
+            <Text style={styles.addText}>add friends</Text>
+          </TouchableOpacity>
+        </View>
       )}
     </SafeAreaView>
   );
 };
 
-export default IsFollowingScreen;
+export default NewChatScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -182,5 +197,33 @@ const styles = StyleSheet.create({
     fontSize: 11,
     marginTop: 5,
     fontFamily: 'Inter-Regular',
+  },
+  notFollowingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  notFollowingText: {
+    fontFamily: 'Inter-Regular',
+    color: 'white',
+    textAlign: 'center',
+    lineHeight: 20,
+    width: '80%',
+  },
+  addContainer: {
+    marginTop: 25,
+    paddingHorizontal: 50,
+    paddingVertical: 12,
+    borderRadius: 20,
+    backgroundColor: '#1F1F1F',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  addText: {
+    color: 'white',
+    fontFamily: 'Inter-Bold',
+    fontSize: 16,
   },
 });

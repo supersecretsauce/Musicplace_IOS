@@ -139,7 +139,7 @@ const ActivityScreen = ({navigation}) => {
   }
 
   function newMessageNav() {
-    navigation.navigate('IsFollowingScreen', {
+    navigation.navigate('NewChatScreen', {
       myUser: myUser,
     });
 
