@@ -33,6 +33,7 @@ const ProfileScreen = ({navigation}) => {
   const [header, setHeader] = useState(null);
   const [PFP, setPFP] = useState(null);
   const [displayName, setDisplayName] = useState(null);
+  const [topSongs, setTopSongs] = useState(null);
   const dimensions = useWindowDimensions();
   const top = useSharedValue(dimensions.height);
   const top2 = useSharedValue(dimensions.height);
@@ -67,6 +68,7 @@ const ProfileScreen = ({navigation}) => {
           setUserProfile(documentSnapshot.data());
           setDisplayName(documentSnapshot.data().displayName);
           setBio(documentSnapshot.data().bio);
+          setTopSongs(documentSnapshot.data().topSongs);
         });
 
       // Stop listening for updates when no longer required
@@ -211,7 +213,7 @@ const ProfileScreen = ({navigation}) => {
               <Text style={styles.editProfileText}>Edit profile</Text>
             </TouchableOpacity>
           </View>
-          <MyPosts UID={UID} navigation={navigation} />
+          <MyPosts topSongs={topSongs} UID={UID} navigation={navigation} />
 
           <PanGestureHandler onGestureEvent={gestureHandler2}>
             <Animated.View

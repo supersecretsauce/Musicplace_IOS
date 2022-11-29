@@ -17,32 +17,61 @@ import {authorize} from 'react-native-app-auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 const MyPosts = props => {
-  const {UID, navigation} = props;
+  const {UID, navigation, topSongs} = props;
   const {hasSpotify, setHasSpotify} = useContext(Context);
   const [userPosts, setUserPosts] = useState(null);
 
+  // useEffect(() => {
+  //   if (UID) {
+  //     //this will change
+  //     const subscriber = firestore()
+  //       .collection('posts')
+  //       .where('users', 'array-contains', UID)
+  //       .get()
+  //       .then(resp => {
+  //         console.log(resp);
+  //         if (resp.empty) {
+  //           return;
+  //         } else {
+  //           let songDocs = [];
+  //           resp.docs.forEach(doc => {
+  //             songDocs.push(doc._data);
+  //           });
+  //           setUserPosts(songDocs);
+  //         }
+  //       });
+  //     return () => subscriber;
+  //   }
+  // }, [UID]);
+
   useEffect(() => {
-    if (UID) {
-      //this will change
-      const subscriber = firestore()
-        .collection('posts')
-        .where('users', 'array-contains', UID)
-        .get()
-        .then(resp => {
-          console.log(resp);
-          if (resp.empty) {
-            return;
-          } else {
-            let songDocs = [];
-            resp.docs.forEach(doc => {
-              songDocs.push(doc._data);
-            });
-            setUserPosts(songDocs);
+    if (topSongs) {
+      console.log(topSongs);
+      if (topSongs.length > 0) {
+        let topSongsArr = [];
+        async function getAllTopSongs() {
+          for (let i = 0; i < topSongs.length; i += 10) {
+            await firestore()
+              .collection('posts')
+              .where(
+                firestore.FieldPath.documentId(),
+                'in',
+                topSongs.slice(i, i + 10),
+              )
+              .get()
+              .then(resp => {
+                console.log(resp);
+                resp.docs.forEach(document => {
+                  topSongsArr.push(document.data());
+                });
+              });
           }
-        });
-      return () => subscriber;
+          setUserPosts(topSongsArr);
+        }
+        getAllTopSongs();
+      }
     }
-  }, [UID]);
+  }, [topSongs]);
 
   const connectSpotify = async () => {
     if (UID) {
