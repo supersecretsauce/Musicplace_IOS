@@ -148,7 +148,9 @@ const ConnectSpotifyScreen = ({navigation, route}) => {
     } catch (e) {
       console.log(e);
     }
-    navigation.navigate('SelectGenresScreen');
+    navigation.navigate('SelectGenresScreen', {
+      UID: userInfo.uid,
+    });
   };
 
   return (
