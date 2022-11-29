@@ -92,12 +92,14 @@ const styles = StyleSheet.create({
   },
   iconRow: {
     flexDirection: 'row',
-    width: '85%',
+    width: '93%',
     alignSelf: 'center',
     justifyContent: 'space-between',
   },
   iconContainer: {
     alignItems: 'center',
+    // backgroundColor: 'green',
+    width: 105,
   },
   iconCircle: {
     backgroundColor: Colors.red,
