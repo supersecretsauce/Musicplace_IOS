@@ -25,6 +25,16 @@
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>org.reactjs.native.example.musicplace-ios</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>musicplace</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>com.googleusercontent.apps.642367062887-aguvvctj95b59l1f5umg1tj742ho21u0</string>
@@ -86,28 +96,15 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>branch_key</key>
+	<dict>
+		<key>live</key>
+		<string>key_live_nn29HF1X5j5DIho0Sy83CocfCqiGl5t2</string>
+	</dict>
 	<key>branch_universal_link_domains</key>
-    <array>
-        <string>musicplace.app.link</string>
-        <string>musicplace-alternate.app.link</string>
-    </array>
-    <key>CFBundleURLTypes</key>
-    <array>
-        <dict>
-            <key>CFBundleTypeRole</key>
-            <string>Editor</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>musicplace</string>
-            </array>
-            <key>CFBundleURLName</key>
-            <string>org.reactjs.native.example.musicplace-ios</string>
-        </dict>
-    </array>
-    <key>branch_key</key>
-    <dict>
-        <key>live</key>
-        <string>key_live_nn29HF1X5j5DIho0Sy83CocfCqiGl5t2</string>
-    </dict>
+	<array>
+		<string>musicplace.app.link</string>
+		<string>musicplace-alternate.app.link</string>
+	</array>
 </dict>
 </plist>

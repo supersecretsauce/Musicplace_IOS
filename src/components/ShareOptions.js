@@ -1,12 +1,27 @@
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, Linking} from 'react-native';
 import React from 'react';
 import IMessage from '../assets/img/imessage.svg';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../assets/utilities/Colors';
 import {withSpring} from 'react-native-reanimated';
 import {SPRING_CONFIG} from '../assets/utilities/reanimated-2';
+import branch from 'react-native-branch';
+
 const ShareOptions = props => {
   const {setShowDirectMessages, top, setShowShareSheet} = props;
+
+  async function sendText() {
+    let buo = await branch.createBranchUniversalObject('content/12345', {
+      title: 'My Content Title',
+      contentDescription: 'My Content Description',
+      contentMetadata: {
+        customMetadata: {
+          key1: 'value1',
+        },
+      },
+    });
+    await Linking.openURL(`sms:body=My sms text`);
+  }
 
   return (
     <View style={styles.container}>
@@ -14,7 +29,7 @@ const ShareOptions = props => {
       <Text style={styles.shareText}>Share Song</Text>
       <View style={styles.middleContainer}>
         <View style={styles.iconRow}>
-          <TouchableOpacity style={styles.iconContainer}>
+          <TouchableOpacity style={styles.iconContainer} onPress={sendText}>
             <IMessage height={50} width={50} />
             <Text style={styles.iconText}>iMessage</Text>
           </TouchableOpacity>
