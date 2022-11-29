@@ -29,7 +29,7 @@ import {useNavigation} from '@react-navigation/native';
 import HapticFeedback from 'react-native-haptic-feedback';
 
 const BottomSheet = props => {
-  const {currentIndex, feed, UID} = props;
+  const {currentIndex, feed, UID, showShareSheet} = props;
   const [containerUp, setContainerUp] = useState(false);
   const [containerSmall, setContainerSmall] = useState(false);
   const [comments, setComments] = useState(false);
@@ -139,6 +139,14 @@ const BottomSheet = props => {
       }
     },
   });
+
+  useEffect(() => {
+    if (showShareSheet) {
+      top.value = withSpring(1000, SPRING_CONFIG);
+    } else {
+      top.value = withSpring(490, SPRING_CONFIG);
+    }
+  }, [showShareSheet]);
 
   // handle logic when a user posts a comment
   function handleCommentSubmit() {
@@ -526,12 +534,12 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   drawer: {
-    borderBottomColor: 'white',
-    borderWidth: 2,
-    borderRadius: 10,
-    width: 75,
+    height: 3,
+    width: 50,
+    backgroundColor: 'white',
     alignSelf: 'center',
-    marginTop: '3%',
+    marginTop: 10,
+    borderRadius: 10,
     marginBottom: 20,
   },
   flatlistContainer: {

@@ -58,14 +58,6 @@ const ShareOptions = props => {
           </TouchableOpacity>
         </View>
       </View>
-      {/* <TouchableOpacity
-        style={styles.cancelButton}
-        onPress={() => {
-          top.value = withSpring(1000, SPRING_CONFIG);
-          setShowShareSheet(false);
-        }}>
-        <Text style={styles.cancelText}>cancel</Text>
-      </TouchableOpacity> */}
     </View>
   );
 };
@@ -77,11 +69,11 @@ const styles = StyleSheet.create({
     flex: 0.35,
   },
   tab: {
-    height: 5,
+    height: 3,
     width: 50,
-    backgroundColor: 'grey',
+    backgroundColor: 'white',
     alignSelf: 'center',
-    marginTop: 7,
+    marginTop: 10,
     borderRadius: 10,
   },
   shareText: {
@@ -89,16 +81,16 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: 'white',
     alignSelf: 'center',
-    paddingVertical: 10,
+    marginTop: '2%',
   },
   middleContainer: {
     position: 'absolute',
-    bottom: '30%',
     justifyContent: 'center',
     alignSelf: 'center',
+    paddingVertical: '5%',
+    marginTop: 35,
   },
   iconRow: {
-    // backgroundColor: 'grey',
     flexDirection: 'row',
     width: '85%',
     alignSelf: 'center',
@@ -123,22 +115,5 @@ const styles = StyleSheet.create({
     color: 'white',
     fontFamily: 'Inter-Regular',
     marginTop: 10,
-  },
-  cancelButton: {
-    alignSelf: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    bottom: '4%',
-    width: 350,
-    paddingVertical: 10,
-    borderWidth: 0.5,
-    borderColor: 'grey',
-    borderRadius: 20,
-    justifyContent: 'center',
-  },
-  cancelText: {
-    fontFamily: 'Inter-Medium',
-    fontSize: 18,
-    color: 'white',
   },
 });

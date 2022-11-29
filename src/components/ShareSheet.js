@@ -73,7 +73,7 @@ const ShareSheet = props => {
 
   useEffect(() => {
     if (showShareSheet) {
-      top.value = withSpring(dimensions.height / 1.5, SPRING_CONFIG);
+      top.value = withSpring(dimensions.height / 1.4, SPRING_CONFIG);
       getFollowingList();
     }
   }, [showShareSheet]);
@@ -405,7 +405,7 @@ export default ShareSheet;
 const styles = StyleSheet.create({
   shareSheet: {
     position: 'absolute',
-    backgroundColor: 'black',
+    backgroundColor: '#1F1F1F',
     height: '100%',
     bottom: 0,
     width: '100%',
@@ -415,7 +415,7 @@ const styles = StyleSheet.create({
   tab: {
     height: 5,
     width: 50,
-    backgroundColor: 'grey',
+    backgroundColor: 'white',
     alignSelf: 'center',
     marginTop: 7,
     borderRadius: 10,
