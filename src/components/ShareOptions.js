@@ -8,19 +8,18 @@ import {SPRING_CONFIG} from '../assets/utilities/reanimated-2';
 import branch from 'react-native-branch';
 
 const ShareOptions = props => {
-  const {setShowDirectMessages, top, setShowShareSheet} = props;
-
+  const {setShowDirectMessages, top, setShowShareSheet, post} = props;
+  console.log(post);
   async function sendText() {
-    let buo = await branch.createBranchUniversalObject('content/12345', {
-      title: 'My Content Title',
-      contentDescription: 'My Content Description',
-      contentMetadata: {
-        customMetadata: {
-          key1: 'value1',
-        },
-      },
+    let buo = await branch.createBranchUniversalObject(`post/${post.id}`, {
+      title: post.songName,
+      contentDescription: post.songName,
+      contentImageUrl: post.songPhoto,
     });
-    await Linking.openURL(`sms:body=My sms text`);
+
+    let smsURL = await buo.generateShortUrl();
+    console.log(smsURL);
+    await Linking.openURL(`sms:&body=${smsURL.url}`);
   }
 
   return (
@@ -59,14 +58,14 @@ const ShareOptions = props => {
           </TouchableOpacity>
         </View>
       </View>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.cancelButton}
         onPress={() => {
           top.value = withSpring(1000, SPRING_CONFIG);
           setShowShareSheet(false);
         }}>
         <Text style={styles.cancelText}>cancel</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };
@@ -93,13 +92,15 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   middleContainer: {
-    // backgroundColor: 'grey',
-    flex: 0.6,
+    position: 'absolute',
+    bottom: '30%',
     justifyContent: 'center',
+    alignSelf: 'center',
   },
   iconRow: {
+    // backgroundColor: 'grey',
     flexDirection: 'row',
-    width: '75%',
+    width: '85%',
     alignSelf: 'center',
     justifyContent: 'space-between',
   },

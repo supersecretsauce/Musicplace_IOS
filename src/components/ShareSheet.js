@@ -73,7 +73,7 @@ const ShareSheet = props => {
 
   useEffect(() => {
     if (showShareSheet) {
-      top.value = withSpring(dimensions.height / 1.7, SPRING_CONFIG);
+      top.value = withSpring(dimensions.height / 1.5, SPRING_CONFIG);
       getFollowingList();
     }
   }, [showShareSheet]);
@@ -372,11 +372,12 @@ const ShareSheet = props => {
               top={top}
               setShowDirectMessages={setShowDirectMessages}
               setShowShareSheet={setShowShareSheet}
+              post={post}
             />
           )}
         </Animated.View>
       </PanGestureHandler>
-      {showShareSheet && followingData ? (
+      {showShareSheet && followingData && showDirectMessages ? (
         <KeyboardAvoidingView behavior="position">
           <View style={styles.btnsContainer}>
             <TextInput

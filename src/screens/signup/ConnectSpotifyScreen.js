@@ -69,7 +69,6 @@ const ConnectSpotifyScreen = ({navigation, route}) => {
       followingList: [],
       autoPost: true,
       topSongs: [],
-      userPosts: [],
       handle: username,
     };
 
@@ -135,7 +134,6 @@ const ConnectSpotifyScreen = ({navigation, route}) => {
         followingList: [],
         autoPost: true,
         topSongs: [],
-        userPosts: [],
         handle: username,
       });
     } catch (error) {
