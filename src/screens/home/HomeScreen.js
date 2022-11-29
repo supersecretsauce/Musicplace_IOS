@@ -88,20 +88,30 @@ const HomeScreen = ({route}) => {
         // if (initialFeed) {
         //   setFeed(initialFeed);
         // }
-        async function getFeed() {
-          console.log(UID);
-          axios
-            .get(
-              `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${UID}`,
-            )
-            .then(resp => {
-              console.log(resp);
-            })
-            .catch(e => {
-              console.log(e);
+        // async function getFeed() {
+        //   console.log(UID);
+        //   axios
+        //     .get(
+        //       `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${UID}`,
+        //     )
+        //     .then(resp => {
+        //       console.log(resp);
+        //     })
+        //     .catch(e => {
+        //       console.log(e);
+        //     });
+        // }
+        // getFeed();
+        firestore()
+          .collection('posts')
+          .get()
+          .then(resp => {
+            let docsArr = [];
+            resp.docs.forEach(doc => {
+              docsArr.push(doc.data());
             });
-        }
-        getFeed();
+            setFeed(docsArr);
+          });
       }
     }
   }, [UID, prevScreen, trackID, initialFeed]);
@@ -365,7 +375,12 @@ const HomeScreen = ({route}) => {
               );
             })}
           </Swiper>
-          <BottomSheet UID={UID} feed={feed} currentIndex={currentIndex} />
+          <BottomSheet
+            showShareSheet={showShareSheet}
+            UID={UID}
+            feed={feed}
+            currentIndex={currentIndex}
+          />
           <ShareSheet
             post={feed[currentIndex]}
             UID={UID}

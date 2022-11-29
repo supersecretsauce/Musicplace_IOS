@@ -546,12 +546,12 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   drawer: {
-    borderBottomColor: 'white',
-    borderWidth: 2,
-    borderRadius: 10,
-    width: 75,
+    height: 3,
+    width: 50,
+    backgroundColor: 'white',
     alignSelf: 'center',
-    marginTop: '3%',
+    marginTop: 10,
+    borderRadius: 10,
     marginBottom: 20,
   },
   flatlistContainer: {
