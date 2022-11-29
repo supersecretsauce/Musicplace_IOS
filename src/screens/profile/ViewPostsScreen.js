@@ -242,6 +242,7 @@ const ViewPostsScreen = ({route}) => {
             songInfo={songInfo}
             openSheet={openSheet}
             commentDocID={commentDocID}
+            showShareSheet={showShareSheet}
           />
           <ShareSheet
             post={songInfo[0]}

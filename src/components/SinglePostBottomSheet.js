@@ -29,7 +29,7 @@ import {useNavigation} from '@react-navigation/native';
 import HapticFeedback from 'react-native-haptic-feedback';
 
 const SinglePostBottomSheet = props => {
-  const {songInfo, UID, openSheet, commentDocID} = props;
+  const {songInfo, UID, openSheet, commentDocID, showShareSheet} = props;
   const [containerUp, setContainerUp] = useState(false);
   const [containerSmall, setContainerSmall] = useState(false);
   const [comments, setComments] = useState(false);
@@ -149,6 +149,14 @@ const SinglePostBottomSheet = props => {
       }
     },
   });
+
+  useEffect(() => {
+    if (showShareSheet) {
+      top.value = withSpring(1000, SPRING_CONFIG);
+    } else {
+      top.value = withSpring(490, SPRING_CONFIG);
+    }
+  }, [showShareSheet]);
 
   // handle logic when a user posts a comment
   function handleCommentSubmit() {

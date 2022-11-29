@@ -270,7 +270,12 @@ const PlaylistTracksScreen = ({route}) => {
               );
             })}
           </Swiper>
-          <BottomSheet UID={UID} feed={feed} currentIndex={currentIndex} />
+          <BottomSheet
+            UID={UID}
+            feed={feed}
+            currentIndex={currentIndex}
+            showShareSheet={showShareSheet}
+          />
           <ShareSheet
             post={feed[currentIndex]}
             UID={UID}
