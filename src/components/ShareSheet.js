@@ -369,9 +369,7 @@ const ShareSheet = props => {
             </>
           ) : (
             <ShareOptions
-              top={top}
               setShowDirectMessages={setShowDirectMessages}
-              setShowShareSheet={setShowShareSheet}
               post={post}
             />
           )}

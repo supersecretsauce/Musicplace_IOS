@@ -1094,6 +1094,8 @@ PODS:
     - React-perflogger (= 0.69.1)
   - RNCAsyncStorage (1.17.9):
     - React-Core
+  - RNCClipboard (1.11.1):
+    - React-Core
   - RNFBApp (16.4.3):
     - Firebase/CoreOnly (= 10.1.0)
     - React-Core
@@ -1227,6 +1229,7 @@ DEPENDENCIES:
   - React-runtimeexecutor (from `../node_modules/react-native/ReactCommon/runtimeexecutor`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
+  - "RNCClipboard (from `../node_modules/@react-native-clipboard/clipboard`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
   - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics`)"
@@ -1367,6 +1370,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
+  RNCClipboard:
+    :path: "../node_modules/@react-native-clipboard/clipboard"
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBAuth:
@@ -1472,6 +1477,7 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: 27f468c5576eaf05ffb7a907528e44c75a3fcbae
   ReactCommon: e30ec17dfb1d4c4f3419eac254350d6abca6d5a2
   RNCAsyncStorage: b2489b49e38c85e10ed45a888d13a2a4c7b32ea1
+  RNCClipboard: 2834e1c4af68697089cdd455ee4a4cdd198fa7dd
   RNFBApp: e2157f61e4769b53641df8948c534580630cb50a
   RNFBAuth: 7d2d8b68ef2dbeed0844532e9b65df09af627bf9
   RNFBCrashlytics: e0869743b4f57b0353605363a0a41fbff2500594

@@ -3,14 +3,19 @@ import React from 'react';
 import IMessage from '../assets/img/imessage.svg';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../assets/utilities/Colors';
-import {withSpring} from 'react-native-reanimated';
-import {SPRING_CONFIG} from '../assets/utilities/reanimated-2';
+
 import branch from 'react-native-branch';
+import Clipboard from '@react-native-clipboard/clipboard';
+import Toast from 'react-native-toast-message';
+import HapticFeedback from 'react-native-haptic-feedback';
 
 const ShareOptions = props => {
-  const {setShowDirectMessages, top, setShowShareSheet, post} = props;
+  const {setShowDirectMessages, post} = props;
   console.log(post);
+
   async function sendText() {
+    HapticFeedback.trigger('impactLight');
+
     let buo = await branch.createBranchUniversalObject(`post/${post.id}`, {
       title: post.songName,
       contentDescription: post.songName,
@@ -18,8 +23,25 @@ const ShareOptions = props => {
     });
 
     let smsURL = await buo.generateShortUrl();
-    console.log(smsURL);
     await Linking.openURL(`sms:&body=${smsURL.url}`);
+  }
+
+  async function copyToClipboard() {
+    HapticFeedback.trigger('impactLight');
+
+    let buo = await branch.createBranchUniversalObject(`post/${post.id}`, {
+      title: post.songName,
+      contentDescription: post.songName,
+      contentImageUrl: post.songPhoto,
+    });
+
+    let smsURL = await buo.generateShortUrl();
+    Clipboard.setString(smsURL.url);
+    Toast.show({
+      type: 'success',
+      text1: 'Copied to clipboard',
+      visibilityTime: 1000,
+    });
   }
 
   return (
@@ -34,7 +56,10 @@ const ShareOptions = props => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.iconContainer}
-            onPress={() => setShowDirectMessages(true)}>
+            onPress={() => {
+              HapticFeedback.trigger('impactLight');
+              setShowDirectMessages(true);
+            }}>
             <View style={styles.iconCircle}>
               <Ionicons
                 style={styles.iconStyle}
@@ -45,7 +70,9 @@ const ShareOptions = props => {
             </View>
             <Text style={styles.iconText}>direct message</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconContainer}>
+          <TouchableOpacity
+            style={styles.iconContainer}
+            onPress={copyToClipboard}>
             <View style={styles.iconCircle}>
               <Ionicons
                 style={styles.iconStyle2}
