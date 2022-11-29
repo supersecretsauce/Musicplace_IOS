@@ -77,18 +77,20 @@ const ConnectSpotifyScreen = ({navigation, route}) => {
     docRef.set(data, {merge: true}).then(() => {
       docRef.get().then(resp => {
         console.log(resp);
-        // axios
-        //   .get(
-        //     `https://reccomendation-api-pmtku.ondigitalocean.app/updates/${userInfo.uid}`,
-        //   )
-        //   .then(resp => {
-        //     if (resp.status === 200) {
-        //       console.log('finished fetching top songs');
-        //     }
-        //   })
-        //   .catch(e => {
-        //     console.log(e);
-        //   });
+        axios
+          .get(
+            `https://reccomendation-api-pmtku.ondigitalocean.app/updates/top-songs/${
+              resp.data().UID
+            }`,
+          )
+          .then(resp => {
+            if (resp.status === 200) {
+              console.log('finished fetching top songs');
+            }
+          })
+          .catch(e => {
+            console.log(e);
+          });
         // axios
         //   .get(
         //     `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${userInfo.uid}`,
