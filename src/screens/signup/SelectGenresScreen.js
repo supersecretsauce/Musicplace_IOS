@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
+import axios from 'axios';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
 import React, {useState, useEffect} from 'react';
 import Rap from '../../assets/img/rap.svg';
@@ -24,8 +25,10 @@ import Electronic from '../../assets/img/electronic.svg';
 import Latin from '../../assets/img/latin.svg';
 import HapticFeedback from 'react-native-haptic-feedback';
 
-const SelectGenresScreen = ({navigation}) => {
+const SelectGenresScreen = ({navigation, route}) => {
+  const {UID} = route.params;
   const [selections, setSelections] = useState([]);
+
   function goBack() {
     navigation.goBack();
   }
@@ -44,7 +47,19 @@ const SelectGenresScreen = ({navigation}) => {
     if (selections.length === 0) {
       return;
     } else {
-      navigation.navigate('SwipeUpScreen');
+      let formattedGenres = selections.join(',');
+      console.log(UID);
+      axios
+        .get(
+          `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${UID}?genres=${formattedGenres}`,
+        )
+        .then(resp => {
+          console.log(resp);
+          navigation.navigate('SwipeUpScreen');
+        })
+        .catch(e => {
+          console.log(e);
+        });
     }
   }
 
