@@ -25,7 +25,7 @@ const CreateUsernameScreen = ({navigation}) => {
   const {username, setUsername} = useContext(Context);
 
   const goBack = () => {
-    navigation.navigate('EnterCodeScreen');
+    navigation.goBack();
   };
 
   const handleText = text => {
@@ -88,11 +88,13 @@ const CreateUsernameScreen = ({navigation}) => {
         await firestore().collection('usernames').doc(username).set({
           UID: userInfo.uid,
         });
-        navigation.navigate('ConnectSpotifyScreen', {
-          username: username,
+        await firestore().collection('users').doc(userInfo.uid).update({
+          displayName: username,
+          handle: username,
         });
+        navigation.navigate('SwipeUpScreen');
       } catch (error) {
-        console.log('error uploading username to db');
+        console.log(error);
         return;
       }
     }

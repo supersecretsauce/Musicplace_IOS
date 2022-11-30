@@ -52,7 +52,7 @@ const EnterCodeScreen = ({navigation}) => {
       HapticFeedback.trigger('impactHeavy');
       mixpanel.track('New Signup');
       await confirm.confirm(verificationCode);
-      navigation.navigate('CreateUsernameScreen');
+      navigation.navigate('ConnectSpotifyScreen');
     } catch (error) {
       console.log('Invalid code.');
       Toast.show({

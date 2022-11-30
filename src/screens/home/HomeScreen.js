@@ -7,7 +7,13 @@ import {
   TouchableWithoutFeedback,
   Linking,
 } from 'react-native';
-import React, {useState, useEffect, useContext, useCallback} from 'react';
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+  useMemo,
+} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
 import Swiper from 'react-native-swiper';
 import Sound from 'react-native-sound';
@@ -66,57 +72,6 @@ const HomeScreen = ({route}) => {
   );
 
   useEffect(() => {
-    if (UID) {
-      if (prevScreen && trackID) {
-        async function getFeed() {
-          console.log(UID);
-          console.log(trackID);
-          axios
-            .get(
-              `https://reccomendation-api-pmtku.ondigitalocean.app/flow/track/${trackID}/user/${UID}`,
-            )
-            .then(resp => {
-              console.log(resp);
-              setFeed(resp.data);
-            })
-            .catch(e => {
-              console.log(e);
-            });
-        }
-        getFeed();
-      } else {
-        // if (initialFeed) {
-        //   setFeed(initialFeed);
-        // }
-        // async function getFeed() {
-        //   console.log(UID);
-        //   axios
-        //     .get(
-        //       `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${UID}`,
-        //     )
-        //     .then(resp => {
-        //       console.log(resp);
-        //     })
-        //     .catch(e => {
-        //       console.log(e);
-        //     });
-        // }
-        // getFeed();
-        firestore()
-          .collection('posts')
-          .get()
-          .then(resp => {
-            let docsArr = [];
-            resp.docs.forEach(doc => {
-              docsArr.push(doc.data());
-            });
-            setFeed(docsArr);
-          });
-      }
-    }
-  }, [UID, prevScreen, trackID, initialFeed]);
-
-  useEffect(() => {
     async function checkSpotifyConnection() {
       const spotifyBoolean = await AsyncStorage.getItem('hasSpotify');
       const localRefresh = await AsyncStorage.getItem('spotRefreshToken');
@@ -168,22 +123,12 @@ const HomeScreen = ({route}) => {
     }
   }, [UID]);
 
-  //get updated feed
-
-  // useEffect(() => {
-  //   if (UID) {
-  //     axios
-  //       .get(
-  //         `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${UID}`,
-  //       )
-  //       .then(resp => {
-  //         console.log(resp);
-  //       })
-  //       .catch(e => {
-  //         console.log(e);
-  //       });
-  //   }
-  // }, [UID]);
+  useEffect(() => {
+    if (initialFeed) {
+      console.log('setting feed');
+      setFeed(initialFeed);
+    }
+  }, [initialFeed]);
 
   useEffect(() => {
     if (feed) {

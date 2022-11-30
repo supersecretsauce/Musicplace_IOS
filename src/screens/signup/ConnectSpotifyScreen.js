@@ -19,13 +19,12 @@ import HapticFeedback from 'react-native-haptic-feedback';
 import axios from 'axios';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const ConnectSpotifyScreen = ({navigation, route}) => {
-  const {contacts} = route.params;
+const ConnectSpotifyScreen = ({navigation}) => {
   const userInfo = firebase.auth().currentUser;
   const {username, setInitialFeed} = useContext(Context);
 
   const goBack = () => {
-    navigation.navigate('CreateUsernameScreen');
+    navigation.goBack();
   };
 
   const config = {
@@ -64,12 +63,12 @@ const ConnectSpotifyScreen = ({navigation, route}) => {
       bio: null,
       followers: 0,
       following: 0,
-      displayName: username,
+      displayName: null,
       followersList: [],
       followingList: [],
       autoPost: true,
       topSongs: [],
-      handle: username,
+      handle: null,
     };
 
     const docRef = firestore().collection('users').doc(userInfo.uid);
@@ -86,24 +85,24 @@ const ConnectSpotifyScreen = ({navigation, route}) => {
           .then(resp => {
             if (resp.status === 200) {
               console.log('finished fetching top songs');
+              axios
+                .get(
+                  `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${userInfo.uid}`,
+                )
+                .then(resp => {
+                  if (resp.status === 200) {
+                    console.log('successfull response from recco:', resp);
+                    setInitialFeed(resp.data);
+                  }
+                })
+                .catch(e => {
+                  console.log(e);
+                });
             }
           })
           .catch(e => {
             console.log(e);
           });
-        // axios
-        //   .get(
-        //     `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${userInfo.uid}`,
-        //   )
-        //   .then(resp => {
-        //     if (resp.status === 200) {
-        //       console.log('successfull response from recco:', resp);
-        //       setInitialFeed(true);
-        //     }
-        //   })
-        //   .catch(e => {
-        //     console.log(e);
-        //   });
       });
     });
 
@@ -116,7 +115,7 @@ const ConnectSpotifyScreen = ({navigation, route}) => {
     } catch (e) {
       console.log(e);
     }
-    navigation.navigate('SwipeUpScreen');
+    navigation.navigate('CreateUsernameScreen');
   };
 
   const maybeLater = async () => {
@@ -131,12 +130,12 @@ const ConnectSpotifyScreen = ({navigation, route}) => {
         bio: null,
         followers: 0,
         following: 0,
-        displayName: username,
+        displayName: null,
         followersList: [],
         followingList: [],
         autoPost: true,
         topSongs: [],
-        handle: username,
+        handle: null,
       });
     } catch (error) {
       return;
