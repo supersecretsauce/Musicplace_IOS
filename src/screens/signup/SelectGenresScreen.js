@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import Rap from '../../assets/img/rap.svg';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Pop from '../../assets/img/pop.svg';
@@ -24,10 +24,11 @@ import Colors from '../../assets/utilities/Colors';
 import Electronic from '../../assets/img/electronic.svg';
 import Latin from '../../assets/img/latin.svg';
 import HapticFeedback from 'react-native-haptic-feedback';
-
+import {Context} from '../../context/Context';
 const SelectGenresScreen = ({navigation, route}) => {
   const {UID} = route.params;
   const [selections, setSelections] = useState([]);
+  const {setInitialFeed} = useContext(Context);
 
   function goBack() {
     navigation.goBack();
@@ -54,12 +55,18 @@ const SelectGenresScreen = ({navigation, route}) => {
           `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${UID}?genres=${formattedGenres}`,
         )
         .then(resp => {
-          console.log(resp);
-          navigation.navigate('SwipeUpScreen');
+          if (resp.data.length === 0) {
+            console.log('no songs in this genre');
+          } else {
+            console.log(resp.data);
+            setInitialFeed(resp.data);
+            navigation.navigate('CreateUsernameScreen');
+          }
         })
         .catch(e => {
           console.log(e);
         });
+      // navigation.navigate('SwipeUpScreen');
     }
   }
 
@@ -241,10 +248,10 @@ const SelectGenresScreen = ({navigation, route}) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.genreContainer}
-            onPress={() => handleSelections('latin')}>
+            onPress={() => handleSelections('trap latino')}>
             <View style={styles.genreLeft}>
               <Latin height={30} />
-              <Text style={styles.genreText}>Latin</Text>
+              <Text style={styles.genreText}>Trap Latino</Text>
             </View>
             <Ionicons
               name={

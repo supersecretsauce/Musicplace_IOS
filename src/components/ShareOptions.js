@@ -11,7 +11,6 @@ import HapticFeedback from 'react-native-haptic-feedback';
 
 const ShareOptions = props => {
   const {setShowDirectMessages, post} = props;
-  console.log(post);
 
   async function sendText() {
     HapticFeedback.trigger('impactLight');
