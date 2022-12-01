@@ -9,6 +9,9 @@ import DirectMessageScreen from '../screens/activity/DirectMessageScreen';
 import AddFriends from '../screens/activity/AddFriends';
 const PostStack = createNativeStackNavigator();
 const HomeStackScreen = () => {
+  useEffect(() => {
+    console.log('HomeStack mounted');
+  }, []);
   return (
     <PostStack.Navigator screenOptions={{headerShown: false}}>
       <PostStack.Screen name="HomeScreen" component={HomeScreen} />
