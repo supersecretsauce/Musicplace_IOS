@@ -27,7 +27,7 @@ export default function App() {
   const [username, setUsername] = useState('');
   const [currentPost, setCurrentPost] = useState();
   const [hasSpotify, setHasSpotify] = useState(null);
-  const [initialFeed, setInitialFeed] = useState(null);
+  const [feed, setFeed] = useState(null);
   const [UID, setUID] = useState(null);
   const appState = useRef(AppState.currentState);
   const navigationRef = useRef();
@@ -149,8 +149,8 @@ export default function App() {
             setHasSpotify,
             UID,
             setUID,
-            initialFeed,
-            setInitialFeed,
+            feed,
+            setFeed,
           }}>
           {userLogin ? (
             <Stack.Navigator

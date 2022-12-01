@@ -37,7 +37,7 @@ const HomeScreen = ({route}) => {
   Sound.setCategory('Playback');
   const {authFetch} = useSpotifyService();
   const {prevScreen, trackID} = route.params ?? {};
-  const [feed, setFeed] = useState(null);
+  const [loadedFeed, setLoadedFeed] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentTrack, setCurrentTrack] = useState(null);
   const [likedTracks, setLikedTracks] = useState([]);
@@ -52,7 +52,8 @@ const HomeScreen = ({route}) => {
     hasSpotify,
     setUID,
     UID,
-    initialFeed,
+    feed,
+    setFeed,
   } = useContext(Context);
 
   useFocusEffect(
@@ -123,12 +124,21 @@ const HomeScreen = ({route}) => {
     }
   }, [UID]);
 
-  useEffect(() => {
-    if (initialFeed) {
-      console.log('setting feed');
-      setFeed(initialFeed);
-    }
-  }, [initialFeed]);
+  // useEffect(() => {
+  //   if (currentIndex === 15) {
+  //     console.log('halfway!');
+  //     axios
+  //       .get(
+  //         `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${UID}`,
+  //       )
+  //       .then(resp => {
+  //         setLoadedFeed(resp.data);
+  //       });
+  //   }
+  //   if (currentIndex === 24) {
+  //     setFeed([...feed, loadedFeed]);
+  //   }
+  // }, [currentIndex]);
 
   useEffect(() => {
     if (feed) {
