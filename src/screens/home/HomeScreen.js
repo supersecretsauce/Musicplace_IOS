@@ -54,6 +54,7 @@ const HomeScreen = ({route}) => {
     UID,
     feed,
     setFeed,
+    isNewUser,
   } = useContext(Context);
 
   useFocusEffect(
@@ -121,6 +122,29 @@ const HomeScreen = ({route}) => {
         }
       }
       requestUserPermission();
+    }
+  }, [UID]);
+
+  useEffect(() => {
+    if (UID) {
+      if (isNewUser) {
+        console.log('this is a new user');
+        return;
+      } else {
+        console.log(UID);
+        axios
+          .get(
+            `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${UID}`,
+          )
+          .then(resp => {
+            setFeed(resp.data);
+          })
+          .catch(e => {
+            console.log(e);
+          });
+      }
+    } else {
+      console.log('UID is not present');
     }
   }, [UID]);
 
