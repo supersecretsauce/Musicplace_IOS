@@ -1,7 +1,6 @@
-import {StyleSheet, Text, View} from 'react-native';
-import React, {useContext, useEffect} from 'react';
+import {StyleSheet} from 'react-native';
+import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Context} from '../context/Context';
 import ViewUserScreen from '../screens/home/ViewUserScreen';
 import HomeScreen from '../screens/home/HomeScreen';
 import ViewPostsScreen from '../screens/profile/ViewPostsScreen';
@@ -9,9 +8,6 @@ import DirectMessageScreen from '../screens/activity/DirectMessageScreen';
 import AddFriends from '../screens/activity/AddFriends';
 const PostStack = createNativeStackNavigator();
 const HomeStackScreen = () => {
-  useEffect(() => {
-    console.log('HomeStack mounted');
-  }, []);
   return (
     <PostStack.Navigator screenOptions={{headerShown: false}}>
       <PostStack.Screen name="HomeScreen" component={HomeScreen} />

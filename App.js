@@ -2,24 +2,17 @@ import React, {useState, useEffect, useRef} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import ProfileStackScreen from './src/routes/ProfileStackScreen';
 import {Context} from './src/context/Context';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import {StyleSheet, StatusBar} from 'react-native';
+import {StatusBar} from 'react-native';
 import Toast from 'react-native-toast-message';
-import HomeStackScreen from './src/routes/HomeStackScreen';
 import WelcomeStackScreen from './src/routes/WelcomeStackScreen';
-import ActivityStackScreen from './src/routes/ActivityStackScreen';
 import {mixpanel} from './mixpanel';
 import notifee, {EventType} from '@notifee/react-native';
-import DiscoverStackScreen from './src/routes/DiscoverStackScreen';
 import {AppState} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
-
+import TabNavigator from './src/routes/TabNavigator';
 mixpanel.init();
-const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -160,41 +153,12 @@ export default function App() {
             setInitialFeed,
           }}>
           {userLogin ? (
-            <Tab.Navigator
-              screenOptions={({route}) => ({
-                tabBarIcon: ({focused, color, size}) => {
-                  let iconName;
-
-                  if (route.name === 'Home') {
-                    iconName = focused ? 'home-sharp' : 'home-outline';
-                  } else if (route.name === 'Discover') {
-                    iconName = focused ? 'ear-sharp' : 'ear-outline';
-                  } else if (route.name === 'Discover') {
-                    iconName = focused ? 'add-sharp' : 'add-outline';
-                  } else if (route.name === 'Activity') {
-                    iconName = focused
-                      ? 'notifications-sharp'
-                      : 'notifications-outline';
-                  } else if (route.name === 'Profile') {
-                    iconName = focused ? 'person-sharp' : 'person-outline';
-                  }
-
-                  // You can return any component that you like here!
-                  return <Ionicons name={iconName} size={size} color={color} />;
-                },
-                tabBarActiveTintColor: 'white',
-                tabBarInactiveTintColor: 'grey',
-                tabBarInactiveBackgroundColor: 'black',
-                tabBarActiveBackgroundColor: 'black',
+            <Stack.Navigator
+              screenOptions={{
                 headerShown: false,
-                tabBarStyle: {backgroundColor: 'black'},
-              })}>
-              <Tab.Screen name="Home" component={HomeStackScreen} />
-              {/* <Tab.Screen name="Discover" component={ActivityStackScreen} /> */}
-              <Tab.Screen name="Discover" component={DiscoverStackScreen} />
-              <Tab.Screen name="Activity" component={ActivityStackScreen} />
-              <Tab.Screen name="Profile" component={ProfileStackScreen} />
-            </Tab.Navigator>
+              }}>
+              <Stack.Screen name="TabNavigator" component={TabNavigator} />
+            </Stack.Navigator>
           ) : (
             <Stack.Navigator
               screenOptions={{
