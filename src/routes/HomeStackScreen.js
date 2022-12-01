@@ -7,9 +7,8 @@ import HomeScreen from '../screens/home/HomeScreen';
 import ViewPostsScreen from '../screens/profile/ViewPostsScreen';
 import DirectMessageScreen from '../screens/activity/DirectMessageScreen';
 import AddFriends from '../screens/activity/AddFriends';
+const PostStack = createNativeStackNavigator();
 const HomeStackScreen = () => {
-  const PostStack = createNativeStackNavigator();
-
   return (
     <PostStack.Navigator screenOptions={{headerShown: false}}>
       <PostStack.Screen name="HomeScreen" component={HomeScreen} />

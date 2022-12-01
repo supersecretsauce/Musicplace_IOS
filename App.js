@@ -19,9 +19,10 @@ import {AppState} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 
 mixpanel.init();
+const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const Stack = createNativeStackNavigator();
   const [confirm, setConfirm] = useState(null);
   const [userLogin, setUserLogin] = useState(false);
   const [refreshToken, setRefreshToken] = useState('');
@@ -35,11 +36,14 @@ export default function App() {
   const [hasSpotify, setHasSpotify] = useState(null);
   const [initialFeed, setInitialFeed] = useState(null);
   const [UID, setUID] = useState(null);
-  const Tab = createBottomTabNavigator();
   const appState = useRef(AppState.currentState);
   const navigationRef = useRef();
 
   // AsyncStorage.clear();
+
+  useEffect(() => {
+    console.log('userLogin', userLogin);
+  }, [userLogin]);
 
   // look for changes to access and refresh token
   useEffect(() => {
