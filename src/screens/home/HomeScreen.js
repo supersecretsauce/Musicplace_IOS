@@ -123,16 +123,12 @@ const HomeScreen = ({route}) => {
     }
   }, [UID]);
 
-  // useEffect(() => {
-  //   if (initialFeed) {
-  //     console.log('setting feed');
-  //     setFeed(initialFeed);
-  //   }
-  // }, [initialFeed]);
-
   useEffect(() => {
-    console.log('homescreen mounted');
-  }, []);
+    if (initialFeed) {
+      console.log('setting feed');
+      setFeed(initialFeed);
+    }
+  }, [initialFeed]);
 
   useEffect(() => {
     if (feed) {
