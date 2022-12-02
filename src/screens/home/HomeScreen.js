@@ -42,7 +42,7 @@ const HomeScreen = ({route}) => {
   const [currentTrack, setCurrentTrack] = useState(null);
   const [likedTracks, setLikedTracks] = useState([]);
   const [showShareSheet, setShowShareSheet] = useState(false);
-  const [apiResponse, setApiResponse] = useState(null);
+  const [initialFeed, setInitialFeed] = useState(true);
   const {
     accessToken,
     refreshToken,
@@ -137,6 +137,7 @@ const HomeScreen = ({route}) => {
             `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${UID}`,
           )
           .then(resp => {
+            console.log(resp);
             setFeed(resp.data);
           })
           .catch(e => {
@@ -148,24 +149,8 @@ const HomeScreen = ({route}) => {
     }
   }, [UID]);
 
-  // useEffect(() => {
-  //   if (currentIndex === 15) {
-  //     console.log('halfway!');
-  //     axios
-  //       .get(
-  //         `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${UID}`,
-  //       )
-  //       .then(resp => {
-  //         setLoadedFeed(resp.data);
-  //       });
-  //   }
-  //   if (currentIndex === 24) {
-  //     setFeed([...feed, loadedFeed]);
-  //   }
-  // }, [currentIndex]);
-
   useEffect(() => {
-    if (feed) {
+    if (feed && initialFeed) {
       let newTrack = new Sound(feed[currentIndex].previewUrl, null, error => {
         if (error) {
           console.log('failed to load the sound', error);
@@ -176,8 +161,53 @@ const HomeScreen = ({route}) => {
         }
       });
       setCurrentTrack(newTrack);
+      setInitialFeed(false);
     }
-  }, [currentIndex, feed]);
+  }, [feed]);
+
+  useEffect(() => {
+    console.log(currentIndex);
+    if (feed) {
+      if (currentIndex == Math.floor(feed.length / 2)) {
+        console.log('halfway!');
+        axios
+          .get(
+            `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${UID}`,
+          )
+          .then(resp => {
+            console.log(resp);
+            setFeed(current => [
+              ...current.splice(currentIndex - 5, currentIndex),
+              ...resp.data,
+            ]);
+          })
+          .catch(e => {
+            console.log(e);
+          });
+      }
+    }
+  }, [currentIndex]);
+
+  function handleIndexChange(index) {
+    currentTrack.stop();
+    recordTime();
+    playNextTrack(index);
+    setCurrentIndex(index);
+    mixpanel.track('New Listen');
+  }
+
+  function playNextTrack(index) {
+    let newTrack = new Sound(feed[index].previewUrl, null, error => {
+      if (error) {
+        console.log('failed to load the sound', error);
+        return;
+      } else {
+        newTrack.play();
+        newTrack.setNumberOfLoops(-1);
+      }
+    });
+    setCurrentTrack(newTrack);
+  }
 
   let startTime = new Date();
   function recordTime() {
@@ -275,12 +305,7 @@ const HomeScreen = ({route}) => {
         <>
           <Swiper
             loadMinimal={true}
-            onIndexChanged={index => {
-              currentTrack.stop();
-              recordTime();
-              setCurrentIndex(index);
-              mixpanel.track('New Listen');
-            }}
+            onIndexChanged={index => handleIndexChange(index)}
             loop={false}
             showsButtons={false}>
             {feed.map((post, index) => {
