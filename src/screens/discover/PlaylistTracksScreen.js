@@ -67,7 +67,7 @@ const PlaylistTracksScreen = ({route}) => {
     if (playlistID) {
       firestore()
         .collection('posts')
-        .where('playlistID', '==', playlistID)
+        .where('playlists', 'array-contains', playlistID)
         .get()
         .then(resp => {
           let tracksDocs = [];
@@ -76,6 +76,7 @@ const PlaylistTracksScreen = ({route}) => {
             tracksDocs.push(doc.data());
           });
           setFeed(tracksDocs);
+          console.log(tracksDocs);
         });
     }
   }, [playlistID]);

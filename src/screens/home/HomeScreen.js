@@ -13,6 +13,7 @@ import React, {
   useContext,
   useCallback,
   useMemo,
+  useRef,
 } from 'react';
 import {useFocusEffect} from '@react-navigation/native';
 import Swiper from 'react-native-swiper';
@@ -43,6 +44,7 @@ const HomeScreen = ({route}) => {
   const [likedTracks, setLikedTracks] = useState([]);
   const [showShareSheet, setShowShareSheet] = useState(false);
   const [initialFeed, setInitialFeed] = useState(true);
+  const [startTime, setStartTime] = useState(new Date());
   const {
     accessToken,
     refreshToken,
@@ -63,6 +65,8 @@ const HomeScreen = ({route}) => {
         currentTrack.play();
         // eslint-disable-next-line react-hooks/exhaustive-deps
         playing = true;
+        console.log('new start time set');
+        setStartTime(new Date());
       }
       return () => {
         if (currentTrack) {
@@ -176,10 +180,7 @@ const HomeScreen = ({route}) => {
           )
           .then(resp => {
             console.log(resp);
-            setFeed(current => [
-              ...current.splice(currentIndex - 5, currentIndex),
-              ...resp.data,
-            ]);
+            setFeed(current => [...current, ...resp.data]);
           })
           .catch(e => {
             console.log(e);
@@ -189,8 +190,8 @@ const HomeScreen = ({route}) => {
   }, [currentIndex]);
 
   function handleIndexChange(index) {
+    recordTime(index);
     currentTrack.stop();
-    recordTime();
     playNextTrack(index);
     setCurrentIndex(index);
     mixpanel.track('New Listen');
@@ -209,11 +210,9 @@ const HomeScreen = ({route}) => {
     setCurrentTrack(newTrack);
   }
 
-  let startTime = new Date();
   function recordTime() {
     let endTime = new Date();
     let timeDiff = endTime - startTime;
-    startTime = new Date();
 
     firestore()
       .collection('users')
@@ -227,11 +226,16 @@ const HomeScreen = ({route}) => {
       })
       .then(() => {
         console.log('added watch document');
+        setStartTime(new Date());
       })
       .catch(error => {
         console.log(error);
       });
   }
+
+  useEffect(() => {
+    console.log(startTime);
+  }, [startTime]);
 
   let playing = true;
   function pauseHandler() {

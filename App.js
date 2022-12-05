@@ -35,10 +35,6 @@ export default function App() {
 
   // AsyncStorage.clear();
 
-  useEffect(() => {
-    console.log('userLogin', userLogin);
-  }, [userLogin]);
-
   // look for changes to access and refresh token
   useEffect(() => {
     if (UID) {
