@@ -13,6 +13,7 @@ import React, {
   useContext,
   useCallback,
   useMemo,
+  useRef,
 } from 'react';
 import {useFocusEffect} from '@react-navigation/native';
 import Swiper from 'react-native-swiper';
@@ -37,12 +38,13 @@ const HomeScreen = ({route}) => {
   Sound.setCategory('Playback');
   const {authFetch} = useSpotifyService();
   const {prevScreen, trackID} = route.params ?? {};
-  const [feed, setFeed] = useState(null);
+  const [loadedFeed, setLoadedFeed] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentTrack, setCurrentTrack] = useState(null);
   const [likedTracks, setLikedTracks] = useState([]);
   const [showShareSheet, setShowShareSheet] = useState(false);
-  const [apiResponse, setApiResponse] = useState(null);
+  const [initialFeed, setInitialFeed] = useState(true);
+  const [startTime, setStartTime] = useState(new Date());
   const {
     accessToken,
     refreshToken,
@@ -52,7 +54,9 @@ const HomeScreen = ({route}) => {
     hasSpotify,
     setUID,
     UID,
-    initialFeed,
+    feed,
+    setFeed,
+    isNewUser,
   } = useContext(Context);
 
   useFocusEffect(
@@ -61,6 +65,8 @@ const HomeScreen = ({route}) => {
         currentTrack.play();
         // eslint-disable-next-line react-hooks/exhaustive-deps
         playing = true;
+        console.log('new start time set');
+        setStartTime(new Date());
       }
       return () => {
         if (currentTrack) {
@@ -123,19 +129,32 @@ const HomeScreen = ({route}) => {
     }
   }, [UID]);
 
-  // useEffect(() => {
-  //   if (initialFeed) {
-  //     console.log('setting feed');
-  //     setFeed(initialFeed);
-  //   }
-  // }, [initialFeed]);
+  useEffect(() => {
+    if (UID) {
+      if (isNewUser) {
+        console.log('this is a new user');
+        return;
+      } else {
+        console.log(UID);
+        axios
+          .get(
+            `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${UID}`,
+          )
+          .then(resp => {
+            console.log(resp);
+            setFeed(resp.data);
+          })
+          .catch(e => {
+            console.log(e);
+          });
+      }
+    } else {
+      console.log('UID is not present');
+    }
+  }, [UID]);
 
   useEffect(() => {
-    console.log('homescreen mounted');
-  }, []);
-
-  useEffect(() => {
-    if (feed) {
+    if (feed && initialFeed) {
       let newTrack = new Sound(feed[currentIndex].previewUrl, null, error => {
         if (error) {
           console.log('failed to load the sound', error);
@@ -146,14 +165,54 @@ const HomeScreen = ({route}) => {
         }
       });
       setCurrentTrack(newTrack);
+      setInitialFeed(false);
     }
-  }, [currentIndex, feed]);
+  }, [feed]);
 
-  let startTime = new Date();
+  useEffect(() => {
+    console.log(currentIndex);
+    if (feed) {
+      if (currentIndex == Math.floor(feed.length / 2)) {
+        console.log('halfway!');
+        axios
+          .get(
+            `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${UID}`,
+          )
+          .then(resp => {
+            console.log(resp);
+            setFeed(current => [...current, ...resp.data]);
+          })
+          .catch(e => {
+            console.log(e);
+          });
+      }
+    }
+  }, [currentIndex]);
+
+  function handleIndexChange(index) {
+    recordTime(index);
+    currentTrack.stop();
+    playNextTrack(index);
+    setCurrentIndex(index);
+    mixpanel.track('New Listen');
+  }
+
+  function playNextTrack(index) {
+    let newTrack = new Sound(feed[index].previewUrl, null, error => {
+      if (error) {
+        console.log('failed to load the sound', error);
+        return;
+      } else {
+        newTrack.play();
+        newTrack.setNumberOfLoops(-1);
+      }
+    });
+    setCurrentTrack(newTrack);
+  }
+
   function recordTime() {
     let endTime = new Date();
     let timeDiff = endTime - startTime;
-    startTime = new Date();
 
     firestore()
       .collection('users')
@@ -167,11 +226,16 @@ const HomeScreen = ({route}) => {
       })
       .then(() => {
         console.log('added watch document');
+        setStartTime(new Date());
       })
       .catch(error => {
         console.log(error);
       });
   }
+
+  useEffect(() => {
+    console.log(startTime);
+  }, [startTime]);
 
   let playing = true;
   function pauseHandler() {
@@ -245,12 +309,7 @@ const HomeScreen = ({route}) => {
         <>
           <Swiper
             loadMinimal={true}
-            onIndexChanged={index => {
-              currentTrack.stop();
-              recordTime();
-              setCurrentIndex(index);
-              mixpanel.track('New Listen');
-            }}
+            onIndexChanged={index => handleIndexChange(index)}
             loop={false}
             showsButtons={false}>
             {feed.map((post, index) => {

@@ -27,16 +27,13 @@ export default function App() {
   const [username, setUsername] = useState('');
   const [currentPost, setCurrentPost] = useState();
   const [hasSpotify, setHasSpotify] = useState(null);
-  const [initialFeed, setInitialFeed] = useState(null);
+  const [feed, setFeed] = useState(null);
   const [UID, setUID] = useState(null);
+  const [isNewUser, setIsNewUser] = useState(null);
   const appState = useRef(AppState.currentState);
   const navigationRef = useRef();
 
   // AsyncStorage.clear();
-
-  useEffect(() => {
-    console.log('userLogin', userLogin);
-  }, [userLogin]);
 
   // look for changes to access and refresh token
   useEffect(() => {
@@ -149,8 +146,10 @@ export default function App() {
             setHasSpotify,
             UID,
             setUID,
-            initialFeed,
-            setInitialFeed,
+            feed,
+            setFeed,
+            isNewUser,
+            setIsNewUser,
           }}>
           {userLogin ? (
             <Stack.Navigator

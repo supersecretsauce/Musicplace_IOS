@@ -28,7 +28,7 @@ import {Context} from '../../context/Context';
 const SelectGenresScreen = ({navigation, route}) => {
   const {UID} = route.params;
   const [selections, setSelections] = useState([]);
-  const {setInitialFeed} = useContext(Context);
+  const {setFeed} = useContext(Context);
 
   function goBack() {
     navigation.goBack();
@@ -59,7 +59,7 @@ const SelectGenresScreen = ({navigation, route}) => {
             console.log('no songs in this genre');
           } else {
             console.log(resp.data);
-            setInitialFeed(resp.data);
+            setFeed(resp.data);
             navigation.navigate('CreateUsernameScreen');
           }
         })

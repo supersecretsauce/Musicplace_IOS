@@ -20,7 +20,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 const EnterCodeScreen = ({navigation}) => {
   const [showEnterDone, setShowEnterDone] = useState(false);
   const [verificationCode, setVerificationCode] = useState();
-  const {confirm} = useContext(Context);
+  const {confirm, setIsNewUser} = useContext(Context);
 
   const goBack = () => {
     navigation.navigate('PhoneNumberScreen');
@@ -52,6 +52,7 @@ const EnterCodeScreen = ({navigation}) => {
       HapticFeedback.trigger('impactHeavy');
       mixpanel.track('New Signup');
       await confirm.confirm(verificationCode);
+      setIsNewUser(true);
       navigation.navigate('ConnectSpotifyScreen');
     } catch (error) {
       console.log('Invalid code.');

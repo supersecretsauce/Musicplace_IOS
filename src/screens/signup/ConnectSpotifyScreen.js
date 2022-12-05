@@ -21,7 +21,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const ConnectSpotifyScreen = ({navigation}) => {
   const userInfo = firebase.auth().currentUser;
-  const {username, setInitialFeed} = useContext(Context);
+  const {username, setFeed} = useContext(Context);
 
   const goBack = () => {
     navigation.goBack();
@@ -91,8 +91,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
                 )
                 .then(resp => {
                   if (resp.status === 200) {
-                    console.log('successfull response from recco:', resp);
-                    setInitialFeed(resp.data);
+                    setFeed(resp.data);
                   }
                 })
                 .catch(e => {
