@@ -35,7 +35,7 @@ const CreateUsernameScreen = ({navigation}) => {
 
   const formatName = text => {
     const removeExtraStuff = text.replace(
-      /([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&\s])/g,
+      /([@#%=~`\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&\s])/g,
       '',
     );
     const nameLength = removeExtraStuff.length;
