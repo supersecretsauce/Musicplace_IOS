@@ -24,6 +24,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../assets/utilities/Colors';
 import {useNavigation} from '@react-navigation/native';
 import ShareOptions from './ShareOptions';
+import Toast from 'react-native-toast-message';
 
 const ShareSheet = props => {
   const {navigate} = useNavigation();
@@ -183,6 +184,11 @@ const ShareSheet = props => {
                 })
                 .then(() => {
                   console.log('message doc added!');
+                  Toast.show({
+                    type: 'success',
+                    text1: 'Song shared.',
+                    visibilityTime: 2000,
+                  });
                   setMessageText(null);
                   setUserDisplayNameSelections([]);
                   setUserItemSelections([]);
@@ -199,6 +205,11 @@ const ShareSheet = props => {
                   to: userItemSelections[i].UID,
                 })
                 .then(() => {
+                  Toast.show({
+                    type: 'success',
+                    text1: 'Song shared.',
+                    visibilityTime: 2000,
+                  });
                   console.log('message doc added!');
                   setMessageText(null);
                   setUserDisplayNameSelections([]);
@@ -220,6 +231,11 @@ const ShareSheet = props => {
               songInfo: post,
             })
             .then(() => {
+              Toast.show({
+                type: 'success',
+                text1: 'Song shared.',
+                visibilityTime: 2000,
+              });
               console.log('message added');
               setMessageText(null);
               setUserDisplayNameSelections([]);
@@ -237,6 +253,11 @@ const ShareSheet = props => {
               songInfo: post,
             })
             .then(() => {
+              Toast.show({
+                type: 'success',
+                text1: 'Song shared.',
+                visibilityTime: 2000,
+              });
               console.log('message added without text!');
               setMessageText(null);
               setUserDisplayNameSelections([]);
