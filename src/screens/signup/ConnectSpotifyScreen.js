@@ -132,9 +132,13 @@ const ConnectSpotifyScreen = ({navigation}) => {
         displayName: null,
         followersList: [],
         followingList: [],
-        autoPost: true,
+        autoPost: false,
         topSongs: [],
         handle: null,
+        spotifyAccessToken: null,
+        spotifyAccessTokenExpirationDate: null,
+        spotifyRefreshToken: null,
+        spotifyTokenType: null,
       });
     } catch (error) {
       return;

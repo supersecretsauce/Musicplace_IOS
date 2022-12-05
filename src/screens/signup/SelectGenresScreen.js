@@ -7,32 +7,60 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  FlatList,
 } from 'react-native';
 import axios from 'axios';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
-import React, {useState, useEffect, useContext} from 'react';
-import Rap from '../../assets/img/rap.svg';
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+  useMemo,
+} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Pop from '../../assets/img/pop.svg';
-import RB from '../../assets/img/r&b.svg';
-import House from '../../assets/img/house.svg';
-import Trap from '../../assets/img/trap.svg';
-import Soul from '../../assets/img/soul.svg';
-import Edm from '../../assets/img/edm.svg';
-import Rock from '../../assets/img/rock.svg';
 import Colors from '../../assets/utilities/Colors';
-import Electronic from '../../assets/img/electronic.svg';
-import Latin from '../../assets/img/latin.svg';
 import HapticFeedback from 'react-native-haptic-feedback';
 import {Context} from '../../context/Context';
+
 const SelectGenresScreen = ({navigation, route}) => {
   const {UID} = route.params;
   const [selections, setSelections] = useState([]);
+  const [popularGenres, setPopularGenres] = useState(null);
+  const [colors, setColors] = useState(null);
   const {setFeed} = useContext(Context);
 
   function goBack() {
     navigation.goBack();
   }
+
+  useEffect(() => {
+    let colorsArr = [];
+    for (let i = 0; i < 30; i++) {
+      const randomColor = Math.floor(Math.random() * 16777215)
+        .toString(16)
+        .padStart(6, '0');
+      colorsArr.push(`#${randomColor}`);
+    }
+    setColors(colorsArr);
+  }, []);
+
+  useEffect(() => {
+    axios
+      .get('https://reccomendation-api-pmtku.ondigitalocean.app/genres/all')
+      .then(resp => {
+        let allGenres = resp.data.data;
+        let sortable = [];
+        for (var genre in allGenres) {
+          sortable.push([genre, allGenres[genre]]);
+        }
+        let sortedArray = sortable.sort(function (a, b) {
+          return b[1] - a[1];
+        });
+        console.log(sortedArray);
+        setPopularGenres(sortedArray.slice(0, 30));
+      });
+  }, []);
 
   function handleSelections(genre) {
     HapticFeedback.trigger('selection');
@@ -49,7 +77,7 @@ const SelectGenresScreen = ({navigation, route}) => {
       return;
     } else {
       let formattedGenres = selections.join(',');
-      console.log(UID);
+      console.log(formattedGenres);
       axios
         .get(
           `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${UID}?genres=${formattedGenres}`,
@@ -92,178 +120,44 @@ const SelectGenresScreen = ({navigation, route}) => {
         Select your favorite genres so we can get to know you better.
       </Text>
       <View style={styles.scrollViewContainer}>
-        <ScrollView style={styles.middleContainer}>
-          <TouchableOpacity
-            style={styles.genreContainer}
-            onPress={() => handleSelections('rap')}>
-            <View style={styles.genreLeft}>
-              <Rap height={30} />
-              <Text style={styles.genreText}>Rap</Text>
-            </View>
-            <Ionicons
-              name={
-                selections.includes('rap')
-                  ? 'radio-button-on'
-                  : 'radio-button-off'
-              }
-              color="white"
-              size={25}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.genreContainer}
-            onPress={() => handleSelections('pop')}>
-            <View style={styles.genreLeft}>
-              <Pop height={30} />
-              <Text style={styles.genreText}>Pop</Text>
-            </View>
-            <Ionicons
-              name={
-                selections.includes('pop')
-                  ? 'radio-button-on'
-                  : 'radio-button-off'
-              }
-              color="white"
-              size={25}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.genreContainer}
-            onPress={() => handleSelections('r&b')}>
-            <View style={styles.genreLeft}>
-              <RB height={30} />
-              <Text style={styles.genreText}>R&B</Text>
-            </View>
-            <Ionicons
-              name={
-                selections.includes('r&b')
-                  ? 'radio-button-on'
-                  : 'radio-button-off'
-              }
-              color="white"
-              size={25}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.genreContainer}
-            onPress={() => handleSelections('house')}>
-            <View style={styles.genreLeft}>
-              <House height={30} />
-              <Text style={styles.genreText}>House</Text>
-            </View>
-            <Ionicons
-              name={
-                selections.includes('house')
-                  ? 'radio-button-on'
-                  : 'radio-button-off'
-              }
-              color="white"
-              size={25}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.genreContainer}
-            onPress={() => handleSelections('trap')}>
-            <View style={styles.genreLeft}>
-              <Trap height={30} />
-              <Text style={styles.genreText}>Trap</Text>
-            </View>
-            <Ionicons
-              name={
-                selections.includes('trap')
-                  ? 'radio-button-on'
-                  : 'radio-button-off'
-              }
-              color="white"
-              size={25}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.genreContainer}
-            onPress={() => handleSelections('edm')}>
-            <View style={styles.genreLeft}>
-              <Edm height={30} />
-              <Text style={styles.genreText}>EDM</Text>
-            </View>
-            <Ionicons
-              name={
-                selections.includes('edm')
-                  ? 'radio-button-on'
-                  : 'radio-button-off'
-              }
-              color="white"
-              size={25}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.genreContainer}
-            onPress={() => handleSelections('soul')}>
-            <View style={styles.genreLeft}>
-              <Soul height={30} />
-              <Text style={styles.genreText}>Soul</Text>
-            </View>
-            <Ionicons
-              name={
-                selections.includes('soul')
-                  ? 'radio-button-on'
-                  : 'radio-button-off'
-              }
-              color="white"
-              size={25}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.genreContainer}
-            onPress={() => handleSelections('rock')}>
-            <View style={styles.genreLeft}>
-              <Rock height={30} />
-              <Text style={styles.genreText}>Rock</Text>
-            </View>
-            <Ionicons
-              name={
-                selections.includes('rock')
-                  ? 'radio-button-on'
-                  : 'radio-button-off'
-              }
-              color="white"
-              size={25}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.genreContainer}
-            onPress={() => handleSelections('electronic')}>
-            <View style={styles.genreLeft}>
-              <Electronic height={30} />
-              <Text style={styles.genreText}>Electronic</Text>
-            </View>
-            <Ionicons
-              name={
-                selections.includes('electronic')
-                  ? 'radio-button-on'
-                  : 'radio-button-off'
-              }
-              color="white"
-              size={25}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.genreContainer}
-            onPress={() => handleSelections('trap latino')}>
-            <View style={styles.genreLeft}>
-              <Latin height={30} />
-              <Text style={styles.genreText}>Trap Latino</Text>
-            </View>
-            <Ionicons
-              name={
-                selections.includes('latin')
-                  ? 'radio-button-on'
-                  : 'radio-button-off'
-              }
-              color="white"
-              size={25}
-            />
-          </TouchableOpacity>
-        </ScrollView>
+        {popularGenres && colors ? (
+          <FlatList
+            style={styles.middleContainer}
+            data={popularGenres}
+            renderItem={({item, index}) => {
+              return (
+                <TouchableOpacity
+                  style={styles.genreContainer}
+                  key={index}
+                  onPress={() => handleSelections(item[0])}>
+                  <View style={styles.genreLeft}>
+                    <View
+                      // eslint-disable-next-line react-native/no-inline-styles
+                      style={{
+                        backgroundColor: colors[index],
+                        height: 30,
+                        width: 30,
+                        borderRadius: 30,
+                      }}
+                    />
+                    <Text style={styles.genreText}>{item[0]}</Text>
+                  </View>
+                  <Ionicons
+                    name={
+                      selections.includes(item[0])
+                        ? 'radio-button-on'
+                        : 'radio-button-off'
+                    }
+                    color="white"
+                    size={25}
+                  />
+                </TouchableOpacity>
+              );
+            }}
+          />
+        ) : (
+          <></>
+        )}
       </View>
       <TouchableOpacity
         style={selections.length > 0 ? styles.nextBtn : styles.nextBtnEmpty}
@@ -333,7 +227,8 @@ const styles = StyleSheet.create({
   genreText: {
     color: 'white',
     fontFamily: 'Inter-Medium',
-    fontSize: 26,
+    fontSize: 22,
+    marginLeft: 10,
   },
   nextBtnEmpty: {
     backgroundColor: 'rgba(255, 8, 0, 0.5)',
