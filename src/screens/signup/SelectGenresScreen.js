@@ -18,20 +18,11 @@ import React, {
   useCallback,
   useMemo,
 } from 'react';
-import Rap from '../../assets/img/rap.svg';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Pop from '../../assets/img/pop.svg';
-import RB from '../../assets/img/r&b.svg';
-import House from '../../assets/img/house.svg';
-import Trap from '../../assets/img/trap.svg';
-import Soul from '../../assets/img/soul.svg';
-import Edm from '../../assets/img/edm.svg';
-import Rock from '../../assets/img/rock.svg';
 import Colors from '../../assets/utilities/Colors';
-import Electronic from '../../assets/img/electronic.svg';
-import Latin from '../../assets/img/latin.svg';
 import HapticFeedback from 'react-native-haptic-feedback';
 import {Context} from '../../context/Context';
+
 const SelectGenresScreen = ({navigation, route}) => {
   const {UID} = route.params;
   const [selections, setSelections] = useState([]);
@@ -42,20 +33,6 @@ const SelectGenresScreen = ({navigation, route}) => {
   function goBack() {
     navigation.goBack();
   }
-
-  // const generateColor = () => {
-  //   const randomColor = Math.floor(Math.random() * 16777215)
-  //     .toString(16)
-  //     .padStart(6, '0');
-  //   return `#${randomColor}`;
-  // };
-
-  const generateColor = () => {
-    const randomColor = Math.floor(Math.random() * 16777215)
-      .toString(16)
-      .padStart(6, '0');
-    return `#${randomColor}`;
-  };
 
   useEffect(() => {
     let colorsArr = [];
