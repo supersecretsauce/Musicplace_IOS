@@ -34,7 +34,7 @@ const SinglePostBottomSheet = props => {
   const [containerSmall, setContainerSmall] = useState(false);
   const [comments, setComments] = useState(false);
   const [userDoc, setUserDoc] = useState(null);
-  const [userText, setUserText] = useState(null);
+  const [userText, setUserText] = useState('');
   const [replyInfo, setReplyInfo] = useState(null);
   const [showReplies, setShowReplies] = useState(false);
   const [parentCommentID, setParentCommentID] = useState([]);
@@ -161,7 +161,9 @@ const SinglePostBottomSheet = props => {
   // handle logic when a user posts a comment
   function handleCommentSubmit() {
     console.log(replyInfo);
-
+    if (userText === '') {
+      return;
+    }
     if (replyInfo) {
       firestore()
         .collection('posts')
