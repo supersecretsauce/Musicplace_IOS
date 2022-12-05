@@ -16,12 +16,35 @@ const UserPosts = props => {
   useEffect(() => {
     if (UID) {
       async function getTracks() {
-        const posts = await firestore()
+        const userDoc = await firestore()
           .collection('users')
           .doc(profileID)
           .get();
-        if (posts.exists) {
-          console.log(posts._data.userPosts);
+        if (userDoc.exists) {
+          if (userDoc.data().topSongs.length > 0) {
+            let topSongsArr = [];
+            async function getAllTopSongs() {
+              for (let i = 0; i < userDoc.data().topSongs.length; i += 10) {
+                await firestore()
+                  .collection('posts')
+                  .where(
+                    firestore.FieldPath.documentId(),
+                    'in',
+                    userDoc.data().topSongs.slice(i, i + 10),
+                  )
+                  .get()
+                  .then(resp => {
+                    console.log(resp);
+                    resp.docs.forEach(document => {
+                      topSongsArr.push(document.data());
+                    });
+                  });
+              }
+
+              setUserPosts(topSongsArr);
+            }
+            getAllTopSongs();
+          }
           setUserPosts(posts._data.userPosts);
         }
       }
