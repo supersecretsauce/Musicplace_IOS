@@ -45,7 +45,6 @@ const UserPosts = props => {
             }
             getAllTopSongs();
           }
-          setUserPosts(posts._data.userPosts);
         }
       }
       getTracks();

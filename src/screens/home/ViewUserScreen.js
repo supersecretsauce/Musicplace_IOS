@@ -191,7 +191,7 @@ const ViewUserScreen = ({route, navigation}) => {
                 color="white"
                 size={28}
               />
-              <Text style={styles.postText}>Posts</Text>
+              <Text style={styles.postText}>Top Songs</Text>
             </View>
             {UID !== profileID && (
               <View style={styles.btnRow}>
@@ -317,8 +317,8 @@ const styles = StyleSheet.create({
   postText: {
     color: 'white',
     fontSize: 18,
-    fontFamily: 'Inter-Medium',
-    marginLeft: 10,
+    fontFamily: 'Inter-Bold',
+    marginLeft: 5,
   },
   btnRow: {
     flexDirection: 'row',
