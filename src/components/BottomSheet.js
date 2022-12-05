@@ -7,6 +7,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
   FlatList,
+  Keyboard,
 } from 'react-native';
 import React, {useState, useEffect, useRef} from 'react';
 import Animated, {
@@ -154,6 +155,7 @@ const BottomSheet = props => {
     if (userText === '') {
       return;
     }
+    Keyboard.dismiss();
     if (replyInfo) {
       firestore()
         .collection('posts')
