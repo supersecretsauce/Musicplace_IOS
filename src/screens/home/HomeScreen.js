@@ -142,7 +142,9 @@ const HomeScreen = ({route}) => {
           )
           .then(resp => {
             console.log(resp);
-            setFeed(resp.data);
+            if (resp.data.length > 0) {
+              setFeed(resp.data);
+            }
           })
           .catch(e => {
             console.log(e);
