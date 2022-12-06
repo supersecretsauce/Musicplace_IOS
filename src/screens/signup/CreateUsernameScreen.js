@@ -54,35 +54,25 @@ const CreateUsernameScreen = ({navigation}) => {
   };
 
   // get all usernames and set them in state
-  const getAllUsernames = async () => {
-    let docIDs = await firestore()
-      .collection('usernames')
-      .get()
-      .then(resp => {
-        return resp.docs.map(doc => {
-          return doc.id;
-        });
-      });
-    setUsernames(docIDs);
-  };
+  // const getAllUsernames = async () => {
+  //   let docIDs = await firestore()
+  //     .collection('usernames')
+  //     .get()
+  //     .then(resp => {
+  //       return resp.docs.map(doc => {
+  //         return doc.id;
+  //       });
+  //     });
+  //   setUsernames(docIDs);
+  // };
 
-  getAllUsernames();
+  // getAllUsernames();
 
   const checkIfUsernameTaken = async () => {
     if (username === '') {
       console.log("can't enter empty string");
       return;
-    }
-    if (userNames.includes(username)) {
-      console.log('this name is taken');
-      Toast.show({
-        type: 'error',
-        text1: 'This username is taken',
-        text2: 'Try entering another username.',
-        visibilityTime: 3000,
-      });
     } else {
-      console.log('this name is not taken');
       HapticFeedback.trigger('impactHeavy');
       try {
         await firestore().collection('usernames').doc(username).set({
@@ -94,14 +84,15 @@ const CreateUsernameScreen = ({navigation}) => {
         });
         navigation.navigate('SwipeUpScreen');
       } catch (error) {
+        Toast.show({
+          type: 'error',
+          text1: 'This username is taken',
+          text2: 'Try entering another username.',
+          visibilityTime: 3000,
+        });
         console.log(error);
         return;
       }
-    }
-  };
-
-  const backspace = ({nativeEvent}) => {
-    if (nativeEvent.key === 'Backspace') {
     }
   };
 
@@ -127,7 +118,6 @@ const CreateUsernameScreen = ({navigation}) => {
         <View style={styles.rectangle}>
           <TextInput
             maxLength={20}
-            onKeyPress={backspace}
             keyboardType="default"
             style={styles.inputText}
             placeholder="Username"
