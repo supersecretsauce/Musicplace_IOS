@@ -148,6 +148,8 @@ const ViewUserScreen = ({route, navigation}) => {
         userProfile: userProfile,
         prevRoute: 'ViewUserScreen',
       });
+    } else if (prevRoute === 'ActivityScreen') {
+      navigation.navigate('ActivityScreen');
     } else {
       navigation.navigate('HomeScreen');
     }
