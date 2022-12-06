@@ -17,6 +17,7 @@ import HapticFeedback from 'react-native-haptic-feedback';
 import firestore from '@react-native-firebase/firestore';
 import Toast from 'react-native-toast-message';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import axios from 'axios';
 
 const PhoneNumber = ({navigation}) => {
   const [inputValue, setInputValue] = useState('');
@@ -80,24 +81,28 @@ const PhoneNumber = ({navigation}) => {
   };
 
   async function doesNumberExist() {
-    firestore()
-      .collection('users')
-      // Filter results
-      .where('phoneNumber', '==', firebaseNumberFormat)
-      .get()
-      .then(querySnapshot => {
-        if (querySnapshot.empty === true) {
-          console.log('this number does not exist');
-          signInWithPhoneNumber();
-        } else {
-          console.log('this number does exist');
+    axios
+      .post(
+        'https://us-central1-musicplace-66f20.cloudfunctions.net/checkPhoneNumber',
+        {
+          phoneNumber: firebaseNumberFormat,
+        },
+      )
+      .then(resp => {
+        console.log(resp.data.exists);
+        if (resp.data.exists) {
           Toast.show({
             type: 'error',
             text1: 'This number already exists',
             text2: 'Try logging in instead.',
             visibilityTime: 3000,
           });
+        } else {
+          signInWithPhoneNumber();
         }
+      })
+      .catch(e => {
+        console.log(e);
       });
   }
 
@@ -107,7 +112,6 @@ const PhoneNumber = ({navigation}) => {
       const confirmation = await auth().signInWithPhoneNumber(
         firebaseNumberFormat,
       );
-
       setConfirm(confirmation);
       navigation.navigate('EnterCodeScreen');
     } catch (error) {

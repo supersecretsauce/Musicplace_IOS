@@ -16,12 +16,11 @@ import Musicplace from '../../assets/img/musicplace-signup.svg';
 import firestore from '@react-native-firebase/firestore';
 import Toast from 'react-native-toast-message';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
+import axios from 'axios';
 const ExistingPhoneNumberScreen = ({navigation}) => {
   const [inputValue, setInputValue] = useState('');
   const [showSubmitDone, setShowSubmitDone] = useState(false);
   const [firebaseNumberFormat, setFirebaseNumberFormat] = useState('');
-  const [userExists, setUserExists] = useState(false);
   const {setConfirm} = useContext(Context);
 
   const goBack = () => {
@@ -80,37 +79,38 @@ const ExistingPhoneNumberScreen = ({navigation}) => {
   };
 
   const signIn = async () => {
-    const loginStatus = await firestore()
-      .collection('users')
-      .where('phoneNumber', '==', firebaseNumberFormat)
-      .get();
-
-    if (loginStatus.empty === false) {
-      try {
-        const confirmation = await auth().signInWithPhoneNumber(
-          firebaseNumberFormat,
-        );
-        setConfirm(confirmation);
-        navigation.navigate('ExistingCodeScreen');
-      } catch (error) {
-        console.log(error);
-      }
-    } else {
-      setUserExists(true);
-    }
-  };
-
-  useEffect(() => {
-    if (userExists) {
-      Toast.show({
-        type: 'error',
-        text1: "This user doesn't exist",
-        text2: 'Try creating an account instead',
-        visibilityTime: 2000,
+    axios
+      .post(
+        'https://us-central1-musicplace-66f20.cloudfunctions.net/checkPhoneNumber',
+        {
+          phoneNumber: firebaseNumberFormat,
+        },
+      )
+      .then(resp => {
+        console.log(resp.data.exists);
+        if (resp.data.exists) {
+          const confirmation = auth()
+            .signInWithPhoneNumber(firebaseNumberFormat)
+            .then(() => {
+              setConfirm(confirmation);
+              navigation.navigate('ExistingCodeScreen');
+            })
+            .catch(e => {
+              console.log(e);
+            });
+        } else {
+          Toast.show({
+            type: 'error',
+            text1: 'This number does not exist',
+            text2: 'Try creating an account instead.',
+            visibilityTime: 3000,
+          });
+        }
+      })
+      .catch(e => {
+        console.log(e);
       });
-      setUserExists(false);
-    }
-  }, [userExists]);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
