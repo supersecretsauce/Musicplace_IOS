@@ -41,7 +41,6 @@ const SinglePostBottomSheet = props => {
   const [parentCommentID, setParentCommentID] = useState([]);
   const [replies, setReplies] = useState(null);
   const [likedComments, setLikedComments] = useState([]);
-  const [likeValue, setLikeValue] = useState(0);
   const inputRef = useRef();
   const flatListRef = useRef();
   const {navigate} = useNavigation();
@@ -70,7 +69,6 @@ const SinglePostBottomSheet = props => {
       setComments(null);
       return;
     } else {
-      console.log('comments exist!');
       setComments(commentDocs._docs);
       let myLikes = commentDocs.docs.filter(doc => {
         return doc.data().likesArray.includes(UID);
@@ -78,7 +76,6 @@ const SinglePostBottomSheet = props => {
       let filteredLikes = myLikes.map(likeDoc => {
         return likeDoc.id;
       });
-      console.log(filteredLikes);
       setLikedComments(filteredLikes);
     }
   }
@@ -300,6 +297,15 @@ const SinglePostBottomSheet = props => {
     const decrement = firebase.firestore.FieldValue.increment(-1);
     if (likedComments.includes(item.id)) {
       setLikedComments(likedComments.filter(id => id !== item.id));
+      let updatedComments = comments.map(comment => {
+        if (comment.id === item.id) {
+          comment._data.likeAmount -= 1;
+          return comment;
+        } else {
+          return comment;
+        }
+      });
+      setComments(updatedComments);
       firestore()
         .collection('posts')
         .doc(songInfo[0].id)
@@ -313,9 +319,17 @@ const SinglePostBottomSheet = props => {
           console.log('Like removed :(');
         })
         .catch(e => console.log(e));
-      setLikeValue(-1);
     } else {
       setLikedComments([...likedComments, item.id]);
+      let updatedComments = comments.map(comment => {
+        if (comment.id === item.id) {
+          comment._data.likeAmount += 1;
+          return comment;
+        } else {
+          return comment;
+        }
+      });
+      setComments(updatedComments);
       firestore()
         .collection('posts')
         .doc(songInfo[0].id)
@@ -350,7 +364,6 @@ const SinglePostBottomSheet = props => {
           console.log('added doc to parent user');
         })
         .catch(e => console.log(e));
-      setLikeValue(1);
     }
   }
 
@@ -456,11 +469,7 @@ const SinglePostBottomSheet = props => {
                                 />
                               </TouchableOpacity>
                               <Text style={styles.likeAmount}>
-                                {likeValue && likedComments.includes(item.id)
-                                  ? likeValue === 1
-                                    ? item._data.likeAmount + 1
-                                    : item._data.likeAmount - 1
-                                  : item._data.likeAmount}
+                                {item._data.likeAmount}
                               </Text>
                             </View>
                           </View>

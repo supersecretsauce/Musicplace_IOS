@@ -41,7 +41,6 @@ const BottomSheet = props => {
   const [parentCommentID, setParentCommentID] = useState([]);
   const [replies, setReplies] = useState(null);
   const [likedComments, setLikedComments] = useState([]);
-  const [likeValue, setLikeValue] = useState(null);
   const inputRef = useRef();
   const {navigate} = useNavigation();
 
@@ -59,16 +58,13 @@ const BottomSheet = props => {
       setComments(null);
       return;
     } else {
-      console.log('comments exist!');
       setComments(commentDocs._docs);
-
       let myLikes = commentDocs.docs.filter(doc => {
         return doc.data().likesArray.includes(UID);
       });
       let filteredLikes = myLikes.map(likeDoc => {
         return likeDoc.id;
       });
-      console.log(filteredLikes);
       setLikedComments(filteredLikes);
     }
   }
@@ -293,6 +289,15 @@ const BottomSheet = props => {
     console.log(item);
     if (likedComments.includes(item.id)) {
       setLikedComments(likedComments.filter(id => id !== item.id));
+      let updatedComments = comments.map(comment => {
+        if (comment.id === item.id) {
+          comment._data.likeAmount -= 1;
+          return comment;
+        } else {
+          return comment;
+        }
+      });
+      setComments(updatedComments);
       firestore()
         .collection('posts')
         .doc(feed[currentIndex].id)
@@ -305,9 +310,18 @@ const BottomSheet = props => {
         .then(() => {
           console.log('Like removed :(');
         });
-      setLikeValue(-1);
     } else {
+      console.log(feed[currentIndex]);
       setLikedComments([...likedComments, item.id]);
+      let updatedComments = comments.map(comment => {
+        if (comment.id === item.id) {
+          comment._data.likeAmount += 1;
+          return comment;
+        } else {
+          return comment;
+        }
+      });
+      setComments(updatedComments);
       firestore()
         .collection('posts')
         .doc(feed[currentIndex].id)
@@ -330,7 +344,7 @@ const BottomSheet = props => {
           from: 'user',
           type: 'like',
           timestamp: firestore.FieldValue.serverTimestamp(),
-          songInfo: feed[currentIndex]._data,
+          songInfo: feed[currentIndex],
           handle: userDoc.handle,
           displayName: userDoc.displayName,
           pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
@@ -340,8 +354,6 @@ const BottomSheet = props => {
         .then(() => {
           console.log('added doc to parent user');
         });
-
-      setLikeValue(1);
     }
   }
 
@@ -434,12 +446,9 @@ const BottomSheet = props => {
                                   }
                                   size={18}
                                 />
+                                {/* if item is in liked comments and if item is on local &&    */}
                                 <Text style={styles.likeAmount}>
-                                  {likeValue && likedComments.includes(item.id)
-                                    ? likeValue === 1
-                                      ? item._data.likeAmount + 1
-                                      : item._data.likeAmount - 1
-                                    : item._data.likeAmount}
+                                  {item._data.likeAmount}
                                 </Text>
                               </TouchableOpacity>
                             </View>
