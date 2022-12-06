@@ -122,6 +122,9 @@ const HomeScreen = () => {
                 .then(() => {
                   console.log('token pushed!');
                 });
+            })
+            .catch(e => {
+              console.log(e);
             });
         } else {
           console.log(authStatus);

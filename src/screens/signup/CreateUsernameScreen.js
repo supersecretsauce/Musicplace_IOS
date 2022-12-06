@@ -82,6 +82,7 @@ const CreateUsernameScreen = ({navigation}) => {
           displayName: username,
           handle: username,
         });
+        setUsername('');
         navigation.navigate('SwipeUpScreen');
       } catch (error) {
         Toast.show({
