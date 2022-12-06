@@ -114,6 +114,24 @@ const ViewUserScreen = ({route, navigation}) => {
         .then(() => {
           console.log('followed user!');
         });
+      firestore()
+        .collection('users')
+        .doc(profileID)
+        .collection('activity')
+        .add({
+          UID: UID,
+          from: 'user',
+          type: 'follow',
+          timestamp: firestore.FieldValue.serverTimestamp(),
+          songInfo: null,
+          handle: myUser.handle,
+          displayName: myUser.displayName,
+          pfpURL: myUser?.pfpURL ? myUser?.pfpURL : null,
+          notificationRead: false,
+        })
+        .then(() => {
+          console.log('added doc to parent user');
+        });
     }
   }
 
@@ -130,6 +148,8 @@ const ViewUserScreen = ({route, navigation}) => {
         userProfile: userProfile,
         prevRoute: 'ViewUserScreen',
       });
+    } else if (prevRoute === 'ActivityScreen') {
+      navigation.navigate('ActivityScreen');
     } else {
       navigation.navigate('HomeScreen');
     }
