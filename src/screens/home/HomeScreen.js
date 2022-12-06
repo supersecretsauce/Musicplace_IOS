@@ -34,17 +34,16 @@ import axios from 'axios';
 import LoadingPost from '../../components/LoadingPost';
 import {useSpotifyService} from '../../hooks/useSpotifyService';
 
-const HomeScreen = ({route}) => {
+const HomeScreen = () => {
   Sound.setCategory('Playback');
   const {authFetch} = useSpotifyService();
-  const {prevScreen, trackID} = route.params ?? {};
-  const [loadedFeed, setLoadedFeed] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentTrack, setCurrentTrack] = useState(null);
   const [likedTracks, setLikedTracks] = useState([]);
   const [showShareSheet, setShowShareSheet] = useState(false);
   const [initialFeed, setInitialFeed] = useState(true);
   const [startTime, setStartTime] = useState(new Date());
+  const [isOnHomeScreen, setIsOnHomeScreen] = useState(true);
   const {
     accessToken,
     refreshToken,
@@ -61,6 +60,7 @@ const HomeScreen = ({route}) => {
 
   useFocusEffect(
     useCallback(() => {
+      setIsOnHomeScreen(true);
       if (currentTrack) {
         currentTrack.play();
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -69,6 +69,8 @@ const HomeScreen = ({route}) => {
         setStartTime(new Date());
       }
       return () => {
+        // if a user leaves the homescreen while feed is loading, don't play sound
+        setIsOnHomeScreen(false);
         if (currentTrack) {
           currentTrack.pause();
           playing = false;
@@ -156,7 +158,7 @@ const HomeScreen = ({route}) => {
   }, [UID]);
 
   useEffect(() => {
-    if (feed && initialFeed) {
+    if (feed && initialFeed && isOnHomeScreen) {
       let newTrack = new Sound(feed[currentIndex].previewUrl, null, error => {
         if (error) {
           console.log('failed to load the sound', error);
@@ -169,11 +171,11 @@ const HomeScreen = ({route}) => {
       setCurrentTrack(newTrack);
       setInitialFeed(false);
     }
-  }, [feed]);
+  }, [feed, isOnHomeScreen]);
 
   useEffect(() => {
     console.log(currentIndex);
-    if (feed) {
+    if (feed && isOnHomeScreen) {
       if (currentIndex == Math.floor(feed.length / 2)) {
         console.log('halfway!');
         axios
@@ -189,7 +191,7 @@ const HomeScreen = ({route}) => {
           });
       }
     }
-  }, [currentIndex]);
+  }, [currentIndex, isOnHomeScreen]);
 
   function handleIndexChange(index) {
     recordTime(index);
