@@ -210,6 +210,7 @@ const DiscoverScreen = ({navigation}) => {
       {results && searchFocused ? (
         <View style={styles.resultsContainer}>
           <FlatList
+            showsVerticalScrollIndicator={false}
             contentContainerStyle={{paddingBottom: '25%'}}
             data={results}
             renderItem={({item, index}) => {

@@ -121,6 +121,7 @@ const MyPosts = props => {
           <>
             <View style={styles.trackScrollContainer}>
               <FlatList
+                showsVerticalScrollIndicator={false}
                 data={userPosts}
                 numColumns={2}
                 contentContainerStyle={{paddingBottom: '40%'}}
