@@ -102,7 +102,6 @@ const HomeScreen = () => {
   useEffect(() => {
     if (UID) {
       //get noti token
-
       async function requestUserPermission() {
         const authStatus = await messaging().requestPermission();
         const enabled =

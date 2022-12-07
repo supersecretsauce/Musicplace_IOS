@@ -12,6 +12,7 @@ import notifee, {EventType} from '@notifee/react-native';
 import {AppState} from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import TabNavigator from './src/routes/TabNavigator';
+
 mixpanel.init();
 const Stack = createNativeStackNavigator();
 

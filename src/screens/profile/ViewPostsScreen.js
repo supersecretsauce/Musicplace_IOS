@@ -22,20 +22,21 @@ import {firebase} from '@react-native-firebase/firestore';
 import {mixpanel} from '../../../mixpanel';
 import {useSpotifyService} from '../../hooks/useSpotifyService';
 import ShareSheet from '../../components/ShareSheet';
-const ViewPostsScreen = ({route}) => {
+const ViewPostsScreen = ({route, navigation}) => {
   Sound.setCategory('Playback');
   const {authFetch} = useSpotifyService();
-  const {songInfo, UID, openSheet, commentDocID} = route.params;
+  const {songInfo, UID, openSheet, commentDocID} = route.params ?? {};
   const [likedTracks, setLikedTracks] = useState([]);
   const [currentTrack, setCurrentTrack] = useState(null);
   const [showShareSheet, setShowShareSheet] = useState(false);
-
   const {
     accessToken,
     refreshToken,
     setAccessToken,
     setRefreshToken,
     hasSpotify,
+    trackDeepLink,
+    setTrackDeepLink,
   } = useContext(Context);
 
   let playing = true;
@@ -93,6 +94,15 @@ const ViewPostsScreen = ({route}) => {
   }
 
   useEffect(() => {
+    const unsubscribe = navigation.addListener('gestureStart', e => {
+      // Do something
+      console.log('swiped');
+    });
+
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
     if (songInfo) {
       console.log(songInfo);
       let newTrack = new Sound(songInfo[0].previewUrl, null, error => {
@@ -105,8 +115,19 @@ const ViewPostsScreen = ({route}) => {
         }
       });
       setCurrentTrack(newTrack);
+    } else if (trackDeepLink) {
+      firestore()
+        .collection('posts')
+        .doc(trackDeepLink)
+        .get()
+        .then(resp => {
+          console.log(resp);
+          songInfo = resp.data();
+          setTrackDeepLink(null);
+        });
+      return;
     }
-  }, [songInfo]);
+  }, [songInfo, trackDeepLink]);
 
   function likeHandler() {
     if (hasSpotify) {

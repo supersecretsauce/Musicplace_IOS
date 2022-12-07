@@ -1,13 +1,54 @@
-import React from 'react';
+import React, {useEffect, useContext} from 'react';
+import {Context} from '../context/Context';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import HomeStackScreen from './HomeStackScreen';
 import DiscoverStackScreen from './DiscoverStackScreen';
 import ActivityStackScreen from './ActivityStackScreen';
 import ProfileStackScreen from './ProfileStackScreen';
+import branch from 'react-native-branch';
+import firestore from '@react-native-firebase/firestore';
+import {useNavigation} from '@react-navigation/native';
+
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
+  const {UID} = useContext(Context);
+  const {navigate} = useNavigation();
+
+  useEffect(() => {
+    const subscription = branch.subscribe(({error, params, uri}) => {
+      if (error) {
+        console.error('Error from Branch: ' + error);
+        return;
+      }
+      // params will never be null if error is null
+      if (params.$canonical_identifier) {
+        let songArr = [];
+        let trackID = params.$canonical_identifier.slice(5);
+        firestore()
+          .collection('posts')
+          .doc(trackID)
+          .get()
+          .then(resp => {
+            songArr.push(resp.data());
+            navigate('Activity', {
+              screen: 'ViewPostsScreen',
+              params: {
+                UID: UID,
+                songInfo: songArr,
+              },
+            });
+          });
+      }
+      console.log('uri', uri);
+    });
+
+    return () => {
+      subscription();
+    };
+  });
+
   return (
     <Tab.Navigator
       screenOptions={({route}) => ({
