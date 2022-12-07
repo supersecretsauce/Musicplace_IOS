@@ -11,6 +11,7 @@ import {Context} from '../context/Context';
 import {authorize} from 'react-native-app-auth';
 import {spotConfig} from '../../SpotifyConfig';
 import {firebase} from '@react-native-firebase/firestore';
+import functions from '@react-native-firebase/functions';
 import axios from 'axios';
 
 const ProfileSettings = props => {
@@ -83,32 +84,33 @@ const ProfileSettings = props => {
   const deleteAccount = async () => {
     let user = firebase.auth().currentUser;
     try {
-      console.log(UID);
-      firestore()
-        .collection('users')
-        .doc(UID)
-        .delete()
-        .then(() => {
-          firestore()
-            .collection('usernames')
-            .where('UID', '==', UID)
-            .get()
-            .then(resp => {
-              let docRef = resp.docs[0].id;
-              firestore()
-                .collection('usernames')
-                .doc(docRef)
-                .delete()
-                .then(() => {
-                  user.delete();
-                  setUserLogin(false);
-                  setCurrentTrack(null);
-                  setFeed(null);
-                  AsyncStorage.clear();
-                  // currentTrack.stop();
-                });
-            });
-        });
+      user.delete();
+      // console.log(UID);
+      // firestore()
+      //   .collection('users')
+      //   .doc(UID)
+      //   .delete()
+      //   .then(() => {
+      //     firestore()
+      //       .collection('usernames')
+      //       .where('UID', '==', UID)
+      //       .get()
+      //       .then(resp => {
+      //         let docRef = resp.docs[0].id;
+      //         firestore()
+      //           .collection('usernames')
+      //           .doc(docRef)
+      //           .delete()
+      //           .then(() => {
+      //             user.delete();
+      //             setUserLogin(false);
+      //             setCurrentTrack(null);
+      //             setFeed(null);
+      //             AsyncStorage.clear();
+      //             // currentTrack.stop();
+      //           });
+      //       });
+      //   });
     } catch (error) {
       console.log(error);
     }
