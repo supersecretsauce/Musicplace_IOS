@@ -10,10 +10,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Context} from '../context/Context';
 import {authorize} from 'react-native-app-auth';
 import {spotConfig} from '../../SpotifyConfig';
+import {firebase} from '@react-native-firebase/firestore';
 
 const ProfileSettings = props => {
   const [spotifyConnected, setSpotifyConnected] = useState(false);
-  const {setUserLogin, username, setCurrentTrack, currentTrack} =
+  const {setUserLogin, username, setCurrentTrack, currentTrack, setFeed} =
     useContext(Context);
   const {UID} = props;
 
@@ -78,25 +79,29 @@ const ProfileSettings = props => {
       });
   };
 
-  const deleteAccount = () => {
-    firestore()
-      .collection('users')
-      .doc(UID)
-      .delete()
-      .then(() => {
-        console.log('User deleted!');
-        firestore()
-          .collection('usernames')
-          .doc(username)
-          .delete()
-          .then(() => {
-            console.log('username deleted!');
-            setUserLogin(false);
-            setCurrentTrack(null);
-            currentTrack.stop();
-            AsyncStorage.clear();
-          });
-      });
+  const deleteAccount = async () => {
+    let user = firebase.auth().currentUser;
+    try {
+      firestore()
+        .collection('usernames')
+        .where('UID', '==', UID)
+        .get()
+        .then(resp => {
+          let docRef = resp.docs[0].id;
+          firestore()
+            .collection('usernames')
+            .doc(docRef)
+            .delete()
+            .then(() => {
+              setUserLogin(false);
+              setFeed(null);
+              AsyncStorage.clear();
+              user.delete();
+            });
+        });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

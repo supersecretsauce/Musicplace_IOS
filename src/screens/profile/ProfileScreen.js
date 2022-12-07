@@ -65,10 +65,12 @@ const ProfileScreen = ({navigation}) => {
         .doc(UID)
         .onSnapshot(documentSnapshot => {
           console.log(documentSnapshot);
-          setUserProfile(documentSnapshot.data());
-          setDisplayName(documentSnapshot.data().displayName);
-          setBio(documentSnapshot.data().bio);
-          setTopSongs(documentSnapshot.data().topSongs);
+          if (documentSnapshot.exists) {
+            setUserProfile(documentSnapshot.data());
+            setDisplayName(documentSnapshot.data().displayName);
+            setBio(documentSnapshot.data().bio);
+            setTopSongs(documentSnapshot.data().topSongs);
+          }
         });
 
       // Stop listening for updates when no longer required
