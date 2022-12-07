@@ -146,8 +146,8 @@ const ShareSheet = props => {
               [userItemSelections[i].UID]: true,
               [UID]: true,
             },
-            createdAt: new Date(),
-            lastMessageAt: new Date(),
+            createdAt: firestore.FieldValue.serverTimestamp(),
+            lastMessageAt: firestore.FieldValue.serverTimestamp(),
             [userItemSelections[i].UID]: {
               UID: userItemSelections[i].UID,
               displayName: userItemSelections[i].displayName,
@@ -178,7 +178,7 @@ const ShareSheet = props => {
                 .add({
                   messageText: messageText,
                   songInfo: post,
-                  sentAt: new Date(),
+                  sentAt: firestore.FieldValue.serverTimestamp(),
                   from: UID,
                   to: userItemSelections[i].UID,
                 })
@@ -200,7 +200,7 @@ const ShareSheet = props => {
                 .collection('messages')
                 .add({
                   songInfo: post,
-                  sentAt: new Date(),
+                  sentAt: firestore.FieldValue.serverTimestamp(),
                   from: UID,
                   to: userItemSelections[i].UID,
                 })
@@ -224,7 +224,7 @@ const ShareSheet = props => {
             .doc(doc._docs[0].id)
             .collection('messages')
             .add({
-              sentAt: new Date(),
+              sentAt: firestore.FieldValue.serverTimestamp(),
               from: UID,
               to: userItemSelections[i].UID,
               messageText: messageText,
@@ -247,7 +247,7 @@ const ShareSheet = props => {
             .doc(doc._docs[0].id)
             .collection('messages')
             .add({
-              sentAt: new Date(),
+              sentAt: firestore.FieldValue.serverTimestamp(),
               from: UID,
               to: userItemSelections[i].UID,
               songInfo: post,
@@ -268,7 +268,7 @@ const ShareSheet = props => {
           .collection('chats')
           .doc(doc._docs[0].id)
           .update({
-            lastMessageAt: new Date(),
+            lastMessageAt: firestore.FieldValue.serverTimestamp(),
             [userItemSelections[i].UID + '.messageRead']: false,
             [userItemSelections[i].UID + '.sentLastMessage']: false,
             [UID + '.messageRead']: false,

@@ -128,7 +128,7 @@ const DirectMessageScreen = ({route, navigation}) => {
             .doc(resp.id)
             .collection('messages')
             .add({
-              messageText: firestore.FieldValue.serverTimestamp(),
+              messageText: messageText,
               sentAt: firestore.FieldValue.serverTimestamp(),
               from: UID,
               to: profileID,

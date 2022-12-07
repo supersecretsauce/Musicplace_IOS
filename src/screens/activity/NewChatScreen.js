@@ -21,6 +21,7 @@ const NewChatScreen = ({route, navigation}) => {
 
   useEffect(() => {
     if (UID) {
+      console.log(UID);
       firestore()
         .collection('users')
         .doc(UID)
@@ -33,7 +34,7 @@ const NewChatScreen = ({route, navigation}) => {
   }, [UID]);
 
   useEffect(() => {
-    if (followingList?.length > 0) {
+    if (followingList && followingList?.length > 0) {
       async function getDocs() {
         let docsArray = [];
         for (let i = 0; i < followingList.length; i += 10) {
