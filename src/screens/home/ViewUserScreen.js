@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
   },
   header: {
-    backgroundColor: 'red',
+    backgroundColor: 'rgba(255, 8, 0, 0.7)',
     height: 160,
     width: '100%',
   },
@@ -270,6 +270,7 @@ const styles = StyleSheet.create({
     width: 94,
     height: 94,
     borderRadius: 94,
+    backgroundColor: Colors.red,
   },
   userInfoContainer: {
     position: 'absolute',
