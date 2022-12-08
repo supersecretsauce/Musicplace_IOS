@@ -294,7 +294,9 @@ const DirectMessageScreen = ({route, navigation}) => {
                               <View style={styles.fromSongInfoContainer}>
                                 <View style={styles.songTop}>
                                   {/* <Spotify height={20} /> */}
-                                  <Text style={styles.songName}>
+                                  <Text
+                                    numberOfLines={1}
+                                    style={styles.songName}>
                                     {item?._data?.songInfo?.songName}
                                   </Text>
                                 </View>
@@ -556,6 +558,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-bold',
     fontSize: 16,
     marginLeft: 5,
+    maxWidth: 220,
   },
   songMiddle: {
     flexDirection: 'row',
