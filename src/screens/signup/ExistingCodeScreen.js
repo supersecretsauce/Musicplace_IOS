@@ -14,7 +14,6 @@ import {Context} from '../../context/Context';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
 import HapticFeedback from 'react-native-haptic-feedback';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {firebase} from '@react-native-firebase/firestore';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
 
@@ -22,7 +21,6 @@ const ExistingCodeScreen = ({navigation}) => {
   const [showEnterDone, setShowEnterDone] = useState(false);
   const [verificationCode, setVerificationCode] = useState();
   const {confirm, setUserLogin} = useContext(Context);
-  const userInfo = firebase.auth().currentUser;
 
   const goBack = () => {
     navigation.navigate('ExistingPhoneNumberScreen');
@@ -52,17 +50,15 @@ const ExistingCodeScreen = ({navigation}) => {
   let enterCode = async () => {
     try {
       HapticFeedback.trigger('impactHeavy');
-
-      await confirm.confirm(verificationCode);
+      let authResult = await confirm.confirm(verificationCode);
       let userDoc = await firestore()
         .collection('users')
-        .doc(userInfo.uid)
+        .doc(authResult.user.uid)
         .get();
-      console.log(userDoc);
       if (userDoc.data().connectedWithSpotify) {
         console.log('has spotify');
         await AsyncStorage.setItem('user', 'true');
-        await AsyncStorage.setItem('UID', userInfo.uid);
+        await AsyncStorage.setItem('UID', authResult.user.uid);
         await AsyncStorage.setItem('hasSpotify', 'true');
         await AsyncStorage.setItem(
           'spotAccessToken',
@@ -75,12 +71,12 @@ const ExistingCodeScreen = ({navigation}) => {
         setUserLogin(true);
       } else {
         await AsyncStorage.setItem('user', 'true');
-        await AsyncStorage.setItem('UID', userInfo.uid);
+        await AsyncStorage.setItem('UID', authResult.user.uid);
         await AsyncStorage.setItem('hasSpotify', 'false');
         setUserLogin(true);
       }
     } catch (error) {
-      console.log('Invalid code.');
+      console.log(error);
       return;
     }
   };

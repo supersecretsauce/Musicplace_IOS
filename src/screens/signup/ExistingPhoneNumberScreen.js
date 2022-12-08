@@ -86,18 +86,18 @@ const ExistingPhoneNumberScreen = ({navigation}) => {
           phoneNumber: firebaseNumberFormat,
         },
       )
-      .then(resp => {
+      .then(async resp => {
         console.log(resp.data.exists);
         if (resp.data.exists) {
-          const confirmation = auth()
-            .signInWithPhoneNumber(firebaseNumberFormat)
-            .then(() => {
-              setConfirm(confirmation);
-              navigation.navigate('ExistingCodeScreen');
-            })
-            .catch(e => {
-              console.log(e);
-            });
+          try {
+            const confirmation = await auth().signInWithPhoneNumber(
+              firebaseNumberFormat,
+            );
+            setConfirm(confirmation);
+            navigation.navigate('ExistingCodeScreen');
+          } catch (error) {
+            console.log(error);
+          }
         } else {
           Toast.show({
             type: 'error',
