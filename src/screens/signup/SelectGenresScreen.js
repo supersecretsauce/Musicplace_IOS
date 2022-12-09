@@ -47,7 +47,7 @@ const SelectGenresScreen = ({navigation, route}) => {
 
   useEffect(() => {
     axios
-      .get('https://reccomendation-api-pmtku.ondigitalocean.app/genres/all')
+      .get('https://reccomendation-api-pmtku.ondigitalocean.app/fetch/genres')
       .then(resp => {
         let allGenres = resp.data.data;
         let sortable = [];
