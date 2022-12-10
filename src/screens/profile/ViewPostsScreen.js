@@ -20,11 +20,10 @@ import HapticFeedback from 'react-native-haptic-feedback';
 import Toast from 'react-native-toast-message';
 import {firebase} from '@react-native-firebase/firestore';
 import {mixpanel} from '../../../mixpanel';
-import {useSpotifyService} from '../../hooks/useSpotifyService';
 import ShareSheet from '../../components/ShareSheet';
+import axios from 'axios';
 const ViewPostsScreen = ({route, navigation}) => {
   Sound.setCategory('Playback');
-  const {authFetch} = useSpotifyService();
   const {songInfo, UID, openSheet, commentDocID} = route.params ?? {};
   const [likedTracks, setLikedTracks] = useState([]);
   const [currentTrack, setCurrentTrack] = useState(null);
@@ -140,14 +139,15 @@ const ViewPostsScreen = ({route, navigation}) => {
           text2: 'Well that was quick.',
           visibilityTime: 2000,
         });
-        authFetch()
-          .delete(`/me/tracks?ids=${songInfo[0].id}`)
-          .then(response => {
-            console.log(response);
+        axios
+          .get(
+            `https://www.musicplaceapi.com/updates/remove-track/${songInfo[0].id}/user/${UID}`,
+          )
+          .then(resp => {
+            console.log(resp);
           })
-          .catch(error => {
-            console.log(error);
-            return error;
+          .catch(e => {
+            console.log(e);
           });
       } else {
         HapticFeedback.trigger('impactHeavy');
@@ -158,14 +158,15 @@ const ViewPostsScreen = ({route, navigation}) => {
           text2: "Don't believe us? Check your spotify library.",
           visibilityTime: 2000,
         });
-        authFetch()
-          .put(`/me/tracks?ids=${songInfo[0].id}`)
-          .then(response => {
-            console.log(response);
+        axios
+          .get(
+            `https://www.musicplaceapi.com/updates/save-track/${songInfo[0].id}/user/${UID}`,
+          )
+          .then(resp => {
+            console.log(resp);
           })
-          .catch(error => {
-            console.log(error);
-            return error;
+          .catch(e => {
+            console.log(e);
           });
       }
     } else {

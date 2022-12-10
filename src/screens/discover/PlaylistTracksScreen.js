@@ -17,7 +17,6 @@ import firestore from '@react-native-firebase/firestore';
 import BottomSheet from '../../components/BottomSheet';
 import HapticFeedback from 'react-native-haptic-feedback';
 import Toast from 'react-native-toast-message';
-import {authFetch} from '../../services/SpotifyService';
 import {Context} from '../../context/Context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {mixpanel} from '../../../mixpanel';
@@ -142,14 +141,15 @@ const PlaylistTracksScreen = ({route}) => {
           text2: 'Well that was quick.',
           visibilityTime: 2000,
         });
-        authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
-          .delete(`/me/tracks?ids=${feed[currentIndex].id}`)
-          .then(response => {
-            console.log(response);
+        axios
+          .get(
+            `https://www.musicplaceapi.com/updates/remove-track/${feed[currentIndex].id}/user/${UID}`,
+          )
+          .then(resp => {
+            console.log(resp);
           })
-          .catch(error => {
-            console.log(error);
-            return error;
+          .catch(e => {
+            console.log(e);
           });
       } else {
         HapticFeedback.trigger('impactHeavy');
@@ -160,14 +160,15 @@ const PlaylistTracksScreen = ({route}) => {
           text2: "Don't believe us? Check your spotify library.",
           visibilityTime: 2000,
         });
-        authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
-          .put(`/me/tracks?ids=${feed[currentIndex].id}`)
-          .then(response => {
-            console.log(response);
+        axios
+          .get(
+            `https://www.musicplaceapi.com/updates/save-track/${feed[currentIndex].id}/user/${UID}`,
+          )
+          .then(resp => {
+            console.log(resp);
           })
-          .catch(error => {
-            console.log(error);
-            return error;
+          .catch(e => {
+            console.log(e);
           });
       }
     } else {
