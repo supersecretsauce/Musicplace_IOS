@@ -93,10 +93,11 @@ const ProfileSettings = props => {
             .doc(docRef)
             .delete()
             .then(() => {
-              setUserLogin(false);
-              setFeed(null);
-              AsyncStorage.clear();
-              user.delete();
+              user.delete().then(() => {
+                setUserLogin(false);
+                setFeed(null);
+                AsyncStorage.clear();
+              });
             });
         });
     } catch (error) {
