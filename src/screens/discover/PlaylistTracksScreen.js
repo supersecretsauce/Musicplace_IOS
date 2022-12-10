@@ -34,17 +34,7 @@ const PlaylistTracksScreen = ({route}) => {
   const [currentTrack, setCurrentTrack] = useState(null);
   const [likedTracks, setLikedTracks] = useState([]);
   const [showShareSheet, setShowShareSheet] = useState(false);
-  const {
-    accessToken,
-    refreshToken,
-    setAccessToken,
-    setRefreshToken,
-    setHasSpotify,
-    hasSpotify,
-    setUID,
-    UID,
-    initialFeed,
-  } = useContext(Context);
+  const {hasSpotify, UID} = useContext(Context);
 
   useFocusEffect(
     useCallback(() => {

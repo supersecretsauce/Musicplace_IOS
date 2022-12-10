@@ -50,17 +50,12 @@ const ProfileSettings = props => {
         const authState = await authorize(spotConfig);
         await AsyncStorage.setItem('hasSpotify', 'true');
         setSpotifyConnected(true);
-        await AsyncStorage.setItem('spotAccessToken', authState.accessToken);
-        await AsyncStorage.setItem('spotRefreshToken', authState.refreshToken);
       };
       connectToSpotify();
     } else {
       const disconnectFromSpotify = async () => {
         await Linking.openURL('https://www.spotify.com/us/account/apps/');
         await AsyncStorage.setItem('hasSpotify', 'false');
-        await AsyncStorage.removeItem('spotAccessToken');
-        await AsyncStorage.removeItem('spotRefreshToken');
-
         setSpotifyConnected(false);
       };
       disconnectFromSpotify();

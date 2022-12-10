@@ -44,17 +44,7 @@ const RadioScreen = ({route}) => {
   const [isOnHomeScreen, setIsOnHomeScreen] = useState(true);
   const [initialFeed, setInitialFeed] = useState(true);
   const [feed, setFeed] = useState(null);
-  const {
-    accessToken,
-    refreshToken,
-    setAccessToken,
-    setRefreshToken,
-    setHasSpotify,
-    hasSpotify,
-    setUID,
-    UID,
-    isNewUser,
-  } = useContext(Context);
+  const {setHasSpotify, hasSpotify, UID} = useContext(Context);
 
   useFocusEffect(
     useCallback(() => {
@@ -76,25 +66,6 @@ const RadioScreen = ({route}) => {
       };
     }, [currentTrack]),
   );
-
-  useEffect(() => {
-    async function checkSpotifyConnection() {
-      const spotifyBoolean = await AsyncStorage.getItem('hasSpotify');
-      const localRefresh = await AsyncStorage.getItem('spotRefreshToken');
-      const localAccess = await AsyncStorage.getItem('spotAccessToken');
-      const localUID = await AsyncStorage.getItem('UID');
-      if (spotifyBoolean === 'false') {
-        setHasSpotify(false);
-        setUID(localUID);
-      } else if (spotifyBoolean === 'true') {
-        setUID(localUID);
-        setHasSpotify(true);
-        setAccessToken(localAccess);
-        setRefreshToken(localRefresh);
-      }
-    }
-    checkSpotifyConnection();
-  }, []);
 
   useEffect(() => {
     if (UID && trackID) {

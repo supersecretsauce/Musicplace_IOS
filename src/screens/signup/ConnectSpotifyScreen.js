@@ -108,8 +108,6 @@ const ConnectSpotifyScreen = ({navigation}) => {
     try {
       await AsyncStorage.setItem('user', 'true');
       await AsyncStorage.setItem('hasSpotify', 'true');
-      await AsyncStorage.setItem('spotAccessToken', authState.accessToken);
-      await AsyncStorage.setItem('spotRefreshToken', authState.refreshToken);
       await AsyncStorage.setItem('UID', userInfo.uid);
     } catch (e) {
       console.log(e);

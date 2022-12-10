@@ -28,15 +28,7 @@ const ViewPostsScreen = ({route, navigation}) => {
   const [likedTracks, setLikedTracks] = useState([]);
   const [currentTrack, setCurrentTrack] = useState(null);
   const [showShareSheet, setShowShareSheet] = useState(false);
-  const {
-    accessToken,
-    refreshToken,
-    setAccessToken,
-    setRefreshToken,
-    hasSpotify,
-    trackDeepLink,
-    setTrackDeepLink,
-  } = useContext(Context);
+  const {hasSpotify, trackDeepLink, setTrackDeepLink} = useContext(Context);
 
   let playing = true;
   let startTime = new Date();

@@ -21,29 +21,6 @@ const MyPosts = props => {
   const {hasSpotify, setHasSpotify} = useContext(Context);
   const [userPosts, setUserPosts] = useState(null);
 
-  // useEffect(() => {
-  //   if (UID) {
-  //     //this will change
-  //     const subscriber = firestore()
-  //       .collection('posts')
-  //       .where('users', 'array-contains', UID)
-  //       .get()
-  //       .then(resp => {
-  //         console.log(resp);
-  //         if (resp.empty) {
-  //           return;
-  //         } else {
-  //           let songDocs = [];
-  //           resp.docs.forEach(doc => {
-  //             songDocs.push(doc._data);
-  //           });
-  //           setUserPosts(songDocs);
-  //         }
-  //       });
-  //     return () => subscriber;
-  //   }
-  // }, [UID]);
-
   useEffect(() => {
     if (topSongs) {
       console.log(topSongs);
@@ -93,8 +70,6 @@ const MyPosts = props => {
             console.log(resp);
             setHasSpotify(true);
             AsyncStorage.setItem('hasSpotify', 'true');
-            AsyncStorage.setItem('spotAccessToken', authState.accessToken);
-            AsyncStorage.setItem('spotRefreshToken', authState.refreshToken);
             axios
               .get(
                 `https://reccomendation-api-pmtku.ondigitalocean.app/updates/${userInfo.uid}`,

@@ -32,92 +32,11 @@ import Toast from 'react-native-toast-message';
 import firestore from '@react-native-firebase/firestore';
 import axios from 'axios';
 const DiscoverScreen = ({navigation}) => {
-  const {
-    accessToken,
-    refreshToken,
-    setAccessToken,
-    setRefreshToken,
-    hasSpotify,
-  } = useContext(Context);
+  const {hasSpotify} = useContext(Context);
   const [results, setResults] = useState(null);
   const [searchFocused, setSearchFocused] = useState(false);
   const [playlists, setPlaylists] = useState(null);
 
-  // useEffect(() => {
-  //   authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
-  //     .get('/browse/featured-playlists?limit=50')
-  //     .then(resp => {
-  //       console.log(resp);
-  //       // setPlaylists(resp.data.playlists.items);
-
-  //       async function uploadPlaylists() {
-  //         let trackHREF = resp.data.playlists.items[9].tracks.href;
-  //         let playlistID = resp.data.playlists.items[9].id;
-  //         // let docID = resp.data.playlists.items[0].id;
-  //         await firestore()
-  //           .collection('playlists')
-  //           .doc(resp.data.playlists.items[9].id)
-  //           .set({
-  //             name: resp.data.playlists.items[9].name,
-  //             playlistImage: resp.data.playlists.items[9].images[0].url,
-  //             playlistID: resp.data.playlists.items[9].id,
-  //             href: resp.data.playlists.items[9].href,
-  //             description: resp.data.playlists.items[9].description,
-  //             externalURL: resp.data.playlists.items[9].external_urls.spotify,
-  //           })
-  //           .then(resp => {
-  //             authFetch(
-  //               accessToken,
-  //               refreshToken,
-  //               setAccessToken,
-  //               setRefreshToken,
-  //             )
-  //               .get(trackHREF)
-  //               .then(resp => {
-  //                 console.log(resp);
-  //                 async function uploadPlaylistTracks() {
-  //                   for (let i = 0; i < resp.data.items.length; i++) {
-  //                     // use song id as doc id
-  //                     await firestore()
-  //                       .collection('posts')
-  //                       .doc(resp.data.items[i].track.id)
-  //                       .set({
-  //                         albumId: resp.data.items[i].track.album.id,
-  //                         albumName: resp.data.items[i].track.album.name,
-  //                         artists: resp.data.items[i].track.artists,
-  //                         availableMarkets:
-  //                           resp.data.items[i].track.available_markets,
-  //                         durationInMs: resp.data.items[i].track.duration_ms,
-  //                         id: resp.data.items[i].track.id,
-  //                         isExplicit: resp.data.items[i].track.explicit,
-  //                         popularity: resp.data.items[i].track.popularity,
-  //                         previewUrl: resp.data.items[i].track.preview_url,
-  //                         releaseDate:
-  //                           resp.data.items[i].track.album.release_date,
-  //                         songName: resp.data.items[i].track.name,
-  //                         songPhoto:
-  //                           resp.data.items[i].track.album.images[0].url,
-  //                         playlistID: playlistID,
-  //                       })
-  //                       .then(() => {
-  //                         console.log('doc added');
-  //                         // console.log('doc deleted');
-  //                       })
-  //                       .catch(e => {
-  //                         console.log(e);
-  //                       });
-  //                   }
-  //                 }
-  //                 uploadPlaylistTracks();
-  //               });
-  //           })
-  //           .catch(e => {
-  //             console.log(e);
-  //           });
-  //       }
-  //       uploadPlaylists();
-  //     });
-  // }, []);
   useEffect(() => {
     firestore()
       .collection('playlists')

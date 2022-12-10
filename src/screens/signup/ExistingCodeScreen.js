@@ -60,14 +60,6 @@ const ExistingCodeScreen = ({navigation}) => {
         await AsyncStorage.setItem('user', 'true');
         await AsyncStorage.setItem('UID', authResult.user.uid);
         await AsyncStorage.setItem('hasSpotify', 'true');
-        await AsyncStorage.setItem(
-          'spotAccessToken',
-          userDoc.data().spotifyAccessToken,
-        );
-        await AsyncStorage.setItem(
-          'spotRefreshToken',
-          userDoc.data().spotifyRefreshToken,
-        );
         setUserLogin(true);
       } else {
         await AsyncStorage.setItem('user', 'true');

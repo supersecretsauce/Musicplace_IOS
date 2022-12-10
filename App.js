@@ -19,12 +19,10 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   const [confirm, setConfirm] = useState(null);
   const [userLogin, setUserLogin] = useState(false);
-  const [refreshToken, setRefreshToken] = useState('');
   const [currentTrack, setCurrentTrack] = useState();
   const [homeScreenFocus, setHomeScreenFocus] = useState();
   const [profileScreenFocus, setProfileScreenFocus] = useState();
   const [parentComments, setParentComments] = useState();
-  const [accessToken, setAccessToken] = useState('');
   const [username, setUsername] = useState('');
   const [currentPost, setCurrentPost] = useState();
   const [hasSpotify, setHasSpotify] = useState(null);
@@ -35,23 +33,6 @@ export default function App() {
   const navigationRef = useRef();
 
   // AsyncStorage.clear();
-
-  // look for changes to access and refresh token
-  useEffect(() => {
-    if (UID) {
-      const subscriber = firestore()
-        .collection('users')
-        .doc(UID)
-        .onSnapshot(snapshot => {
-          console.log(snapshot.data());
-          setAccessToken(snapshot.data().spotifyAccessToken);
-          setRefreshToken(snapshot.data().spotifyRefreshToken);
-        });
-
-      // Stop listening for updates when no longer required
-      return () => subscriber();
-    }
-  }, []);
 
   // Bootstrap sequence function
   async function bootstrap() {
@@ -127,14 +108,10 @@ export default function App() {
             confirm,
             setConfirm,
             setUserLogin,
-            refreshToken,
-            setRefreshToken,
             currentTrack,
             setCurrentTrack,
             homeScreenFocus,
             setHomeScreenFocus,
-            accessToken,
-            setAccessToken,
             username,
             setUsername,
             currentPost,
