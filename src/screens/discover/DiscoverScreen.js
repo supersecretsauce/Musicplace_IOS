@@ -140,13 +140,11 @@ const DiscoverScreen = ({navigation}) => {
 
   function getData(value) {
     authFetch(value)
-      .get(
-        `https://api.spotify.com/v1/search?type=track&include_external=audio&q=${value}`,
-      )
+      .get(`https://www.musicplaceapi.com/fetch/tracks/${value}`)
       .then(resp => {
         if (resp && resp.status == 200) {
-          console.log(resp.data.tracks.items);
-          setResults(resp.data.tracks.items);
+          console.log(resp.data.data.tracks.items);
+          setResults(resp.data.data.tracks.items);
         }
       })
       .catch(e => {
@@ -219,8 +217,7 @@ const DiscoverScreen = ({navigation}) => {
                   style={styles.songItem}
                   key={index}
                   onPress={() =>
-                    navigation.navigate('HomeScreen', {
-                      prevScreen: 'DiscoverScreen',
+                    navigation.navigate('RadioScreen', {
                       trackID: item.id,
                     })
                   }>
