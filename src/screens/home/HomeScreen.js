@@ -32,11 +32,9 @@ import messaging from '@react-native-firebase/messaging';
 import ShareSheet from '../../components/ShareSheet';
 import axios from 'axios';
 import LoadingPost from '../../components/LoadingPost';
-import {useSpotifyService} from '../../hooks/useSpotifyService';
 
 const HomeScreen = () => {
   Sound.setCategory('Playback');
-  const {authFetch} = useSpotifyService();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentTrack, setCurrentTrack] = useState(null);
   const [likedTracks, setLikedTracks] = useState([]);
@@ -265,14 +263,16 @@ const HomeScreen = () => {
           text2: 'Well that was quick.',
           visibilityTime: 2000,
         });
-        authFetch()
-          .delete(`/me/tracks?ids=${feed[currentIndex].id}`)
-          .then(response => {
-            console.log(response);
+        // remove song from liked songs
+        axios
+          .get(
+            `https://www.musicplaceapi.com/updates/remove-track/${feed[currentIndex].id}/user/${UID}`,
+          )
+          .then(resp => {
+            console.log(resp);
           })
-          .catch(error => {
-            console.log(error);
-            return error;
+          .catch(e => {
+            console.log(e);
           });
       } else {
         HapticFeedback.trigger('impactHeavy');
@@ -283,14 +283,15 @@ const HomeScreen = () => {
           text2: "Don't believe us? Check your spotify library.",
           visibilityTime: 2000,
         });
-        authFetch()
-          .put(`/me/tracks?ids=${feed[currentIndex].id}`)
-          .then(response => {
-            console.log(response);
+        axios
+          .get(
+            `https://www.musicplaceapi.com/updates/save-track/${feed[currentIndex].id}/user/${UID}`,
+          )
+          .then(resp => {
+            console.log(resp);
           })
-          .catch(error => {
-            console.log(error);
-            return error;
+          .catch(e => {
+            console.log(e);
           });
       }
     } else {

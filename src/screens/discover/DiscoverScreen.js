@@ -19,7 +19,6 @@ import React, {
 import {Context} from '../../context/Context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../assets/utilities/Colors';
-// import {authFetch} from '../../services/SpotifyService2';
 import {debounce} from 'lodash';
 import Animated, {
   useAnimatedGestureHandler,
@@ -31,7 +30,7 @@ import Animated, {
 import {SPRING_CONFIG} from '../../assets/utilities/reanimated-2';
 import Toast from 'react-native-toast-message';
 import firestore from '@react-native-firebase/firestore';
-import {useSpotifyService} from '../../hooks/useSpotifyService';
+import axios from 'axios';
 const DiscoverScreen = ({navigation}) => {
   const {
     accessToken,
@@ -43,7 +42,6 @@ const DiscoverScreen = ({navigation}) => {
   const [results, setResults] = useState(null);
   const [searchFocused, setSearchFocused] = useState(false);
   const [playlists, setPlaylists] = useState(null);
-  const {authFetch} = useSpotifyService();
 
   // useEffect(() => {
   //   authFetch(accessToken, refreshToken, setAccessToken, setRefreshToken)
@@ -139,7 +137,7 @@ const DiscoverScreen = ({navigation}) => {
   }, 500);
 
   function getData(value) {
-    authFetch(value)
+    axios
       .get(`https://www.musicplaceapi.com/fetch/tracks/${value}`)
       .then(resp => {
         if (resp && resp.status == 200) {
