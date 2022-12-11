@@ -65,6 +65,8 @@ const ShareSheet = props => {
             setFollowingData(docsArray);
           }
           getFollowingDocs();
+        } else {
+          setFollowingData(null);
         }
       });
 
