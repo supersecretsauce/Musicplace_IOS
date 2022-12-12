@@ -382,7 +382,7 @@ const ShareSheet = props => {
                     onPress={() => {
                       navigate('AddFriends', {
                         myUser: myUser,
-                        prevRoute: 'PlaylistTracksScreen',
+                        prevRoute: 'ShareSheet',
                       });
                     }}>
                     <Text style={styles.addText}>add friends</Text>

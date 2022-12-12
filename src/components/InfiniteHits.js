@@ -11,12 +11,13 @@ import {useInfiniteHits} from 'react-instantsearch-hooks';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../assets/utilities/Colors';
 import {Context} from '../context/Context';
+import firestore from '@react-native-firebase/firestore';
+
 const InfiniteHits = ({...props}) => {
   const {hits, isLastPage, showMore} = useInfiniteHits(props);
   const {navigation, myUser, prevRoute} = props;
   const {UID} = useContext(Context);
-  const [userIDs, setUserIDs] = useState(null);
-
+  const [followingList, setFollowingList] = useState([]);
   function handleNav(item) {
     console.log(item);
     navigation.navigate('ViewUserScreen', {
@@ -25,6 +26,43 @@ const InfiniteHits = ({...props}) => {
       myUser: myUser,
       prevRoute: 'search',
     });
+  }
+
+  function followHandler(item) {
+    if (followingList.includes(item.objectID)) {
+      let filteredList = followingList.filter(id => id !== item.objectID);
+      setFollowingList(filteredList);
+      firestore()
+        .collection('users')
+        .doc(UID)
+        .update({
+          followingList: firestore.FieldValue.arrayRemove(item.objectID),
+          following: firestore.FieldValue.increment(-1),
+        });
+      firestore()
+        .collection('users')
+        .doc(item.objectID)
+        .update({
+          followersList: firestore.FieldValue.arrayRemove(UID),
+          followers: firestore.FieldValue.increment(-1),
+        });
+    } else {
+      setFollowingList(current => [...current, item.objectID]);
+      firestore()
+        .collection('users')
+        .doc(UID)
+        .update({
+          followingList: firestore.FieldValue.arrayUnion(item.objectID),
+          following: firestore.FieldValue.increment(1),
+        });
+      firestore()
+        .collection('users')
+        .doc(item.objectID)
+        .update({
+          followersList: firestore.FieldValue.arrayUnion(UID),
+          followers: firestore.FieldValue.increment(1),
+        });
+    }
   }
   return (
     <>
@@ -60,12 +98,22 @@ const InfiniteHits = ({...props}) => {
                       <Text style={styles.handle}>@{item.handle}</Text>
                     </View>
                   </View>
-                  <Ionicons
-                    style={styles.socialIcon}
-                    name={'chevron-forward'}
-                    color={'white'}
-                    size={20}
-                  />
+                  {prevRoute == 'ShareSheet' ? (
+                    <TouchableOpacity onPress={() => followHandler(item)}>
+                      <Text style={styles.followText}>
+                        {followingList.includes(item.objectID)
+                          ? 'unfollow'
+                          : 'follow'}
+                      </Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <Ionicons
+                      style={styles.socialIcon}
+                      name={'chevron-forward'}
+                      color={'white'}
+                      size={20}
+                    />
+                  )}
                 </TouchableOpacity>
               )}
             </>
@@ -113,10 +161,12 @@ const styles = StyleSheet.create({
     marginTop: 5,
     fontFamily: 'Inter-Regular',
   },
+
   followButton: {
     marginRight: 10,
   },
   followText: {
-    color: 'white',
+    color: Colors.greyOut,
+    fontFamily: 'Inter-Regular',
   },
 });
