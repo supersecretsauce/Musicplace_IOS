@@ -109,7 +109,7 @@ const DiscoverScreen = ({navigation}) => {
             }}
             onChangeText={text => handleDebounce(text)}
             style={styles.textInput}
-            placeholder="search for a track"
+            placeholder="search track to start radio"
             placeholderTextColor={Colors.greyOut}
           />
         </Animated.View>
