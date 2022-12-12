@@ -10,6 +10,7 @@ import React, {useContext} from 'react';
 import Colors from '../../assets/utilities/Colors';
 import {Context} from '../../context/Context';
 import HapticFeedback from 'react-native-haptic-feedback';
+import FastImage from 'react-native-fast-image';
 
 const SwipeRightScreen = ({navigation}) => {
   const {setUserLogin} = useContext(Context);
@@ -19,10 +20,12 @@ const SwipeRightScreen = ({navigation}) => {
       <Text style={styles.swipeDesc}>
         Swipe right to navigate to the next song.
       </Text>
-      <Image
+      <FastImage
         source={{
-          uri: 'https://firebasestorage.googleapis.com/v0/b/musicplace-66f20.appspot.com/o/horizontal-gif.gif?alt=media&token=021f64e9-8ee4-42cf-aacf-51405dbdc550',
+          uri: 'https://firebasestorage.googleapis.com/v0/b/musicplace-66f20.appspot.com/o/gif2.gif?alt=media&token=39438028-84f0-4e23-860e-6dbdebd37865',
+          priority: FastImage.priority.high,
         }}
+        resizeMode={FastImage.resizeMode.contain}
         style={styles.gif}
       />
       <View style={styles.nextBtnContainer}>

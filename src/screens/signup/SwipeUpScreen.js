@@ -9,6 +9,7 @@ import {
 import React from 'react';
 import Colors from '../../assets/utilities/Colors';
 import HapticFeedback from 'react-native-haptic-feedback';
+import FastImage from 'react-native-fast-image';
 
 const SwipeUpScreen = ({navigation}) => {
   return (
@@ -17,10 +18,12 @@ const SwipeUpScreen = ({navigation}) => {
       <Text style={styles.swipeDesc}>
         Expand the comment section or listen to a song on Spotify.
       </Text>
-      <Image
+      <FastImage
         source={{
-          uri: 'https://firebasestorage.googleapis.com/v0/b/musicplace-66f20.appspot.com/o/vertical-gif.gif?alt=media&token=2e20d893-d078-4ffe-93e6-edbe86ceb5fc',
+          uri: 'https://firebasestorage.googleapis.com/v0/b/musicplace-66f20.appspot.com/o/gif.gif?alt=media&token=0e2e5cba-6bd8-4cc2-a9ff-e6fa78b8db9e',
+          priority: FastImage.priority.high,
         }}
+        resizeMode={FastImage.resizeMode.contain}
         style={styles.gif}
       />
       <View style={styles.nextBtnContainer}>
