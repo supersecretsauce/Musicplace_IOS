@@ -12,6 +12,8 @@ import {authorize} from 'react-native-app-auth';
 import {spotConfig} from '../../SpotifyConfig';
 import {firebase} from '@react-native-firebase/firestore';
 import axios from 'axios';
+import functions from '@react-native-firebase/functions';
+
 const ProfileSettings = props => {
   const [spotifyConnected, setSpotifyConnected] = useState(false);
   const {
@@ -121,7 +123,6 @@ const ProfileSettings = props => {
   };
 
   const deleteAccount = async () => {
-    let user = firebase.auth().currentUser;
     try {
       firestore()
         .collection('usernames')
@@ -134,11 +135,17 @@ const ProfileSettings = props => {
             .doc(docRef)
             .delete()
             .then(() => {
-              user.delete().then(() => {
-                setUserLogin(false);
-                setFeed(null);
-                AsyncStorage.clear();
-              });
+              setUserLogin(false);
+              setFeed(null);
+              AsyncStorage.clear();
+              functions()
+                .httpsCallable('deleteAccount')()
+                .then(() => {
+                  console.log('user deleted');
+                })
+                .catch(e => {
+                  console.log(e);
+                });
             });
         });
     } catch (error) {
