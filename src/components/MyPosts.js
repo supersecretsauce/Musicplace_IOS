@@ -22,7 +22,7 @@ const MyPosts = props => {
   const [userPosts, setUserPosts] = useState(null);
 
   useEffect(() => {
-    if (topSongs) {
+    if (topSongs && topSongs.length > 0) {
       console.log(topSongs);
       if (topSongs.length > 0) {
         let topSongsArr = [];
@@ -47,45 +47,42 @@ const MyPosts = props => {
         }
         getAllTopSongs();
       }
+    } else {
+      setUserPosts(null);
     }
   }, [topSongs]);
 
   const connectSpotify = async () => {
     if (UID) {
-      try {
-        const authState = await authorize(spotConfig);
-        console.log(authState);
-        firestore()
-          .collection('users')
-          .doc(UID)
-          .update({
-            spotifyAccessToken: authState.accessToken,
-            spotifyAccessTokenExpirationDate:
-              authState.accessTokenExpirationDate,
-            spotifyRefreshToken: authState.refreshToken,
-            spotifyTokenType: authState.tokenType,
-            connectedWithSpotify: true,
-          })
-          .then(resp => {
-            console.log(resp);
-            setHasSpotify(true);
-            AsyncStorage.setItem('hasSpotify', 'true');
-            axios
-              .get(
-                `https://reccomendation-api-pmtku.ondigitalocean.app/updates/${userInfo.uid}`,
-              )
-              .then(resp => {
-                if (resp.status === 200) {
-                  console.log('done fetching top songs');
-                }
-              })
-              .catch(e => {
-                console.log(e);
-              });
-          });
-      } catch (error) {
-        console.log(error);
-      }
+      const authState = await authorize(spotConfig);
+      console.log(authState);
+      firestore()
+        .collection('users')
+        .doc(UID)
+        .update({
+          spotifyAccessToken: authState.accessToken,
+          spotifyAccessTokenExpirationDate: authState.accessTokenExpirationDate,
+          spotifyRefreshToken: authState.refreshToken,
+          spotifyTokenType: authState.tokenType,
+          connectedWithSpotify: true,
+        })
+        .then(resp => {
+          console.log(resp);
+          setHasSpotify(true);
+          AsyncStorage.setItem('hasSpotify', 'true');
+          axios
+            .get(
+              `https://reccomendation-api-pmtku.ondigitalocean.app/updates/top-songs/${UID}`,
+            )
+            .then(resp => {
+              if (resp.status === 200) {
+                console.log('done fetching top songs');
+              }
+            })
+            .catch(e => {
+              console.log(e);
+            });
+        });
     }
   };
 

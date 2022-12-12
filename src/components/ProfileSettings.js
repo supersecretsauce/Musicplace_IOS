@@ -11,12 +11,17 @@ import {Context} from '../context/Context';
 import {authorize} from 'react-native-app-auth';
 import {spotConfig} from '../../SpotifyConfig';
 import {firebase} from '@react-native-firebase/firestore';
-
+import axios from 'axios';
 const ProfileSettings = props => {
   const [spotifyConnected, setSpotifyConnected] = useState(false);
-  const {setUserLogin, username, setCurrentTrack, currentTrack, setFeed} =
-    useContext(Context);
-  const {UID} = props;
+  const {
+    setUserLogin,
+    UID,
+    setCurrentTrack,
+    setFeed,
+    setHasSpotify,
+    hasSpotify,
+  } = useContext(Context);
 
   useEffect(() => {
     const checkForSpotifyConnection = async () => {
@@ -37,7 +42,7 @@ const ProfileSettings = props => {
   };
 
   const twitter = async () => {
-    await Linking.openURL('https://twitter.com/maxmandia');
+    await Linking.openURL('https://twitter.com/musicplaceapp');
   };
 
   const discord = async () => {
@@ -45,18 +50,60 @@ const ProfileSettings = props => {
   };
 
   const handleSpotify = () => {
-    if (spotifyConnected === false) {
+    if (hasSpotify === false) {
       const connectToSpotify = async () => {
-        const authState = await authorize(spotConfig);
-        await AsyncStorage.setItem('hasSpotify', 'true');
-        setSpotifyConnected(true);
+        try {
+          const authState = await authorize(spotConfig);
+          await AsyncStorage.setItem('hasSpotify', 'true');
+          setSpotifyConnected(true);
+          setHasSpotify(true);
+          firestore()
+            .collection('users')
+            .doc(UID)
+            .update({
+              spotifyAccessToken: authState.accessToken,
+              spotifyAccessTokenExpirationDate:
+                authState.accessTokenExpirationDate,
+              spotifyRefreshToken: authState.refreshToken,
+              spotifyTokenType: authState.tokenType,
+              connectedWithSpotify: true,
+            })
+            .then(() => {
+              axios
+                .get(
+                  `https://reccomendation-api-pmtku.ondigitalocean.app/updates/top-songs/${UID}`,
+                )
+                .then(resp => {
+                  if (resp.status === 200) {
+                    console.log('done fetching top songs');
+                  }
+                })
+                .catch(e => {
+                  console.log(e);
+                });
+            });
+        } catch (error) {
+          console.log(error);
+        }
       };
       connectToSpotify();
     } else {
       const disconnectFromSpotify = async () => {
-        await Linking.openURL('https://www.spotify.com/us/account/apps/');
-        await AsyncStorage.setItem('hasSpotify', 'false');
-        setSpotifyConnected(false);
+        try {
+          await Linking.openURL('https://www.spotify.com/us/account/apps/');
+          await AsyncStorage.setItem('hasSpotify', 'false');
+          setHasSpotify(false);
+          firestore().collection('users').doc(UID).update({
+            spotifyAccessToken: null,
+            spotifyAccessTokenExpirationDate: null,
+            spotifyRefreshToken: null,
+            spotifyTokenType: null,
+            connectedWithSpotify: false,
+            topSongs: [],
+          });
+        } catch (error) {
+          console.log(error);
+        }
       };
       disconnectFromSpotify();
     }
@@ -69,7 +116,6 @@ const ProfileSettings = props => {
         console.log('User signed out!');
         setUserLogin(false);
         setCurrentTrack(null);
-        currentTrack.stop();
         AsyncStorage.clear();
       });
   };
@@ -119,7 +165,7 @@ const ProfileSettings = props => {
       <TouchableOpacity onPress={handleSpotify} style={styles.socialContainer}>
         <Spotify height={24} width={24} />
         <Text style={styles.socialText}>
-          {spotifyConnected ? 'Disconnect from Spotify' : 'Connect to Spotify'}
+          {hasSpotify ? 'Disconnect from Spotify' : 'Connect with Spotify'}
         </Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={logout} style={styles.socialContainer}>
