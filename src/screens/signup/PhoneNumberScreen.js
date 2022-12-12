@@ -18,6 +18,7 @@ import firestore from '@react-native-firebase/firestore';
 import Toast from 'react-native-toast-message';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
+import functions from '@react-native-firebase/functions';
 
 const PhoneNumber = ({navigation}) => {
   const [inputValue, setInputValue] = useState('');
@@ -81,15 +82,10 @@ const PhoneNumber = ({navigation}) => {
   };
 
   async function doesNumberExist() {
-    axios
-      .post(
-        'https://us-central1-musicplace-66f20.cloudfunctions.net/checkPhoneNumber',
-        {
-          phoneNumber: firebaseNumberFormat,
-        },
-      )
+    functions()
+      .httpsCallable('checkNumber')(firebaseNumberFormat)
       .then(resp => {
-        console.log(resp.data.exists);
+        console.log(resp);
         if (resp.data.exists) {
           Toast.show({
             type: 'error',
@@ -97,7 +93,7 @@ const PhoneNumber = ({navigation}) => {
             text2: 'Try logging in instead.',
             visibilityTime: 3000,
           });
-        } else {
+        } else if (resp.data.exists === false) {
           signInWithPhoneNumber();
         }
       })

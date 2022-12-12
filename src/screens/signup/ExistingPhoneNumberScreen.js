@@ -17,6 +17,8 @@ import firestore from '@react-native-firebase/firestore';
 import Toast from 'react-native-toast-message';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
+import functions from '@react-native-firebase/functions';
+
 const ExistingPhoneNumberScreen = ({navigation}) => {
   const [inputValue, setInputValue] = useState('');
   const [showSubmitDone, setShowSubmitDone] = useState(false);
@@ -79,22 +81,20 @@ const ExistingPhoneNumberScreen = ({navigation}) => {
   };
 
   const signIn = async () => {
-    axios
-      .post(
-        'https://us-central1-musicplace-66f20.cloudfunctions.net/checkPhoneNumber',
-        {
-          phoneNumber: firebaseNumberFormat,
-        },
-      )
-      .then(async resp => {
-        console.log(resp.data.exists);
+    functions()
+      .httpsCallable('checkNumber')(firebaseNumberFormat)
+      .then(resp => {
+        console.log(resp);
         if (resp.data.exists) {
           try {
-            const confirmation = await auth().signInWithPhoneNumber(
-              firebaseNumberFormat,
-            );
-            setConfirm(confirmation);
-            navigation.navigate('ExistingCodeScreen');
+            async function signIn() {
+              const confirmation = await auth().signInWithPhoneNumber(
+                firebaseNumberFormat,
+              );
+              setConfirm(confirmation);
+              navigation.navigate('ExistingCodeScreen');
+            }
+            signIn();
           } catch (error) {
             console.log(error);
           }
