@@ -72,9 +72,8 @@ const BottomSheet = props => {
     }
   }
 
-  // MAKE SURE THIS IS IN AL OTHER DOCUMENTS
   useEffect(() => {
-    if (feed && currentIndex) {
+    if (feed) {
       console.log('getting comments');
       getComments();
     }
@@ -261,6 +260,7 @@ const BottomSheet = props => {
     const replyDocs = await firestore()
       .collection('comments')
       .where('parent', '==', itemID)
+      .where('songID', '==', feed[currentIndex].id)
       .orderBy('likeAmount', 'desc')
       .get();
     if (!replyDocs.empty) {
@@ -300,8 +300,6 @@ const BottomSheet = props => {
       });
       setComments(updatedComments);
       firestore()
-        .collection('posts')
-        .doc(feed[currentIndex].id)
         .collection('comments')
         .doc(item.id)
         .update({
@@ -324,8 +322,6 @@ const BottomSheet = props => {
       });
       setComments(updatedComments);
       firestore()
-        .collection('posts')
-        .doc(feed[currentIndex].id)
         .collection('comments')
         .doc(item.id)
         .update({
