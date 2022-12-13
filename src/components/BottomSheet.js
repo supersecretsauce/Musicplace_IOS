@@ -272,12 +272,12 @@ const BottomSheet = props => {
   //handle show replies logic
   async function handleShowReplies(itemID) {
     if (parentCommentID.includes(itemID)) {
-      setParentCommentID(parentCommentID.filter(id => id !== itemID));
+      setParentCommentID([]);
       setShowReplies(false);
-      setReplies();
+      setReplies([]);
     } else {
       setShowReplies(true);
-      setParentCommentID([...parentCommentID, itemID]);
+      setParentCommentID([itemID]);
       getCommentReplies(itemID);
     }
   }
@@ -414,7 +414,8 @@ const BottomSheet = props => {
                                     <Ionicons
                                       style={styles.socialIcon}
                                       name={
-                                        showReplies
+                                        showReplies &&
+                                        parentCommentID.includes(item.id)
                                           ? 'chevron-up'
                                           : 'chevron-down'
                                       }
@@ -453,7 +454,12 @@ const BottomSheet = props => {
                           {showReplies &&
                           parentCommentID.includes(item.id) &&
                           replies ? (
-                            <ReplyComments replies={replies} />
+                            <ReplyComments
+                              userDoc={userDoc}
+                              songInfo={feed[currentIndex]}
+                              UID={UID}
+                              replies={replies}
+                            />
                           ) : (
                             <></>
                           )}
