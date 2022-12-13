@@ -47,9 +47,8 @@ const BottomSheet = props => {
   // get comments
   async function getComments() {
     const commentDocs = await firestore()
-      .collection('posts')
-      .doc(feed[currentIndex].id)
       .collection('comments')
+      .where('songID', '==', feed[currentIndex].id)
       .where('parent', '==', false)
       .orderBy('likeAmount', 'desc')
       .get();
@@ -59,6 +58,10 @@ const BottomSheet = props => {
       return;
     } else {
       setComments(commentDocs._docs);
+      // let sortedComments = commentDocs.docs.sort((a, z) => {
+      //   return a.data().likeAmount - z.data().likeAmount;
+      // });
+      // setComments(sortedComments);
       let myLikes = commentDocs.docs.filter(doc => {
         return doc.data().likesArray.includes(UID);
       });
@@ -69,8 +72,12 @@ const BottomSheet = props => {
     }
   }
 
+  // MAKE SURE THIS IS IN AL OTHER DOCUMENTS
   useEffect(() => {
-    getComments();
+    if (feed && currentIndex) {
+      console.log('getting comments');
+      getComments();
+    }
   }, [currentIndex, feed]);
 
   // get current user's profile picture and their user document
@@ -154,8 +161,6 @@ const BottomSheet = props => {
     Keyboard.dismiss();
     if (replyInfo) {
       firestore()
-        .collection('posts')
-        .doc(feed[currentIndex].id)
         .collection('comments')
         .add({
           comment: userText,
@@ -168,11 +173,10 @@ const BottomSheet = props => {
           parent: replyInfo.id,
           parentUID: replyInfo._data.UID,
           UID: UID,
+          songID: feed[currentIndex].id,
         })
         .then(() => {
           firestore()
-            .collection('posts')
-            .doc(feed[currentIndex].id)
             .collection('comments')
             .doc(replyInfo.id)
             .update({
@@ -214,8 +218,6 @@ const BottomSheet = props => {
         .catch(e => console.log(e));
     } else {
       firestore()
-        .collection('posts')
-        .doc(feed[currentIndex].id)
         .collection('comments')
         .add({
           comment: userText,
@@ -226,6 +228,7 @@ const BottomSheet = props => {
           parent: false,
           likesArray: [],
           UID: UID,
+          songID: feed[currentIndex].id,
         })
         .then(() => {
           Toast.show({
@@ -256,8 +259,6 @@ const BottomSheet = props => {
   //get comment replies
   async function getCommentReplies(itemID) {
     const replyDocs = await firestore()
-      .collection('posts')
-      .doc(feed[currentIndex].id)
       .collection('comments')
       .where('parent', '==', itemID)
       .orderBy('likeAmount', 'desc')
