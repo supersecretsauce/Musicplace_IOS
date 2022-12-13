@@ -58,10 +58,9 @@ const SinglePostBottomSheet = props => {
   // get comments
   async function getComments() {
     const commentDocs = await firestore()
-      .collection('posts')
-      .doc(songInfo[0].id)
       .collection('comments')
       .where('parent', '==', false)
+      .where('songID', '==', songInfo[0].id)
       .orderBy('likeAmount', 'desc')
       .get();
     console.log('comment documents', commentDocs);
@@ -81,7 +80,10 @@ const SinglePostBottomSheet = props => {
   }
 
   useEffect(() => {
-    getComments();
+    if (songInfo) {
+      console.log('getting comments');
+      getComments();
+    }
   }, [songInfo]);
 
   // get current user's profile picture and their user document
@@ -165,8 +167,6 @@ const SinglePostBottomSheet = props => {
     Keyboard.dismiss();
     if (replyInfo) {
       firestore()
-        .collection('posts')
-        .doc(songInfo[0].id)
         .collection('comments')
         .add({
           comment: userText,
@@ -179,11 +179,10 @@ const SinglePostBottomSheet = props => {
           parent: replyInfo.id,
           parentUID: replyInfo._data.UID,
           UID: UID,
+          songID: songInfo[0].id,
         })
         .then(() => {
           firestore()
-            .collection('posts')
-            .doc(songInfo[0].id)
             .collection('comments')
             .doc(replyInfo.id)
             .update({
@@ -223,8 +222,6 @@ const SinglePostBottomSheet = props => {
         .catch(e => console.log(e));
     } else {
       firestore()
-        .collection('posts')
-        .doc(songInfo[0].id)
         .collection('comments')
         .add({
           comment: userText,
@@ -235,6 +232,7 @@ const SinglePostBottomSheet = props => {
           likesArray: [],
           parent: false,
           UID: UID,
+          songID: songInfo[0].id,
         })
         .then(() => {
           Toast.show({
@@ -265,10 +263,9 @@ const SinglePostBottomSheet = props => {
   //get comment replies
   async function getCommentReplies(itemID) {
     const replyDocs = await firestore()
-      .collection('posts')
-      .doc(songInfo[0].id)
       .collection('comments')
       .where('parent', '==', itemID)
+      .where('songID', '==', songInfo[0].id)
       .orderBy('likeAmount', 'desc')
       .get();
     if (!replyDocs.empty) {
@@ -280,12 +277,12 @@ const SinglePostBottomSheet = props => {
   //handle show replies logic
   async function handleShowReplies(itemID) {
     if (parentCommentID.includes(itemID)) {
-      setParentCommentID(parentCommentID.filter(id => id !== itemID));
+      setParentCommentID([]);
       setShowReplies(false);
-      setReplies();
+      setReplies([]);
     } else {
       setShowReplies(true);
-      setParentCommentID([...parentCommentID, itemID]);
+      setParentCommentID([itemID]);
       getCommentReplies(itemID);
     }
   }
@@ -307,8 +304,6 @@ const SinglePostBottomSheet = props => {
       });
       setComments(updatedComments);
       firestore()
-        .collection('posts')
-        .doc(songInfo[0].id)
         .collection('comments')
         .doc(item.id)
         .update({
@@ -331,8 +326,6 @@ const SinglePostBottomSheet = props => {
       });
       setComments(updatedComments);
       firestore()
-        .collection('posts')
-        .doc(songInfo[0].id)
         .collection('comments')
         .doc(item.id)
         .update({
@@ -439,7 +432,8 @@ const SinglePostBottomSheet = props => {
                                     <Ionicons
                                       style={styles.socialIcon}
                                       name={
-                                        showReplies
+                                        showReplies &&
+                                        parentCommentID.includes(item.id)
                                           ? 'chevron-up'
                                           : 'chevron-down'
                                       }
@@ -476,7 +470,12 @@ const SinglePostBottomSheet = props => {
                           {showReplies &&
                           parentCommentID.includes(item.id) &&
                           replies ? (
-                            <ReplyComments replies={replies} />
+                            <ReplyComments
+                              userDoc={userDoc}
+                              songInfo={songInfo[0]}
+                              UID={UID}
+                              replies={replies}
+                            />
                           ) : (
                             <></>
                           )}

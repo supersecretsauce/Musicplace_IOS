@@ -47,9 +47,8 @@ const BottomSheet = props => {
   // get comments
   async function getComments() {
     const commentDocs = await firestore()
-      .collection('posts')
-      .doc(feed[currentIndex].id)
       .collection('comments')
+      .where('songID', '==', feed[currentIndex].id)
       .where('parent', '==', false)
       .orderBy('likeAmount', 'desc')
       .get();
@@ -59,6 +58,10 @@ const BottomSheet = props => {
       return;
     } else {
       setComments(commentDocs._docs);
+      // let sortedComments = commentDocs.docs.sort((a, z) => {
+      //   return a.data().likeAmount - z.data().likeAmount;
+      // });
+      // setComments(sortedComments);
       let myLikes = commentDocs.docs.filter(doc => {
         return doc.data().likesArray.includes(UID);
       });
@@ -70,7 +73,10 @@ const BottomSheet = props => {
   }
 
   useEffect(() => {
-    getComments();
+    if (feed) {
+      console.log('getting comments');
+      getComments();
+    }
   }, [currentIndex, feed]);
 
   // get current user's profile picture and their user document
@@ -154,8 +160,6 @@ const BottomSheet = props => {
     Keyboard.dismiss();
     if (replyInfo) {
       firestore()
-        .collection('posts')
-        .doc(feed[currentIndex].id)
         .collection('comments')
         .add({
           comment: userText,
@@ -168,11 +172,10 @@ const BottomSheet = props => {
           parent: replyInfo.id,
           parentUID: replyInfo._data.UID,
           UID: UID,
+          songID: feed[currentIndex].id,
         })
         .then(() => {
           firestore()
-            .collection('posts')
-            .doc(feed[currentIndex].id)
             .collection('comments')
             .doc(replyInfo.id)
             .update({
@@ -214,8 +217,6 @@ const BottomSheet = props => {
         .catch(e => console.log(e));
     } else {
       firestore()
-        .collection('posts')
-        .doc(feed[currentIndex].id)
         .collection('comments')
         .add({
           comment: userText,
@@ -226,6 +227,7 @@ const BottomSheet = props => {
           parent: false,
           likesArray: [],
           UID: UID,
+          songID: feed[currentIndex].id,
         })
         .then(() => {
           Toast.show({
@@ -256,10 +258,9 @@ const BottomSheet = props => {
   //get comment replies
   async function getCommentReplies(itemID) {
     const replyDocs = await firestore()
-      .collection('posts')
-      .doc(feed[currentIndex].id)
       .collection('comments')
       .where('parent', '==', itemID)
+      .where('songID', '==', feed[currentIndex].id)
       .orderBy('likeAmount', 'desc')
       .get();
     if (!replyDocs.empty) {
@@ -271,12 +272,12 @@ const BottomSheet = props => {
   //handle show replies logic
   async function handleShowReplies(itemID) {
     if (parentCommentID.includes(itemID)) {
-      setParentCommentID(parentCommentID.filter(id => id !== itemID));
+      setParentCommentID([]);
       setShowReplies(false);
-      setReplies();
+      setReplies([]);
     } else {
       setShowReplies(true);
-      setParentCommentID([...parentCommentID, itemID]);
+      setParentCommentID([itemID]);
       getCommentReplies(itemID);
     }
   }
@@ -299,8 +300,6 @@ const BottomSheet = props => {
       });
       setComments(updatedComments);
       firestore()
-        .collection('posts')
-        .doc(feed[currentIndex].id)
         .collection('comments')
         .doc(item.id)
         .update({
@@ -323,8 +322,6 @@ const BottomSheet = props => {
       });
       setComments(updatedComments);
       firestore()
-        .collection('posts')
-        .doc(feed[currentIndex].id)
         .collection('comments')
         .doc(item.id)
         .update({
@@ -417,7 +414,8 @@ const BottomSheet = props => {
                                     <Ionicons
                                       style={styles.socialIcon}
                                       name={
-                                        showReplies
+                                        showReplies &&
+                                        parentCommentID.includes(item.id)
                                           ? 'chevron-up'
                                           : 'chevron-down'
                                       }
@@ -456,7 +454,12 @@ const BottomSheet = props => {
                           {showReplies &&
                           parentCommentID.includes(item.id) &&
                           replies ? (
-                            <ReplyComments replies={replies} />
+                            <ReplyComments
+                              userDoc={userDoc}
+                              songInfo={feed[currentIndex]}
+                              UID={UID}
+                              replies={replies}
+                            />
                           ) : (
                             <></>
                           )}
