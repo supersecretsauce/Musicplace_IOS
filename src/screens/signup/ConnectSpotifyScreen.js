@@ -76,6 +76,14 @@ const ConnectSpotifyScreen = ({navigation}) => {
     docRef.set(data, {merge: true}).then(() => {
       docRef.get().then(resp => {
         console.log(resp);
+        firestore()
+          .collection('users')
+          .doc(userInfo.uid)
+          .collection('savedTracks')
+          .doc(userInfo.uid)
+          .set({
+            library: [],
+          });
         axios
           .get(
             `https://reccomendation-api-pmtku.ondigitalocean.app/updates/top-songs/${
@@ -138,6 +146,14 @@ const ConnectSpotifyScreen = ({navigation}) => {
         spotifyRefreshToken: null,
         spotifyTokenType: null,
       });
+      firestore()
+        .collection('users')
+        .doc(userInfo.uid)
+        .collection('savedTracks')
+        .doc(userInfo.uid)
+        .set({
+          library: [],
+        });
     } catch (error) {
       return;
     }
