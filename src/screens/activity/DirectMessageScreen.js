@@ -364,7 +364,9 @@ const DirectMessageScreen = ({route, navigation}) => {
                               <View style={styles.fromSongInfoContainer}>
                                 <View style={styles.songTop}>
                                   {/* <Spotify height={20} /> */}
-                                  <Text style={styles.songName}>
+                                  <Text
+                                    style={styles.songName}
+                                    numberOfLines={1}>
                                     {item?._data?.songInfo?.songName}
                                   </Text>
                                 </View>
