@@ -92,6 +92,9 @@ const DirectMessageScreen = ({route, navigation}) => {
 
   function handleSendMessage() {
     Keyboard.dismiss();
+    if (messageText === '') {
+      return;
+    }
     setMessageText('');
     if (!chatDoc) {
       firestore()
