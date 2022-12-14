@@ -284,6 +284,7 @@ const ShareSheet = props => {
           });
       }
     }
+    setShowDirectMessages(false);
   }
 
   return (
