@@ -24,6 +24,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import {SPRING_CONFIG} from '../../assets/utilities/reanimated-2';
+import FastImage from 'react-native-fast-image';
 
 const ProfileScreen = ({navigation}) => {
   const [userProfile, setUserProfile] = useState();
@@ -161,20 +162,22 @@ const ProfileScreen = ({navigation}) => {
       {userProfile ? (
         <View style={styles.container}>
           {header ? (
-            <Image
+            <FastImage
               style={styles.header}
               source={{
                 uri: header,
+                priority: FastImage.priority.high,
               }}
             />
           ) : (
             <View style={styles.header} />
           )}
           {PFP ? (
-            <Image
+            <FastImage
               style={styles.PFP}
               source={{
                 uri: PFP,
+                priority: FastImage.priority.high,
               }}
             />
           ) : (
