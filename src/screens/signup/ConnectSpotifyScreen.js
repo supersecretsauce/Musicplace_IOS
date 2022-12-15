@@ -86,9 +86,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
           });
         axios
           .get(
-            `https://reccomendation-api-pmtku.ondigitalocean.app/updates/top-songs/${
-              resp.data().UID
-            }`,
+            `https://reccomendation-api-pmtku.ondigitalocean.app/updates/top-songs/${userInfo.uid}`,
           )
           .then(resp => {
             if (resp.status === 200) {
