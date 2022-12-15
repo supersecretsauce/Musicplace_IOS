@@ -82,8 +82,22 @@ const ConnectSpotifyScreen = ({navigation}) => {
           .collection('savedTracks')
           .doc(userInfo.uid)
           .set({
-            library: [],
+            library: new Map(),
+          })
+          .then(() => {
+            axios
+              .get(
+                `https://reccomendation-api-pmtku.ondigitalocean.app/updates/saved-tracks/${userInfo.uid}`,
+              )
+              .then(resp => {
+                console.log('finished updating spot library');
+                console.log(resp);
+              })
+              .catch(e => {
+                console.log(e);
+              });
           });
+
         axios
           .get(
             `https://reccomendation-api-pmtku.ondigitalocean.app/updates/top-songs/${

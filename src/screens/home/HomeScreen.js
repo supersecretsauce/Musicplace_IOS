@@ -237,17 +237,19 @@ const HomeScreen = () => {
     }
   }
 
-  function likeHandler() {
+  function likeHandler(post) {
+    HapticFeedback.trigger('impactLight');
     if (hasSpotify) {
-      if (likedTracks.includes(feed[currentIndex].id)) {
-        HapticFeedback.trigger('impactLight');
-        setLikedTracks(likedTracks.filter(id => id != feed[currentIndex].id));
-        Toast.show({
-          type: 'success',
-          text1: 'Removed from liked songs',
-          text2: 'Well that was quick.',
-          visibilityTime: 2000,
+      if (post.liked === 1) {
+        let updatedFeed = feed.map(track => {
+          if (track.id === post.id) {
+            track.liked = 0;
+            return track;
+          } else {
+            return track;
+          }
         });
+        setFeed(updatedFeed);
         // remove song from liked songs
         axios
           .get(
@@ -260,14 +262,16 @@ const HomeScreen = () => {
             console.log(e);
           });
       } else {
-        HapticFeedback.trigger('impactHeavy');
-        setLikedTracks(current => [...current, feed[currentIndex].id]);
-        Toast.show({
-          type: 'success',
-          text1: 'Added to liked songs',
-          text2: "Don't believe us? Check your spotify library.",
-          visibilityTime: 2000,
+        let updatedFeed = feed.map(track => {
+          if (track.id === post.id) {
+            track.liked = 1;
+            return track;
+          } else {
+            return track;
+          }
         });
+        setFeed(updatedFeed);
+        // add to liked songs
         axios
           .get(
             `https://www.musicplaceapi.com/updates/save-track/${feed[currentIndex].id}/user/${UID}`,
@@ -279,13 +283,6 @@ const HomeScreen = () => {
             console.log(e);
           });
       }
-    } else {
-      Toast.show({
-        type: 'info',
-        text1: 'Connect to Spotify',
-        text2: 'Connect to Spotify to save this track to your library.',
-        visibilityTime: 2000,
-      });
     }
   }
 
@@ -329,17 +326,14 @@ const HomeScreen = () => {
                         onPress={() => setShowShareSheet(true)}>
                         <Ionicons name="share-outline" color="grey" size={28} />
                       </TouchableOpacity>
-                      <TouchableOpacity onPress={likeHandler}>
+                      <TouchableOpacity onPress={() => likeHandler(post)}>
                         <Ionicons
                           style={styles.likeIcon}
-                          name={
-                            likedTracks.includes(post.id)
-                              ? 'heart'
-                              : 'heart-outline'
-                          }
-                          color={
-                            likedTracks.includes(post.id) ? '#1DB954' : 'grey'
-                          }
+                          name={post.liked === 0 ? 'heart-outline' : 'heart'}
+                          // color={
+                          //   likedTracks.includes(post.id) ? '#1DB954' : 'grey'
+                          // }
+                          color={post.liked === 0 ? 'grey' : '#1DB954'}
                           size={28}
                         />
                       </TouchableOpacity>
