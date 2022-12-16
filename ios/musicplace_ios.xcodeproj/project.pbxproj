@@ -18,11 +18,14 @@
 		52D604539A194A888458C9D9 /* Inter-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 053EBED09F814467B09B5D21 /* Inter-Medium.ttf */; };
 		55086197ACC64500A367BCF8 /* Inter-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 58C2D8AED98C4A5DADD0ED04 /* Inter-ExtraLight.ttf */; };
 		6013502A5FDD4542B75CBBB3 /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7F70A953386041A5A8377206 /* Inter-Bold.ttf */; };
+		61B0784464254F108F4FB6A5 /* SF-Pro-Rounded-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = D386702BE55448639204C421 /* SF-Pro-Rounded-Bold.otf */; };
 		813462419171C6B0BB019A4E /* Pods_musicplace_ios_musicplace_iosTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A26B799B4352DA93CA55EA31 /* Pods_musicplace_ios_musicplace_iosTests.framework */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		9D46F8F4E551488B80B922C1 /* Inter-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2E6E7A785B2A4D3A9F92AA35 /* Inter-ExtraBold.ttf */; };
 		A4769D43FC02472490872B83 /* Inter-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 05FF9C4D9A6C4BFBB3061863 /* Inter-Thin.ttf */; };
+		B40E9F507F1C4EF48CAC1D89 /* SF-Pro-Rounded-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 578BA531933B4B1097FC80EB /* SF-Pro-Rounded-Medium.otf */; };
 		B6F9AE0A472C4BF98E56DC7E /* Inter-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2C9B1781683E4193870E14C6 /* Inter-Regular.ttf */; };
+		BFE46327ED454B499D8B6693 /* SF-Pro-Rounded-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 8B8E02CA85C84F01A5ED655B /* SF-Pro-Rounded-Semibold.otf */; };
 		CC8A117B288262F8003F315C /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CC8A116B288262F8003F315C /* Foundation.ttf */; };
 		CC8A117C288262F8003F315C /* FontAwesome5_Brands.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CC8A116C288262F8003F315C /* FontAwesome5_Brands.ttf */; };
 		CC8A117D288262F8003F315C /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CC8A116D288262F8003F315C /* FontAwesome.ttf */; };
@@ -75,12 +78,14 @@
 		3D5E0B536CAD420EB0F53944 /* Inter-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Light.ttf"; path = "../src/assets/fonts/Inter-Light.ttf"; sourceTree = "<group>"; };
 		4287A011B76B4E2E90724E8D /* Inter-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Black.ttf"; path = "../src/assets/fonts/Inter-Black.ttf"; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-musicplace_ios.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-musicplace_ios.release.xcconfig"; path = "Target Support Files/Pods-musicplace_ios/Pods-musicplace_ios.release.xcconfig"; sourceTree = "<group>"; };
+		578BA531933B4B1097FC80EB /* SF-Pro-Rounded-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Rounded-Medium.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Medium.otf"; sourceTree = "<group>"; };
 		58C2D8AED98C4A5DADD0ED04 /* Inter-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ExtraLight.ttf"; path = "../src/assets/fonts/Inter-ExtraLight.ttf"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-musicplace_ios-musicplace_iosTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-musicplace_ios-musicplace_iosTests.debug.xcconfig"; path = "Target Support Files/Pods-musicplace_ios-musicplace_iosTests/Pods-musicplace_ios-musicplace_iosTests.debug.xcconfig"; sourceTree = "<group>"; };
 		718936629CB98AF6D8A31DD4 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-musicplace_ios-musicplace_iosTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 		7F70A953386041A5A8377206 /* Inter-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Bold.ttf"; path = "../src/assets/fonts/Inter-Bold.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = musicplace_ios/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-musicplace_ios-musicplace_iosTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-musicplace_ios-musicplace_iosTests.release.xcconfig"; path = "Target Support Files/Pods-musicplace_ios-musicplace_iosTests/Pods-musicplace_ios-musicplace_iosTests.release.xcconfig"; sourceTree = "<group>"; };
+		8B8E02CA85C84F01A5ED655B /* SF-Pro-Rounded-Semibold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Rounded-Semibold.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Semibold.otf"; sourceTree = "<group>"; };
 		918F868EB3CA420AA1394667 /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-SemiBold.ttf"; path = "../src/assets/fonts/Inter-SemiBold.ttf"; sourceTree = "<group>"; };
 		A26B799B4352DA93CA55EA31 /* Pods_musicplace_ios_musicplace_iosTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_musicplace_ios_musicplace_iosTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC87ED30291C774200B8CCFB /* musicplace_ios.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = musicplace_ios.entitlements; path = musicplace_ios/musicplace_ios.entitlements; sourceTree = "<group>"; };
@@ -101,6 +106,7 @@
 		CC8A1179288262F8003F315C /* AntDesign.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = AntDesign.ttf; path = "../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf"; sourceTree = "<group>"; };
 		CC8A117A288262F8003F315C /* Feather.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
 		CC8B4DF728778D85005FE1B9 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		D386702BE55448639204C421 /* SF-Pro-Rounded-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-Pro-Rounded-Bold.otf"; path = "../src/assets/fonts/SF-Pro-Rounded-Bold.otf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -186,6 +192,9 @@
 				2C9B1781683E4193870E14C6 /* Inter-Regular.ttf */,
 				918F868EB3CA420AA1394667 /* Inter-SemiBold.ttf */,
 				05FF9C4D9A6C4BFBB3061863 /* Inter-Thin.ttf */,
+				D386702BE55448639204C421 /* SF-Pro-Rounded-Bold.otf */,
+				578BA531933B4B1097FC80EB /* SF-Pro-Rounded-Medium.otf */,
+				8B8E02CA85C84F01A5ED655B /* SF-Pro-Rounded-Semibold.otf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -400,6 +409,9 @@
 				CC8A1189288262F8003F315C /* AntDesign.ttf in Resources */,
 				D74631C1448240E8B294857C /* Inter-SemiBold.ttf in Resources */,
 				A4769D43FC02472490872B83 /* Inter-Thin.ttf in Resources */,
+				61B0784464254F108F4FB6A5 /* SF-Pro-Rounded-Bold.otf in Resources */,
+				B40E9F507F1C4EF48CAC1D89 /* SF-Pro-Rounded-Medium.otf in Resources */,
+				BFE46327ED454B499D8B6693 /* SF-Pro-Rounded-Semibold.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

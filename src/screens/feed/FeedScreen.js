@@ -160,5 +160,9 @@ const styles = StyleSheet.create({
   songDetails: {
     marginLeft: 5,
   },
-  songName: {},
+  songName: {
+    fontFamily: 'SFProRounded-Bold',
+    fontSize: 20,
+    color: 'white',
+  },
 });

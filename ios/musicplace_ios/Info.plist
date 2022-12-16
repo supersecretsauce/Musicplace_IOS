@@ -59,7 +59,7 @@
 	<key>NSContactsUsageDescription</key>
 	<string>Allow $(PRODUCT_NAME) to access your contacts</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This application will access your photos to allow you to edit your profile picture.</string>
 	<key>UIAppFonts</key>
@@ -76,6 +76,9 @@
 		<string>AntDesign.ttf</string>
 		<string>Entypo.ttf</string>
 		<string>Ionicons.ttf</string>
+		<string>SF-Pro-Rounded-Bold.otf</string>
+		<string>SF-Pro-Rounded-Medium.otf</string>
+		<string>SF-Pro-Rounded-Semibold.otf</string>
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
@@ -89,7 +92,7 @@
 		<string>armv7</string>
 	</array>
 	<key>UIStatusBarStyle</key>
-	<string></string>
+	<string/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
