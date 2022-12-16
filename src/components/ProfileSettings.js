@@ -73,6 +73,16 @@ const ProfileSettings = props => {
             .then(() => {
               axios
                 .get(
+                  `https://reccomendation-api-pmtku.ondigitalocean.app/updates/saved-tracks/${UID}`,
+                )
+                .then(() => {
+                  console.log('finished getting spotify library');
+                })
+                .catch(e => {
+                  console.log(e);
+                });
+              axios
+                .get(
                   `https://reccomendation-api-pmtku.ondigitalocean.app/updates/top-songs/${UID}`,
                 )
                 .then(resp => {
