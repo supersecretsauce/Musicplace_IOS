@@ -7,6 +7,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import UserPosts from '../../components/UserPosts';
 import {firebase} from '@react-native-firebase/firestore';
 import HapticFeedback from 'react-native-haptic-feedback';
+import FastImage from 'react-native-fast-image';
 
 const ViewUserScreen = ({route, navigation}) => {
   const {profileID, UID, prevRoute, myUser} = route.params;
@@ -160,10 +161,11 @@ const ViewUserScreen = ({route, navigation}) => {
       {userProfile ? (
         <View>
           {header ? (
-            <Image
+            <FastImage
               style={styles.header}
               source={{
                 uri: header,
+                priority: FastImage.priority.high,
               }}
             />
           ) : (
@@ -173,10 +175,11 @@ const ViewUserScreen = ({route, navigation}) => {
             <Ionicons name={'chevron-back'} color="white" size={40} />
           </TouchableOpacity>
           {profilePic ? (
-            <Image
+            <FastImage
               style={styles.PFP}
               source={{
                 uri: profilePic,
+                priority: FastImage.priority.high,
               }}
             />
           ) : (
