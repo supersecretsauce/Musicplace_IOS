@@ -29,6 +29,7 @@ const FeedScreen = ({navigation}) => {
       artists: [{name: 'somebody'}],
       likedAt: new Date(),
       displayName: 'maxmandia',
+      albumName: 'idk',
     },
     {
       id: '008aqmngiiKe5jrPSNyV6n',
@@ -41,6 +42,7 @@ const FeedScreen = ({navigation}) => {
       artists: [{name: 'somebody'}],
       likedAt: new Date(),
       displayName: 'maxmandia',
+      albumName: 'idk',
     },
     {
       id: '008aqmngiiKe5jrPSNyV6n',
@@ -53,6 +55,7 @@ const FeedScreen = ({navigation}) => {
       artists: [{name: 'somebody'}],
       likedAt: new Date(),
       displayName: 'maxmandia',
+      albumName: 'idk',
     },
     {
       id: '008aqmngiiKe5jrPSNyV6n',
@@ -65,6 +68,7 @@ const FeedScreen = ({navigation}) => {
       artists: [{name: 'somebody'}],
       likedAt: new Date(),
       displayName: 'maxmandia',
+      albumName: 'idk',
     },
     {
       id: '008aqmngiiKe5jrPSNyV6n',
@@ -77,6 +81,7 @@ const FeedScreen = ({navigation}) => {
       artists: [{name: 'somebody'}],
       likedAt: new Date(),
       displayName: 'maxmandia',
+      albumName: 'idk',
     },
     {
       id: '008aqmngiiKe5jrPSNyV6n',
@@ -89,6 +94,7 @@ const FeedScreen = ({navigation}) => {
       artists: [{name: 'somebody'}],
       likedAt: new Date(),
       displayName: 'maxmandia',
+      albumName: 'idk',
     },
     {
       id: '008aqmngiiKe5jrPSNyV6n',
@@ -101,6 +107,7 @@ const FeedScreen = ({navigation}) => {
       artists: [{name: 'somebody'}],
       likedAt: new Date(),
       displayName: 'maxmandia',
+      albumName: 'idk',
     },
     {
       id: '008aqmngiiKe5jrPSNyV6n',
@@ -113,6 +120,7 @@ const FeedScreen = ({navigation}) => {
       artists: [{name: 'somebody'}],
       likedAt: new Date(),
       displayName: 'maxmandia',
+      albumName: 'idk',
     },
     {
       id: '008aqmngiiKe5jrPSNyV6n',
@@ -125,6 +133,7 @@ const FeedScreen = ({navigation}) => {
       artists: [{name: 'somebody'}],
       likedAt: new Date(),
       displayName: 'maxmandia',
+      albumName: 'idk',
     },
     {
       id: '008aqmngiiKe5jrPSNyV6n',
@@ -137,6 +146,7 @@ const FeedScreen = ({navigation}) => {
       artists: [{name: 'somebody'}],
       likedAt: new Date(),
       displayName: 'maxmandia',
+      albumName: 'idk',
     },
     {
       id: '008aqmngiiKe5jrPSNyV6n',
@@ -149,6 +159,7 @@ const FeedScreen = ({navigation}) => {
       artists: [{name: 'somebody'}],
       likedAt: new Date(),
       displayName: 'maxmandia',
+      albumName: 'idk',
     },
     {
       id: '008aqmngiiKe5jrPSNyV6n',
@@ -161,6 +172,7 @@ const FeedScreen = ({navigation}) => {
       artists: [{name: 'somebody'}],
       likedAt: new Date(),
       displayName: 'maxmandia',
+      albumName: 'idk',
     },
   ];
 
@@ -210,7 +222,14 @@ const FeedScreen = ({navigation}) => {
                     <Text style={styles.likeText}>liked a track</Text>
                   </View>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.songContainer}>
+                <TouchableOpacity
+                  style={styles.songContainer}
+                  onPress={() =>
+                    navigation.navigate('ViewPostsScreen', {
+                      songInfo: [item],
+                      UID: UID,
+                    })
+                  }>
                   <View style={styles.songInfo}>
                     <View style={styles.songInfoLeft}>
                       <FastImage
