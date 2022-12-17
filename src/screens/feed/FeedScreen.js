@@ -11,11 +11,144 @@ import Colors from '../../assets/utilities/Colors';
 import firestore from '@react-native-firebase/firestore';
 import {FlatList} from 'react-native-gesture-handler';
 import FastImage from 'react-native-fast-image';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const FeedScreen = () => {
   const {UID} = useContext(Context);
 
   const dummyData = [
+    {
+      id: '008aqmngiiKe5jrPSNyV6n',
+      songName: 'G Wagon',
+      songPhoto:
+        'https://i.scdn.co/image/ab67616d0000b273c9e0be25252692294eabee6a',
+      likedBy: 'IkqL5FCbYJWnfhFf2mDXOMEcQh13',
+      pfpURL:
+        'https://firebasestorage.googleapis.com:443/v0/b/musicplace-66f20.appspot.com/o/EFZhNvJTZ8NLWzIfe93ZHHqSDB13PFP?alt=media&token=a18dc233-a0e8-4ed3-bbfd-43ab6cc5522a',
+      artists: [{name: 'somebody'}],
+      likedAt: new Date(),
+      displayName: 'maxmandia',
+    },
+    {
+      id: '008aqmngiiKe5jrPSNyV6n',
+      songName: 'G Wagon',
+      songPhoto:
+        'https://i.scdn.co/image/ab67616d0000b273c9e0be25252692294eabee6a',
+      likedBy: 'IkqL5FCbYJWnfhFf2mDXOMEcQh13',
+      pfpURL:
+        'https://firebasestorage.googleapis.com:443/v0/b/musicplace-66f20.appspot.com/o/EFZhNvJTZ8NLWzIfe93ZHHqSDB13PFP?alt=media&token=a18dc233-a0e8-4ed3-bbfd-43ab6cc5522a',
+      artists: [{name: 'somebody'}],
+      likedAt: new Date(),
+      displayName: 'maxmandia',
+    },
+    {
+      id: '008aqmngiiKe5jrPSNyV6n',
+      songName: 'G Wagon',
+      songPhoto:
+        'https://i.scdn.co/image/ab67616d0000b273c9e0be25252692294eabee6a',
+      likedBy: 'IkqL5FCbYJWnfhFf2mDXOMEcQh13',
+      pfpURL:
+        'https://firebasestorage.googleapis.com:443/v0/b/musicplace-66f20.appspot.com/o/EFZhNvJTZ8NLWzIfe93ZHHqSDB13PFP?alt=media&token=a18dc233-a0e8-4ed3-bbfd-43ab6cc5522a',
+      artists: [{name: 'somebody'}],
+      likedAt: new Date(),
+      displayName: 'maxmandia',
+    },
+    {
+      id: '008aqmngiiKe5jrPSNyV6n',
+      songName: 'G Wagon',
+      songPhoto:
+        'https://i.scdn.co/image/ab67616d0000b273c9e0be25252692294eabee6a',
+      likedBy: 'IkqL5FCbYJWnfhFf2mDXOMEcQh13',
+      pfpURL:
+        'https://firebasestorage.googleapis.com:443/v0/b/musicplace-66f20.appspot.com/o/EFZhNvJTZ8NLWzIfe93ZHHqSDB13PFP?alt=media&token=a18dc233-a0e8-4ed3-bbfd-43ab6cc5522a',
+      artists: [{name: 'somebody'}],
+      likedAt: new Date(),
+      displayName: 'maxmandia',
+    },
+    {
+      id: '008aqmngiiKe5jrPSNyV6n',
+      songName: 'G Wagon',
+      songPhoto:
+        'https://i.scdn.co/image/ab67616d0000b273c9e0be25252692294eabee6a',
+      likedBy: 'IkqL5FCbYJWnfhFf2mDXOMEcQh13',
+      pfpURL:
+        'https://firebasestorage.googleapis.com:443/v0/b/musicplace-66f20.appspot.com/o/EFZhNvJTZ8NLWzIfe93ZHHqSDB13PFP?alt=media&token=a18dc233-a0e8-4ed3-bbfd-43ab6cc5522a',
+      artists: [{name: 'somebody'}],
+      likedAt: new Date(),
+      displayName: 'maxmandia',
+    },
+    {
+      id: '008aqmngiiKe5jrPSNyV6n',
+      songName: 'G Wagon',
+      songPhoto:
+        'https://i.scdn.co/image/ab67616d0000b273c9e0be25252692294eabee6a',
+      likedBy: 'IkqL5FCbYJWnfhFf2mDXOMEcQh13',
+      pfpURL:
+        'https://firebasestorage.googleapis.com:443/v0/b/musicplace-66f20.appspot.com/o/EFZhNvJTZ8NLWzIfe93ZHHqSDB13PFP?alt=media&token=a18dc233-a0e8-4ed3-bbfd-43ab6cc5522a',
+      artists: [{name: 'somebody'}],
+      likedAt: new Date(),
+      displayName: 'maxmandia',
+    },
+    {
+      id: '008aqmngiiKe5jrPSNyV6n',
+      songName: 'G Wagon',
+      songPhoto:
+        'https://i.scdn.co/image/ab67616d0000b273c9e0be25252692294eabee6a',
+      likedBy: 'IkqL5FCbYJWnfhFf2mDXOMEcQh13',
+      pfpURL:
+        'https://firebasestorage.googleapis.com:443/v0/b/musicplace-66f20.appspot.com/o/EFZhNvJTZ8NLWzIfe93ZHHqSDB13PFP?alt=media&token=a18dc233-a0e8-4ed3-bbfd-43ab6cc5522a',
+      artists: [{name: 'somebody'}],
+      likedAt: new Date(),
+      displayName: 'maxmandia',
+    },
+    {
+      id: '008aqmngiiKe5jrPSNyV6n',
+      songName: 'G Wagon',
+      songPhoto:
+        'https://i.scdn.co/image/ab67616d0000b273c9e0be25252692294eabee6a',
+      likedBy: 'IkqL5FCbYJWnfhFf2mDXOMEcQh13',
+      pfpURL:
+        'https://firebasestorage.googleapis.com:443/v0/b/musicplace-66f20.appspot.com/o/EFZhNvJTZ8NLWzIfe93ZHHqSDB13PFP?alt=media&token=a18dc233-a0e8-4ed3-bbfd-43ab6cc5522a',
+      artists: [{name: 'somebody'}],
+      likedAt: new Date(),
+      displayName: 'maxmandia',
+    },
+    {
+      id: '008aqmngiiKe5jrPSNyV6n',
+      songName: 'G Wagon',
+      songPhoto:
+        'https://i.scdn.co/image/ab67616d0000b273c9e0be25252692294eabee6a',
+      likedBy: 'IkqL5FCbYJWnfhFf2mDXOMEcQh13',
+      pfpURL:
+        'https://firebasestorage.googleapis.com:443/v0/b/musicplace-66f20.appspot.com/o/EFZhNvJTZ8NLWzIfe93ZHHqSDB13PFP?alt=media&token=a18dc233-a0e8-4ed3-bbfd-43ab6cc5522a',
+      artists: [{name: 'somebody'}],
+      likedAt: new Date(),
+      displayName: 'maxmandia',
+    },
+    {
+      id: '008aqmngiiKe5jrPSNyV6n',
+      songName: 'G Wagon',
+      songPhoto:
+        'https://i.scdn.co/image/ab67616d0000b273c9e0be25252692294eabee6a',
+      likedBy: 'IkqL5FCbYJWnfhFf2mDXOMEcQh13',
+      pfpURL:
+        'https://firebasestorage.googleapis.com:443/v0/b/musicplace-66f20.appspot.com/o/EFZhNvJTZ8NLWzIfe93ZHHqSDB13PFP?alt=media&token=a18dc233-a0e8-4ed3-bbfd-43ab6cc5522a',
+      artists: [{name: 'somebody'}],
+      likedAt: new Date(),
+      displayName: 'maxmandia',
+    },
+    {
+      id: '008aqmngiiKe5jrPSNyV6n',
+      songName: 'G Wagon',
+      songPhoto:
+        'https://i.scdn.co/image/ab67616d0000b273c9e0be25252692294eabee6a',
+      likedBy: 'IkqL5FCbYJWnfhFf2mDXOMEcQh13',
+      pfpURL:
+        'https://firebasestorage.googleapis.com:443/v0/b/musicplace-66f20.appspot.com/o/EFZhNvJTZ8NLWzIfe93ZHHqSDB13PFP?alt=media&token=a18dc233-a0e8-4ed3-bbfd-43ab6cc5522a',
+      artists: [{name: 'somebody'}],
+      likedAt: new Date(),
+      displayName: 'maxmandia',
+    },
     {
       id: '008aqmngiiKe5jrPSNyV6n',
       songName: 'G Wagon',
@@ -75,6 +208,11 @@ const FeedScreen = () => {
                         </Text>
                       </View>
                     </View>
+                    <Ionicons
+                      name="chevron-forward"
+                      color={Colors.greyBtn}
+                      size={20}
+                    />
                   </View>
                 </TouchableOpacity>
               </View>
@@ -99,6 +237,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
     marginTop: '6%',
+    marginBottom: '4%',
+
     width: '90%',
   },
   feedText: {
@@ -131,7 +271,7 @@ const styles = StyleSheet.create({
   displayName: {
     color: 'white',
     fontFamily: 'Inter-Medium',
-    marginLeft: 10,
+    marginLeft: 6,
     fontSize: 16,
   },
   likeText: {
@@ -141,12 +281,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   songContainer: {
-    marginTop: 15,
+    marginTop: 10,
     backgroundColor: 'rgba(52, 52, 52, 0.6)',
     borderRadius: 9,
   },
   songInfo: {
     padding: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   songInfoLeft: {
     flexDirection: 'row',
@@ -158,11 +301,16 @@ const styles = StyleSheet.create({
     borderRadius: 9,
   },
   songDetails: {
-    marginLeft: 5,
+    marginLeft: 10,
   },
   songName: {
-    fontFamily: 'SFProRounded-Bold',
-    fontSize: 20,
+    fontFamily: 'SFProRounded-Semibold',
+    fontSize: 18,
     color: 'white',
+  },
+  artists: {
+    fontFamily: 'SFProRounded-Medium',
+    fontSize: 14,
+    color: Colors.greyBtn,
   },
 });
