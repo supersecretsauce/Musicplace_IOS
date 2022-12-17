@@ -5,7 +5,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from 'react-native';
-import React, {useEffect, useContext} from 'react';
+import React, {useEffect, useContext, useState} from 'react';
 import {Context} from '../../context/Context';
 import Colors from '../../assets/utilities/Colors';
 import firestore from '@react-native-firebase/firestore';
@@ -13,8 +13,9 @@ import {FlatList} from 'react-native-gesture-handler';
 import FastImage from 'react-native-fast-image';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const FeedScreen = () => {
+const FeedScreen = ({navigation}) => {
   const {UID} = useContext(Context);
+  const [myUser, setMyUser] = useState(null);
 
   const dummyData = [
     {
@@ -163,6 +164,19 @@ const FeedScreen = () => {
     },
   ];
 
+  useEffect(() => {
+    if (UID) {
+      firestore()
+        .collection('users')
+        .doc(UID)
+        .get()
+        .then(resp => {
+          console.log(resp.data());
+          setMyUser(resp.data());
+        });
+    }
+  }, [UID]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.feedContainer}>
@@ -174,7 +188,16 @@ const FeedScreen = () => {
           renderItem={({item, index}) => {
             return (
               <View key={index} style={styles.itemContainer}>
-                <TouchableOpacity style={styles.userContainer}>
+                <TouchableOpacity
+                  style={styles.userContainer}
+                  onPress={() =>
+                    navigation.navigate('ViewUserScreen', {
+                      profileID: item.likedBy,
+                      UID: UID,
+                      prevRoute: 'FeedScreen',
+                      myUser: myUser,
+                    })
+                  }>
                   <FastImage
                     style={styles.pfp}
                     source={{

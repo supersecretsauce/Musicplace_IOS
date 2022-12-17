@@ -151,6 +151,8 @@ const ViewUserScreen = ({route, navigation}) => {
       });
     } else if (prevRoute === 'ActivityScreen') {
       navigation.navigate('ActivityScreen');
+    } else if (prevRoute === 'FeedScreen') {
+      navigation.navigate('FeedScreen');
     } else {
       navigation.navigate('HomeScreen');
     }
