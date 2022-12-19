@@ -12,6 +12,8 @@ import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as Contacts from 'expo-contacts';
 import firestore from '@react-native-firebase/firestore';
+import firebase from '@react-native-firebase/app';
+
 import {Context} from '../../context/Context';
 
 const ActivityScreen = ({navigation}) => {
@@ -20,6 +22,7 @@ const ActivityScreen = ({navigation}) => {
   const [memberInfo, setMemberInfo] = useState(null);
   const [myUser, setMyUser] = useState(null);
   const [activity, setActivity] = useState(null);
+  const [myPhoneNumber, setMyPhoneNumber] = useState(null);
   const {UID} = useContext(Context);
 
   useEffect(() => {
@@ -35,8 +38,10 @@ const ActivityScreen = ({navigation}) => {
             if (person.phoneNumbers) {
               let ogNumber = person?.phoneNumbers[0]?.number;
               let arr = ogNumber.split('');
-              let filteredNumber = arr.filter(n => n !== '(' && n !== ')');
-              return filteredNumber.join('');
+              let filteredNumber = arr.filter(
+                n => n !== '(' && n !== ')' && n !== '-' && n !== ' ',
+              );
+              return {number: filteredNumber.join(''), name: person.firstName};
             } else {
               return;
             }
@@ -55,6 +60,7 @@ const ActivityScreen = ({navigation}) => {
         .get()
         .then(resp => {
           setMyUser(resp._data);
+          setMyPhoneNumber(resp.data().phoneNumber);
         });
     }
   }, [UID]);
@@ -124,6 +130,8 @@ const ActivityScreen = ({navigation}) => {
   function handleNav(nav) {
     navigation.navigate(nav, {
       contacts: contacts,
+      myPhoneNumber: myPhoneNumber,
+      phoneNumbers: phoneNumbers,
     });
   }
 

@@ -7,18 +7,64 @@ import {
   Image,
   TouchableOpacity,
   SafeAreaView,
+  useWindowDimensions,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import Animated, {
+  useAnimatedGestureHandler,
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
+import {SPRING_CONFIG} from '../../assets/utilities/reanimated-2';
 
 const InviteContactsScreen = ({route, navigation}) => {
-  const {contacts} = route.params;
+  const {contacts, myPhoneNumber, phoneNumbers} = route.params;
+  const dimensions = useWindowDimensions();
+  const top = useSharedValue(dimensions.height);
+  const [contactName, setContactName] = useState(null);
+  const [contactNumber, setContactNumber] = useState(null);
+  const [myName, setMyName] = useState(null);
+  const [time, setTime] = useState(null);
 
-  const handleInvite = async number => {
-    await Linking.openURL(
-      `sms:/open?addresses=${number}&body=download the Musicplace App!`,
+  const style = useAnimatedStyle(() => {
+    return {
+      top: withSpring(top.value, SPRING_CONFIG),
+    };
+  });
+
+  useEffect(() => {
+    if (myPhoneNumber && phoneNumbers) {
+      console.log(phoneNumbers);
+      phoneNumbers.forEach(contact => {
+        if (contact.number === '+' + myPhoneNumber) {
+          setMyName(contact.name);
+        } else {
+          return;
+        }
+      });
+    }
+  }, [myPhoneNumber, phoneNumbers]);
+
+  // const handleInvite = async number => {
+  //   await Linking.openURL(
+  //     `sms:/open?addresses=${number}&body=download the Musicplace App!`,
+  //   );
+  // };
+
+  const handleInvite = item => {
+    console.log(item);
+    setTime(
+      new Date().toLocaleTimeString(navigator.language, {
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
     );
+    setContactName(item.name);
+    setContactNumber(item.phoneNumbers[0].number);
+    top.value = withSpring(0, SPRING_CONFIG);
   };
 
   async function handleSettings() {
@@ -74,8 +120,7 @@ const InviteContactsScreen = ({route, navigation}) => {
                       </Text>
                     </View>
                   </View>
-                  <TouchableOpacity
-                    onPress={() => handleInvite(item.phoneNumbers[0].number)}>
+                  <TouchableOpacity onPress={() => handleInvite(item)}>
                     <Text style={styles.inviteContactText}>invite</Text>
                   </TouchableOpacity>
                 </View>
@@ -92,6 +137,44 @@ const InviteContactsScreen = ({route, navigation}) => {
           </View>
         </>
       )}
+      <Animated.View
+        onTouchEnd={() => (top.value = withSpring(1000, SPRING_CONFIG))}
+        style={[
+          // eslint-disable-next-line react-native/no-inline-styles
+          {
+            position: 'absolute',
+            backgroundColor: 'rgba(52, 52, 52, 0)',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            alignItems: 'center',
+            alignSelf: 'center',
+            justifyContent: 'center',
+          },
+          style,
+        ]}>
+        <View style={styles.modal}>
+          <View style={styles.inviteTextContainer}>
+            <Text style={styles.sendInviteText}>
+              You're about to send an invite to
+            </Text>
+            <Text style={styles.contactName}>{contactName}</Text>
+            <Text style={styles.contactNumber}>@ {contactNumber}</Text>
+          </View>
+          <View style={styles.previewContainer}>
+            <Text style={styles.time}>Today {time}</Text>
+            <View style={styles.previewBubble}>
+              <Text style={styles.textPreview}>
+                {myName ? myName : myPhoneNumber} invited you to join
+                Musicplace. Your number is now eligible! Download the app here
+              </Text>
+            </View>
+          </View>
+          <TouchableOpacity style={styles.inviteButton}>
+            <Text style={styles.inviteButtonText}>Invite</Text>
+          </TouchableOpacity>
+        </View>
+      </Animated.View>
     </SafeAreaView>
   );
 };
@@ -208,5 +291,66 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     color: 'white',
     textAlign: 'center',
+  },
+  modal: {
+    backgroundColor: '#1F1F1F',
+    textAlign: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    // height: '40%',
+    paddingVertical: 40,
+    width: '85%',
+    borderRadius: 20,
+  },
+  inviteTextContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sendInviteText: {
+    color: 'white',
+    fontFamily: 'Inter-Medium',
+  },
+  contactName: {
+    color: 'white',
+    fontFamily: 'Inter-Bold',
+    fontSize: 22,
+    marginTop: '2%',
+  },
+  contactNumber: {
+    color: Colors.greyOut,
+    fontSize: 12,
+    marginTop: '2%',
+  },
+  previewContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: '8%',
+  },
+  time: {
+    color: Colors.greyOut,
+    fontSize: 12,
+  },
+  previewBubble: {
+    padding: 10,
+    backgroundColor: '#3E3E3E',
+    width: 240,
+    borderRadius: 16,
+    borderBottomLeftRadius: 2,
+    marginTop: '3%',
+  },
+  textPreview: {
+    color: 'white',
+    fontSize: 13,
+  },
+  inviteButton: {
+    backgroundColor: Colors.red,
+    marginTop: '10%',
+    paddingHorizontal: 75,
+    paddingVertical: 10,
+    borderRadius: 16,
+  },
+  inviteButtonText: {
+    color: 'white',
+    fontFamily: 'Inter-Bold',
   },
 });
