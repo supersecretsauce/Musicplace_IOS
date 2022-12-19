@@ -70,7 +70,15 @@ const ProfileScreen = ({navigation}) => {
             setUserProfile(documentSnapshot.data());
             setDisplayName(documentSnapshot.data().displayName);
             setBio(documentSnapshot.data().bio);
-            setTopSongs(documentSnapshot.data().topSongs);
+            if (
+              JSON.stringify(topSongs) ===
+              JSON.stringify(documentSnapshot.data().topSongs)
+            ) {
+              console.log('they are the same');
+            } else {
+              console.log('they are dif');
+              setTopSongs(documentSnapshot.data().topSongs);
+            }
           }
         });
 
