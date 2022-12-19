@@ -70,6 +70,9 @@ const ProfileScreen = ({navigation}) => {
             setUserProfile(documentSnapshot.data());
             setDisplayName(documentSnapshot.data().displayName);
             setBio(documentSnapshot.data().bio);
+            setUsername(documentSnapshot.data().handle);
+            setPFP(documentSnapshot.data().pfpURL);
+            setHeader(documentSnapshot.data().headerURL);
             if (
               JSON.stringify(topSongs) ===
               JSON.stringify(documentSnapshot.data().topSongs)
@@ -85,43 +88,6 @@ const ProfileScreen = ({navigation}) => {
       // Stop listening for updates when no longer required
       return () => subscriber();
     }
-  }, [UID]);
-
-  const getProfilePicURL = async () => {
-    const url = await storage()
-      .ref(UID + 'PFP')
-      .getDownloadURL()
-      .catch(error => {
-        console.log(error);
-      });
-    console.log('url', url);
-    setPFP(url);
-  };
-
-  const getHeaderURL = async () => {
-    const url = await storage()
-      .ref(UID + 'HEADER')
-      .getDownloadURL()
-      .catch(error => {
-        console.log(error);
-      });
-    setHeader(url);
-  };
-
-  useEffect(() => {
-    if (UID) {
-      getProfilePicURL();
-      getHeaderURL();
-      firestore()
-        .collection('usernames')
-        .where('UID', '==', UID)
-        .get()
-        .then(querySnapshot => {
-          console.log(querySnapshot);
-          setUsername(querySnapshot);
-        });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [UID]);
 
   //animations for profile settings
@@ -198,9 +164,7 @@ const ProfileScreen = ({navigation}) => {
             <Text style={styles.displayName}>
               {displayName ? displayName : userProfile.displayName}
             </Text>
-            <Text style={styles.handle}>
-              {username && `@${username?._docs[0]?.id}`}
-            </Text>
+            <Text style={styles.handle}>{username && `@${username}`}</Text>
             <Text numberOfLines={2} style={styles.bio}>
               {bio && bio}
             </Text>

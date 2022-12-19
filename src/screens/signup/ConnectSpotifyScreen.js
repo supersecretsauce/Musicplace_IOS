@@ -34,6 +34,8 @@ const ConnectSpotifyScreen = ({navigation}) => {
 
     let data = {
       UID: userInfo.uid,
+      pfpURL: null,
+      headerURL: null,
       phoneNumber: userInfo.phoneNumber,
       createdAt: userInfo.metadata.creationTime,
       lastSignIn: userInfo.metadata.lastSignInTime,
@@ -122,6 +124,8 @@ const ConnectSpotifyScreen = ({navigation}) => {
     try {
       await firestore().collection('users').doc(userInfo.uid).set({
         UID: userInfo.uid,
+        pfpURL: null,
+        headerURL: null,
         phoneNumber: userInfo.phoneNumber,
         createdAt: userInfo.metadata.creationTime,
         lastSignIn: userInfo.metadata.lastSignInTime,
