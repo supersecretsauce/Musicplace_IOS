@@ -20,6 +20,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import {SPRING_CONFIG} from '../../assets/utilities/reanimated-2';
 import functions from '@react-native-firebase/functions';
+import HapticFeedback from 'react-native-haptic-feedback';
+import Toast from 'react-native-toast-message';
 
 const InviteContactsScreen = ({route, navigation}) => {
   const {contacts, myPhoneNumber, phoneNumbers} = route.params;
@@ -61,6 +63,8 @@ const InviteContactsScreen = ({route, navigation}) => {
   // };
 
   const handleInvite = item => {
+    HapticFeedback.trigger('impactLight');
+
     console.log(item);
     setTime(
       new Date().toLocaleTimeString(navigator.language, {
@@ -74,6 +78,12 @@ const InviteContactsScreen = ({route, navigation}) => {
   };
 
   function handleSend() {
+    HapticFeedback.trigger('impactHeavy');
+    Toast.show({
+      type: 'success',
+      text1: `Sent an invite to ${contactName}`,
+      visibilityTime: 2000,
+    });
     if (myName) {
       functions()
         .httpsCallable('inviteContact')({
