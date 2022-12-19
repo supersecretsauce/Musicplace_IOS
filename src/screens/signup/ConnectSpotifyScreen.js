@@ -18,7 +18,7 @@ import Musicplace from '../../assets/img/musicplace-signup.svg';
 import HapticFeedback from 'react-native-haptic-feedback';
 import axios from 'axios';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
+import {spotConfig} from '../../../SpotifyConfig';
 const ConnectSpotifyScreen = ({navigation}) => {
   const userInfo = firebase.auth().currentUser;
   const {username, setFeed} = useContext(Context);
@@ -27,27 +27,9 @@ const ConnectSpotifyScreen = ({navigation}) => {
     navigation.goBack();
   };
 
-  const config = {
-    clientId: '501638f5cfb04abfb61d039e370c5d99', // available on the app page
-    clientSecret: '16f92a6d7e9a4180b29af25bf012e6fe', // click "show client secret" to see this
-    redirectUrl: 'musicplace-ios:/musicplace-ios-login', // the redirect you defined after creating the app
-    scopes: [
-      'playlist-modify-public',
-      'user-read-private',
-      'user-library-read',
-      'user-follow-read',
-      'user-library-modify',
-      'user-top-read',
-    ], // the scopes you need to access
-    serviceConfiguration: {
-      authorizationEndpoint: 'https://accounts.spotify.com/authorize',
-      tokenEndpoint: 'https://accounts.spotify.com/api/token',
-    },
-  };
-
   const connectSpotify = async () => {
     HapticFeedback.trigger('impactHeavy');
-    const authState = await authorize(config);
+    const authState = await authorize(spotConfig);
     console.log(userInfo.uid);
 
     let data = {
