@@ -19,6 +19,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import {SPRING_CONFIG} from '../../assets/utilities/reanimated-2';
+import functions from '@react-native-firebase/functions';
 
 const InviteContactsScreen = ({route, navigation}) => {
   const {contacts, myPhoneNumber, phoneNumbers} = route.params;
@@ -38,8 +39,13 @@ const InviteContactsScreen = ({route, navigation}) => {
   useEffect(() => {
     if (myPhoneNumber && phoneNumbers) {
       console.log(phoneNumbers);
+      console.log(myPhoneNumber);
       phoneNumbers.forEach(contact => {
-        if (contact.number === '+' + myPhoneNumber) {
+        if (
+          '+' + contact?.number === myPhoneNumber ||
+          '+1' + contact?.number === myPhoneNumber
+        ) {
+          console.log(contact);
           setMyName(contact.name);
         } else {
           return;
@@ -66,6 +72,27 @@ const InviteContactsScreen = ({route, navigation}) => {
     setContactNumber(item.phoneNumbers[0].number);
     top.value = withSpring(0, SPRING_CONFIG);
   };
+
+  function handleSend() {
+    if (myName) {
+      functions()
+        .httpsCallable('inviteContact')({
+          name: myName,
+          number: contactNumber,
+        })
+        .then(resp => console.log(resp))
+        .catch(e => console.log(e));
+    } else {
+      functions()
+        .httpsCallable('inviteContact')({
+          name: myName,
+          number: contactNumber,
+          myPhoneNumber: myPhoneNumber,
+        })
+        .then(resp => console.log(resp))
+        .catch(e => console.log(e));
+    }
+  }
 
   async function handleSettings() {
     await Linking.openSettings();
@@ -170,7 +197,7 @@ const InviteContactsScreen = ({route, navigation}) => {
               </Text>
             </View>
           </View>
-          <TouchableOpacity style={styles.inviteButton}>
+          <TouchableOpacity style={styles.inviteButton} onPress={handleSend}>
             <Text style={styles.inviteButtonText}>Invite</Text>
           </TouchableOpacity>
         </View>

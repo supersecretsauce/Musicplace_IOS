@@ -39,7 +39,8 @@ const ActivityScreen = ({navigation}) => {
               let ogNumber = person?.phoneNumbers[0]?.number;
               let arr = ogNumber.split('');
               let filteredNumber = arr.filter(
-                n => n !== '(' && n !== ')' && n !== '-' && n !== ' ',
+                n =>
+                  n !== '(' && n !== ')' && n !== '-' && n !== ' ' && n !== '+',
               );
               return {number: filteredNumber.join(''), name: person.firstName};
             } else {
