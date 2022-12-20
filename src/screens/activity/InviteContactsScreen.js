@@ -9,7 +9,8 @@ import {
   SafeAreaView,
   useWindowDimensions,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
+import {Context} from '../../context/Context';
 import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Animated, {
@@ -22,9 +23,11 @@ import {SPRING_CONFIG} from '../../assets/utilities/reanimated-2';
 import functions from '@react-native-firebase/functions';
 import HapticFeedback from 'react-native-haptic-feedback';
 import Toast from 'react-native-toast-message';
+import firestore from '@react-native-firebase/firestore';
 
 const InviteContactsScreen = ({route, navigation}) => {
-  const {contacts, myPhoneNumber, phoneNumbers} = route.params;
+  const {contacts, myPhoneNumber, phoneNumbers, UID} = route.params;
+  const {invitesRemaining} = useContext(Context);
   const dimensions = useWindowDimensions();
   const top = useSharedValue(dimensions.height);
   const [contactName, setContactName] = useState(null);
@@ -79,6 +82,21 @@ const InviteContactsScreen = ({route, navigation}) => {
 
   function handleSend() {
     HapticFeedback.trigger('impactHeavy');
+    if (invitesRemaining === 0) {
+      Toast.show({
+        type: 'error',
+        text1: `You have no invites left`,
+        visibilityTime: 2000,
+      });
+      return;
+    }
+    firestore()
+      .collection('users')
+      .doc(UID)
+      .update({
+        invitesRemaining: invitesRemaining - 1,
+      });
+    // firestore().collection("invites").doc()
     Toast.show({
       type: 'success',
       text1: `Sent an invite to ${contactName}`,
@@ -122,7 +140,9 @@ const InviteContactsScreen = ({route, navigation}) => {
       <View style={styles.line} />
       {contacts ? (
         <View style={styles.contactsContainer}>
-          <Text style={styles.inviteText}>My contacts</Text>
+          <Text style={styles.inviteText}>
+            {invitesRemaining} invites remaining
+          </Text>
           <FlatList
             showsVerticalScrollIndicator={false}
             data={contacts}
