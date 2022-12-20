@@ -12,6 +12,7 @@ import SwipeRightScreen from '../screens/signup/SwipeRightScreen';
 import ExistingPhoneNumberScreen from '../screens/signup/ExistingPhoneNumberScreen';
 import ExistingCodeScreen from '../screens/signup/ExistingCodeScreen';
 import SelectGenresScreen from '../screens/signup/SelectGenresScreen';
+import WaitlistScreen from '../screens/signup/WaitlistScreen';
 const WelcomeStackScreen = () => {
   const WelcomeStack = createNativeStackNavigator();
   return (
@@ -22,6 +23,7 @@ const WelcomeStackScreen = () => {
         name="PhoneNumberScreen"
         component={PhoneNumberScreen}
       />
+      <WelcomeStack.Screen name="WaitlistScreen" component={WaitlistScreen} />
       <WelcomeStack.Screen name="EnterCodeScreen" component={EnterCodeScreen} />
       <WelcomeStack.Screen
         name="CreateUsernameScreen"
