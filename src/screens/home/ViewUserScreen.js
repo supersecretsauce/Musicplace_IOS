@@ -151,6 +151,8 @@ const ViewUserScreen = ({route, navigation}) => {
       });
     } else if (prevRoute === 'ActivityScreen') {
       navigation.navigate('ActivityScreen');
+    } else if (prevRoute === 'ViewAllActivityScreen') {
+      navigation.goBack();
     } else {
       navigation.navigate('HomeScreen');
     }

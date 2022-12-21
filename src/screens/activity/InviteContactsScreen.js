@@ -30,7 +30,7 @@ const InviteContactsScreen = ({route, navigation}) => {
         <TouchableOpacity
           style={styles.createIcon}
           onPress={() => {
-            navigation.navigate('ActivityScreen');
+            navigation.goBack();
           }}>
           <Ionicons name={'chevron-back'} color={'white'} size={32} />
         </TouchableOpacity>
