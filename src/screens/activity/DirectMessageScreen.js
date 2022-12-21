@@ -193,6 +193,8 @@ const DirectMessageScreen = ({route, navigation}) => {
       navigation.goBack();
     } else if (prevRoute === 'ViewUserScreen') {
       navigation.goBack();
+    } else if (prevRoute === 'ViewAllMessagesScreen') {
+      navigation.goBack();
     } else {
       navigation.navigate('ViewUserScreen', {
         profileID: profileID,

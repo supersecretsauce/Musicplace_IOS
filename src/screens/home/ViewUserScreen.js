@@ -142,13 +142,14 @@ const ViewUserScreen = ({route, navigation}) => {
         myUser: myUser,
       });
     } else if (prevRoute === 'DirectMessageScreen') {
-      navigation.navigate('DirectMessageScreen', {
-        profileID: profileID,
-        UID: UID,
-        myUser: myUser,
-        userProfile: userProfile,
-        prevRoute: 'ViewUserScreen',
-      });
+      // navigation.navigate('DirectMessageScreen', {
+      //   profileID: profileID,
+      //   UID: UID,
+      //   myUser: myUser,
+      //   userProfile: userProfile,
+      //   prevRoute: 'ViewUserScreen',
+      // });
+      navigation.goBack();
     } else if (prevRoute === 'ActivityScreen') {
       navigation.navigate('ActivityScreen');
     } else if (prevRoute === 'ViewAllActivityScreen') {

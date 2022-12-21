@@ -371,7 +371,20 @@ const ActivityScreen = ({navigation}) => {
         </View>
       </View>
       <View style={styles.messagesContainer}>
-        <Text style={styles.messagesText}>Messages</Text>
+        <View style={styles.newActivityHeader}>
+          <Text style={styles.messagesText}>Messages</Text>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('ViewAllMessagesScreen', {
+                UID: UID,
+                // contacts: contacts,
+                // UID: UID,
+                myUser: myUser,
+              })
+            }>
+            <Text style={styles.viewMore}>view all</Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.messagesFlatListContainer}>
           <FlatList
             data={memberInfo}
