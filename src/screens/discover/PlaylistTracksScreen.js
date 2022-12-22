@@ -72,7 +72,7 @@ const PlaylistTracksScreen = ({route}) => {
 
   useEffect(() => {
     if (feed) {
-      let newTrack = new Sound(feed[currentIndex].previewUrl, null, error => {
+      let newTrack = new Sound(feed[currentIndex].previewURL, null, error => {
         if (error) {
           console.log('failed to load the sound', error);
           return;

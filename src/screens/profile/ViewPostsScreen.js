@@ -96,7 +96,7 @@ const ViewPostsScreen = ({route, navigation}) => {
   useEffect(() => {
     if (songInfo) {
       console.log(songInfo);
-      let newTrack = new Sound(songInfo[0].previewUrl, null, error => {
+      let newTrack = new Sound(songInfo[0].previewURL, null, error => {
         if (error) {
           console.log('failed to load the sound', error);
           return;

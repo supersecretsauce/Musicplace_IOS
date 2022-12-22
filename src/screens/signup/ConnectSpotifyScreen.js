@@ -30,7 +30,15 @@ const ConnectSpotifyScreen = ({navigation}) => {
   const connectSpotify = async () => {
     HapticFeedback.trigger('impactHeavy');
     const authState = await authorize(spotConfig);
-    console.log(userInfo.uid);
+    // let dateConversion = new Date(authState.accessTokenExpirationDate);
+    // let UTCDate = Date.UTC(
+    //   dateConversion.getUTCFullYear(),
+    //   dateConversion.getUTCMonth(),
+    //   dateConversion.getUTCDate(),
+    //   dateConversion.getUTCHours(),
+    //   dateConversion.getUTCMinutes(),
+    //   dateConversion.getUTCSeconds(),
+    // );
 
     let data = {
       UID: userInfo.uid,
@@ -56,57 +64,30 @@ const ConnectSpotifyScreen = ({navigation}) => {
     };
 
     const docRef = firestore().collection('users').doc(userInfo.uid);
-
     docRef.set(data, {merge: true}).then(() => {
-      docRef.get().then(resp => {
-        console.log(resp);
-        firestore()
-          .collection('users')
-          .doc(userInfo.uid)
-          .collection('savedTracks')
-          .doc(userInfo.uid)
-          .set({
-            library: new Map(),
-          })
-          .then(() => {
+      axios
+        .get(`http://167.99.22.22/update/top-tracks?userId=${userInfo.uid}`)
+        .then(resp => {
+          if (resp.status === 200) {
+            console.log('finished fetching top songs');
             axios
               .get(
-                `https://reccomendation-api-pmtku.ondigitalocean.app/updates/saved-tracks/${userInfo.uid}`,
+                `http://167.99.22.22/recommendation/user?userId=${userInfo.uid}`,
               )
               .then(resp => {
-                console.log('finished updating spot library');
-                console.log(resp);
+                if (resp.status === 200) {
+                  console.log(resp.data.data);
+                  setFeed(resp.data.data);
+                }
               })
               .catch(e => {
                 console.log(e);
               });
-          });
-
-        axios
-          .get(
-            `https://reccomendation-api-pmtku.ondigitalocean.app/updates/top-songs/${userInfo.uid}`,
-          )
-          .then(resp => {
-            if (resp.status === 200) {
-              console.log('finished fetching top songs');
-              axios
-                .get(
-                  `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${userInfo.uid}`,
-                )
-                .then(resp => {
-                  if (resp.status === 200) {
-                    setFeed(resp.data);
-                  }
-                })
-                .catch(e => {
-                  console.log(e);
-                });
-            }
-          })
-          .catch(e => {
-            console.log(e);
-          });
-      });
+          }
+        })
+        .catch(e => {
+          console.log(e);
+        });
     });
 
     try {

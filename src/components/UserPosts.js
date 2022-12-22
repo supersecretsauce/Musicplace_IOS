@@ -9,47 +9,65 @@ import {
 import React, {useEffect, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import Colors from '../assets/utilities/Colors';
+import axios from 'axios';
 const UserPosts = props => {
   const {profileID, UID, navigation} = props;
   const [userPosts, setUserPosts] = useState([]);
 
-  useEffect(() => {
-    if (UID) {
-      async function getTracks() {
-        const userDoc = await firestore()
-          .collection('users')
-          .doc(profileID)
-          .get();
-        if (userDoc.exists) {
-          if (userDoc.data().topSongs.length > 0) {
-            let topSongsArr = [];
-            async function getAllTopSongs() {
-              for (let i = 0; i < userDoc.data().topSongs.length; i += 10) {
-                await firestore()
-                  .collection('posts')
-                  .where(
-                    firestore.FieldPath.documentId(),
-                    'in',
-                    userDoc.data().topSongs.slice(i, i + 10),
-                  )
-                  .get()
-                  .then(resp => {
-                    console.log(resp);
-                    resp.docs.forEach(document => {
-                      topSongsArr.push(document.data());
-                    });
-                  });
-              }
+  // useEffect(() => {
+  //   if (UID) {
+  //     async function getTracks() {
+  //       const userDoc = await firestore()
+  //         .collection('users')
+  //         .doc(profileID)
+  //         .get();
+  //       if (userDoc.exists) {
+  //         if (userDoc.data().topSongs.length > 0) {
+  //           let topSongsArr = [];
+  //           async function getAllTopSongs() {
+  //             for (let i = 0; i < userDoc.data().topSongs.length; i += 10) {
+  //               await firestore()
+  //                 .collection('posts')
+  //                 .where(
+  //                   firestore.FieldPath.documentId(),
+  //                   'in',
+  //                   userDoc.data().topSongs.slice(i, i + 10),
+  //                 )
+  //                 .get()
+  //                 .then(resp => {
+  //                   console.log(resp);
+  //                   resp.docs.forEach(document => {
+  //                     topSongsArr.push(document.data());
+  //                   });
+  //                 });
+  //             }
 
-              setUserPosts(topSongsArr);
-            }
-            getAllTopSongs();
-          }
-        }
-      }
-      getTracks();
+  //             setUserPosts(topSongsArr);
+  //           }
+  //           getAllTopSongs();
+  //         }
+  //       }
+  //     }
+  //     getTracks();
+  //   }
+  // }, [profileID]);
+
+  useEffect(() => {
+    if (profileID && UID) {
+      console.log(UID);
+      console.log(profileID);
+      axios
+        .get(
+          `http://167.99.22.22/fetch/library?userId=${profileID}&viewerId=${UID}`,
+        )
+        .then(resp => {
+          console.log(resp);
+        })
+        .catch(e => {
+          console.log(e);
+        });
     }
-  }, [profileID]);
+  }, [profileID, UID]);
 
   return (
     <View style={styles.container}>

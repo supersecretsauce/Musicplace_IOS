@@ -84,7 +84,7 @@ const RadioScreen = ({route}) => {
 
   useEffect(() => {
     if (feed && initialFeed && isOnHomeScreen) {
-      let newTrack = new Sound(feed[currentIndex].previewUrl, null, error => {
+      let newTrack = new Sound(feed[currentIndex].previewURL, null, error => {
         if (error) {
           console.log('failed to load the sound', error);
           return;
@@ -128,7 +128,7 @@ const RadioScreen = ({route}) => {
   }
 
   function playNextTrack(index) {
-    let newTrack = new Sound(feed[index].previewUrl, null, error => {
+    let newTrack = new Sound(feed[index].previewURL, null, error => {
       if (error) {
         console.log('failed to load the sound', error);
         return;
