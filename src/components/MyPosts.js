@@ -17,40 +17,23 @@ import {authorize} from 'react-native-app-auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 const MyPosts = props => {
-  const {UID, navigation, topSongs} = props;
+  const {UID, navigation} = props;
   const {hasSpotify, setHasSpotify} = useContext(Context);
   const [userPosts, setUserPosts] = useState(null);
 
   useEffect(() => {
-    if (topSongs && topSongs.length > 0) {
-      console.log(topSongs);
-      if (topSongs.length > 0) {
-        let topSongsArr = [];
-        async function getAllTopSongs() {
-          for (let i = 0; i < topSongs.length; i += 10) {
-            await firestore()
-              .collection('posts')
-              .where(
-                firestore.FieldPath.documentId(),
-                'in',
-                topSongs.slice(i, i + 10),
-              )
-              .get()
-              .then(resp => {
-                console.log(resp);
-                resp.docs.forEach(document => {
-                  topSongsArr.push(document.data());
-                });
-              });
-          }
-          setUserPosts(topSongsArr);
-        }
-        getAllTopSongs();
-      }
-    } else {
-      setUserPosts(null);
+    if (UID) {
+      axios
+        .get(`http://167.99.22.22/fetch/library?userId=${UID}&viewerId=${UID}`)
+        .then(resp => {
+          console.log(resp);
+          setUserPosts(resp.data.data);
+        })
+        .catch(e => {
+          console.log(e);
+        });
     }
-  }, [topSongs]);
+  }, [UID]);
 
   const connectSpotify = async () => {
     if (UID) {

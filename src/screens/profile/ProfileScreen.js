@@ -34,7 +34,6 @@ const ProfileScreen = ({navigation}) => {
   const [header, setHeader] = useState(null);
   const [PFP, setPFP] = useState(null);
   const [displayName, setDisplayName] = useState(null);
-  const [topSongs, setTopSongs] = useState(null);
   const dimensions = useWindowDimensions();
   const top = useSharedValue(dimensions.height);
   const top2 = useSharedValue(dimensions.height);
@@ -73,15 +72,6 @@ const ProfileScreen = ({navigation}) => {
             setUsername(documentSnapshot.data().handle);
             setPFP(documentSnapshot.data().pfpURL);
             setHeader(documentSnapshot.data().headerURL);
-            if (
-              JSON.stringify(topSongs) ===
-              JSON.stringify(documentSnapshot.data().topSongs)
-            ) {
-              console.log('they are the same');
-            } else {
-              console.log('they are dif');
-              setTopSongs(documentSnapshot.data().topSongs);
-            }
           }
         });
 
@@ -190,7 +180,7 @@ const ProfileScreen = ({navigation}) => {
               <Text style={styles.editProfileText}>Edit profile</Text>
             </TouchableOpacity>
           </View>
-          <MyPosts topSongs={topSongs} UID={UID} navigation={navigation} />
+          <MyPosts UID={UID} navigation={navigation} />
 
           <PanGestureHandler onGestureEvent={gestureHandler2}>
             <Animated.View
