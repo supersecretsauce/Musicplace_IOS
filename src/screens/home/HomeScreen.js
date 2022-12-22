@@ -124,13 +124,11 @@ const HomeScreen = () => {
       } else {
         console.log(UID);
         axios
-          .get(
-            `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${UID}`,
-          )
+          .get(`http://167.99.22.22/recommendation/user?userId=${UID}`)
           .then(resp => {
             console.log(resp);
-            if (resp.data.length > 0) {
-              setFeed(resp.data);
+            if (resp.data.data.length > 0) {
+              setFeed(resp.data.data);
             }
           })
           .catch(e => {
@@ -164,12 +162,10 @@ const HomeScreen = () => {
       if (currentIndex == Math.floor(feed.length / 2)) {
         console.log('halfway!');
         axios
-          .get(
-            `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${UID}`,
-          )
+          .get(`http://167.99.22.22/recommendation/user?userId=${UID}`)
           .then(resp => {
             console.log(resp);
-            setFeed(current => [...current, ...resp.data]);
+            setFeed(current => [...current, ...resp.data.data]);
           })
           .catch(e => {
             console.log(e);
@@ -240,10 +236,10 @@ const HomeScreen = () => {
   function likeHandler(post) {
     HapticFeedback.trigger('impactLight');
     if (hasSpotify) {
-      if (post.liked === 1) {
+      if (post.liked) {
         let updatedFeed = feed.map(track => {
           if (track.id === post.id) {
-            track.liked = 0;
+            track.liked = false;
             return track;
           } else {
             return track;
@@ -253,10 +249,11 @@ const HomeScreen = () => {
         // remove song from liked songs
         axios
           .get(
-            `https://www.musicplaceapi.com/updates/remove-track/${feed[currentIndex].id}/user/${UID}`,
+            `http://167.99.22.22/update/remove-track?userId=${UID}&trackId=${feed[currentIndex].id}`,
           )
           .then(resp => {
             console.log(resp);
+            console.log('track removed');
           })
           .catch(e => {
             console.log(e);
@@ -264,7 +261,7 @@ const HomeScreen = () => {
       } else {
         let updatedFeed = feed.map(track => {
           if (track.id === post.id) {
-            track.liked = 1;
+            track.liked = true;
             return track;
           } else {
             return track;
@@ -274,10 +271,11 @@ const HomeScreen = () => {
         // add to liked songs
         axios
           .get(
-            `https://www.musicplaceapi.com/updates/save-track/${feed[currentIndex].id}/user/${UID}`,
+            `http://167.99.22.22/update/save-track?userId=${UID}&trackId=${feed[currentIndex].id}`,
           )
           .then(resp => {
             console.log(resp);
+            console.log('saved track');
           })
           .catch(e => {
             console.log(e);
@@ -329,11 +327,11 @@ const HomeScreen = () => {
                       <TouchableOpacity onPress={() => likeHandler(post)}>
                         <Ionicons
                           style={styles.likeIcon}
-                          name={post.liked === 0 ? 'heart-outline' : 'heart'}
+                          name={post.liked ? 'heart' : 'heart-outline'}
                           // color={
                           //   likedTracks.includes(post.id) ? '#1DB954' : 'grey'
                           // }
-                          color={post.liked === 0 ? 'grey' : '#1DB954'}
+                          color={post.liked ? '#1DB954' : 'grey'}
                           size={28}
                         />
                       </TouchableOpacity>
