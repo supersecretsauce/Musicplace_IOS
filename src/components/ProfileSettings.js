@@ -111,7 +111,6 @@ const ProfileSettings = props => {
             spotifyRefreshToken: null,
             spotifyTokenType: null,
             connectedWithSpotify: false,
-            topSongs: [],
           });
         } catch (error) {
           console.log(error);

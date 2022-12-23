@@ -59,7 +59,6 @@ const ConnectSpotifyScreen = ({navigation}) => {
       followersList: [],
       followingList: [],
       autoPost: true,
-      topSongs: [],
       handle: null,
     };
 
@@ -118,7 +117,6 @@ const ConnectSpotifyScreen = ({navigation}) => {
         followersList: [],
         followingList: [],
         autoPost: false,
-        topSongs: [],
         handle: null,
         spotifyAccessToken: null,
         spotifyAccessTokenExpirationDate: null,
