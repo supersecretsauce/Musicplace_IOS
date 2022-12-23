@@ -37,27 +37,6 @@ const EditProfileSheet = props => {
   const [localBio, setLocalBio] = useState(false);
   const dimensions = useWindowDimensions();
 
-  const getHeaderAndPFP = async () => {
-    const headerURL = await storage()
-      .ref(UID + 'HEADER')
-      .getDownloadURL()
-      .catch(error => {
-        console.log(error);
-      });
-    const PFPURL = await storage()
-      .ref(UID + 'PFP')
-      .getDownloadURL()
-      .catch(error => {
-        console.log(error);
-      });
-    setPFP(PFPURL);
-    setHeader(headerURL);
-  };
-
-  useEffect(() => {
-    getHeaderAndPFP();
-  }, []);
-
   const selectPFP = () => {
     ImagePicker.openPicker({
       width: 2000,

@@ -34,7 +34,6 @@ const ProfileScreen = ({navigation}) => {
   const [header, setHeader] = useState(null);
   const [PFP, setPFP] = useState(null);
   const [displayName, setDisplayName] = useState(null);
-  const [topSongs, setTopSongs] = useState(null);
   const dimensions = useWindowDimensions();
   const top = useSharedValue(dimensions.height);
   const top2 = useSharedValue(dimensions.height);
@@ -70,50 +69,15 @@ const ProfileScreen = ({navigation}) => {
             setUserProfile(documentSnapshot.data());
             setDisplayName(documentSnapshot.data().displayName);
             setBio(documentSnapshot.data().bio);
-            setTopSongs(documentSnapshot.data().topSongs);
+            setUsername(documentSnapshot.data().handle);
+            setPFP(documentSnapshot.data().pfpURL);
+            setHeader(documentSnapshot.data().headerURL);
           }
         });
 
       // Stop listening for updates when no longer required
       return () => subscriber();
     }
-  }, [UID]);
-
-  const getProfilePicURL = async () => {
-    const url = await storage()
-      .ref(UID + 'PFP')
-      .getDownloadURL()
-      .catch(error => {
-        console.log(error);
-      });
-    console.log('url', url);
-    setPFP(url);
-  };
-
-  const getHeaderURL = async () => {
-    const url = await storage()
-      .ref(UID + 'HEADER')
-      .getDownloadURL()
-      .catch(error => {
-        console.log(error);
-      });
-    setHeader(url);
-  };
-
-  useEffect(() => {
-    if (UID) {
-      getProfilePicURL();
-      getHeaderURL();
-      firestore()
-        .collection('usernames')
-        .where('UID', '==', UID)
-        .get()
-        .then(querySnapshot => {
-          console.log(querySnapshot);
-          setUsername(querySnapshot);
-        });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [UID]);
 
   //animations for profile settings
@@ -190,9 +154,7 @@ const ProfileScreen = ({navigation}) => {
             <Text style={styles.displayName}>
               {displayName ? displayName : userProfile.displayName}
             </Text>
-            <Text style={styles.handle}>
-              {username && `@${username?._docs[0]?.id}`}
-            </Text>
+            <Text style={styles.handle}>{username && `@${username}`}</Text>
             <Text numberOfLines={2} style={styles.bio}>
               {bio && bio}
             </Text>
@@ -218,7 +180,7 @@ const ProfileScreen = ({navigation}) => {
               <Text style={styles.editProfileText}>Edit profile</Text>
             </TouchableOpacity>
           </View>
-          <MyPosts topSongs={topSongs} UID={UID} navigation={navigation} />
+          <MyPosts UID={UID} navigation={navigation} />
 
           <PanGestureHandler onGestureEvent={gestureHandler2}>
             <Animated.View

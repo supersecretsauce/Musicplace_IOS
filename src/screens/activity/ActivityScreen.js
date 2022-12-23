@@ -202,7 +202,19 @@ const ActivityScreen = ({navigation}) => {
       </View>
       <View style={styles.line} />
       <View style={styles.newActivityContainer}>
-        <Text style={styles.newActivity}>New Activity</Text>
+        <View style={styles.newActivityHeader}>
+          <Text style={styles.newActivity}>New Activity</Text>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('ViewAllActivityScreen', {
+                contacts: contacts,
+                UID: UID,
+                myUser: myUser,
+              })
+            }>
+            <Text style={styles.viewMore}>view all</Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.activityFlatListContainer}>
           {activity && (
             <FlatList
@@ -359,7 +371,20 @@ const ActivityScreen = ({navigation}) => {
         </View>
       </View>
       <View style={styles.messagesContainer}>
-        <Text style={styles.messagesText}>Messages</Text>
+        <View style={styles.newActivityHeader}>
+          <Text style={styles.messagesText}>Messages</Text>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('ViewAllMessagesScreen', {
+                UID: UID,
+                // contacts: contacts,
+                // UID: UID,
+                myUser: myUser,
+              })
+            }>
+            <Text style={styles.viewMore}>view all</Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.messagesFlatListContainer}>
           <FlatList
             data={memberInfo}
@@ -442,10 +467,20 @@ const styles = StyleSheet.create({
     marginVertical: '7%',
     // backgroundColor: 'red',
   },
+  newActivityHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   newActivity: {
     fontFamily: 'Inter-Medium',
     color: 'white',
     fontSize: 18,
+  },
+  viewMore: {
+    color: Colors.greyOut,
+    fontFamily: 'Inter-Regular',
+    fontSize: 13,
   },
   activityFlatListContainer: {
     // backgroundColor: 'grey',
