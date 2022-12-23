@@ -30,15 +30,6 @@ const ConnectSpotifyScreen = ({navigation}) => {
   const connectSpotify = async () => {
     HapticFeedback.trigger('impactHeavy');
     const authState = await authorize(spotConfig);
-    // let dateConversion = new Date(authState.accessTokenExpirationDate);
-    // let UTCDate = Date.UTC(
-    //   dateConversion.getUTCFullYear(),
-    //   dateConversion.getUTCMonth(),
-    //   dateConversion.getUTCDate(),
-    //   dateConversion.getUTCHours(),
-    //   dateConversion.getUTCMinutes(),
-    //   dateConversion.getUTCSeconds(),
-    // );
 
     let data = {
       UID: userInfo.uid,
@@ -123,14 +114,6 @@ const ConnectSpotifyScreen = ({navigation}) => {
         spotifyRefreshToken: null,
         spotifyTokenType: null,
       });
-      firestore()
-        .collection('users')
-        .doc(userInfo.uid)
-        .collection('savedTracks')
-        .doc(userInfo.uid)
-        .set({
-          library: [],
-        });
     } catch (error) {
       return;
     }
