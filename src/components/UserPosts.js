@@ -14,44 +14,6 @@ const UserPosts = props => {
   const {profileID, UID, navigation} = props;
   const [userPosts, setUserPosts] = useState([]);
 
-  // useEffect(() => {
-  //   if (UID) {
-  //     async function getTracks() {
-  //       const userDoc = await firestore()
-  //         .collection('users')
-  //         .doc(profileID)
-  //         .get();
-  //       if (userDoc.exists) {
-  //         if (userDoc.data().topSongs.length > 0) {
-  //           let topSongsArr = [];
-  //           async function getAllTopSongs() {
-  //             for (let i = 0; i < userDoc.data().topSongs.length; i += 10) {
-  //               await firestore()
-  //                 .collection('posts')
-  //                 .where(
-  //                   firestore.FieldPath.documentId(),
-  //                   'in',
-  //                   userDoc.data().topSongs.slice(i, i + 10),
-  //                 )
-  //                 .get()
-  //                 .then(resp => {
-  //                   console.log(resp);
-  //                   resp.docs.forEach(document => {
-  //                     topSongsArr.push(document.data());
-  //                   });
-  //                 });
-  //             }
-
-  //             setUserPosts(topSongsArr);
-  //           }
-  //           getAllTopSongs();
-  //         }
-  //       }
-  //     }
-  //     getTracks();
-  //   }
-  // }, [profileID]);
-
   useEffect(() => {
     if (profileID && UID) {
       console.log(UID);
@@ -62,6 +24,7 @@ const UserPosts = props => {
         )
         .then(resp => {
           console.log(resp);
+          setUserPosts(resp.data.data);
         })
         .catch(e => {
           console.log(e);
