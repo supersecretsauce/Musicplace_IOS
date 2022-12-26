@@ -125,7 +125,7 @@ const ViewUserScreen = ({route, navigation}) => {
           type: 'follow',
           timestamp: firestore.FieldValue.serverTimestamp(),
           songInfo: null,
-          handle: myUser.handle,
+          handle: myUser?.handle ? myUser?.handle : null,
           displayName: myUser.displayName,
           pfpURL: myUser?.pfpURL ? myUser?.pfpURL : null,
           notificationRead: false,
