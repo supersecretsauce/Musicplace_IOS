@@ -125,7 +125,7 @@ const ViewUserScreen = ({route, navigation}) => {
           type: 'follow',
           timestamp: firestore.FieldValue.serverTimestamp(),
           songInfo: null,
-          handle: myUser.handle,
+          handle: myUser?.handle ? myUser?.handle : null,
           displayName: myUser.displayName,
           pfpURL: myUser?.pfpURL ? myUser?.pfpURL : null,
           notificationRead: false,
@@ -154,6 +154,8 @@ const ViewUserScreen = ({route, navigation}) => {
       navigation.navigate('ActivityScreen');
     } else if (prevRoute === 'ViewAllActivityScreen') {
       navigation.goBack();
+    } else if (prevRoute === 'FeedScreen') {
+      navigation.navigate('FeedScreen');
     } else {
       navigation.navigate('HomeScreen');
     }

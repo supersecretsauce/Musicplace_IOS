@@ -36,6 +36,18 @@
     {
       "path": "src/assets/fonts/Inter-Thin.ttf",
       "sha1": "050d767137b9bc5d07fbf974ab22a001c4fb21a9"
+    },
+    {
+      "path": "src/assets/fonts/SF-Pro-Rounded-Bold.otf",
+      "sha1": "745fb5fc263ee7e4d86211f1680bd928c327040a"
+    },
+    {
+      "path": "src/assets/fonts/SF-Pro-Rounded-Medium.otf",
+      "sha1": "889faa176363f8b8e629aeaacdf85c07d1312d8d"
+    },
+    {
+      "path": "src/assets/fonts/SF-Pro-Rounded-Semibold.otf",
+      "sha1": "00fd8c58ca31cc2794b221405884a1601f50558f"
     }
   ]
 }
