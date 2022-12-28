@@ -129,7 +129,7 @@ const FeedScreen = ({navigation}) => {
                               }}
                             />
                             <View style={styles.songDetails}>
-                              <Text style={styles.songName}>
+                              <Text numberOfLines={1} style={styles.songName}>
                                 {item.songName}
                               </Text>
                               <Text style={styles.artists}>
@@ -278,11 +278,13 @@ const styles = StyleSheet.create({
     fontFamily: 'SFProRounded-Semibold',
     fontSize: 18,
     color: 'white',
+    maxWidth: 240,
   },
   artists: {
     fontFamily: 'SFProRounded-Medium',
     fontSize: 14,
     color: Colors.greyBtn,
+    maxWidth: 240,
   },
 
   noFriendsContainer: {
