@@ -5,13 +5,14 @@ import {
   SafeAreaView,
   TouchableOpacity,
 } from 'react-native';
-import React, {useEffect, useContext, useState} from 'react';
+import React, {useEffect, useContext, useState, useCallback} from 'react';
 import {Context} from '../../context/Context';
 import Colors from '../../assets/utilities/Colors';
 import firestore from '@react-native-firebase/firestore';
 import {FlatList} from 'react-native-gesture-handler';
 import FastImage from 'react-native-fast-image';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {useFocusEffect} from '@react-navigation/native';
 
 const FeedScreen = ({navigation}) => {
   const {UID} = useContext(Context);
@@ -36,37 +37,47 @@ const FeedScreen = ({navigation}) => {
     }
   }, [UID]);
 
-  useEffect(() => {
-    if (followingList) {
-      async function fetchDocs() {
-        let likesArr = [];
-        for (let i = 0; i < followingList.length; i += 10) {
-          console.log(i);
-          let subscriber = await firestore()
-            .collection('likes')
-            .where('likedBy', 'in', followingList.slice(i, i + 10))
-            .onSnapshot(document => {
-              if (document.empty) {
-                setLikes(null);
-                return;
-              }
-              document.docs.forEach(doc => {
-                console.log(doc.data());
+  // everytime component is mounted, fetch new likes
+
+  async function fetchDocs() {
+    if (followingList && followingList.length > 0) {
+      let likesArr = [];
+      for (let i = 0; i < followingList.length; i += 10) {
+        console.log(i);
+        await firestore()
+          .collection('likes')
+          .where('likedBy', 'in', followingList.slice(i, i + 10))
+          .get()
+          .then(resp => {
+            if (resp.empty) {
+              return;
+            } else {
+              // console.log(resp);
+              resp.docs.forEach(doc => {
+                console.log(doc);
                 likesArr.push(doc.data());
               });
-              if (i < 10) {
-                setLikes(likesArr);
-              } else if (i >= followingList.length - 10) {
-                setLikes(likesArr);
-              }
-            });
-
-          return () => subscriber();
-        }
+            }
+          });
       }
-      fetchDocs();
+      setLikes(likesArr);
     }
-  }, [followingList]);
+  }
+
+  useEffect(() => {
+    console.log(likes);
+  }, [likes]);
+
+  useFocusEffect(
+    useCallback(() => {
+      // do something
+      fetchDocs();
+      return () => {
+        // if a user leaves the homescreen while feed is loading, don't play sound
+        console.log('left screen');
+      };
+    }, [followingList]),
+  );
 
   return (
     <SafeAreaView style={styles.container}>
