@@ -111,9 +111,16 @@ const ProfileSettings = props => {
       .signOut()
       .then(() => {
         console.log('User signed out!');
-        setUserLogin(false);
-        setCurrentTrack(null);
-        AsyncStorage.clear();
+        try {
+          setUserLogin(false);
+          setCurrentTrack(null);
+          AsyncStorage.clear();
+        } catch (error) {
+          console.log(error);
+        }
+      })
+      .catch(e => {
+        console.log(e);
       });
   };
 

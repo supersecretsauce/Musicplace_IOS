@@ -66,7 +66,6 @@ const ConnectSpotifyScreen = ({navigation}) => {
               )
               .then(resp => {
                 if (resp.status === 200) {
-                  console.log(resp.data.data);
                   setFeed(resp.data.data);
                 }
               })
