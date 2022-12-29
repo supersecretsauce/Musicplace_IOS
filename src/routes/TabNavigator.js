@@ -6,6 +6,7 @@ import HomeStackScreen from './HomeStackScreen';
 import DiscoverStackScreen from './DiscoverStackScreen';
 import ActivityStackScreen from './ActivityStackScreen';
 import ProfileStackScreen from './ProfileStackScreen';
+import FeedStackScreen from './FeedStackScreen';
 import branch from 'react-native-branch';
 import firestore from '@react-native-firebase/firestore';
 import {useNavigation} from '@react-navigation/native';
@@ -27,7 +28,7 @@ const TabNavigator = () => {
         let songArr = [];
         let trackID = params.$canonical_identifier.slice(5);
         firestore()
-          .collection('posts')
+          .collection('tracks')
           .doc(trackID)
           .get()
           .then(resp => {
@@ -37,6 +38,7 @@ const TabNavigator = () => {
               params: {
                 UID: UID,
                 songInfo: songArr,
+                prevScreen: 'ActivityScreen',
               },
             });
           });
@@ -57,8 +59,8 @@ const TabNavigator = () => {
 
           if (route.name === 'Home') {
             iconName = focused ? 'home-sharp' : 'home-outline';
-          } else if (route.name === 'Discover') {
-            iconName = focused ? 'ear-sharp' : 'ear-outline';
+          } else if (route.name === 'Feed') {
+            iconName = focused ? 'earth-sharp' : 'earth-outline';
           } else if (route.name === 'Discover') {
             iconName = focused ? 'add-sharp' : 'add-outline';
           } else if (route.name === 'Activity') {
@@ -80,7 +82,7 @@ const TabNavigator = () => {
         tabBarStyle: {backgroundColor: 'black'},
       })}>
       <Tab.Screen name="Home" component={HomeStackScreen} />
-      <Tab.Screen name="Discover" component={DiscoverStackScreen} />
+      <Tab.Screen name="Feed" component={FeedStackScreen} />
       <Tab.Screen name="Activity" component={ActivityStackScreen} />
       <Tab.Screen name="Profile" component={ProfileStackScreen} />
     </Tab.Navigator>

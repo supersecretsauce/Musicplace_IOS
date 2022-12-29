@@ -46,20 +46,18 @@ const SelectGenresScreen = ({navigation, route}) => {
   }, []);
 
   useEffect(() => {
-    axios
-      .get('https://reccomendation-api-pmtku.ondigitalocean.app/fetch/genres')
-      .then(resp => {
-        let allGenres = resp.data.data;
-        let sortable = [];
-        for (var genre in allGenres) {
-          sortable.push([genre, allGenres[genre]]);
-        }
-        let sortedArray = sortable.sort(function (a, b) {
-          return b[1] - a[1];
-        });
-        console.log(sortedArray);
-        setPopularGenres(sortedArray.slice(0, 30));
+    axios.get('http://167.99.22.22/fetch/genres').then(resp => {
+      let allGenres = resp.data.data;
+      let sortable = [];
+      for (var genre in allGenres) {
+        sortable.push([genre, allGenres[genre]]);
+      }
+      let sortedArray = sortable.sort(function (a, b) {
+        return b[1] - a[1];
       });
+      console.log(sortedArray);
+      setPopularGenres(sortedArray.slice(0, 30));
+    });
   }, []);
 
   function handleSelections(genre) {
@@ -78,16 +76,17 @@ const SelectGenresScreen = ({navigation, route}) => {
     } else {
       let formattedGenres = selections.join(',');
       console.log(formattedGenres);
+      let encodedGenres = encodeURIComponent(formattedGenres);
       axios
         .get(
-          `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${UID}?genres=${formattedGenres}`,
+          `http://167.99.22.22/recommendation/user?userId=${UID}&genres=${encodedGenres}`,
         )
         .then(resp => {
           if (resp.data.length === 0) {
             console.log('no songs in this genre');
           } else {
-            console.log(resp.data);
-            setFeed(resp.data);
+            console.log(resp);
+            setFeed(resp.data.data);
             navigation.navigate('CreateUsernameScreen');
           }
         })

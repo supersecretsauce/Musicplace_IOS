@@ -22,37 +22,44 @@ import {firebase} from '@react-native-firebase/firestore';
 import {mixpanel} from '../../../mixpanel';
 import ShareSheet from '../../components/ShareSheet';
 import axios from 'axios';
+import {PanGestureHandler} from 'react-native-gesture-handler';
+import Animated, {useAnimatedGestureHandler} from 'react-native-reanimated';
 const ViewPostsScreen = ({route, navigation}) => {
   Sound.setCategory('Playback');
-  const {songInfo, UID, openSheet, commentDocID} = route.params ?? {};
-  const [likedTracks, setLikedTracks] = useState([]);
+  const {songInfo, UID, openSheet, commentDocID, prevScreen} =
+    route.params ?? {};
   const [currentTrack, setCurrentTrack] = useState(null);
   const [showShareSheet, setShowShareSheet] = useState(false);
   const {hasSpotify, trackDeepLink, setTrackDeepLink} = useContext(Context);
+  const [trackInfo, setTrackInfo] = useState(songInfo);
 
   let playing = true;
   let startTime = new Date();
 
   function recordTime() {
-    let endTime = new Date();
-    let timeDiff = endTime - startTime;
-    startTime = new Date();
-    firestore()
-      .collection('users')
-      .doc(UID)
-      .collection('watches')
-      .add({
-        songID: songInfo[0].id,
-        UID: UID,
-        duration: timeDiff,
-        date: new Date(),
-      })
-      .then(() => {
-        console.log('added watch document');
-      })
-      .catch(error => {
-        console.log(error);
-      });
+    if (trackInfo) {
+      let endTime = new Date();
+      let timeDiff = endTime - startTime;
+      startTime = new Date();
+      firestore()
+        .collection('users')
+        .doc(UID)
+        .collection('watches')
+        .add({
+          songID: songInfo[0].id,
+          UID: UID,
+          duration: timeDiff,
+          date: new Date(),
+        })
+        .then(() => {
+          console.log('added watch document');
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    } else {
+      console.log('track info state not set');
+    }
   }
 
   useFocusEffect(
@@ -85,18 +92,9 @@ const ViewPostsScreen = ({route, navigation}) => {
   }
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('gestureStart', e => {
-      // Do something
-      console.log('swiped');
-    });
-
-    return unsubscribe;
-  }, []);
-
-  useEffect(() => {
     if (songInfo) {
       console.log(songInfo);
-      let newTrack = new Sound(songInfo[0].previewUrl, null, error => {
+      let newTrack = new Sound(songInfo[0].previewURL, null, error => {
         if (error) {
           console.log('failed to load the sound', error);
           return;
@@ -113,7 +111,7 @@ const ViewPostsScreen = ({route, navigation}) => {
         .get()
         .then(resp => {
           console.log(resp);
-          songInfo = resp.data();
+          setTrackInfo(resp.data());
           setTrackDeepLink(null);
         });
       return;
@@ -122,9 +120,14 @@ const ViewPostsScreen = ({route, navigation}) => {
 
   function likeHandler() {
     if (hasSpotify) {
-      if (likedTracks.includes(songInfo[0].id)) {
+      if (trackInfo[0].liked) {
         HapticFeedback.trigger('impactLight');
-        setLikedTracks(likedTracks.filter(id => id != songInfo[0].id));
+        let filteredTrackInfo = trackInfo.map(track => {
+          track.liked = false;
+          return track;
+        });
+        console.log(filteredTrackInfo);
+        setTrackInfo(filteredTrackInfo);
         Toast.show({
           type: 'success',
           text1: 'Removed from liked songs',
@@ -133,7 +136,7 @@ const ViewPostsScreen = ({route, navigation}) => {
         });
         axios
           .get(
-            `https://www.musicplaceapi.com/updates/remove-track/${songInfo[0].id}/user/${UID}`,
+            `http://167.99.22.22/update/remove-track?userId=${UID}&trackId=${trackInfo[0].id}`,
           )
           .then(resp => {
             console.log(resp);
@@ -143,7 +146,12 @@ const ViewPostsScreen = ({route, navigation}) => {
           });
       } else {
         HapticFeedback.trigger('impactHeavy');
-        setLikedTracks(current => [...current, songInfo[0].id]);
+        let filteredTrackInfo = trackInfo.map(track => {
+          track.liked = true;
+          return track;
+        });
+        console.log(filteredTrackInfo);
+        setTrackInfo(filteredTrackInfo);
         Toast.show({
           type: 'success',
           text1: 'Added to liked songs',
@@ -152,7 +160,7 @@ const ViewPostsScreen = ({route, navigation}) => {
         });
         axios
           .get(
-            `https://www.musicplaceapi.com/updates/save-track/${songInfo[0].id}/user/${UID}`,
+            `http://167.99.22.22/update/save-track?userId=${UID}&trackId=${trackInfo[0].id}`,
           )
           .then(resp => {
             console.log(resp);
@@ -175,104 +183,121 @@ const ViewPostsScreen = ({route, navigation}) => {
     await Linking.openURL(`http://open.spotify.com/track/${songInfo[0].id}`);
   }
 
+  let swipe;
+  const gestureHandler = useAnimatedGestureHandler({
+    onStart(event) {
+      swipe = event.x;
+    },
+    onEnd(event) {
+      console.log(event.x);
+      if (swipe < event.x) {
+        if (prevScreen === 'ActivityScreen') {
+          navigation.navigate(prevScreen);
+        } else {
+          navigation.goBack();
+        }
+      }
+    },
+  });
+
   return (
-    <View style={styles.container}>
-      {songInfo ? (
-        <>
-          <Swiper loadMinimal={true} loop={false} showsButtons={false}>
-            {songInfo.map((post, index) => {
-              return (
-                <View key={index}>
-                  <TouchableWithoutFeedback onPress={pauseHandler}>
-                    <Image
-                      style={styles.songPhoto}
-                      source={{
-                        uri: post.songPhoto,
-                      }}
-                      resizeMode="cover"
-                    />
-                  </TouchableWithoutFeedback>
-                  <View style={styles.topRow}>
-                    <View style={styles.topRowLeft}>
-                      <Spotify />
-                      <Text numberOfLines={1} style={styles.songName}>
-                        {post.songName}
+    <PanGestureHandler onGestureEvent={gestureHandler}>
+      <Animated.View style={styles.container}>
+        {songInfo ? (
+          <>
+            <Swiper loadMinimal={true} loop={false} showsButtons={false}>
+              {trackInfo.map((post, index) => {
+                return (
+                  <View key={index}>
+                    <TouchableWithoutFeedback onPress={pauseHandler}>
+                      <Image
+                        style={styles.songPhoto}
+                        source={{
+                          uri: post.songPhoto,
+                        }}
+                        resizeMode="cover"
+                      />
+                    </TouchableWithoutFeedback>
+                    <View style={styles.topRow}>
+                      <View style={styles.topRowLeft}>
+                        <Spotify />
+                        <Text numberOfLines={1} style={styles.songName}>
+                          {post.songName}
+                        </Text>
+                      </View>
+                      <View style={styles.topRowRight}>
+                        <TouchableOpacity
+                          style={styles.shareBtn}
+                          onPress={() => setShowShareSheet(true)}>
+                          <Ionicons
+                            name="share-outline"
+                            color="grey"
+                            size={28}
+                          />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={likeHandler}>
+                          <Ionicons
+                            style={styles.likeIcon}
+                            name={post.liked ? 'heart' : 'heart-outline'}
+                            color={post.liked ? '#1DB954' : 'grey'}
+                            size={28}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    <View style={styles.bottomRow}>
+                      <Text numberOfLines={1} style={styles.artistName}>
+                        {post?.artists
+                          ?.map(artist => {
+                            return artist?.name;
+                          })
+                          .join(', ')}
+                      </Text>
+                      <Ionicons
+                        style={styles.smallDot}
+                        name="ellipse"
+                        color="white"
+                        size={5}
+                      />
+                      <Text numberOfLines={1} style={styles.albumName}>
+                        {post.albumName}
                       </Text>
                     </View>
-                    <View style={styles.topRowRight}>
-                      <TouchableOpacity
-                        style={styles.shareBtn}
-                        onPress={() => setShowShareSheet(true)}>
-                        <Ionicons name="share-outline" color="grey" size={28} />
-                      </TouchableOpacity>
-                      <TouchableOpacity onPress={likeHandler}>
-                        <Ionicons
-                          style={styles.likeIcon}
-                          name={
-                            likedTracks.includes(post.id)
-                              ? 'heart'
-                              : 'heart-outline'
-                          }
-                          color={
-                            likedTracks.includes(post.id) ? '#1DB954' : 'grey'
-                          }
-                          size={28}
-                        />
-                      </TouchableOpacity>
-                    </View>
+                    <TouchableOpacity
+                      style={styles.listenOnSpotifyBtn}
+                      onPress={listenOnSpotify}>
+                      <Spotify />
+                      <Text style={styles.listenOnSpotifyText}>
+                        LISTEN ON SPOTIFY
+                      </Text>
+                    </TouchableOpacity>
                   </View>
-                  <View style={styles.bottomRow}>
-                    <Text numberOfLines={1} style={styles.artistName}>
-                      {post?.artists
-                        ?.map(artist => {
-                          return artist?.name;
-                        })
-                        .join(', ')}
-                    </Text>
-                    <Ionicons
-                      style={styles.smallDot}
-                      name="ellipse"
-                      color="white"
-                      size={5}
-                    />
-                    <Text numberOfLines={1} style={styles.albumName}>
-                      {post.albumName}
-                    </Text>
-                  </View>
-                  <TouchableOpacity
-                    style={styles.listenOnSpotifyBtn}
-                    onPress={listenOnSpotify}>
-                    <Spotify />
-                    <Text style={styles.listenOnSpotifyText}>
-                      LISTEN ON SPOTIFY
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              );
-            })}
-          </Swiper>
-          <SinglePostBottomSheet
-            UID={UID}
-            songInfo={songInfo}
-            openSheet={openSheet}
-            commentDocID={commentDocID}
-            showShareSheet={showShareSheet}
-          />
-          <ShareSheet
-            post={songInfo[0]}
-            UID={UID}
-            setShowShareSheet={setShowShareSheet}
-            showShareSheet={showShareSheet}
-          />
-        </>
-      ) : (
-        <>
-          <View>
-            <Text>loading</Text>
-          </View>
-        </>
-      )}
-    </View>
+                );
+              })}
+            </Swiper>
+            <SinglePostBottomSheet
+              UID={UID}
+              songInfo={songInfo}
+              openSheet={openSheet}
+              commentDocID={commentDocID}
+              showShareSheet={showShareSheet}
+            />
+            <ShareSheet
+              post={songInfo[0]}
+              UID={UID}
+              setShowShareSheet={setShowShareSheet}
+              showShareSheet={showShareSheet}
+            />
+          </>
+        ) : (
+          <>
+            <View>
+              <Text>loading</Text>
+            </View>
+          </>
+        )}
+      </Animated.View>
+    </PanGestureHandler>
   );
 };
 

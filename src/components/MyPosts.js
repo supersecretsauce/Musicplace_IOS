@@ -17,40 +17,29 @@ import {authorize} from 'react-native-app-auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 const MyPosts = props => {
-  const {UID, navigation, topSongs} = props;
+  const {UID, navigation} = props;
   const {hasSpotify, setHasSpotify} = useContext(Context);
   const [userPosts, setUserPosts] = useState(null);
 
+  function getMyPosts() {
+    axios
+      .get(`http://167.99.22.22/fetch/library?userId=${UID}&viewerId=${UID}`)
+      .then(resp => {
+        console.log(resp);
+        setUserPosts(resp.data.data);
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  }
+
   useEffect(() => {
-    if (topSongs && topSongs.length > 0) {
-      console.log(topSongs);
-      if (topSongs.length > 0) {
-        let topSongsArr = [];
-        async function getAllTopSongs() {
-          for (let i = 0; i < topSongs.length; i += 10) {
-            await firestore()
-              .collection('posts')
-              .where(
-                firestore.FieldPath.documentId(),
-                'in',
-                topSongs.slice(i, i + 10),
-              )
-              .get()
-              .then(resp => {
-                console.log(resp);
-                resp.docs.forEach(document => {
-                  topSongsArr.push(document.data());
-                });
-              });
-          }
-          setUserPosts(topSongsArr);
-        }
-        getAllTopSongs();
-      }
-    } else {
+    if (UID && hasSpotify) {
+      getMyPosts();
+    } else if (!hasSpotify) {
       setUserPosts(null);
     }
-  }, [topSongs]);
+  }, [UID, hasSpotify]);
 
   const connectSpotify = async () => {
     if (UID) {
@@ -71,23 +60,10 @@ const MyPosts = props => {
           setHasSpotify(true);
           AsyncStorage.setItem('hasSpotify', 'true');
           axios
-            .get(
-              `https://reccomendation-api-pmtku.ondigitalocean.app/updates/saved-tracks/${UID}`,
-            )
+            .get(`http://167.99.22.22/update/top-tracks?userId=${UID}`)
             .then(() => {
               console.log('finished getting spotify library');
-            })
-            .catch(e => {
-              console.log(e);
-            });
-          axios
-            .get(
-              `https://reccomendation-api-pmtku.ondigitalocean.app/updates/top-songs/${UID}`,
-            )
-            .then(resp => {
-              if (resp.status === 200) {
-                console.log('done fetching top songs');
-              }
+              getMyPosts();
             })
             .catch(e => {
               console.log(e);
@@ -156,6 +132,9 @@ const MyPosts = props => {
             ) : (
               <>
                 <View style={styles.loadingContainer}>
+                  <Text style={styles.connectText}>
+                    Connect with Spotify to add your top songs to your profile.
+                  </Text>
                   <TouchableOpacity
                     style={styles.listenOnSpotifyBtn}
                     onPress={connectSpotify}>
@@ -221,6 +200,15 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     fontSize: 14,
     marginTop: '5%',
+  },
+  connectText: {
+    color: Colors.greyOut,
+    fontFamily: 'Inter-Medium',
+    fontSize: 15,
+    marginBottom: '5%',
+    textAlign: 'center',
+    lineHeight: 22,
+    width: 300,
   },
   listenOnSpotifyBtn: {
     paddingHorizontal: 25,
