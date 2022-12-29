@@ -18,6 +18,7 @@ import Toast from 'react-native-toast-message';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import functions from '@react-native-firebase/functions';
+import HapticFeedback from 'react-native-haptic-feedback';
 
 const ExistingPhoneNumberScreen = ({navigation}) => {
   const [inputValue, setInputValue] = useState('');
@@ -81,6 +82,7 @@ const ExistingPhoneNumberScreen = ({navigation}) => {
   };
 
   const signIn = async () => {
+    HapticFeedback.trigger('impactHeavy');
     functions()
       .httpsCallable('checkNumber')(firebaseNumberFormat)
       .then(resp => {
