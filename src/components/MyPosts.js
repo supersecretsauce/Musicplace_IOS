@@ -21,19 +21,25 @@ const MyPosts = props => {
   const {hasSpotify, setHasSpotify} = useContext(Context);
   const [userPosts, setUserPosts] = useState(null);
 
+  function getMyPosts() {
+    axios
+      .get(`http://167.99.22.22/fetch/library?userId=${UID}&viewerId=${UID}`)
+      .then(resp => {
+        console.log(resp);
+        setUserPosts(resp.data.data);
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  }
+
   useEffect(() => {
-    if (UID) {
-      axios
-        .get(`http://167.99.22.22/fetch/library?userId=${UID}&viewerId=${UID}`)
-        .then(resp => {
-          console.log(resp);
-          setUserPosts(resp.data.data);
-        })
-        .catch(e => {
-          console.log(e);
-        });
+    if (UID && hasSpotify) {
+      getMyPosts();
+    } else if (!hasSpotify) {
+      setUserPosts(null);
     }
-  }, [UID]);
+  }, [UID, hasSpotify]);
 
   const connectSpotify = async () => {
     if (UID) {
@@ -57,6 +63,7 @@ const MyPosts = props => {
             .get(`http://167.99.22.22/update/top-tracks?userId=${UID}`)
             .then(() => {
               console.log('finished getting spotify library');
+              getMyPosts();
             })
             .catch(e => {
               console.log(e);
@@ -125,6 +132,9 @@ const MyPosts = props => {
             ) : (
               <>
                 <View style={styles.loadingContainer}>
+                  <Text style={styles.connectText}>
+                    Connect with Spotify to add your top songs to your profile.
+                  </Text>
                   <TouchableOpacity
                     style={styles.listenOnSpotifyBtn}
                     onPress={connectSpotify}>
@@ -190,6 +200,15 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     fontSize: 14,
     marginTop: '5%',
+  },
+  connectText: {
+    color: Colors.greyOut,
+    fontFamily: 'Inter-Medium',
+    fontSize: 15,
+    marginBottom: '5%',
+    textAlign: 'center',
+    lineHeight: 22,
+    width: 300,
   },
   listenOnSpotifyBtn: {
     paddingHorizontal: 25,
