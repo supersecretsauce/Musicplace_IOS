@@ -76,14 +76,16 @@ const SelectGenresScreen = ({navigation, route}) => {
     } else {
       let formattedGenres = selections.join(',');
       console.log(formattedGenres);
+      let encodedGenres = encodeURIComponent(formattedGenres);
       axios
         .get(
-          `http://167.99.22.22/recommendation/user?userId=${UID}&genres=${formattedGenres}`,
+          `http://167.99.22.22/recommendation/user?userId=${UID}&genres=${encodedGenres}`,
         )
         .then(resp => {
           if (resp.data.length === 0) {
             console.log('no songs in this genre');
           } else {
+            console.log(resp);
             setFeed(resp.data.data);
             navigation.navigate('CreateUsernameScreen');
           }
