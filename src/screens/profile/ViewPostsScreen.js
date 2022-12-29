@@ -22,9 +22,12 @@ import {firebase} from '@react-native-firebase/firestore';
 import {mixpanel} from '../../../mixpanel';
 import ShareSheet from '../../components/ShareSheet';
 import axios from 'axios';
+import {PanGestureHandler} from 'react-native-gesture-handler';
+import Animated, {useAnimatedGestureHandler} from 'react-native-reanimated';
 const ViewPostsScreen = ({route, navigation}) => {
   Sound.setCategory('Playback');
-  const {songInfo, UID, openSheet, commentDocID} = route.params ?? {};
+  const {songInfo, UID, openSheet, commentDocID, prevScreen} =
+    route.params ?? {};
   const [currentTrack, setCurrentTrack] = useState(null);
   const [showShareSheet, setShowShareSheet] = useState(false);
   const {hasSpotify, trackDeepLink, setTrackDeepLink} = useContext(Context);
@@ -180,98 +183,121 @@ const ViewPostsScreen = ({route, navigation}) => {
     await Linking.openURL(`http://open.spotify.com/track/${songInfo[0].id}`);
   }
 
+  let swipe;
+  const gestureHandler = useAnimatedGestureHandler({
+    onStart(event) {
+      swipe = event.x;
+    },
+    onEnd(event) {
+      console.log(event.x);
+      if (swipe < event.x) {
+        if (prevScreen === 'ActivityScreen') {
+          navigation.navigate(prevScreen);
+        } else {
+          navigation.goBack();
+        }
+      }
+    },
+  });
+
   return (
-    <View style={styles.container}>
-      {songInfo ? (
-        <>
-          <Swiper loadMinimal={true} loop={false} showsButtons={false}>
-            {trackInfo.map((post, index) => {
-              return (
-                <View key={index}>
-                  <TouchableWithoutFeedback onPress={pauseHandler}>
-                    <Image
-                      style={styles.songPhoto}
-                      source={{
-                        uri: post.songPhoto,
-                      }}
-                      resizeMode="cover"
-                    />
-                  </TouchableWithoutFeedback>
-                  <View style={styles.topRow}>
-                    <View style={styles.topRowLeft}>
-                      <Spotify />
-                      <Text numberOfLines={1} style={styles.songName}>
-                        {post.songName}
+    <PanGestureHandler onGestureEvent={gestureHandler}>
+      <Animated.View style={styles.container}>
+        {songInfo ? (
+          <>
+            <Swiper loadMinimal={true} loop={false} showsButtons={false}>
+              {trackInfo.map((post, index) => {
+                return (
+                  <View key={index}>
+                    <TouchableWithoutFeedback onPress={pauseHandler}>
+                      <Image
+                        style={styles.songPhoto}
+                        source={{
+                          uri: post.songPhoto,
+                        }}
+                        resizeMode="cover"
+                      />
+                    </TouchableWithoutFeedback>
+                    <View style={styles.topRow}>
+                      <View style={styles.topRowLeft}>
+                        <Spotify />
+                        <Text numberOfLines={1} style={styles.songName}>
+                          {post.songName}
+                        </Text>
+                      </View>
+                      <View style={styles.topRowRight}>
+                        <TouchableOpacity
+                          style={styles.shareBtn}
+                          onPress={() => setShowShareSheet(true)}>
+                          <Ionicons
+                            name="share-outline"
+                            color="grey"
+                            size={28}
+                          />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={likeHandler}>
+                          <Ionicons
+                            style={styles.likeIcon}
+                            name={post.liked ? 'heart' : 'heart-outline'}
+                            color={post.liked ? '#1DB954' : 'grey'}
+                            size={28}
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    <View style={styles.bottomRow}>
+                      <Text numberOfLines={1} style={styles.artistName}>
+                        {post?.artists
+                          ?.map(artist => {
+                            return artist?.name;
+                          })
+                          .join(', ')}
+                      </Text>
+                      <Ionicons
+                        style={styles.smallDot}
+                        name="ellipse"
+                        color="white"
+                        size={5}
+                      />
+                      <Text numberOfLines={1} style={styles.albumName}>
+                        {post.albumName}
                       </Text>
                     </View>
-                    <View style={styles.topRowRight}>
-                      <TouchableOpacity
-                        style={styles.shareBtn}
-                        onPress={() => setShowShareSheet(true)}>
-                        <Ionicons name="share-outline" color="grey" size={28} />
-                      </TouchableOpacity>
-                      <TouchableOpacity onPress={likeHandler}>
-                        <Ionicons
-                          style={styles.likeIcon}
-                          name={post.liked ? 'heart' : 'heart-outline'}
-                          color={post.liked ? '#1DB954' : 'grey'}
-                          size={28}
-                        />
-                      </TouchableOpacity>
-                    </View>
+                    <TouchableOpacity
+                      style={styles.listenOnSpotifyBtn}
+                      onPress={listenOnSpotify}>
+                      <Spotify />
+                      <Text style={styles.listenOnSpotifyText}>
+                        LISTEN ON SPOTIFY
+                      </Text>
+                    </TouchableOpacity>
                   </View>
-                  <View style={styles.bottomRow}>
-                    <Text numberOfLines={1} style={styles.artistName}>
-                      {post?.artists
-                        ?.map(artist => {
-                          return artist?.name;
-                        })
-                        .join(', ')}
-                    </Text>
-                    <Ionicons
-                      style={styles.smallDot}
-                      name="ellipse"
-                      color="white"
-                      size={5}
-                    />
-                    <Text numberOfLines={1} style={styles.albumName}>
-                      {post.albumName}
-                    </Text>
-                  </View>
-                  <TouchableOpacity
-                    style={styles.listenOnSpotifyBtn}
-                    onPress={listenOnSpotify}>
-                    <Spotify />
-                    <Text style={styles.listenOnSpotifyText}>
-                      LISTEN ON SPOTIFY
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              );
-            })}
-          </Swiper>
-          <SinglePostBottomSheet
-            UID={UID}
-            songInfo={songInfo}
-            openSheet={openSheet}
-            commentDocID={commentDocID}
-            showShareSheet={showShareSheet}
-          />
-          <ShareSheet
-            post={songInfo[0]}
-            UID={UID}
-            setShowShareSheet={setShowShareSheet}
-            showShareSheet={showShareSheet}
-          />
-        </>
-      ) : (
-        <>
-          <View>
-            <Text>loading</Text>
-          </View>
-        </>
-      )}
-    </View>
+                );
+              })}
+            </Swiper>
+            <SinglePostBottomSheet
+              UID={UID}
+              songInfo={songInfo}
+              openSheet={openSheet}
+              commentDocID={commentDocID}
+              showShareSheet={showShareSheet}
+            />
+            <ShareSheet
+              post={songInfo[0]}
+              UID={UID}
+              setShowShareSheet={setShowShareSheet}
+              showShareSheet={showShareSheet}
+            />
+          </>
+        ) : (
+          <>
+            <View>
+              <Text>loading</Text>
+            </View>
+          </>
+        )}
+      </Animated.View>
+    </PanGestureHandler>
   );
 };
 

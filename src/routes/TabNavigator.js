@@ -28,7 +28,7 @@ const TabNavigator = () => {
         let songArr = [];
         let trackID = params.$canonical_identifier.slice(5);
         firestore()
-          .collection('posts')
+          .collection('tracks')
           .doc(trackID)
           .get()
           .then(resp => {
@@ -38,6 +38,7 @@ const TabNavigator = () => {
               params: {
                 UID: UID,
                 songInfo: songArr,
+                prevScreen: 'ActivityScreen',
               },
             });
           });
