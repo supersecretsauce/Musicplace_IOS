@@ -1,19 +1,16 @@
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import storage from '@react-native-firebase/storage';
 import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import UserPosts from '../../components/UserPosts';
 import {firebase} from '@react-native-firebase/firestore';
 import HapticFeedback from 'react-native-haptic-feedback';
+import FastImage from 'react-native-fast-image';
 
 const ViewUserScreen = ({route, navigation}) => {
   const {profileID, UID, prevRoute, myUser} = route.params;
   const [userProfile, setUserProfile] = useState(null);
-  const [header, setHeader] = useState(null);
-  const [profilePic, setProfilePic] = useState(null);
-  const [userName, setUserName] = useState(null);
   const [followersList, setFollowersList] = useState([]);
 
   useEffect(() => {
@@ -30,40 +27,6 @@ const ViewUserScreen = ({route, navigation}) => {
 
       // Stop listening for updates when no longer required
       return () => profileDoc();
-    }
-  }, [profileID]);
-
-  useEffect(() => {
-    if (profileID) {
-      const fetchUserProfile = async () => {
-        const usernameDoc = await firestore()
-          .collection('usernames')
-          .where('UID', '==', profileID)
-          .get();
-        if (!usernameDoc.empty) {
-          console.log(usernameDoc.docs[0]);
-          setUserName(usernameDoc._docs[0]);
-        }
-      };
-      const getImages = async () => {
-        const headerURL = await storage()
-          .ref(profileID + 'HEADER')
-          .getDownloadURL()
-          .catch(error => {
-            console.log(error);
-          });
-        const profilePicURL = await storage()
-          .ref(profileID + 'PFP')
-          .getDownloadURL()
-          .catch(error => {
-            console.log(error);
-          });
-        setHeader(headerURL);
-        setProfilePic(profilePicURL);
-      };
-
-      fetchUserProfile();
-      getImages();
     }
   }, [profileID]);
 
@@ -124,7 +87,7 @@ const ViewUserScreen = ({route, navigation}) => {
           type: 'follow',
           timestamp: firestore.FieldValue.serverTimestamp(),
           songInfo: null,
-          handle: myUser.handle,
+          handle: myUser?.handle ? myUser?.handle : null,
           displayName: myUser.displayName,
           pfpURL: myUser?.pfpURL ? myUser?.pfpURL : null,
           notificationRead: false,
@@ -141,15 +104,20 @@ const ViewUserScreen = ({route, navigation}) => {
         myUser: myUser,
       });
     } else if (prevRoute === 'DirectMessageScreen') {
-      navigation.navigate('DirectMessageScreen', {
-        profileID: profileID,
-        UID: UID,
-        myUser: myUser,
-        userProfile: userProfile,
-        prevRoute: 'ViewUserScreen',
-      });
+      // navigation.navigate('DirectMessageScreen', {
+      //   profileID: profileID,
+      //   UID: UID,
+      //   myUser: myUser,
+      //   userProfile: userProfile,
+      //   prevRoute: 'ViewUserScreen',
+      // });
+      navigation.goBack();
     } else if (prevRoute === 'ActivityScreen') {
       navigation.navigate('ActivityScreen');
+    } else if (prevRoute === 'ViewAllActivityScreen') {
+      navigation.goBack();
+    } else if (prevRoute === 'FeedScreen') {
+      navigation.navigate('FeedScreen');
     } else {
       navigation.navigate('HomeScreen');
     }
@@ -159,11 +127,12 @@ const ViewUserScreen = ({route, navigation}) => {
     <View style={styles.container}>
       {userProfile ? (
         <View>
-          {header ? (
-            <Image
+          {userProfile?.headerURL ? (
+            <FastImage
               style={styles.header}
               source={{
-                uri: header,
+                uri: userProfile?.headerURL,
+                priority: FastImage.priority.high,
               }}
             />
           ) : (
@@ -172,11 +141,12 @@ const ViewUserScreen = ({route, navigation}) => {
           <TouchableOpacity style={styles.backBtn} onPress={handleNav}>
             <Ionicons name={'chevron-back'} color="white" size={40} />
           </TouchableOpacity>
-          {profilePic ? (
-            <Image
+          {userProfile?.pfpURL ? (
+            <FastImage
               style={styles.PFP}
               source={{
-                uri: profilePic,
+                uri: userProfile?.pfpURL,
+                priority: FastImage.priority.high,
               }}
             />
           ) : (
@@ -184,10 +154,10 @@ const ViewUserScreen = ({route, navigation}) => {
           )}
           <View style={styles.userInfoContainer}>
             <Text style={styles.displayName}>
-              {userProfile.displayName ? userProfile.displayName : 'n/a'}
+              {userProfile?.displayName ? userProfile.displayName : 'n/a'}
             </Text>
             <Text style={styles.handle}>
-              {userName ? `@${userName?.id}` : 'n/a'}
+              {userProfile?.handle ? `@${userProfile?.handle}` : 'n/a'}
             </Text>
             <Text numberOfLines={2} style={styles.bio}>
               {userProfile.bio && userProfile.bio}

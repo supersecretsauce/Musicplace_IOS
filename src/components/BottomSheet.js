@@ -94,6 +94,10 @@ const BottomSheet = props => {
     }
   }, [UID]);
 
+  useEffect(() => {
+    console.log(containerUp);
+  }, [containerUp]);
+
   /* animations for the bottom sheet 
   NOTE: THE ANIMATIONS DO NOT WORK WHEN DEBUGGING
   */
@@ -119,6 +123,8 @@ const BottomSheet = props => {
           top.value = withSpring(580, SPRING_CONFIG);
           runOnJS(setContainerUp)(false);
           runOnJS(setContainerSmall)(true);
+        } else if (top.value < 200) {
+          top.value = withSpring(200, SPRING_CONFIG);
         }
       } else {
         if (containerSmall) {
@@ -129,6 +135,8 @@ const BottomSheet = props => {
             top.value = withSpring(200, SPRING_CONFIG);
             runOnJS(setContainerUp)(true);
             runOnJS(setContainerSmall)(false);
+          } else if (top.value > 580) {
+            top.value = withSpring(580, SPRING_CONFIG);
           }
         } else {
           if (top.value < 490) {

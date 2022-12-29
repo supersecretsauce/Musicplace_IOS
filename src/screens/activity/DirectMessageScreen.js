@@ -92,6 +92,9 @@ const DirectMessageScreen = ({route, navigation}) => {
 
   function handleSendMessage() {
     Keyboard.dismiss();
+    if (messageText === '') {
+      return;
+    }
     setMessageText('');
     if (!chatDoc) {
       firestore()
@@ -189,6 +192,8 @@ const DirectMessageScreen = ({route, navigation}) => {
     } else if (prevRoute === 'IsFollowingScreen') {
       navigation.goBack();
     } else if (prevRoute === 'ViewUserScreen') {
+      navigation.goBack();
+    } else if (prevRoute === 'ViewAllMessagesScreen') {
       navigation.goBack();
     } else {
       navigation.navigate('ViewUserScreen', {
@@ -361,7 +366,9 @@ const DirectMessageScreen = ({route, navigation}) => {
                               <View style={styles.fromSongInfoContainer}>
                                 <View style={styles.songTop}>
                                   {/* <Spotify height={20} /> */}
-                                  <Text style={styles.songName}>
+                                  <Text
+                                    style={styles.songName}
+                                    numberOfLines={1}>
                                     {item?._data?.songInfo?.songName}
                                   </Text>
                                 </View>

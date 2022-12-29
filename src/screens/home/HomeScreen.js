@@ -124,13 +124,11 @@ const HomeScreen = () => {
       } else {
         console.log(UID);
         axios
-          .get(
-            `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${UID}`,
-          )
+          .get(`http://167.99.22.22/recommendation/user?userId=${UID}`)
           .then(resp => {
             console.log(resp);
-            if (resp.data.length > 0) {
-              setFeed(resp.data);
+            if (resp.data.data.length > 0) {
+              setFeed(resp.data.data);
             }
           })
           .catch(e => {
@@ -144,7 +142,7 @@ const HomeScreen = () => {
 
   useEffect(() => {
     if (feed && initialFeed && isOnHomeScreen) {
-      let newTrack = new Sound(feed[currentIndex].previewUrl, null, error => {
+      let newTrack = new Sound(feed[currentIndex].previewURL, null, error => {
         if (error) {
           console.log('failed to load the sound', error);
           return;
@@ -164,12 +162,10 @@ const HomeScreen = () => {
       if (currentIndex == Math.floor(feed.length / 2)) {
         console.log('halfway!');
         axios
-          .get(
-            `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${UID}`,
-          )
+          .get(`http://167.99.22.22/recommendation/user?userId=${UID}`)
           .then(resp => {
             console.log(resp);
-            setFeed(current => [...current, ...resp.data]);
+            setFeed(current => [...current, ...resp.data.data]);
           })
           .catch(e => {
             console.log(e);
@@ -187,7 +183,7 @@ const HomeScreen = () => {
   }
 
   function playNextTrack(index) {
-    let newTrack = new Sound(feed[index].previewUrl, null, error => {
+    let newTrack = new Sound(feed[index].previewURL, null, error => {
       if (error) {
         console.log('failed to load the sound', error);
         return;
@@ -237,55 +233,54 @@ const HomeScreen = () => {
     }
   }
 
-  function likeHandler() {
+  function likeHandler(post) {
+    HapticFeedback.trigger('impactLight');
     if (hasSpotify) {
-      if (likedTracks.includes(feed[currentIndex].id)) {
-        HapticFeedback.trigger('impactLight');
-        setLikedTracks(likedTracks.filter(id => id != feed[currentIndex].id));
-        Toast.show({
-          type: 'success',
-          text1: 'Removed from liked songs',
-          text2: 'Well that was quick.',
-          visibilityTime: 2000,
+      if (post.liked) {
+        let updatedFeed = feed.map(track => {
+          if (track.id === post.id) {
+            track.liked = false;
+            return track;
+          } else {
+            return track;
+          }
         });
+        setFeed(updatedFeed);
         // remove song from liked songs
         axios
           .get(
-            `https://www.musicplaceapi.com/updates/remove-track/${feed[currentIndex].id}/user/${UID}`,
+            `http://167.99.22.22/update/remove-track?userId=${UID}&trackId=${feed[currentIndex].id}`,
           )
           .then(resp => {
             console.log(resp);
+            console.log('track removed');
           })
           .catch(e => {
             console.log(e);
           });
       } else {
-        HapticFeedback.trigger('impactHeavy');
-        setLikedTracks(current => [...current, feed[currentIndex].id]);
-        Toast.show({
-          type: 'success',
-          text1: 'Added to liked songs',
-          text2: "Don't believe us? Check your spotify library.",
-          visibilityTime: 2000,
+        let updatedFeed = feed.map(track => {
+          if (track.id === post.id) {
+            track.liked = true;
+            return track;
+          } else {
+            return track;
+          }
         });
+        setFeed(updatedFeed);
+        // add to liked songs
         axios
           .get(
-            `https://www.musicplaceapi.com/updates/save-track/${feed[currentIndex].id}/user/${UID}`,
+            `http://167.99.22.22/update/save-track?userId=${UID}&trackId=${feed[currentIndex].id}`,
           )
           .then(resp => {
             console.log(resp);
+            console.log('saved track');
           })
           .catch(e => {
             console.log(e);
           });
       }
-    } else {
-      Toast.show({
-        type: 'info',
-        text1: 'Connect to Spotify',
-        text2: 'Connect to Spotify to save this track to your library.',
-        visibilityTime: 2000,
-      });
     }
   }
 
@@ -329,17 +324,14 @@ const HomeScreen = () => {
                         onPress={() => setShowShareSheet(true)}>
                         <Ionicons name="share-outline" color="grey" size={28} />
                       </TouchableOpacity>
-                      <TouchableOpacity onPress={likeHandler}>
+                      <TouchableOpacity onPress={() => likeHandler(post)}>
                         <Ionicons
                           style={styles.likeIcon}
-                          name={
-                            likedTracks.includes(post.id)
-                              ? 'heart'
-                              : 'heart-outline'
-                          }
-                          color={
-                            likedTracks.includes(post.id) ? '#1DB954' : 'grey'
-                          }
+                          name={post.liked ? 'heart' : 'heart-outline'}
+                          // color={
+                          //   likedTracks.includes(post.id) ? '#1DB954' : 'grey'
+                          // }
+                          color={post.liked ? '#1DB954' : 'grey'}
                           size={28}
                         />
                       </TouchableOpacity>

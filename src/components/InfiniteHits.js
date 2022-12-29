@@ -62,6 +62,24 @@ const InfiniteHits = ({...props}) => {
           followersList: firestore.FieldValue.arrayUnion(UID),
           followers: firestore.FieldValue.increment(1),
         });
+      firestore()
+        .collection('users')
+        .doc(item.objectID)
+        .collection('activity')
+        .add({
+          UID: UID,
+          from: 'user',
+          type: 'follow',
+          timestamp: firestore.FieldValue.serverTimestamp(),
+          songInfo: null,
+          handle: myUser.handle,
+          displayName: myUser.displayName,
+          pfpURL: myUser?.pfpURL ? myUser?.pfpURL : null,
+          notificationRead: false,
+        })
+        .then(() => {
+          console.log('added doc to parent user');
+        });
     }
   }
   return (

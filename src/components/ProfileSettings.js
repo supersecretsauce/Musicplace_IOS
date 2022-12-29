@@ -72,13 +72,9 @@ const ProfileSettings = props => {
             })
             .then(() => {
               axios
-                .get(
-                  `https://reccomendation-api-pmtku.ondigitalocean.app/updates/top-songs/${UID}`,
-                )
-                .then(resp => {
-                  if (resp.status === 200) {
-                    console.log('done fetching top songs');
-                  }
+                .get(`http://167.99.22.22/update/top-tracks?userId=${UID}`)
+                .then(() => {
+                  console.log('finished getting spotify library');
                 })
                 .catch(e => {
                   console.log(e);
@@ -101,7 +97,6 @@ const ProfileSettings = props => {
             spotifyRefreshToken: null,
             spotifyTokenType: null,
             connectedWithSpotify: false,
-            topSongs: [],
           });
         } catch (error) {
           console.log(error);
@@ -116,9 +111,16 @@ const ProfileSettings = props => {
       .signOut()
       .then(() => {
         console.log('User signed out!');
-        setUserLogin(false);
-        setCurrentTrack(null);
-        AsyncStorage.clear();
+        try {
+          setUserLogin(false);
+          setCurrentTrack(null);
+          AsyncStorage.clear();
+        } catch (error) {
+          console.log(error);
+        }
+      })
+      .catch(e => {
+        console.log(e);
       });
   };
 

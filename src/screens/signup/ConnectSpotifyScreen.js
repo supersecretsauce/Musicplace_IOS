@@ -18,7 +18,7 @@ import Musicplace from '../../assets/img/musicplace-signup.svg';
 import HapticFeedback from 'react-native-haptic-feedback';
 import axios from 'axios';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
+import {spotConfig} from '../../../SpotifyConfig';
 const ConnectSpotifyScreen = ({navigation}) => {
   const userInfo = firebase.auth().currentUser;
   const {username, setFeed} = useContext(Context);
@@ -27,31 +27,14 @@ const ConnectSpotifyScreen = ({navigation}) => {
     navigation.goBack();
   };
 
-  const config = {
-    clientId: '501638f5cfb04abfb61d039e370c5d99', // available on the app page
-    clientSecret: '16f92a6d7e9a4180b29af25bf012e6fe', // click "show client secret" to see this
-    redirectUrl: 'musicplace-ios:/musicplace-ios-login', // the redirect you defined after creating the app
-    scopes: [
-      'playlist-modify-public',
-      'user-read-private',
-      'user-library-read',
-      'user-follow-read',
-      'user-library-modify',
-      'user-top-read',
-    ], // the scopes you need to access
-    serviceConfiguration: {
-      authorizationEndpoint: 'https://accounts.spotify.com/authorize',
-      tokenEndpoint: 'https://accounts.spotify.com/api/token',
-    },
-  };
-
   const connectSpotify = async () => {
     HapticFeedback.trigger('impactHeavy');
-    const authState = await authorize(config);
-    console.log(userInfo.uid);
+    const authState = await authorize(spotConfig);
 
     let data = {
       UID: userInfo.uid,
+      pfpURL: null,
+      headerURL: null,
       phoneNumber: userInfo.phoneNumber,
       createdAt: userInfo.metadata.creationTime,
       lastSignIn: userInfo.metadata.lastSignInTime,
@@ -67,50 +50,33 @@ const ConnectSpotifyScreen = ({navigation}) => {
       followersList: [],
       followingList: [],
       autoPost: true,
-      topSongs: [],
       handle: null,
     };
 
     const docRef = firestore().collection('users').doc(userInfo.uid);
-
     docRef.set(data, {merge: true}).then(() => {
-      docRef.get().then(resp => {
-        console.log(resp);
-        firestore()
-          .collection('users')
-          .doc(userInfo.uid)
-          .collection('savedTracks')
-          .doc(userInfo.uid)
-          .set({
-            library: [],
-          });
-        axios
-          .get(
-            `https://reccomendation-api-pmtku.ondigitalocean.app/updates/top-songs/${
-              resp.data().UID
-            }`,
-          )
-          .then(resp => {
-            if (resp.status === 200) {
-              console.log('finished fetching top songs');
-              axios
-                .get(
-                  `https://reccomendation-api-pmtku.ondigitalocean.app/flow/user/${userInfo.uid}`,
-                )
-                .then(resp => {
-                  if (resp.status === 200) {
-                    setFeed(resp.data);
-                  }
-                })
-                .catch(e => {
-                  console.log(e);
-                });
-            }
-          })
-          .catch(e => {
-            console.log(e);
-          });
-      });
+      axios
+        .get(`http://167.99.22.22/update/top-tracks?userId=${userInfo.uid}`)
+        .then(resp => {
+          if (resp.status === 200) {
+            console.log('finished fetching top songs');
+            axios
+              .get(
+                `http://167.99.22.22/recommendation/user?userId=${userInfo.uid}`,
+              )
+              .then(resp => {
+                if (resp.status === 200) {
+                  setFeed(resp.data.data);
+                }
+              })
+              .catch(e => {
+                console.log(e);
+              });
+          }
+        })
+        .catch(e => {
+          console.log(e);
+        });
     });
 
     try {
@@ -128,6 +94,8 @@ const ConnectSpotifyScreen = ({navigation}) => {
     try {
       await firestore().collection('users').doc(userInfo.uid).set({
         UID: userInfo.uid,
+        pfpURL: null,
+        headerURL: null,
         phoneNumber: userInfo.phoneNumber,
         createdAt: userInfo.metadata.creationTime,
         lastSignIn: userInfo.metadata.lastSignInTime,
@@ -139,21 +107,12 @@ const ConnectSpotifyScreen = ({navigation}) => {
         followersList: [],
         followingList: [],
         autoPost: false,
-        topSongs: [],
         handle: null,
         spotifyAccessToken: null,
         spotifyAccessTokenExpirationDate: null,
         spotifyRefreshToken: null,
         spotifyTokenType: null,
       });
-      firestore()
-        .collection('users')
-        .doc(userInfo.uid)
-        .collection('savedTracks')
-        .doc(userInfo.uid)
-        .set({
-          library: [],
-        });
     } catch (error) {
       return;
     }
