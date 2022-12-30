@@ -95,13 +95,14 @@ const FeedScreen = ({navigation}) => {
                     <View key={index} style={styles.itemContainer}>
                       <TouchableOpacity
                         style={styles.userContainer}
-                        onPress={() =>
-                          navigation.navigate('ViewUserScreen', {
-                            profileID: item.user,
-                            UID: UID,
-                            prevRoute: 'FeedScreen',
-                            myUser: myUser,
-                          })
+                        onPress={
+                          () => console.log(item.date.toDate())
+                          // navigation.navigate('ViewUserScreen', {
+                          //   profileID: item.user,
+                          //   UID: UID,
+                          //   prevRoute: 'FeedScreen',
+                          //   myUser: myUser,
+                          // })
                         }>
                         {item.pfpURL ? (
                           <FastImage
@@ -121,6 +122,8 @@ const FeedScreen = ({navigation}) => {
                           </Text>
                           <Text style={styles.likeText}>liked a track</Text>
                         </View>
+                        <Text style={styles.dot}>•</Text>
+                        {/* <Text style={styles.date}>{item.date}</Text> */}
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={styles.songContainer}
@@ -257,6 +260,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   likeText: {
+    color: Colors.greyBtn,
+    fontFamily: 'Inter-Medium',
+    marginLeft: 5,
+    fontSize: 14,
+  },
+  dot: {
     color: Colors.greyBtn,
     fontFamily: 'Inter-Medium',
     marginLeft: 5,
