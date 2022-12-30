@@ -29,6 +29,7 @@ export default function App() {
   const [feed, setFeed] = useState(null);
   const [UID, setUID] = useState(null);
   const [isNewUser, setIsNewUser] = useState(null);
+  const [invitesRemaining, setInvitesRemaining] = useState(null);
   const appState = useRef(AppState.currentState);
   const navigationRef = useRef();
 
@@ -128,6 +129,8 @@ export default function App() {
             setFeed,
             isNewUser,
             setIsNewUser,
+            invitesRemaining,
+            setInvitesRemaining,
           }}>
           {userLogin ? (
             <Stack.Navigator

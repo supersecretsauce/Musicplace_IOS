@@ -86,7 +86,7 @@ const PhoneNumber = ({navigation}) => {
       .httpsCallable('checkNumber')(firebaseNumberFormat)
       .then(resp => {
         console.log(resp);
-        if (resp.data.exists) {
+        if (resp.data.exists === true) {
           Toast.show({
             type: 'error',
             text1: 'This number already exists',
@@ -95,6 +95,21 @@ const PhoneNumber = ({navigation}) => {
           });
         } else if (resp.data.exists === false) {
           signInWithPhoneNumber();
+        } else if (resp.data.exists === 'waitlist error') {
+          navigation.navigate('WaitlistScreen');
+          functions()
+            .httpsCallable('addWaitlist')(firebaseNumberFormat)
+            .then(resp => console.log(resp))
+            .catch(e => {
+              console.log(e);
+            });
+        } else {
+          Toast.show({
+            type: 'error',
+            text1: 'An error occurred',
+            text2: 'Please try again later.',
+            visibilityTime: 3000,
+          });
         }
       })
       .catch(e => {
