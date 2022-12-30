@@ -45,8 +45,8 @@ const FeedScreen = ({navigation}) => {
       for (let i = 0; i < followingList.length; i += 10) {
         console.log(i);
         await firestore()
-          .collection('likes')
-          .where('likedBy', 'in', followingList.slice(i, i + 10))
+          .collection('feed')
+          .where('user', 'in', followingList.slice(i, i + 10))
           .get()
           .then(resp => {
             if (resp.empty) {
@@ -97,7 +97,7 @@ const FeedScreen = ({navigation}) => {
                         style={styles.userContainer}
                         onPress={() =>
                           navigation.navigate('ViewUserScreen', {
-                            profileID: item.likedBy,
+                            profileID: item.user,
                             UID: UID,
                             prevRoute: 'FeedScreen',
                             myUser: myUser,
