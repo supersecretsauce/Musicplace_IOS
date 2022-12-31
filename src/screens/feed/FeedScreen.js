@@ -13,7 +13,7 @@ import {FlatList} from 'react-native-gesture-handler';
 import FastImage from 'react-native-fast-image';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useFocusEffect} from '@react-navigation/native';
-
+import moment from 'moment';
 const FeedScreen = ({navigation}) => {
   const {UID} = useContext(Context);
   const [myUser, setMyUser] = useState(null);
@@ -47,6 +47,7 @@ const FeedScreen = ({navigation}) => {
         await firestore()
           .collection('feed')
           .where('user', 'in', followingList.slice(i, i + 10))
+          .orderBy('date', 'desc')
           .get()
           .then(resp => {
             if (resp.empty) {
@@ -95,14 +96,13 @@ const FeedScreen = ({navigation}) => {
                     <View key={index} style={styles.itemContainer}>
                       <TouchableOpacity
                         style={styles.userContainer}
-                        onPress={
-                          () => console.log(item.date.toDate())
-                          // navigation.navigate('ViewUserScreen', {
-                          //   profileID: item.user,
-                          //   UID: UID,
-                          //   prevRoute: 'FeedScreen',
-                          //   myUser: myUser,
-                          // })
+                        onPress={() =>
+                          navigation.navigate('ViewUserScreen', {
+                            profileID: item.user,
+                            UID: UID,
+                            prevRoute: 'FeedScreen',
+                            myUser: myUser,
+                          })
                         }>
                         {item.pfpURL ? (
                           <FastImage
@@ -123,7 +123,9 @@ const FeedScreen = ({navigation}) => {
                           <Text style={styles.likeText}>liked a track</Text>
                         </View>
                         <Text style={styles.dot}>•</Text>
-                        {/* <Text style={styles.date}>{item.date}</Text> */}
+                        <Text style={styles.date}>
+                          {moment(item.date.toDate()).fromNow()}
+                        </Text>
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={styles.songContainer}
@@ -266,6 +268,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   dot: {
+    color: Colors.greyBtn,
+    fontFamily: 'Inter-Medium',
+    marginLeft: 5,
+    fontSize: 14,
+  },
+  date: {
     color: Colors.greyBtn,
     fontFamily: 'Inter-Medium',
     marginLeft: 5,
