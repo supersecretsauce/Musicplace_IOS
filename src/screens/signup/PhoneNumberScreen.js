@@ -14,10 +14,8 @@ import {Context} from '../../context/Context';
 import auth from '@react-native-firebase/auth';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
 import HapticFeedback from 'react-native-haptic-feedback';
-import firestore from '@react-native-firebase/firestore';
 import Toast from 'react-native-toast-message';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import axios from 'axios';
 import functions from '@react-native-firebase/functions';
 
 const PhoneNumber = ({navigation}) => {

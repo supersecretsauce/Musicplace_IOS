@@ -5,7 +5,6 @@ import {
   SafeAreaView,
   TouchableWithoutFeedback,
   TouchableOpacity,
-  Image,
 } from 'react-native';
 import Color from '../../assets/utilities/Colors';
 import React, {useContext} from 'react';
@@ -24,7 +23,7 @@ import DeviceInfo from 'react-native-device-info';
 
 const ConnectSpotifyScreen = ({navigation}) => {
   const userInfo = firebase.auth().currentUser;
-  const {username, setFeed} = useContext(Context);
+  const {setFeed} = useContext(Context);
 
   const goBack = () => {
     navigation.goBack();

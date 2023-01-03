@@ -10,7 +10,6 @@ import {
 import React from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
-import Colors from '../../assets/utilities/Colors';
 
 const WaitlistScreen = ({navigation}) => {
   async function handleDiscord() {

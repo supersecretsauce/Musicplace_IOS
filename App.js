@@ -10,7 +10,6 @@ import WelcomeStackScreen from './src/routes/WelcomeStackScreen';
 import {mixpanel} from './mixpanel';
 import notifee, {EventType} from '@notifee/react-native';
 import {AppState} from 'react-native';
-import firestore from '@react-native-firebase/firestore';
 import TabNavigator from './src/routes/TabNavigator';
 
 mixpanel.init();
@@ -23,7 +22,6 @@ export default function App() {
   const [homeScreenFocus, setHomeScreenFocus] = useState();
   const [profileScreenFocus, setProfileScreenFocus] = useState();
   const [parentComments, setParentComments] = useState();
-  const [username, setUsername] = useState('');
   const [currentPost, setCurrentPost] = useState();
   const [hasSpotify, setHasSpotify] = useState(null);
   const [feed, setFeed] = useState(null);
@@ -113,8 +111,6 @@ export default function App() {
             setCurrentTrack,
             homeScreenFocus,
             setHomeScreenFocus,
-            username,
-            setUsername,
             currentPost,
             setCurrentPost,
             profileScreenFocus,

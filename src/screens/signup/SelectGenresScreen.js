@@ -4,20 +4,12 @@ import {
   View,
   SafeAreaView,
   TouchableWithoutFeedback,
-  Image,
   TouchableOpacity,
-  ScrollView,
   FlatList,
 } from 'react-native';
 import axios from 'axios';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
-import React, {
-  useState,
-  useEffect,
-  useContext,
-  useCallback,
-  useMemo,
-} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../assets/utilities/Colors';
 import HapticFeedback from 'react-native-haptic-feedback';
