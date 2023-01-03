@@ -12,7 +12,6 @@ import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as Contacts from 'expo-contacts';
 import firestore from '@react-native-firebase/firestore';
-import firebase from '@react-native-firebase/app';
 
 import {Context} from '../../context/Context';
 

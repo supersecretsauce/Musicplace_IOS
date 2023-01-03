@@ -14,7 +14,6 @@ import {Context} from '../../context/Context';
 import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Animated, {
-  useAnimatedGestureHandler,
   useSharedValue,
   useAnimatedStyle,
   withSpring,
@@ -58,12 +57,6 @@ const InviteContactsScreen = ({route, navigation}) => {
       });
     }
   }, [myPhoneNumber, phoneNumbers]);
-
-  // const handleInvite = async number => {
-  //   await Linking.openURL(
-  //     `sms:/open?addresses=${number}&body=download the Musicplace App!`,
-  //   );
-  // };
 
   const handleInvite = item => {
     HapticFeedback.trigger('impactLight');
