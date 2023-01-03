@@ -65,6 +65,8 @@ const FeedScreen = ({navigation}) => {
       }
       if (likesArr.length > 0) {
         setLikes(likesArr);
+      } else {
+        setLikes(null);
       }
     }
   }
@@ -186,7 +188,7 @@ const FeedScreen = ({navigation}) => {
                     myUser: myUser,
                   });
                 }}>
-                <Text style={styles.addText}>add more friends</Text>
+                <Text style={styles.addText}>add friends</Text>
               </TouchableOpacity>
             </View>
           )}
