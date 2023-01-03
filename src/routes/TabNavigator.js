@@ -3,7 +3,6 @@ import {Context} from '../context/Context';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import HomeStackScreen from './HomeStackScreen';
-import DiscoverStackScreen from './DiscoverStackScreen';
 import ActivityStackScreen from './ActivityStackScreen';
 import ProfileStackScreen from './ProfileStackScreen';
 import FeedStackScreen from './FeedStackScreen';
