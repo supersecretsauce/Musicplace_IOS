@@ -19,10 +19,6 @@ export default function App() {
   const [confirm, setConfirm] = useState(null);
   const [userLogin, setUserLogin] = useState(false);
   const [currentTrack, setCurrentTrack] = useState();
-  const [homeScreenFocus, setHomeScreenFocus] = useState();
-  const [profileScreenFocus, setProfileScreenFocus] = useState();
-  const [parentComments, setParentComments] = useState();
-  const [currentPost, setCurrentPost] = useState();
   const [hasSpotify, setHasSpotify] = useState(null);
   const [feed, setFeed] = useState(null);
   const [UID, setUID] = useState(null);
@@ -109,14 +105,6 @@ export default function App() {
             setUserLogin,
             currentTrack,
             setCurrentTrack,
-            homeScreenFocus,
-            setHomeScreenFocus,
-            currentPost,
-            setCurrentPost,
-            profileScreenFocus,
-            setProfileScreenFocus,
-            parentComments,
-            setParentComments,
             hasSpotify,
             setHasSpotify,
             UID,
