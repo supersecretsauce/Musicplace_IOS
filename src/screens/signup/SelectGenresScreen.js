@@ -50,7 +50,6 @@ const SelectGenresScreen = ({navigation, route}) => {
   useEffect(() => {
     async function fetchGenres() {
       let isEmulator = await DeviceInfo.isEmulator();
-      console.log(isEmulator);
       let authToken;
       if (!isEmulator) {
         authToken = await appCheck().getToken();
