@@ -83,7 +83,6 @@ const HomeScreen = () => {
           authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
           authStatus === messaging.AuthorizationStatus.PROVISIONAL;
         if (enabled) {
-          console.log('Authorization status:', authStatus);
           messaging()
             .getToken()
             .then(token => {
@@ -143,7 +142,7 @@ const HomeScreen = () => {
       }
       fetchFeed();
     } else {
-      console.log('UID is not present');
+      return;
     }
   }, [UID]);
 
@@ -164,7 +163,6 @@ const HomeScreen = () => {
   }, [feed, isOnHomeScreen]);
 
   useEffect(() => {
-    console.log(currentIndex);
     if (feed && isOnHomeScreen) {
       if (currentIndex == Math.floor(feed.length / 2)) {
         console.log('halfway!');

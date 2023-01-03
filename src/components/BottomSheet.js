@@ -43,7 +43,6 @@ const BottomSheet = props => {
   const inputRef = useRef();
   const {navigate} = useNavigation();
 
-  // get comments
   async function getComments() {
     const commentDocs = await firestore()
       .collection('comments')
@@ -51,16 +50,11 @@ const BottomSheet = props => {
       .where('parent', '==', false)
       .orderBy('likeAmount', 'desc')
       .get();
-    console.log('comment documents', commentDocs);
     if (commentDocs.empty) {
       setComments(null);
       return;
     } else {
       setComments(commentDocs._docs);
-      // let sortedComments = commentDocs.docs.sort((a, z) => {
-      //   return a.data().likeAmount - z.data().likeAmount;
-      // });
-      // setComments(sortedComments);
       let myLikes = commentDocs.docs.filter(doc => {
         return doc.data().likesArray.includes(UID);
       });
@@ -73,7 +67,6 @@ const BottomSheet = props => {
 
   useEffect(() => {
     if (feed) {
-      console.log('getting comments');
       getComments();
     }
   }, [currentIndex, feed]);
@@ -92,10 +85,6 @@ const BottomSheet = props => {
       return () => subscriber();
     }
   }, [UID]);
-
-  useEffect(() => {
-    console.log(containerUp);
-  }, [containerUp]);
 
   /* animations for the bottom sheet 
   NOTE: THE ANIMATIONS DO NOT WORK WHEN DEBUGGING

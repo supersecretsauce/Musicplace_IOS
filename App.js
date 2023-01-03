@@ -46,7 +46,6 @@ export default function App() {
         appState.current.match(/inactive|background/) &&
         nextAppState === 'active'
       ) {
-        console.log('App has come to the foreground!');
         notifee.setBadgeCount(0).then(() => console.log('Badge count removed'));
         bootstrap();
       }
