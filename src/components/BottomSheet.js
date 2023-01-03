@@ -22,7 +22,6 @@ import {SPRING_CONFIG} from '../assets/utilities/reanimated-2';
 import firestore from '@react-native-firebase/firestore';
 import Colors from '../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import storage from '@react-native-firebase/storage';
 import ReplyComments from './ReplyComments';
 import Toast from 'react-native-toast-message';
 import {firebase} from '@react-native-firebase/firestore';

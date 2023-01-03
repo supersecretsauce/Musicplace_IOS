@@ -7,14 +7,7 @@ import {
   TouchableWithoutFeedback,
   Linking,
 } from 'react-native';
-import React, {
-  useState,
-  useEffect,
-  useContext,
-  useCallback,
-  useMemo,
-  useRef,
-} from 'react';
+import React, {useState, useEffect, useContext, useCallback} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
 import Swiper from 'react-native-swiper';
 import Sound from 'react-native-sound';
@@ -23,11 +16,9 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
 import BottomSheet from '../../components/BottomSheet';
 import HapticFeedback from 'react-native-haptic-feedback';
-import Toast from 'react-native-toast-message';
 import {Context} from '../../context/Context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {mixpanel} from '../../../mixpanel';
-import {firebase} from '@react-native-firebase/firestore';
 import messaging from '@react-native-firebase/messaging';
 import ShareSheet from '../../components/ShareSheet';
 import axios from 'axios';
@@ -39,7 +30,6 @@ const HomeScreen = () => {
   Sound.setCategory('Playback');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentTrack, setCurrentTrack] = useState(null);
-  const [likedTracks, setLikedTracks] = useState([]);
   const [showShareSheet, setShowShareSheet] = useState(false);
   const [initialFeed, setInitialFeed] = useState(true);
   const [startTime, setStartTime] = useState(new Date());
