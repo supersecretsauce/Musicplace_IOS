@@ -11,6 +11,7 @@ import React, {useEffect, useState} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../assets/utilities/Colors';
 import firestore from '@react-native-firebase/firestore';
+
 const ViewAllMessagesScreen = ({navigation, route}) => {
   const {UID, myUser} = route.params;
   const [memberInfo, setMemberInfo] = useState(null);

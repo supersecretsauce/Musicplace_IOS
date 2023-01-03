@@ -4,15 +4,15 @@ import {
   View,
   SafeAreaView,
   TouchableOpacity,
-  TextInput,
 } from 'react-native';
-import React, {useEffect} from 'react';
+import React from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../assets/utilities/Colors';
 import algoliasearch from 'algoliasearch/lite';
 import {InstantSearch} from 'react-instantsearch-hooks';
 import SearchBox from '../../components/SearchBox';
 import InfiniteHits from '../../components/InfiniteHits';
+
 const AddFriends = ({navigation, route}) => {
   const {myUser, prevRoute} = route.params;
   const searchClient = algoliasearch(

@@ -9,14 +9,12 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
-import {useState, useContext, useRef, useEffect} from 'react';
+import {useState, useContext} from 'react';
 import {Context} from '../../context/Context';
 import auth from '@react-native-firebase/auth';
 import Musicplace from '../../assets/img/musicplace-signup.svg';
-import firestore from '@react-native-firebase/firestore';
 import Toast from 'react-native-toast-message';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import axios from 'axios';
 import functions from '@react-native-firebase/functions';
 import HapticFeedback from 'react-native-haptic-feedback';
 
@@ -89,14 +87,14 @@ const ExistingPhoneNumberScreen = ({navigation}) => {
         console.log(resp);
         if (resp.data.exists) {
           try {
-            async function signIn() {
+            async function signInMethod() {
               const confirmation = await auth().signInWithPhoneNumber(
                 firebaseNumberFormat,
               );
               setConfirm(confirmation);
               navigation.navigate('ExistingCodeScreen');
             }
-            signIn();
+            signInMethod();
           } catch (error) {
             console.log(error);
           }

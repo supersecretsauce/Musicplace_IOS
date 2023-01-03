@@ -1,5 +1,5 @@
-import React, {useState, useContext} from 'react';
-import {Context} from '../../context/Context';
+import React, {useState} from 'react';
+
 import {
   StyleSheet,
   Text,
@@ -8,7 +8,6 @@ import {
   TouchableWithoutFeedback,
   TextInput,
   TouchableOpacity,
-  Image,
 } from 'react-native';
 import Color from '../../assets/utilities/Colors';
 import firestore from '@react-native-firebase/firestore';
@@ -20,9 +19,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const CreateUsernameScreen = ({navigation}) => {
   const [submitDone, setSubmitDone] = useState(false);
-  const [userNames, setUsernames] = useState(null);
+  const [username, setUsername] = useState(null);
   const userInfo = firebase.auth().currentUser;
-  const {username, setUsername} = useContext(Context);
 
   const goBack = () => {
     navigation.goBack();
@@ -52,21 +50,6 @@ const CreateUsernameScreen = ({navigation}) => {
       return removeExtraStuff.slice(0, 29);
     }
   };
-
-  // get all usernames and set them in state
-  // const getAllUsernames = async () => {
-  //   let docIDs = await firestore()
-  //     .collection('usernames')
-  //     .get()
-  //     .then(resp => {
-  //       return resp.docs.map(doc => {
-  //         return doc.id;
-  //       });
-  //     });
-  //   setUsernames(docIDs);
-  // };
-
-  // getAllUsernames();
 
   const checkIfUsernameTaken = async () => {
     if (username === '') {
