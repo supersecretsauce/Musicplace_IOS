@@ -20,6 +20,7 @@ import axios from 'axios';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {spotConfig} from '../../../SpotifyConfig';
 import appCheck from '@react-native-firebase/app-check';
+import DeviceInfo from 'react-native-device-info';
 
 const ConnectSpotifyScreen = ({navigation}) => {
   const userInfo = firebase.auth().currentUser;
@@ -58,32 +59,56 @@ const ConnectSpotifyScreen = ({navigation}) => {
 
     const docRef = firestore().collection('users').doc(userInfo.uid);
     docRef.set(data, {merge: true}).then(async () => {
-      let authToken = await appCheck().getToken();
-      console.log(authToken.token);
       axios
         .get(`http://167.99.22.22/update/top-tracks?userId=${userInfo.uid}`)
-        .then(resp => {
+        .then(async resp => {
           if (resp.status === 200) {
             console.log('finished fetching top songs');
-            axios
-              .get(
-                `http://167.99.22.22/recommendation/user?userId=${userInfo.uid}`,
-                {
-                  headers: {
-                    accept: 'application/json',
-                    Authorization: 'Bearer ' + authToken.token,
-                  },
-                },
-              )
-              .then(resp => {
-                if (resp.status === 200) {
-                  console.log(resp.data.data);
-                  setFeed(resp.data.data);
-                }
-              })
-              .catch(e => {
-                console.log(e);
-              });
+            DeviceInfo.isEmulator().then(async resp => {
+              if (resp) {
+                axios
+                  .get(
+                    `http://167.99.22.22/recommendation/user?userId=${userInfo.uid}`,
+                    {
+                      headers: {
+                        accept: 'application/json',
+                        Authorization:
+                          'Bearer ' + '934FD9FF-79D1-4E80-BD7D-D180E8529B5A',
+                      },
+                    },
+                  )
+                  .then(resp => {
+                    if (resp.status === 200) {
+                      console.log(resp.data.data);
+                      setFeed(resp.data.data);
+                    }
+                  })
+                  .catch(e => {
+                    console.log(e);
+                  });
+              } else {
+                let authToken = await appCheck().getToken();
+                axios
+                  .get(
+                    `http://167.99.22.22/recommendation/user?userId=${userInfo.uid}`,
+                    {
+                      headers: {
+                        accept: 'application/json',
+                        Authorization: 'Bearer ' + authToken.token,
+                      },
+                    },
+                  )
+                  .then(resp => {
+                    if (resp.status === 200) {
+                      console.log(resp.data.data);
+                      setFeed(resp.data.data);
+                    }
+                  })
+                  .catch(e => {
+                    console.log(e);
+                  });
+              }
+            });
           }
         })
         .catch(e => {
