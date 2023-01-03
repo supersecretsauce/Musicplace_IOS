@@ -16,14 +16,22 @@ import {spotConfig} from '../../SpotifyConfig';
 import {authorize} from 'react-native-app-auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import appCheck from '@react-native-firebase/app-check';
+
 const MyPosts = props => {
   const {UID, navigation} = props;
   const {hasSpotify, setHasSpotify} = useContext(Context);
   const [userPosts, setUserPosts] = useState(null);
 
-  function getMyPosts() {
+  async function getMyPosts() {
+    let authToken = await appCheck().getToken();
     axios
-      .get(`http://167.99.22.22/fetch/library?userId=${UID}&viewerId=${UID}`)
+      .get(`http://167.99.22.22/fetch/library?userId=${UID}&viewerId=${UID}`, {
+        headers: {
+          accept: 'application/json',
+          Authorization: 'Bearer ' + authToken.token,
+        },
+      })
       .then(resp => {
         console.log(resp);
         setUserPosts(resp.data.data);

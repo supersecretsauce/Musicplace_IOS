@@ -24,6 +24,8 @@ import ShareSheet from '../../components/ShareSheet';
 import axios from 'axios';
 import {PanGestureHandler} from 'react-native-gesture-handler';
 import Animated, {useAnimatedGestureHandler} from 'react-native-reanimated';
+import appCheck from '@react-native-firebase/app-check';
+
 const ViewPostsScreen = ({route, navigation}) => {
   Sound.setCategory('Playback');
   const {songInfo, UID, openSheet, commentDocID, prevScreen} =
@@ -118,8 +120,10 @@ const ViewPostsScreen = ({route, navigation}) => {
     }
   }, [songInfo, trackDeepLink]);
 
-  function likeHandler() {
+  async function likeHandler() {
     if (hasSpotify) {
+      let authToken = await appCheck().getToken();
+
       if (trackInfo[0].liked) {
         HapticFeedback.trigger('impactLight');
         let filteredTrackInfo = trackInfo.map(track => {
@@ -137,6 +141,12 @@ const ViewPostsScreen = ({route, navigation}) => {
         axios
           .get(
             `http://167.99.22.22/update/remove-track?userId=${UID}&trackId=${trackInfo[0].id}`,
+            {
+              headers: {
+                accept: 'application/json',
+                Authorization: 'Bearer ' + authToken.token,
+              },
+            },
           )
           .then(resp => {
             console.log(resp);
@@ -161,6 +171,12 @@ const ViewPostsScreen = ({route, navigation}) => {
         axios
           .get(
             `http://167.99.22.22/update/save-track?userId=${UID}&trackId=${trackInfo[0].id}`,
+            {
+              headers: {
+                accept: 'application/json',
+                Authorization: 'Bearer ' + authToken.token,
+              },
+            },
           )
           .then(resp => {
             console.log(resp);
