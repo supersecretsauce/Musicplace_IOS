@@ -84,7 +84,6 @@ const FeedScreen = ({navigation}) => {
       // do something
       fetchDocs();
       return () => {
-        // if a user leaves the homescreen while feed is loading, don't play sound
         console.log('left screen');
       };
     }, [followingList]),
