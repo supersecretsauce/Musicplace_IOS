@@ -23,6 +23,7 @@ import Colors from '../../assets/utilities/Colors';
 import HapticFeedback from 'react-native-haptic-feedback';
 import {Context} from '../../context/Context';
 import appCheck from '@react-native-firebase/app-check';
+import DeviceInfo from 'react-native-device-info';
 
 const SelectGenresScreen = ({navigation, route}) => {
   const {UID} = route.params;
@@ -48,12 +49,18 @@ const SelectGenresScreen = ({navigation, route}) => {
 
   useEffect(() => {
     async function fetchGenres() {
-      let authToken = await appCheck().getToken();
+      let isEmulator = await DeviceInfo.isEmulator();
+      let authToken;
+      if (!isEmulator) {
+        authToken = await appCheck().getToken();
+      }
       axios
         .get('http://167.99.22.22/fetch/genres', {
           headers: {
             accept: 'application/json',
-            Authorization: 'Bearer ' + authToken.token,
+            Authorization: isEmulator
+              ? 'Bearer ' + '934FD9FF-79D1-4E80-BD7D-D180E8529B5A'
+              : 'Bearer ' + authToken.token,
           },
         })
         .then(resp => {
@@ -88,17 +95,21 @@ const SelectGenresScreen = ({navigation, route}) => {
       return;
     } else {
       let formattedGenres = selections.join(',');
-      console.log(formattedGenres);
       let encodedGenres = encodeURIComponent(formattedGenres);
-      let authToken = await appCheck().getToken();
-
+      let isEmulator = await DeviceInfo.isEmulator();
+      let authToken;
+      if (!isEmulator) {
+        authToken = await appCheck().getToken();
+      }
       axios
         .get(
           `http://167.99.22.22/recommendation/user?userId=${UID}&genres=${encodedGenres}`,
           {
             headers: {
               accept: 'application/json',
-              Authorization: 'Bearer ' + authToken.token,
+              Authorization: isEmulator
+                ? 'Bearer ' + '934FD9FF-79D1-4E80-BD7D-D180E8529B5A'
+                : 'Bearer ' + authToken.token,
             },
           },
         )
@@ -114,7 +125,6 @@ const SelectGenresScreen = ({navigation, route}) => {
         .catch(e => {
           console.log(e);
         });
-      // navigation.navigate('SwipeUpScreen');
     }
   }
 

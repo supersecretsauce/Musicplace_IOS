@@ -11,6 +11,7 @@ import firestore from '@react-native-firebase/firestore';
 import Colors from '../assets/utilities/Colors';
 import axios from 'axios';
 import appCheck from '@react-native-firebase/app-check';
+import DeviceInfo from 'react-native-device-info';
 
 const UserPosts = props => {
   const {profileID, UID, navigation} = props;
@@ -18,27 +19,33 @@ const UserPosts = props => {
 
   useEffect(() => {
     if (profileID && UID) {
-      appCheck()
-        .getToken()
-        .then(resp => {
-          axios
-            .get(
-              `http://167.99.22.22/fetch/library?userId=${profileID}&viewerId=${UID}`,
-              {
-                headers: {
-                  accept: 'application/json',
-                  Authorization: 'Bearer ' + resp.token,
-                },
+      async function fetchUsersTracks() {
+        let isEmulator = await DeviceInfo.isEmulator();
+        let authToken;
+        if (!isEmulator) {
+          authToken = await appCheck().getToken();
+        }
+        axios
+          .get(
+            `http://167.99.22.22/fetch/library?userId=${profileID}&viewerId=${UID}`,
+            {
+              headers: {
+                accept: 'application/json',
+                Authorization: isEmulator
+                  ? 'Bearer ' + '934FD9FF-79D1-4E80-BD7D-D180E8529B5A'
+                  : 'Bearer ' + authToken.token,
               },
-            )
-            .then(response => {
-              console.log(response);
-              setUserPosts(response.data.data);
-            })
-            .catch(e => {
-              console.log(e);
-            });
-        });
+            },
+          )
+          .then(response => {
+            console.log(response);
+            setUserPosts(response.data.data);
+          })
+          .catch(e => {
+            console.log(e);
+          });
+      }
+      fetchUsersTracks();
     }
   }, [profileID, UID]);
 

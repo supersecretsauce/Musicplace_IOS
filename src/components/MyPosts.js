@@ -17,6 +17,7 @@ import {authorize} from 'react-native-app-auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import appCheck from '@react-native-firebase/app-check';
+import DeviceInfo from 'react-native-device-info';
 
 const MyPosts = props => {
   const {UID, navigation} = props;
@@ -24,12 +25,18 @@ const MyPosts = props => {
   const [userPosts, setUserPosts] = useState(null);
 
   async function getMyPosts() {
-    let authToken = await appCheck().getToken();
+    let isEmulator = await DeviceInfo.isEmulator();
+    let authToken;
+    if (!isEmulator) {
+      authToken = await appCheck().getToken();
+    }
     axios
       .get(`http://167.99.22.22/fetch/library?userId=${UID}&viewerId=${UID}`, {
         headers: {
           accept: 'application/json',
-          Authorization: 'Bearer ' + authToken.token,
+          Authorization: isEmulator
+            ? 'Bearer ' + '934FD9FF-79D1-4E80-BD7D-D180E8529B5A'
+            : 'Bearer ' + authToken.token,
         },
       })
       .then(resp => {
