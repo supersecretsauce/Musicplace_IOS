@@ -20,6 +20,7 @@ import axios from 'axios';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {spotConfig} from '../../../SpotifyConfig';
 import appCheck from '@react-native-firebase/app-check';
+
 const ConnectSpotifyScreen = ({navigation}) => {
   const userInfo = firebase.auth().currentUser;
   const {username, setFeed} = useContext(Context);

@@ -32,6 +32,7 @@ import messaging from '@react-native-firebase/messaging';
 import ShareSheet from '../../components/ShareSheet';
 import axios from 'axios';
 import LoadingPost from '../../components/LoadingPost';
+import appCheck from '@react-native-firebase/app-check';
 
 const HomeScreen = () => {
   Sound.setCategory('Playback');
@@ -123,16 +124,25 @@ const HomeScreen = () => {
         return;
       } else {
         console.log(UID);
-        axios
-          .get(`http://167.99.22.22/recommendation/user?userId=${UID}`)
+        appCheck()
+          .getToken()
           .then(resp => {
-            console.log(resp);
-            if (resp.data.data.length > 0) {
-              setFeed(resp.data.data);
-            }
-          })
-          .catch(e => {
-            console.log(e);
+            axios
+              .get(`http://167.99.22.22/recommendation/user?userId=${UID}`, {
+                headers: {
+                  accept: 'application/json',
+                  Authorization: 'Bearer ' + resp.token,
+                },
+              })
+              .then(resp => {
+                console.log(resp);
+                if (resp.data.data.length > 0) {
+                  setFeed(resp.data.data);
+                }
+              })
+              .catch(e => {
+                console.log(e);
+              });
           });
       }
     } else {
@@ -161,14 +171,23 @@ const HomeScreen = () => {
     if (feed && isOnHomeScreen) {
       if (currentIndex == Math.floor(feed.length / 2)) {
         console.log('halfway!');
-        axios
-          .get(`http://167.99.22.22/recommendation/user?userId=${UID}`)
+        appCheck()
+          .getToken()
           .then(resp => {
-            console.log(resp);
-            setFeed(current => [...current, ...resp.data.data]);
-          })
-          .catch(e => {
-            console.log(e);
+            axios
+              .get(`http://167.99.22.22/recommendation/user?userId=${UID}`, {
+                headers: {
+                  accept: 'application/json',
+                  Authorization: 'Bearer ' + resp.token,
+                },
+              })
+              .then(response => {
+                console.log(response);
+                setFeed(current => [...current, ...response.data.data]);
+              })
+              .catch(e => {
+                console.log(e);
+              });
           });
       }
     }
@@ -229,8 +248,10 @@ const HomeScreen = () => {
     }
   }
 
-  function likeHandler(post) {
+  async function likeHandler(post) {
     HapticFeedback.trigger('impactLight');
+    let authToken = await appCheck().getToken();
+
     if (hasSpotify) {
       if (post.liked) {
         let updatedFeed = feed.map(track => {
@@ -246,6 +267,12 @@ const HomeScreen = () => {
         axios
           .get(
             `http://167.99.22.22/update/remove-track?userId=${UID}&trackId=${feed[currentIndex].id}`,
+            {
+              headers: {
+                accept: 'application/json',
+                Authorization: 'Bearer ' + authToken.token,
+              },
+            },
           )
           .then(resp => {
             console.log(resp);
@@ -268,6 +295,12 @@ const HomeScreen = () => {
         axios
           .get(
             `http://167.99.22.22/update/save-track?userId=${UID}&trackId=${feed[currentIndex].id}`,
+            {
+              headers: {
+                accept: 'application/json',
+                Authorization: 'Bearer ' + authToken.token,
+              },
+            },
           )
           .then(resp => {
             console.log(resp);
