@@ -33,6 +33,7 @@ import ShareSheet from '../../components/ShareSheet';
 import axios from 'axios';
 import LoadingPost from '../../components/LoadingPost';
 import appCheck from '@react-native-firebase/app-check';
+import DeviceInfo from 'react-native-device-info';
 
 const HomeScreen = () => {
   Sound.setCategory('Playback');
@@ -119,32 +120,38 @@ const HomeScreen = () => {
 
   useEffect(() => {
     if (UID) {
-      if (isNewUser) {
-        console.log('this is a new user');
-        return;
-      } else {
-        console.log(UID);
-        appCheck()
-          .getToken()
-          .then(resp => {
-            axios
-              .get(`http://167.99.22.22/recommendation/user?userId=${UID}`, {
-                headers: {
-                  accept: 'application/json',
-                  Authorization: 'Bearer ' + resp.token,
-                },
-              })
-              .then(resp => {
-                console.log(resp);
-                if (resp.data.data.length > 0) {
-                  setFeed(resp.data.data);
-                }
-              })
-              .catch(e => {
-                console.log(e);
-              });
-          });
+      async function fetchFeed() {
+        if (isNewUser) {
+          console.log('this is a new user');
+          return;
+        } else {
+          console.log(UID);
+          let isEmulator = await DeviceInfo.isEmulator();
+          let authToken;
+          if (!isEmulator) {
+            authToken = await appCheck().getToken();
+          }
+          axios
+            .get(`http://167.99.22.22/recommendation/user?userId=${UID}`, {
+              headers: {
+                accept: 'application/json',
+                Authorization: isEmulator
+                  ? 'Bearer ' + '934FD9FF-79D1-4E80-BD7D-D180E8529B5A'
+                  : 'Bearer ' + authToken,
+              },
+            })
+            .then(resp => {
+              console.log(resp);
+              if (resp.data.data.length > 0) {
+                setFeed(resp.data.data);
+              }
+            })
+            .catch(e => {
+              console.log(e);
+            });
+        }
       }
+      fetchFeed();
     } else {
       console.log('UID is not present');
     }
@@ -250,8 +257,11 @@ const HomeScreen = () => {
 
   async function likeHandler(post) {
     HapticFeedback.trigger('impactLight');
-    let authToken = await appCheck().getToken();
-
+    let isEmulator = await DeviceInfo.isEmulator();
+    let authToken;
+    if (!isEmulator) {
+      authToken = await appCheck().getToken();
+    }
     if (hasSpotify) {
       if (post.liked) {
         let updatedFeed = feed.map(track => {
@@ -270,7 +280,9 @@ const HomeScreen = () => {
             {
               headers: {
                 accept: 'application/json',
-                Authorization: 'Bearer ' + authToken.token,
+                Authorization: isEmulator
+                  ? 'Bearer ' + '934FD9FF-79D1-4E80-BD7D-D180E8529B5A'
+                  : 'Bearer ' + authToken.token,
               },
             },
           )
@@ -298,7 +310,9 @@ const HomeScreen = () => {
             {
               headers: {
                 accept: 'application/json',
-                Authorization: 'Bearer ' + authToken.token,
+                Authorization: isEmulator
+                  ? 'Bearer ' + '934FD9FF-79D1-4E80-BD7D-D180E8529B5A'
+                  : 'Bearer ' + authToken.token,
               },
             },
           )
