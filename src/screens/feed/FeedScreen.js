@@ -28,9 +28,11 @@ const FeedScreen = ({navigation}) => {
         .doc(UID)
         .onSnapshot(documentSnapshot => {
           setMyUser(documentSnapshot.data());
+          console.log('changes');
           let followingArr = [];
-          followingArr.push(documentSnapshot?.data()?.followingList);
+          followingArr.push(...documentSnapshot?.data()?.followingList);
           followingArr.push(UID);
+          console.log(followingArr);
           setFollowingList(followingArr);
         });
 
@@ -55,7 +57,7 @@ const FeedScreen = ({navigation}) => {
             if (resp.empty) {
               return;
             } else {
-              // console.log(resp);
+              console.log(resp);
               resp.docs.forEach(doc => {
                 console.log(doc);
                 likesArr.push(doc.data());
@@ -72,8 +74,10 @@ const FeedScreen = ({navigation}) => {
   }
 
   useEffect(() => {
-    console.log(likes);
-  }, [likes]);
+    if (followingList) {
+      fetchDocs();
+    }
+  }, [followingList]);
 
   useFocusEffect(
     useCallback(() => {
@@ -90,7 +94,17 @@ const FeedScreen = ({navigation}) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.feedContainer}>
         <Text style={styles.feedText}>Feed</Text>
+        <TouchableOpacity
+          style={styles.addHeader}
+          onPress={() =>
+            navigation.navigate('AddFriends', {
+              myUser: myUser,
+            })
+          }>
+          <Ionicons name={'person-add-outline'} color={'white'} size={28} />
+        </TouchableOpacity>
       </View>
+
       {followingList ? (
         <>
           {likes ? (
@@ -230,14 +244,18 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: '6%',
     marginBottom: '4%',
-
     width: '90%',
   },
   feedText: {
     fontFamily: 'Inter-Bold',
     color: 'white',
-    fontSize: 18,
+    fontSize: 20,
     alignSelf: 'center',
+  },
+  addHeader: {
+    marginLeft: 100,
+    position: 'absolute',
+    right: 0,
   },
   flatListContainer: {
     flex: 1,
