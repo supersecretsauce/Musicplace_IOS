@@ -10,24 +10,34 @@ import React, {useEffect, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import Colors from '../assets/utilities/Colors';
 import axios from 'axios';
+import appCheck from '@react-native-firebase/app-check';
+
 const UserPosts = props => {
   const {profileID, UID, navigation} = props;
   const [userPosts, setUserPosts] = useState([]);
 
   useEffect(() => {
     if (profileID && UID) {
-      console.log(UID);
-      console.log(profileID);
-      axios
-        .get(
-          `http://167.99.22.22/fetch/library?userId=${profileID}&viewerId=${UID}`,
-        )
+      appCheck()
+        .getToken()
         .then(resp => {
-          console.log(resp);
-          setUserPosts(resp.data.data);
-        })
-        .catch(e => {
-          console.log(e);
+          axios
+            .get(
+              `http://167.99.22.22/fetch/library?userId=${profileID}&viewerId=${UID}`,
+              {
+                headers: {
+                  accept: 'application/json',
+                  Authorization: 'Bearer ' + resp.token,
+                },
+              },
+            )
+            .then(response => {
+              console.log(response);
+              setUserPosts(response.data.data);
+            })
+            .catch(e => {
+              console.log(e);
+            });
         });
     }
   }, [profileID, UID]);
