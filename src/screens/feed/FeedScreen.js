@@ -28,9 +28,10 @@ const FeedScreen = ({navigation}) => {
         .doc(UID)
         .onSnapshot(documentSnapshot => {
           setMyUser(documentSnapshot.data());
-          if (documentSnapshot.data().followingList.length > 0) {
-            setFollowingList(documentSnapshot.data().followingList);
-          }
+          let followingArr = [];
+          followingArr.push(documentSnapshot?.data()?.followingList);
+          followingArr.push(UID);
+          setFollowingList(followingArr);
         });
 
       // Stop listening for updates when no longer required
@@ -62,7 +63,9 @@ const FeedScreen = ({navigation}) => {
             }
           });
       }
-      setLikes(likesArr);
+      if (likesArr.length > 0) {
+        setLikes(likesArr);
+      }
     }
   }
 
