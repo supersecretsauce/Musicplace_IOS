@@ -218,10 +218,6 @@ const HomeScreen = () => {
       });
   }
 
-  useEffect(() => {
-    console.log(startTime);
-  }, [startTime]);
-
   let playing = true;
   function pauseHandler() {
     if (playing) {
