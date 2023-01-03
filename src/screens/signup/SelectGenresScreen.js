@@ -22,6 +22,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../assets/utilities/Colors';
 import HapticFeedback from 'react-native-haptic-feedback';
 import {Context} from '../../context/Context';
+import appCheck from '@react-native-firebase/app-check';
 
 const SelectGenresScreen = ({navigation, route}) => {
   const {UID} = route.params;
@@ -46,18 +47,30 @@ const SelectGenresScreen = ({navigation, route}) => {
   }, []);
 
   useEffect(() => {
-    axios.get('http://167.99.22.22/fetch/genres').then(resp => {
-      let allGenres = resp.data.data;
-      let sortable = [];
-      for (var genre in allGenres) {
-        sortable.push([genre, allGenres[genre]]);
-      }
-      let sortedArray = sortable.sort(function (a, b) {
-        return b[1] - a[1];
-      });
-      console.log(sortedArray);
-      setPopularGenres(sortedArray.slice(0, 30));
-    });
+    async function fetchGenres() {
+      let authToken = await appCheck().getToken();
+      axios
+        .get('http://167.99.22.22/fetch/genres', {
+          headers: {
+            accept: 'application/json',
+            Authorization: 'Bearer ' + authToken.token,
+          },
+        })
+        .then(resp => {
+          let allGenres = resp.data.data;
+          let sortable = [];
+          for (var genre in allGenres) {
+            sortable.push([genre, allGenres[genre]]);
+          }
+          let sortedArray = sortable.sort(function (a, b) {
+            return b[1] - a[1];
+          });
+          console.log(sortedArray);
+          setPopularGenres(sortedArray.slice(0, 30));
+        });
+    }
+
+    fetchGenres();
   }, []);
 
   function handleSelections(genre) {
@@ -69,7 +82,7 @@ const SelectGenresScreen = ({navigation, route}) => {
     }
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     HapticFeedback.trigger('impactHeavy');
     if (selections.length === 0) {
       return;
@@ -77,9 +90,17 @@ const SelectGenresScreen = ({navigation, route}) => {
       let formattedGenres = selections.join(',');
       console.log(formattedGenres);
       let encodedGenres = encodeURIComponent(formattedGenres);
+      let authToken = await appCheck().getToken();
+
       axios
         .get(
           `http://167.99.22.22/recommendation/user?userId=${UID}&genres=${encodedGenres}`,
+          {
+            headers: {
+              accept: 'application/json',
+              Authorization: 'Bearer ' + authToken.token,
+            },
+          },
         )
         .then(resp => {
           if (resp.data.length === 0) {
