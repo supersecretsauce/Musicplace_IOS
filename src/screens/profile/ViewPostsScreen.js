@@ -211,14 +211,6 @@ const ViewPostsScreen = ({route, navigation}) => {
     await Linking.openURL(`http://open.spotify.com/track/${songInfo[0].id}`);
   }
 
-  function handleBack() {
-    navigation.goBack();
-  }
-
-  function handleNav(event) {
-    Alert.alert(event);
-  }
-
   const gestureHandler = useAnimatedGestureHandler({
     onStart(event, ctx) {
       ctx.swipe = event.x;
@@ -231,8 +223,6 @@ const ViewPostsScreen = ({route, navigation}) => {
         } else {
           runOnJS(navigation.goBack)();
         }
-      } else {
-        // runOnJS(navigation.navigate)(prevScreen);
       }
     },
   });
