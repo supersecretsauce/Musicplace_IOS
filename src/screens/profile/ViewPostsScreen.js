@@ -39,7 +39,7 @@ const ViewPostsScreen = ({route, navigation}) => {
   const [showShareSheet, setShowShareSheet] = useState(false);
   const {hasSpotify, trackDeepLink, setTrackDeepLink} = useContext(Context);
   const [trackInfo, setTrackInfo] = useState(songInfo);
-
+  const [isLiked, setIsLiked] = useState(null);
   let playing = true;
   let startTime = new Date();
 
@@ -99,31 +99,60 @@ const ViewPostsScreen = ({route, navigation}) => {
   }
 
   useEffect(() => {
-    if (songInfo) {
-      console.log(songInfo);
-      let newTrack = new Sound(songInfo[0].previewURL, null, error => {
-        if (error) {
-          console.log('failed to load the sound', error);
-          return;
-        } else {
-          newTrack.play();
-          newTrack.setNumberOfLoops(-1);
+    if (UID) {
+      if (songInfo) {
+        console.log(songInfo);
+        async function fetchLike() {
+          let isEmulator = await DeviceInfo.isEmulator();
+          let authToken;
+          if (!isEmulator) {
+            authToken = await appCheck().getToken();
+          }
+          axios
+            .get(
+              `http://167.99.22.22/fetch/like?userId=${UID}&trackId=${songInfo[0].id}`,
+              {
+                headers: {
+                  accept: 'application/json',
+                  Authorization: isEmulator
+                    ? 'Bearer ' + '934FD9FF-79D1-4E80-BD7D-D180E8529B5A'
+                    : 'Bearer ' + authToken,
+                },
+              },
+            )
+            .then(resp => {
+              console.log(resp);
+              setIsLiked(resp.data.data);
+            })
+            .catch(e => {
+              console.log(e);
+            });
         }
-      });
-      setCurrentTrack(newTrack);
-    } else if (trackDeepLink) {
-      firestore()
-        .collection('posts')
-        .doc(trackDeepLink)
-        .get()
-        .then(resp => {
-          console.log(resp);
-          setTrackInfo(resp.data());
-          setTrackDeepLink(null);
+        fetchLike();
+        let newTrack = new Sound(songInfo[0].previewURL, null, error => {
+          if (error) {
+            console.log('failed to load the sound', error);
+            return;
+          } else {
+            newTrack.play();
+            newTrack.setNumberOfLoops(-1);
+          }
         });
-      return;
+        setCurrentTrack(newTrack);
+      } else if (trackDeepLink) {
+        firestore()
+          .collection('posts')
+          .doc(trackDeepLink)
+          .get()
+          .then(resp => {
+            console.log(resp);
+            setTrackInfo(resp.data());
+            setTrackDeepLink(null);
+          });
+        return;
+      }
     }
-  }, [songInfo, trackDeepLink]);
+  }, [songInfo, trackDeepLink, UID]);
 
   async function likeHandler() {
     let isEmulator = await DeviceInfo.isEmulator();
@@ -132,7 +161,8 @@ const ViewPostsScreen = ({route, navigation}) => {
       authToken = await appCheck().getToken();
     }
     if (hasSpotify) {
-      if (trackInfo[0].liked) {
+      if (isLiked) {
+        setIsLiked(false);
         HapticFeedback.trigger('impactLight');
         let filteredTrackInfo = trackInfo.map(track => {
           track.liked = false;
@@ -165,6 +195,7 @@ const ViewPostsScreen = ({route, navigation}) => {
             console.log(e);
           });
       } else {
+        setIsLiked(true);
         HapticFeedback.trigger('impactHeavy');
         let filteredTrackInfo = trackInfo.map(track => {
           track.liked = true;
@@ -265,8 +296,8 @@ const ViewPostsScreen = ({route, navigation}) => {
                         <TouchableOpacity onPress={likeHandler}>
                           <Ionicons
                             style={styles.likeIcon}
-                            name={post.liked ? 'heart' : 'heart-outline'}
-                            color={post.liked ? '#1DB954' : 'grey'}
+                            name={isLiked ? 'heart' : 'heart-outline'}
+                            color={isLiked ? '#1DB954' : 'grey'}
                             size={28}
                           />
                         </TouchableOpacity>
