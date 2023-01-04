@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   Linking,
+  Alert,
 } from 'react-native';
 import React, {useEffect, useState, useCallback, useContext} from 'react';
 import {Context} from '../../context/Context';
@@ -22,7 +23,11 @@ import {mixpanel} from '../../../mixpanel';
 import ShareSheet from '../../components/ShareSheet';
 import axios from 'axios';
 import {PanGestureHandler} from 'react-native-gesture-handler';
-import Animated, {useAnimatedGestureHandler} from 'react-native-reanimated';
+import Animated, {
+  useAnimatedGestureHandler,
+  runOnJS,
+  runOnUI,
+} from 'react-native-reanimated';
 import appCheck from '@react-native-firebase/app-check';
 import DeviceInfo from 'react-native-device-info';
 
@@ -206,19 +211,28 @@ const ViewPostsScreen = ({route, navigation}) => {
     await Linking.openURL(`http://open.spotify.com/track/${songInfo[0].id}`);
   }
 
-  let swipe;
+  function handleBack() {
+    navigation.goBack();
+  }
+
+  function handleNav(event) {
+    Alert.alert(event);
+  }
+
   const gestureHandler = useAnimatedGestureHandler({
-    onStart(event) {
-      swipe = event.x;
+    onStart(event, ctx) {
+      ctx.swipe = event.x;
     },
-    onEnd(event) {
-      console.log(event.x);
-      if (swipe < event.x) {
+    onEnd(event, ctx) {
+      // console.log(event.x);
+      if (ctx.swipe < event.x) {
         if (prevScreen === 'ActivityScreen') {
-          navigation.navigate(prevScreen);
+          runOnJS(navigation.navigate)(prevScreen);
         } else {
-          navigation.goBack();
+          runOnJS(navigation.goBack)();
         }
+      } else {
+        // runOnJS(navigation.navigate)(prevScreen);
       }
     },
   });
