@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   Image,
   Linking,
-  Alert,
 } from 'react-native';
 import React, {useEffect, useState, useCallback, useContext} from 'react';
 import {Context} from '../../context/Context';
