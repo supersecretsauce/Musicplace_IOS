@@ -7,7 +7,6 @@ import {
   TextInput,
   SafeAreaView,
   TouchableOpacity,
-  Image,
 } from 'react-native';
 import {useState, useContext} from 'react';
 import {Context} from '../../context/Context';

@@ -12,6 +12,7 @@ import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as Contacts from 'expo-contacts';
 import firestore from '@react-native-firebase/firestore';
+
 import {Context} from '../../context/Context';
 
 const ActivityScreen = ({navigation}) => {
@@ -20,7 +21,8 @@ const ActivityScreen = ({navigation}) => {
   const [memberInfo, setMemberInfo] = useState(null);
   const [myUser, setMyUser] = useState(null);
   const [activity, setActivity] = useState(null);
-  const {UID} = useContext(Context);
+  const [myPhoneNumber, setMyPhoneNumber] = useState(null);
+  const {UID, setInvitesRemaining, invitesRemaining} = useContext(Context);
 
   useEffect(() => {
     (async () => {
@@ -35,8 +37,11 @@ const ActivityScreen = ({navigation}) => {
             if (person.phoneNumbers) {
               let ogNumber = person?.phoneNumbers[0]?.number;
               let arr = ogNumber.split('');
-              let filteredNumber = arr.filter(n => n !== '(' && n !== ')');
-              return filteredNumber.join('');
+              let filteredNumber = arr.filter(
+                n =>
+                  n !== '(' && n !== ')' && n !== '-' && n !== ' ' && n !== '+',
+              );
+              return {number: filteredNumber.join(''), name: person.firstName};
             } else {
               return;
             }
@@ -49,15 +54,23 @@ const ActivityScreen = ({navigation}) => {
 
   useEffect(() => {
     if (UID) {
-      firestore()
+      const subscriber = firestore()
         .collection('users')
         .doc(UID)
-        .get()
-        .then(resp => {
+        .onSnapshot(resp => {
+          console.log(resp.data());
           setMyUser(resp._data);
+          setMyPhoneNumber(resp.data().phoneNumber);
+          setInvitesRemaining(resp.data().invitesRemaining);
         });
+
+      return () => subscriber();
     }
   }, [UID]);
+
+  useEffect(() => {
+    console.log(invitesRemaining);
+  }, [invitesRemaining]);
 
   useEffect(() => {
     if (UID) {
@@ -109,7 +122,6 @@ const ActivityScreen = ({navigation}) => {
           });
           docArr.unshift({
             top: 'Musicplace Team',
-            bottom: 'Invite your friends on to Musicplace.',
             nav: 'InviteContactsScreen',
             from: 'musicplace',
           });
@@ -119,11 +131,14 @@ const ActivityScreen = ({navigation}) => {
       // Stop listening for updates when no longer required
       return () => subscriber();
     }
-  }, [UID]);
+  }, [UID, invitesRemaining]);
 
   function handleNav(nav) {
     navigation.navigate(nav, {
       contacts: contacts,
+      myPhoneNumber: myPhoneNumber,
+      phoneNumbers: phoneNumbers,
+      UID: UID,
     });
   }
 
@@ -231,7 +246,11 @@ const ActivityScreen = ({navigation}) => {
                           <View style={styles.musicplaceLogo} />
                           <View style={styles.itemMiddle}>
                             <Text style={styles.topText}>{item.top}</Text>
-                            <Text style={styles.bottomText}>{item.bottom}</Text>
+                            <Text style={styles.bottomText}>
+                              You have {invitesRemaining}{' '}
+                              {invitesRemaining === 1 ? 'invite' : 'invites'}{' '}
+                              remaining.
+                            </Text>
                           </View>
                         </View>
                         <View>

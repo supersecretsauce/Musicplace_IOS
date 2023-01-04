@@ -3,7 +3,6 @@ import {
   Text,
   View,
   SafeAreaView,
-  Image,
   TouchableOpacity,
 } from 'react-native';
 import React from 'react';

@@ -9,18 +9,15 @@ import {
   KeyboardAvoidingView,
   FlatList,
   Keyboard,
-  TouchableWithoutFeedback,
   Linking,
 } from 'react-native';
 import React, {useEffect, useState, useContext, useRef} from 'react';
 import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Animated, {
-  useAnimatedGestureHandler,
   useSharedValue,
   useAnimatedStyle,
   withSpring,
-  runOnJS,
 } from 'react-native-reanimated';
 import {SPRING_CONFIG} from '../../assets/utilities/reanimated-2';
 import firestore from '@react-native-firebase/firestore';
@@ -34,7 +31,6 @@ const DirectMessageScreen = ({route, navigation}) => {
   const [chatDoc, setChatDoc] = useState(null);
   const [messageDocs, setMessageDocs] = useState(null);
   const [messageText, setMessageText] = useState('');
-  const [chatDocID, setChatDocID] = useState(null);
   const flatlistRef = useRef();
 
   useEffect(() => {
@@ -125,7 +121,6 @@ const DirectMessageScreen = ({route, navigation}) => {
         })
         .then(resp => {
           console.log('create chat doc', resp);
-          setChatDocID(resp.id);
           firestore()
             .collection('chats')
             .doc(resp.id)

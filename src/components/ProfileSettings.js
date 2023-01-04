@@ -58,7 +58,6 @@ const ProfileSettings = props => {
           const authState = await authorize(spotConfig);
           await AsyncStorage.setItem('hasSpotify', 'true');
           setSpotifyConnected(true);
-          setHasSpotify(true);
           firestore()
             .collection('users')
             .doc(UID)
@@ -75,6 +74,7 @@ const ProfileSettings = props => {
                 .get(`http://167.99.22.22/update/top-tracks?userId=${UID}`)
                 .then(() => {
                   console.log('finished getting spotify library');
+                  setHasSpotify(true);
                 })
                 .catch(e => {
                   console.log(e);

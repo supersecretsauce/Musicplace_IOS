@@ -7,14 +7,7 @@ import {
   TouchableWithoutFeedback,
   Linking,
 } from 'react-native';
-import React, {
-  useState,
-  useEffect,
-  useContext,
-  useCallback,
-  useMemo,
-  useRef,
-} from 'react';
+import React, {useState, useEffect, useContext, useCallback} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
 import Swiper from 'react-native-swiper';
 import Sound from 'react-native-sound';
@@ -23,21 +16,20 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
 import BottomSheet from '../../components/BottomSheet';
 import HapticFeedback from 'react-native-haptic-feedback';
-import Toast from 'react-native-toast-message';
 import {Context} from '../../context/Context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {mixpanel} from '../../../mixpanel';
-import {firebase} from '@react-native-firebase/firestore';
 import messaging from '@react-native-firebase/messaging';
 import ShareSheet from '../../components/ShareSheet';
 import axios from 'axios';
 import LoadingPost from '../../components/LoadingPost';
+import appCheck from '@react-native-firebase/app-check';
+import DeviceInfo from 'react-native-device-info';
 
 const HomeScreen = () => {
   Sound.setCategory('Playback');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentTrack, setCurrentTrack] = useState(null);
-  const [likedTracks, setLikedTracks] = useState([]);
   const [showShareSheet, setShowShareSheet] = useState(false);
   const [initialFeed, setInitialFeed] = useState(true);
   const [startTime, setStartTime] = useState(new Date());
@@ -91,7 +83,6 @@ const HomeScreen = () => {
           authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
           authStatus === messaging.AuthorizationStatus.PROVISIONAL;
         if (enabled) {
-          console.log('Authorization status:', authStatus);
           messaging()
             .getToken()
             .then(token => {
@@ -118,25 +109,40 @@ const HomeScreen = () => {
 
   useEffect(() => {
     if (UID) {
-      if (isNewUser) {
-        console.log('this is a new user');
-        return;
-      } else {
-        console.log(UID);
-        axios
-          .get(`http://167.99.22.22/recommendation/user?userId=${UID}`)
-          .then(resp => {
-            console.log(resp);
-            if (resp.data.data.length > 0) {
-              setFeed(resp.data.data);
-            }
-          })
-          .catch(e => {
-            console.log(e);
-          });
+      async function fetchFeed() {
+        if (isNewUser) {
+          console.log('this is a new user');
+          return;
+        } else {
+          console.log(UID);
+          let isEmulator = await DeviceInfo.isEmulator();
+          let authToken;
+          if (!isEmulator) {
+            authToken = await appCheck().getToken();
+          }
+          axios
+            .get(`http://167.99.22.22/recommendation/user?userId=${UID}`, {
+              headers: {
+                accept: 'application/json',
+                Authorization: isEmulator
+                  ? 'Bearer ' + '934FD9FF-79D1-4E80-BD7D-D180E8529B5A'
+                  : 'Bearer ' + authToken,
+              },
+            })
+            .then(resp => {
+              console.log(resp);
+              if (resp.data.data.length > 0) {
+                setFeed(resp.data.data);
+              }
+            })
+            .catch(e => {
+              console.log(e);
+            });
+        }
       }
+      fetchFeed();
     } else {
-      console.log('UID is not present');
+      return;
     }
   }, [UID]);
 
@@ -157,18 +163,26 @@ const HomeScreen = () => {
   }, [feed, isOnHomeScreen]);
 
   useEffect(() => {
-    console.log(currentIndex);
     if (feed && isOnHomeScreen) {
       if (currentIndex == Math.floor(feed.length / 2)) {
         console.log('halfway!');
-        axios
-          .get(`http://167.99.22.22/recommendation/user?userId=${UID}`)
+        appCheck()
+          .getToken()
           .then(resp => {
-            console.log(resp);
-            setFeed(current => [...current, ...resp.data.data]);
-          })
-          .catch(e => {
-            console.log(e);
+            axios
+              .get(`http://167.99.22.22/recommendation/user?userId=${UID}`, {
+                headers: {
+                  accept: 'application/json',
+                  Authorization: 'Bearer ' + resp.token,
+                },
+              })
+              .then(response => {
+                console.log(response);
+                setFeed(current => [...current, ...response.data.data]);
+              })
+              .catch(e => {
+                console.log(e);
+              });
           });
       }
     }
@@ -218,10 +232,6 @@ const HomeScreen = () => {
       });
   }
 
-  useEffect(() => {
-    console.log(startTime);
-  }, [startTime]);
-
   let playing = true;
   function pauseHandler() {
     if (playing) {
@@ -233,8 +243,13 @@ const HomeScreen = () => {
     }
   }
 
-  function likeHandler(post) {
+  async function likeHandler(post) {
     HapticFeedback.trigger('impactLight');
+    let isEmulator = await DeviceInfo.isEmulator();
+    let authToken;
+    if (!isEmulator) {
+      authToken = await appCheck().getToken();
+    }
     if (hasSpotify) {
       if (post.liked) {
         let updatedFeed = feed.map(track => {
@@ -250,6 +265,14 @@ const HomeScreen = () => {
         axios
           .get(
             `http://167.99.22.22/update/remove-track?userId=${UID}&trackId=${feed[currentIndex].id}`,
+            {
+              headers: {
+                accept: 'application/json',
+                Authorization: isEmulator
+                  ? 'Bearer ' + '934FD9FF-79D1-4E80-BD7D-D180E8529B5A'
+                  : 'Bearer ' + authToken.token,
+              },
+            },
           )
           .then(resp => {
             console.log(resp);
@@ -272,6 +295,14 @@ const HomeScreen = () => {
         axios
           .get(
             `http://167.99.22.22/update/save-track?userId=${UID}&trackId=${feed[currentIndex].id}`,
+            {
+              headers: {
+                accept: 'application/json',
+                Authorization: isEmulator
+                  ? 'Bearer ' + '934FD9FF-79D1-4E80-BD7D-D180E8529B5A'
+                  : 'Bearer ' + authToken.token,
+              },
+            },
           )
           .then(resp => {
             console.log(resp);

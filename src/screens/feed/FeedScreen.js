@@ -13,6 +13,7 @@ import {FlatList} from 'react-native-gesture-handler';
 import FastImage from 'react-native-fast-image';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useFocusEffect} from '@react-navigation/native';
+import moment from 'moment';
 
 const FeedScreen = ({navigation}) => {
   const {UID} = useContext(Context);
@@ -27,9 +28,12 @@ const FeedScreen = ({navigation}) => {
         .doc(UID)
         .onSnapshot(documentSnapshot => {
           setMyUser(documentSnapshot.data());
-          if (documentSnapshot.data().followingList.length > 0) {
-            setFollowingList(documentSnapshot.data().followingList);
-          }
+          console.log('changes');
+          let followingArr = [];
+          followingArr.push(...documentSnapshot?.data()?.followingList);
+          followingArr.push(UID);
+          console.log(followingArr);
+          setFollowingList(followingArr);
         });
 
       // Stop listening for updates when no longer required
@@ -45,14 +49,15 @@ const FeedScreen = ({navigation}) => {
       for (let i = 0; i < followingList.length; i += 10) {
         console.log(i);
         await firestore()
-          .collection('likes')
-          .where('likedBy', 'in', followingList.slice(i, i + 10))
+          .collection('feed')
+          .where('user', 'in', followingList.slice(i, i + 10))
+          .orderBy('date', 'desc')
           .get()
           .then(resp => {
             if (resp.empty) {
               return;
             } else {
-              // console.log(resp);
+              console.log(resp);
               resp.docs.forEach(doc => {
                 console.log(doc);
                 likesArr.push(doc.data());
@@ -60,20 +65,25 @@ const FeedScreen = ({navigation}) => {
             }
           });
       }
-      setLikes(likesArr);
+      if (likesArr.length > 0) {
+        setLikes(likesArr);
+      } else {
+        setLikes(null);
+      }
     }
   }
 
   useEffect(() => {
-    console.log(likes);
-  }, [likes]);
+    if (followingList) {
+      fetchDocs();
+    }
+  }, [followingList]);
 
   useFocusEffect(
     useCallback(() => {
       // do something
       fetchDocs();
       return () => {
-        // if a user leaves the homescreen while feed is loading, don't play sound
         console.log('left screen');
       };
     }, [followingList]),
@@ -83,7 +93,17 @@ const FeedScreen = ({navigation}) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.feedContainer}>
         <Text style={styles.feedText}>Feed</Text>
+        <TouchableOpacity
+          style={styles.addHeader}
+          onPress={() =>
+            navigation.navigate('AddFriends', {
+              myUser: myUser,
+            })
+          }>
+          <Ionicons name={'person-add-outline'} color={'white'} size={28} />
+        </TouchableOpacity>
       </View>
+
       {followingList ? (
         <>
           {likes ? (
@@ -97,7 +117,7 @@ const FeedScreen = ({navigation}) => {
                         style={styles.userContainer}
                         onPress={() =>
                           navigation.navigate('ViewUserScreen', {
-                            profileID: item.likedBy,
+                            profileID: item.user,
                             UID: UID,
                             prevRoute: 'FeedScreen',
                             myUser: myUser,
@@ -121,6 +141,10 @@ const FeedScreen = ({navigation}) => {
                           </Text>
                           <Text style={styles.likeText}>liked a track</Text>
                         </View>
+                        <Text style={styles.dot}>•</Text>
+                        <Text style={styles.date}>
+                          {moment(item.date.toDate()).fromNow()}
+                        </Text>
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={styles.songContainer}
@@ -177,7 +201,7 @@ const FeedScreen = ({navigation}) => {
                     myUser: myUser,
                   });
                 }}>
-                <Text style={styles.addText}>add more friends</Text>
+                <Text style={styles.addText}>add friends</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -219,14 +243,18 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginTop: '6%',
     marginBottom: '4%',
-
     width: '90%',
   },
   feedText: {
     fontFamily: 'Inter-Bold',
     color: 'white',
-    fontSize: 18,
+    fontSize: 20,
     alignSelf: 'center',
+  },
+  addHeader: {
+    marginLeft: 100,
+    position: 'absolute',
+    right: 0,
   },
   flatListContainer: {
     flex: 1,
@@ -257,6 +285,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   likeText: {
+    color: Colors.greyBtn,
+    fontFamily: 'Inter-Medium',
+    marginLeft: 5,
+    fontSize: 14,
+  },
+  dot: {
+    color: Colors.greyBtn,
+    fontFamily: 'Inter-Medium',
+    marginLeft: 5,
+    fontSize: 14,
+  },
+  date: {
     color: Colors.greyBtn,
     fontFamily: 'Inter-Medium',
     marginLeft: 5,

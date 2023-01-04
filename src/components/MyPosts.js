@@ -16,24 +16,45 @@ import {spotConfig} from '../../SpotifyConfig';
 import {authorize} from 'react-native-app-auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import appCheck from '@react-native-firebase/app-check';
+import DeviceInfo from 'react-native-device-info';
+
 const MyPosts = props => {
   const {UID, navigation} = props;
   const {hasSpotify, setHasSpotify} = useContext(Context);
   const [userPosts, setUserPosts] = useState(null);
 
-  useEffect(() => {
-    if (UID) {
-      axios
-        .get(`http://167.99.22.22/fetch/library?userId=${UID}&viewerId=${UID}`)
-        .then(resp => {
-          console.log(resp);
-          setUserPosts(resp.data.data);
-        })
-        .catch(e => {
-          console.log(e);
-        });
+  async function getMyPosts() {
+    let isEmulator = await DeviceInfo.isEmulator();
+    let authToken;
+    if (!isEmulator) {
+      authToken = await appCheck().getToken();
     }
-  }, [UID]);
+    axios
+      .get(`http://167.99.22.22/fetch/library?userId=${UID}&viewerId=${UID}`, {
+        headers: {
+          accept: 'application/json',
+          Authorization: isEmulator
+            ? 'Bearer ' + '934FD9FF-79D1-4E80-BD7D-D180E8529B5A'
+            : 'Bearer ' + authToken.token,
+        },
+      })
+      .then(resp => {
+        console.log(resp);
+        setUserPosts(resp.data.data);
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  }
+
+  useEffect(() => {
+    if (UID && hasSpotify) {
+      getMyPosts();
+    } else if (!hasSpotify) {
+      setUserPosts(null);
+    }
+  }, [UID, hasSpotify]);
 
   const connectSpotify = async () => {
     if (UID) {
@@ -57,6 +78,7 @@ const MyPosts = props => {
             .get(`http://167.99.22.22/update/top-tracks?userId=${UID}`)
             .then(() => {
               console.log('finished getting spotify library');
+              getMyPosts();
             })
             .catch(e => {
               console.log(e);
@@ -125,6 +147,9 @@ const MyPosts = props => {
             ) : (
               <>
                 <View style={styles.loadingContainer}>
+                  <Text style={styles.connectText}>
+                    Connect with Spotify to add your top songs to your profile.
+                  </Text>
                   <TouchableOpacity
                     style={styles.listenOnSpotifyBtn}
                     onPress={connectSpotify}>
@@ -190,6 +215,15 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     fontSize: 14,
     marginTop: '5%',
+  },
+  connectText: {
+    color: Colors.greyOut,
+    fontFamily: 'Inter-Medium',
+    fontSize: 15,
+    marginBottom: '5%',
+    textAlign: 'center',
+    lineHeight: 22,
+    width: 300,
   },
   listenOnSpotifyBtn: {
     paddingHorizontal: 25,

@@ -3,7 +3,6 @@ import {
   Text,
   View,
   SafeAreaView,
-  Image,
   TouchableOpacity,
 } from 'react-native';
 import React, {useContext} from 'react';
@@ -12,7 +11,7 @@ import {Context} from '../../context/Context';
 import HapticFeedback from 'react-native-haptic-feedback';
 import FastImage from 'react-native-fast-image';
 
-const SwipeRightScreen = ({navigation}) => {
+const SwipeRightScreen = () => {
   const {setUserLogin} = useContext(Context);
   return (
     <SafeAreaView style={styles.container}>
