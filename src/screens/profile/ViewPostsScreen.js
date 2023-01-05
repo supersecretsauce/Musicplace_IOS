@@ -25,10 +25,10 @@ import {PanGestureHandler} from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedGestureHandler,
   runOnJS,
-  runOnUI,
 } from 'react-native-reanimated';
 import appCheck from '@react-native-firebase/app-check';
 import DeviceInfo from 'react-native-device-info';
+import {simKey} from '../../../simKey';
 
 const ViewPostsScreen = ({route, navigation}) => {
   Sound.setCategory('Playback');
@@ -114,7 +114,7 @@ const ViewPostsScreen = ({route, navigation}) => {
                 headers: {
                   accept: 'application/json',
                   Authorization: isEmulator
-                    ? 'Bearer ' + '934FD9FF-79D1-4E80-BD7D-D180E8529B5A'
+                    ? 'Bearer ' + simKey
                     : 'Bearer ' + authToken,
                 },
               },
@@ -182,7 +182,7 @@ const ViewPostsScreen = ({route, navigation}) => {
               headers: {
                 accept: 'application/json',
                 Authorization: isEmulator
-                  ? 'Bearer ' + '934FD9FF-79D1-4E80-BD7D-D180E8529B5A'
+                  ? 'Bearer ' + simKey
                   : 'Bearer ' + authToken.token,
               },
             },
@@ -215,7 +215,7 @@ const ViewPostsScreen = ({route, navigation}) => {
               headers: {
                 accept: 'application/json',
                 Authorization: isEmulator
-                  ? 'Bearer ' + '934FD9FF-79D1-4E80-BD7D-D180E8529B5A'
+                  ? 'Bearer ' + simKey
                   : 'Bearer ' + authToken.token,
               },
             },

@@ -7,11 +7,11 @@ import {
   FlatList,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import firestore from '@react-native-firebase/firestore';
 import Colors from '../assets/utilities/Colors';
 import axios from 'axios';
 import appCheck from '@react-native-firebase/app-check';
 import DeviceInfo from 'react-native-device-info';
+import {simKey} from '../../simKey';
 
 const UserPosts = props => {
   const {profileID, UID, navigation} = props;
@@ -32,7 +32,7 @@ const UserPosts = props => {
               headers: {
                 accept: 'application/json',
                 Authorization: isEmulator
-                  ? 'Bearer ' + '934FD9FF-79D1-4E80-BD7D-D180E8529B5A'
+                  ? 'Bearer ' + simKey
                   : 'Bearer ' + authToken.token,
               },
             },
