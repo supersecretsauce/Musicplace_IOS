@@ -7,12 +7,14 @@ import {
   FlatList,
   Image,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
+import {Context} from '../../context/Context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../assets/utilities/Colors';
 import firestore from '@react-native-firebase/firestore';
 
 const ViewAllActivityScreen = ({navigation, route}) => {
+  const {invitesRemaining, setInvitesRemaining} = useContext(Context);
   const {contacts, UID, myUser} = route.params;
   const [activity, setActivity] = useState(null);
 
@@ -30,7 +32,6 @@ const ViewAllActivityScreen = ({navigation, route}) => {
           });
           docArr.unshift({
             top: 'Musicplace Team',
-            bottom: 'Invite your friends on to Musicplace.',
             nav: 'InviteContactsScreen',
             from: 'musicplace',
           });
@@ -113,7 +114,11 @@ const ViewAllActivityScreen = ({navigation, route}) => {
                         <View style={styles.musicplaceLogo} />
                         <View style={styles.itemMiddle}>
                           <Text style={styles.topText}>{item.top}</Text>
-                          <Text style={styles.bottomText}>{item.bottom}</Text>
+                          <Text style={styles.bottomText}>
+                            You have {invitesRemaining}{' '}
+                            {invitesRemaining === 1 ? 'invite' : 'invites'}{' '}
+                            remaining.
+                          </Text>
                         </View>
                       </View>
                       <View>
