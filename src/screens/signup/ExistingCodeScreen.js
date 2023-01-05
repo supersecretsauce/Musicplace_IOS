@@ -15,6 +15,7 @@ import HapticFeedback from 'react-native-haptic-feedback';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
+import Toast from 'react-native-toast-message';
 
 const ExistingCodeScreen = ({navigation}) => {
   const [showEnterDone, setShowEnterDone] = useState(false);
@@ -68,6 +69,12 @@ const ExistingCodeScreen = ({navigation}) => {
       }
     } catch (error) {
       console.log(error);
+      Toast.show({
+        type: 'error',
+        text1: 'This code is not valid',
+        text2: 'Make sure you entered the correct number.',
+        visibilityTime: 3000,
+      });
       return;
     }
   };
