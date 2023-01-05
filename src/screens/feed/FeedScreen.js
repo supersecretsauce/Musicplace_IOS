@@ -110,6 +110,7 @@ const FeedScreen = ({navigation}) => {
             <View style={styles.flatListContainer}>
               <FlatList
                 data={likes}
+                showsVerticalScrollIndicator={false}
                 renderItem={({item, index}) => {
                   return (
                     <View key={index} style={styles.itemContainer}>
