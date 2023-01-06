@@ -12,4 +12,4 @@ cd ../
 
 npm start
 
-npm run ios
+in a new terminal in vscode -> npm run ios
