@@ -25,6 +25,7 @@ import axios from 'axios';
 import LoadingPost from '../../components/LoadingPost';
 import appCheck from '@react-native-firebase/app-check';
 import DeviceInfo from 'react-native-device-info';
+import {simKey} from '../../../simKey';
 
 const HomeScreen = () => {
   Sound.setCategory('Playback');
@@ -125,7 +126,7 @@ const HomeScreen = () => {
               headers: {
                 accept: 'application/json',
                 Authorization: isEmulator
-                  ? 'Bearer ' + '934FD9FF-79D1-4E80-BD7D-D180E8529B5A'
+                  ? 'Bearer ' + simKey
                   : 'Bearer ' + authToken,
               },
             })
@@ -269,7 +270,7 @@ const HomeScreen = () => {
               headers: {
                 accept: 'application/json',
                 Authorization: isEmulator
-                  ? 'Bearer ' + '934FD9FF-79D1-4E80-BD7D-D180E8529B5A'
+                  ? 'Bearer ' + simKey
                   : 'Bearer ' + authToken.token,
               },
             },
@@ -299,7 +300,7 @@ const HomeScreen = () => {
               headers: {
                 accept: 'application/json',
                 Authorization: isEmulator
-                  ? 'Bearer ' + '934FD9FF-79D1-4E80-BD7D-D180E8529B5A'
+                  ? 'Bearer ' + simKey
                   : 'Bearer ' + authToken.token,
               },
             },

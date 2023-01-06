@@ -5,13 +5,14 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import firestore from '@react-native-firebase/firestore';
 import Colors from '../assets/utilities/Colors';
 import axios from 'axios';
 import appCheck from '@react-native-firebase/app-check';
 import DeviceInfo from 'react-native-device-info';
+import {simKey} from '../../simKey';
 
 const UserPosts = props => {
   const {profileID, UID, navigation} = props;
@@ -32,7 +33,7 @@ const UserPosts = props => {
               headers: {
                 accept: 'application/json',
                 Authorization: isEmulator
-                  ? 'Bearer ' + '934FD9FF-79D1-4E80-BD7D-D180E8529B5A'
+                  ? 'Bearer ' + simKey
                   : 'Bearer ' + authToken.token,
               },
             },
@@ -63,7 +64,7 @@ const UserPosts = props => {
                 renderItem={({item, index}) => {
                   return (
                     <View style={styles.postContainer} key={index}>
-                      <TouchableOpacity
+                      <TouchableWithoutFeedback
                         onPress={() => {
                           navigation.navigate('ViewPostsScreen', {
                             //making the song an array so it works with swiper package
@@ -71,25 +72,27 @@ const UserPosts = props => {
                             UID: UID,
                           });
                         }}>
-                        <Image
-                          style={styles.songPhoto}
-                          source={{
-                            uri: item.songPhoto,
-                          }}
-                        />
-                        <Text numberOfLines={1} style={styles.songName}>
-                          {item.songName}
-                        </Text>
                         <View>
-                          <Text numberOfLines={1} style={styles.artistName}>
-                            {item.artists
-                              ?.map(artist => {
-                                return artist.name;
-                              })
-                              .join(', ')}
+                          <Image
+                            style={styles.songPhoto}
+                            source={{
+                              uri: item.songPhoto,
+                            }}
+                          />
+                          <Text numberOfLines={1} style={styles.songName}>
+                            {item.songName}
                           </Text>
+                          <View>
+                            <Text numberOfLines={1} style={styles.artistName}>
+                              {item.artists
+                                ?.map(artist => {
+                                  return artist.name;
+                                })
+                                .join(', ')}
+                            </Text>
+                          </View>
                         </View>
-                      </TouchableOpacity>
+                      </TouchableWithoutFeedback>
                     </View>
                   );
                 }}
@@ -108,7 +111,7 @@ export default UserPosts;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 215,
+    marginTop: 211,
   },
   trackScrollContainer: {
     justifyContent: 'center',
@@ -116,9 +119,9 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   postContainer: {
-    padding: 16,
+    paddingHorizontal: '5%',
+    paddingVertical: '4%',
     marginTop: '1%',
-    paddingHorizontal: '6%',
   },
   songPhoto: {
     height: 150,

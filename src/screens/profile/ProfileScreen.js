@@ -318,9 +318,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     top: 325,
     width: '88%',
-    borderBottomColor: 'grey',
+    borderBottomColor: Colors.greyBtn,
     borderBottomWidth: 1,
-    paddingBottom: 10,
+    paddingBottom: 13,
+    // backgroundColor: 'red',
   },
   iconContainer: {
     flexDirection: 'row',
@@ -336,7 +337,7 @@ const styles = StyleSheet.create({
     left: 6,
   },
   editProfileContainer: {
-    borderColor: Colors.greyOut,
+    borderColor: Colors.greyBtn,
     borderWidth: 0.5,
     paddingVertical: 6,
     paddingHorizontal: 24,

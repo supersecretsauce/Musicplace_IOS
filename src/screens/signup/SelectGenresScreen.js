@@ -16,6 +16,7 @@ import HapticFeedback from 'react-native-haptic-feedback';
 import {Context} from '../../context/Context';
 import appCheck from '@react-native-firebase/app-check';
 import DeviceInfo from 'react-native-device-info';
+import {simKey} from '../../../simKey';
 
 const SelectGenresScreen = ({navigation, route}) => {
   const {UID} = route.params;
@@ -51,7 +52,7 @@ const SelectGenresScreen = ({navigation, route}) => {
           headers: {
             accept: 'application/json',
             Authorization: isEmulator
-              ? 'Bearer ' + '934FD9FF-79D1-4E80-BD7D-D180E8529B5A'
+              ? 'Bearer ' + simKey
               : 'Bearer ' + authToken.token,
           },
         })
@@ -100,7 +101,7 @@ const SelectGenresScreen = ({navigation, route}) => {
             headers: {
               accept: 'application/json',
               Authorization: isEmulator
-                ? 'Bearer ' + '934FD9FF-79D1-4E80-BD7D-D180E8529B5A'
+                ? 'Bearer ' + simKey
                 : 'Bearer ' + authToken.token,
             },
           },

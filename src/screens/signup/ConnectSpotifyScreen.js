@@ -20,7 +20,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {spotConfig} from '../../../SpotifyConfig';
 import appCheck from '@react-native-firebase/app-check';
 import DeviceInfo from 'react-native-device-info';
-
+import {simKey} from '../../../simKey';
 const ConnectSpotifyScreen = ({navigation}) => {
   const userInfo = firebase.auth().currentUser;
   const {setFeed} = useContext(Context);
@@ -71,8 +71,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
                     {
                       headers: {
                         accept: 'application/json',
-                        Authorization:
-                          'Bearer ' + '934FD9FF-79D1-4E80-BD7D-D180E8529B5A',
+                        Authorization: 'Bearer ' + simKey,
                       },
                     },
                   )
