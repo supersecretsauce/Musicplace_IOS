@@ -1,5 +1,5 @@
 import {StyleSheet, useWindowDimensions} from 'react-native';
-import React, {useState} from 'react';
+import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import ViewPostsScreen from '../screens/profile/ViewPostsScreen';
 import ProfileDrawerRoute from './ProfileDrawerRoute';

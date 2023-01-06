@@ -11,9 +11,11 @@ const ProfileDrawerRoute = () => {
       screenOptions={{
         headerShown: false,
         drawerPosition: 'right',
+        drawerStyle: {
+          backgroundColor: 'black',
+        },
       }}>
       <Drawer.Screen name="ProfileScreen" component={ProfileScreen} />
-      {/* <Drawer.Screen name="Article" component={Article} /> */}
     </Drawer.Navigator>
   );
 };
