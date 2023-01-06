@@ -21,7 +21,7 @@ import {withSpring} from 'react-native-reanimated';
 const EditProfileSheet = props => {
   const {
     UID,
-    top2,
+    editTopValue,
     setPFP,
     PFP,
     header,
@@ -73,7 +73,7 @@ const EditProfileSheet = props => {
   };
 
   const saveChanges = () => {
-    top2.value = withSpring(dimensions.height, SPRING_CONFIG);
+    editTopValue.value = withSpring(dimensions.height, SPRING_CONFIG);
 
     if (localDisplayName) {
       firestore()
@@ -158,7 +158,10 @@ const EditProfileSheet = props => {
         <View style={styles.container}>
           <TouchableOpacity
             onPress={() =>
-              (top2.value = withSpring(dimensions.height, SPRING_CONFIG))
+              (editTopValue.value = withSpring(
+                dimensions.height,
+                SPRING_CONFIG,
+              ))
             }>
             <Text style={styles.cancelText}>Cancel</Text>
           </TouchableOpacity>
