@@ -5,7 +5,8 @@ import {
   TouchableOpacity,
   useWindowDimensions,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
+import {DrawerContext} from '../../context/DrawerContext';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../assets/utilities/Colors';
 import firestore from '@react-native-firebase/firestore';
@@ -24,6 +25,7 @@ import {SPRING_CONFIG} from '../../assets/utilities/reanimated-2';
 import FastImage from 'react-native-fast-image';
 
 const ProfileScreen = ({navigation}) => {
+  const {editTopValue} = useContext(DrawerContext);
   const [userProfile, setUserProfile] = useState();
   const [username, setUsername] = useState();
   const [UID, setUID] = useState();
@@ -33,7 +35,7 @@ const ProfileScreen = ({navigation}) => {
   const [displayName, setDisplayName] = useState(null);
   const dimensions = useWindowDimensions();
   const top = useSharedValue(dimensions.height);
-  const top2 = useSharedValue(dimensions.height);
+  // const top2 = useSharedValue(dimensions.height);
   const style = useAnimatedStyle(() => {
     return {
       top: withSpring(top.value, SPRING_CONFIG),
@@ -41,7 +43,7 @@ const ProfileScreen = ({navigation}) => {
   });
   const style2 = useAnimatedStyle(() => {
     return {
-      top: withSpring(top2.value, SPRING_CONFIG),
+      top: withSpring(editTopValue.value, SPRING_CONFIG),
     };
   });
 
@@ -100,22 +102,22 @@ const ProfileScreen = ({navigation}) => {
 
   const gestureHandler2 = useAnimatedGestureHandler({
     onStart(_, context) {
-      context.startTop = top2.value;
+      context.startTop = editTopValue.value;
     },
     onActive(event, context) {
-      top2.value = context.startTop + event.translationY;
+      editTopValue.value = context.startTop + event.translationY;
     },
     onEnd() {
-      if (top2.value > dimensions.height / 10 + 50) {
-        top2.value = dimensions.height;
+      if (editTopValue.value > dimensions.height / 10 + 50) {
+        editTopValue.value = dimensions.height;
       } else {
-        top2.value = dimensions.height / 10;
+        editTopValue.value = dimensions.height / 10;
       }
     },
   });
 
   function handleSpring2() {
-    top2.value = withSpring(dimensions.height / 10, SPRING_CONFIG);
+    editTopValue.value = withSpring(dimensions.height / 10, SPRING_CONFIG);
   }
 
   return (
@@ -196,7 +198,7 @@ const ProfileScreen = ({navigation}) => {
                 style2,
               ]}>
               <EditProfileSheet
-                top2={top2}
+                editTopValue={editTopValue}
                 userProfile={userProfile}
                 UID={UID}
                 setPFP={setPFP}
