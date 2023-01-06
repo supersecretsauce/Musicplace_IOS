@@ -189,7 +189,7 @@ const FeedScreen = ({navigation}) => {
                               <Text numberOfLines={1} style={styles.songName}>
                                 {item.songName}
                               </Text>
-                              <Text style={styles.artists}>
+                              <Text numberOfLines={1} style={styles.artists}>
                                 {item.artists
                                   .map(artist => {
                                     return artist.name;
