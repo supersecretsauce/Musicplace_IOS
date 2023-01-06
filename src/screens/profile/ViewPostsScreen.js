@@ -159,81 +159,97 @@ const ViewPostsScreen = ({route, navigation}) => {
     if (!isEmulator) {
       authToken = await appCheck().getToken();
     }
-    if (hasSpotify) {
-      if (isLiked) {
-        setIsLiked(false);
-        HapticFeedback.trigger('impactLight');
-        let filteredTrackInfo = trackInfo.map(track => {
-          track.liked = false;
-          return track;
+    if (isLiked) {
+      setIsLiked(false);
+      HapticFeedback.trigger('impactLight');
+      let filteredTrackInfo = trackInfo.map(track => {
+        track.liked = false;
+        return track;
+      });
+      console.log(filteredTrackInfo);
+      setTrackInfo(filteredTrackInfo);
+
+      axios
+        .get(
+          `http://167.99.22.22/update/remove-track?userId=${UID}&trackId=${trackInfo[0].id}`,
+          {
+            headers: {
+              accept: 'application/json',
+              Authorization: isEmulator
+                ? 'Bearer ' + simKey
+                : 'Bearer ' + authToken.token,
+            },
+          },
+        )
+        .then(resp => {
+          console.log(resp);
+        })
+        .catch(e => {
+          console.log(e);
         });
-        console.log(filteredTrackInfo);
-        setTrackInfo(filteredTrackInfo);
+      if (hasSpotify) {
         Toast.show({
           type: 'success',
           text1: 'Removed from liked songs',
-          text2: 'Well that was quick.',
+          text2: "Don't believe us? Check your spotify library.",
           visibilityTime: 2000,
         });
-        axios
-          .get(
-            `http://167.99.22.22/update/remove-track?userId=${UID}&trackId=${trackInfo[0].id}`,
-            {
-              headers: {
-                accept: 'application/json',
-                Authorization: isEmulator
-                  ? 'Bearer ' + simKey
-                  : 'Bearer ' + authToken.token,
-              },
-            },
-          )
-          .then(resp => {
-            console.log(resp);
-          })
-          .catch(e => {
-            console.log(e);
-          });
       } else {
-        setIsLiked(true);
-        HapticFeedback.trigger('impactHeavy');
-        let filteredTrackInfo = trackInfo.map(track => {
-          track.liked = true;
-          return track;
+        Toast.show({
+          type: 'success',
+          text1: 'Removed from liked songs',
+          text2: "Don't believe us? Check your profile.",
+          visibilityTime: 2000,
         });
-        console.log(filteredTrackInfo);
-        setTrackInfo(filteredTrackInfo);
+      }
+    } else {
+      setIsLiked(true);
+      HapticFeedback.trigger('impactHeavy');
+      let filteredTrackInfo = trackInfo.map(track => {
+        track.liked = true;
+        return track;
+      });
+      console.log(filteredTrackInfo);
+      setTrackInfo(filteredTrackInfo);
+      Toast.show({
+        type: 'success',
+        text1: 'Added to liked songs',
+        text2: "Don't believe us? Check your spotify library.",
+        visibilityTime: 2000,
+      });
+      axios
+        .get(
+          `http://167.99.22.22/update/save-track?userId=${UID}&trackId=${trackInfo[0].id}`,
+          {
+            headers: {
+              accept: 'application/json',
+              Authorization: isEmulator
+                ? 'Bearer ' + simKey
+                : 'Bearer ' + authToken.token,
+            },
+          },
+        )
+        .then(resp => {
+          console.log(resp);
+        })
+        .catch(e => {
+          console.log(e);
+        });
+      if (hasSpotify) {
         Toast.show({
           type: 'success',
           text1: 'Added to liked songs',
           text2: "Don't believe us? Check your spotify library.",
           visibilityTime: 2000,
         });
-        axios
-          .get(
-            `http://167.99.22.22/update/save-track?userId=${UID}&trackId=${trackInfo[0].id}`,
-            {
-              headers: {
-                accept: 'application/json',
-                Authorization: isEmulator
-                  ? 'Bearer ' + simKey
-                  : 'Bearer ' + authToken.token,
-              },
-            },
-          )
-          .then(resp => {
-            console.log(resp);
-          })
-          .catch(e => {
-            console.log(e);
-          });
+      } else {
+        Toast.show({
+          type: 'success',
+          text1: 'Added to liked songs',
+          text2: "Don't believe us? Check your profile.",
+          visibilityTime: 2000,
+        });
       }
-    } else {
-      Toast.show({
-        type: 'info',
-        text1: 'Connect to Spotify',
-        text2: 'Connect to Spotify to save this track to your library.',
-        visibilityTime: 2000,
-      });
     }
   }
 
