@@ -1,9 +1,8 @@
 import {StyleSheet} from 'react-native';
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import ProfileScreen from '../screens/profile/ProfileScreen';
 import ViewPostsScreen from '../screens/profile/ViewPostsScreen';
-
+import ProfileDrawerRoute from './ProfileDrawerRoute';
 const ProfileStackScreen = () => {
   const ProfileStack = createNativeStackNavigator();
   const config = {
@@ -20,7 +19,10 @@ const ProfileStackScreen = () => {
 
   return (
     <ProfileStack.Navigator screenOptions={{headerShown: false}}>
-      <ProfileStack.Screen name="ProfileScreen" component={ProfileScreen} />
+      <ProfileStack.Screen
+        name="ProfileDrawer"
+        component={ProfileDrawerRoute}
+      />
       <ProfileStack.Screen
         name="ViewPostsScreen"
         component={ViewPostsScreen}
