@@ -140,13 +140,13 @@ const ProfileScreen = ({navigation}) => {
             </View>
           </View>
           <View style={styles.userContentContainer}>
+            <TouchableOpacity activeOpacity={1} style={styles.likesContainer}>
+              <Text style={styles.likes}>Likes</Text>
+            </TouchableOpacity>
             <TouchableOpacity
               activeOpacity={1}
               style={styles.mostPlayedContainer}>
               <Text style={styles.mostPlayed}>Most Played</Text>
-            </TouchableOpacity>
-            <TouchableOpacity activeOpacity={1} style={styles.likesContainer}>
-              <Text style={styles.likes}>Likes</Text>
             </TouchableOpacity>
           </View>
           {/* <MyPosts UID={UID} navigation={navigation} /> */}
@@ -279,7 +279,6 @@ const styles = StyleSheet.create({
   },
   mostPlayedContainer: {
     paddingVertical: 13,
-
     // backgroundColor: 'blue',
     width: '45%',
     display: 'flex',
@@ -290,7 +289,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontFamily: 'Inter-Medium',
-    marginLeft: 5,
+    // marginLeft: 5,
   },
   likesContainer: {
     // backgroundColor: 'red',
@@ -304,7 +303,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontFamily: 'Inter-Medium',
-    marginLeft: '5%',
+    // marginLeft: '5%',
   },
   helpIcon: {
     left: 6,

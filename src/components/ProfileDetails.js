@@ -7,8 +7,15 @@ import {
   TouchableWithoutFeedback,
   Image,
 } from 'react-native';
-import React, {useEffect, useContext, useState} from 'react';
+import React, {
+  useEffect,
+  useContext,
+  useState,
+  useRef,
+  useCallback,
+} from 'react';
 import {Context} from '../context/Context';
+import {useFocusEffect} from '@react-navigation/native';
 import Swiper from 'react-native-swiper';
 import axios from 'axios';
 import DeviceInfo from 'react-native-device-info';
@@ -19,10 +26,36 @@ import Colors from '../assets/utilities/Colors';
 const ProfileDetails = props => {
   const {UID, navigation} = props;
   const {hasSpotify, setHasSpotify} = useContext(Context);
+  const [topSongs, setTopSongs] = useState([]);
+  const [likes, setLikes] = useState([]);
   const [allData, setAllData] = useState([]);
+  const swiperRef = useRef();
+
+  useEffect(() => {
+    if (!UID) {
+      return;
+    }
+    getTopSongs();
+    const subscriber = firestore()
+      .collection('feed')
+      .where('type', '==', 'like')
+      .where('user', '==', UID)
+      .onSnapshot(resp => {
+        console.log(resp);
+        // setLikes(documentSnapshot.docs);
+        let likesArr = resp.docs.sort((z, a) => {
+          return a.data().date - z.data().date;
+        });
+        setLikes(likesArr);
+      });
+
+    return () => subscriber();
+  }, [UID]);
 
   async function getTopSongs() {
-    setAllData([]);
+    if (!UID) {
+      return;
+    }
     let isEmulator = await DeviceInfo.isEmulator();
     let authToken;
     if (!isEmulator) {
@@ -39,19 +72,7 @@ const ProfileDetails = props => {
       })
       .then(resp => {
         console.log(resp);
-        setAllData(current => [...current, resp.data.data]);
-        firestore()
-          .collection('feed')
-          .where('type', '==', 'like')
-          .where('user', '==', UID)
-          .get()
-          .then(resp => {
-            console.log('likes', resp);
-            setAllData(current => [...current, resp.docs]);
-          })
-          .catch(e => {
-            console.log(e);
-          });
+        setTopSongs(resp.data.data);
       })
       .catch(e => {
         console.log(e);
@@ -59,36 +80,57 @@ const ProfileDetails = props => {
   }
 
   useEffect(() => {
-    if (UID && hasSpotify) {
-      getTopSongs();
-    } else if (!hasSpotify) {
-      //   setUserPosts(null);
+    if (topSongs.length > 0 && likes.length > 0) {
+      setAllData([likes, topSongs]);
     }
-  }, [UID, hasSpotify]);
+  }, [topSongs, likes]);
 
   useEffect(() => {
     console.log(allData);
   }, [allData]);
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     // do something
+  //     getTopSongs();
+  //     return () => {
+  //       console.log('left screen');
+  //     };
+  //   }, [UID]),
+  // );
   return (
     <View style={styles.container}>
       {allData.length > 1 ? (
-        <Swiper showsPagination={false} showsButtons={false} loop={false}>
+        <Swiper
+          ref={swiperRef}
+          showsPagination={false}
+          showsButtons={false}
+          loop={false}>
           {allData.map((idk, topIndex) => {
             return (
               <FlatList
                 numColumns={2}
                 showsVerticalScrollIndicator={false}
+                // eslint-disable-next-line react-native/no-inline-styles
                 contentContainerStyle={{
                   paddingBottom: '40%',
                   alignSelf: 'center',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  justifyContent: 'flex-start',
                 }}
-                style={{width: '100%', height: '100%', marginTop: 1}}
+                // eslint-disable-next-line react-native/no-inline-styles
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  marginTop: 1,
+                }}
                 key={topIndex}
                 data={allData[topIndex]}
                 renderItem={({item, index}) => {
                   return (
                     <>
-                      {topIndex === 0 ? (
+                      {topIndex === 1 ? (
                         <View style={styles.postContainer} key={index}>
                           <TouchableWithoutFeedback
                             onPress={() => {
