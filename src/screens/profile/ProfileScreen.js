@@ -21,7 +21,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import {SPRING_CONFIG} from '../../assets/utilities/reanimated-2';
 import FastImage from 'react-native-fast-image';
-
+import ProfileDetails from '../../components/ProfileDetails';
 const ProfileScreen = ({navigation}) => {
   const {editTopValue} = useContext(DrawerContext);
   const [userProfile, setUserProfile] = useState();
@@ -149,8 +149,8 @@ const ProfileScreen = ({navigation}) => {
               <Text style={styles.likes}>Likes</Text>
             </TouchableOpacity>
           </View>
-          <MyPosts UID={UID} navigation={navigation} />
-
+          {/* <MyPosts UID={UID} navigation={navigation} /> */}
+          <ProfileDetails UID={UID} navigation={navigation} />
           <PanGestureHandler onGestureEvent={gestureHandler2}>
             <Animated.View
               style={[

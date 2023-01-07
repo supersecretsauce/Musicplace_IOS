@@ -357,6 +357,7 @@ const HomeScreen = () => {
       {feed ? (
         <>
           <Swiper
+            showsPagination={false}
             loadMinimal={true}
             onIndexChanged={index => handleIndexChange(index)}
             loop={false}

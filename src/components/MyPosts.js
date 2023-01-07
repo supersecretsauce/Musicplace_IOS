@@ -188,7 +188,6 @@ const styles = StyleSheet.create({
     marginTop: '1%',
     paddingHorizontal: '5%',
     paddingVertical: '4%',
-
     // backgroundColor: 'green',
   },
   songPhoto: {
