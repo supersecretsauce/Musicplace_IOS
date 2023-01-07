@@ -139,11 +139,15 @@ const ProfileScreen = ({navigation}) => {
               <Text style={styles.statsText}>Following</Text>
             </View>
           </View>
-          <View style={styles.dividerContainer}>
-            <View style={styles.iconContainer}>
-              <Ionicons name={'albums'} color="white" size={28} />
-              <Text style={styles.postText}>Top Songs</Text>
-            </View>
+          <View style={styles.userContentContainer}>
+            <TouchableOpacity
+              activeOpacity={1}
+              style={styles.mostPlayedContainer}>
+              <Text style={styles.mostPlayed}>Most Played</Text>
+            </TouchableOpacity>
+            <TouchableOpacity activeOpacity={1} style={styles.likesContainer}>
+              <Text style={styles.likes}>Likes</Text>
+            </TouchableOpacity>
           </View>
           <MyPosts UID={UID} navigation={navigation} />
 
@@ -259,7 +263,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: '10%',
   },
-  dividerContainer: {
+  userContentContainer: {
     position: 'absolute',
     alignItems: 'center',
     alignSelf: 'center',
@@ -269,18 +273,38 @@ const styles = StyleSheet.create({
     width: '88%',
     borderBottomColor: Colors.greyBtn,
     borderBottomWidth: 1,
-    paddingBottom: 13,
+    // paddingBottom: 13,
+    // paddingVertical: 13,
     // backgroundColor: 'red',
   },
-  iconContainer: {
-    flexDirection: 'row',
+  mostPlayedContainer: {
+    paddingVertical: 13,
+
+    // backgroundColor: 'blue',
+    width: '45%',
+    display: 'flex',
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  postText: {
+  mostPlayed: {
     color: 'white',
     fontSize: 18,
-    fontFamily: 'Inter-Bold',
+    fontFamily: 'Inter-Medium',
     marginLeft: 5,
+  },
+  likesContainer: {
+    // backgroundColor: 'red',
+    paddingVertical: 13,
+    width: '45%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  likes: {
+    color: 'white',
+    fontSize: 18,
+    fontFamily: 'Inter-Medium',
+    marginLeft: '5%',
   },
   helpIcon: {
     left: 6,
