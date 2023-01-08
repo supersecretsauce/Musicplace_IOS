@@ -23,7 +23,7 @@ import {SPRING_CONFIG} from '../../assets/utilities/reanimated-2';
 import FastImage from 'react-native-fast-image';
 import ProfileDetails from '../../components/ProfileDetails';
 const ProfileScreen = ({navigation}) => {
-  const {editTopValue} = useContext(DrawerContext);
+  const {editTopValue, swiperRef, swiperIndex} = useContext(DrawerContext);
   const [userProfile, setUserProfile] = useState();
   const [username, setUsername] = useState();
   const [UID, setUID] = useState();
@@ -37,6 +37,10 @@ const ProfileScreen = ({navigation}) => {
       top: withSpring(editTopValue.value, SPRING_CONFIG),
     };
   });
+
+  useEffect(() => {
+    console.log(swiperRef);
+  }, [swiperRef]);
 
   useEffect(() => {
     const checkforUID = async () => {
@@ -91,6 +95,18 @@ const ProfileScreen = ({navigation}) => {
     },
   });
 
+  function showLikes() {
+    if (swiperIndex === 1) {
+      swiperRef.current.scrollBy(-1);
+    }
+  }
+
+  function showMostPlayed() {
+    if (swiperIndex === 0) {
+      swiperRef.current.scrollBy(1);
+    }
+  }
+
   return (
     <>
       {userProfile ? (
@@ -140,12 +156,16 @@ const ProfileScreen = ({navigation}) => {
             </View>
           </View>
           <View style={styles.userContentContainer}>
-            <TouchableOpacity activeOpacity={1} style={styles.likesContainer}>
+            <TouchableOpacity
+              activeOpacity={1}
+              style={styles.likesContainer}
+              onPress={showLikes}>
               <Text style={styles.likes}>Likes</Text>
             </TouchableOpacity>
             <TouchableOpacity
               activeOpacity={1}
-              style={styles.mostPlayedContainer}>
+              style={styles.mostPlayedContainer}
+              onPress={showMostPlayed}>
               <Text style={styles.mostPlayed}>Most Played</Text>
             </TouchableOpacity>
           </View>

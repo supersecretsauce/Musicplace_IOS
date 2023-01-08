@@ -1,5 +1,5 @@
 import {StyleSheet, useWindowDimensions} from 'react-native';
-import React from 'react';
+import React, {useRef, useState} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import ViewPostsScreen from '../screens/profile/ViewPostsScreen';
 import ProfileDrawerRoute from './ProfileDrawerRoute';
@@ -10,6 +10,8 @@ const ProfileStack = createNativeStackNavigator();
 const ProfileStackScreen = () => {
   const dimensions = useWindowDimensions();
   let editTopValue = useSharedValue(dimensions.height);
+  const [swiperIndex, setSwiperIndex] = useState(0);
+  const swiperRef = useRef();
 
   const config = {
     animation: 'spring',
@@ -27,6 +29,9 @@ const ProfileStackScreen = () => {
     <DrawerContext.Provider
       value={{
         editTopValue,
+        swiperRef,
+        swiperIndex,
+        setSwiperIndex,
       }}>
       <ProfileStack.Navigator screenOptions={{headerShown: false}}>
         <ProfileStack.Screen

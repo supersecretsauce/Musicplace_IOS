@@ -21,14 +21,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {authorize} from 'react-native-app-auth';
 import {spotConfig} from '../../SpotifyConfig';
 import Spotify from '../assets/img/spotify.svg';
+import {DrawerContext} from '../context/DrawerContext';
 
 const ProfileDetails = props => {
   const {UID, navigation} = props;
+  const {swiperRef, setSwiperIndex} = useContext(DrawerContext);
   const {hasSpotify, setHasSpotify} = useContext(Context);
   const [topSongs, setTopSongs] = useState(null);
   const [likes, setLikes] = useState(null);
   const [allData, setAllData] = useState([]);
-  const swiperRef = useRef();
+  // const swiperRef = useRef();
 
   useEffect(() => {
     if (hasSpotify) {
@@ -147,6 +149,7 @@ const ProfileDetails = props => {
       {allData.length > 1 ? (
         <Swiper
           ref={swiperRef}
+          onIndexChanged={index => setSwiperIndex(index)}
           showsPagination={false}
           showsButtons={false}
           loop={false}>
