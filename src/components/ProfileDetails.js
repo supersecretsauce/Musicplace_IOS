@@ -25,7 +25,8 @@ import {DrawerContext} from '../context/DrawerContext';
 
 const ProfileDetails = props => {
   const {UID, navigation} = props;
-  const {swiperRef, setSwiperIndex} = useContext(DrawerContext);
+  const {swiperRef, setSwiperIndex, fetchingTopSongs, setFetchingTopSongs} =
+    useContext(DrawerContext);
   const {hasSpotify, setHasSpotify} = useContext(Context);
   const [topSongs, setTopSongs] = useState(null);
   const [likes, setLikes] = useState(null);
@@ -70,6 +71,7 @@ const ProfileDetails = props => {
     if (!UID) {
       return;
     }
+    setFetchingTopSongs(true);
     let isEmulator = await DeviceInfo.isEmulator();
     let authToken;
     if (!isEmulator) {
@@ -88,6 +90,7 @@ const ProfileDetails = props => {
         console.log(resp);
         // setTopSongs([]);
         setTopSongs(resp.data.data);
+        setFetchingTopSongs(false);
       })
       .catch(e => {
         console.log(e);
@@ -116,7 +119,7 @@ const ProfileDetails = props => {
   const connectSpotify = async () => {
     if (UID) {
       const authState = await authorize(spotConfig);
-      console.log(authState);
+      setFetchingTopSongs(true);
       firestore()
         .collection('users')
         .doc(UID)
@@ -183,15 +186,8 @@ const ProfileDetails = props => {
                             <>
                               <View style={styles.noLikeContainer}>
                                 <Text style={styles.noLikeText}>
-                                  No likes just yet...
+                                  No likes just yet ☹️
                                 </Text>
-                                <TouchableOpacity
-                                  style={styles.viewSongsBtn}
-                                  onPress={connectSpotify}>
-                                  <Text style={styles.viewSongsText}>
-                                    View recommended songs
-                                  </Text>
-                                </TouchableOpacity>
                               </View>
                             </>
                           ) : (
@@ -232,6 +228,13 @@ const ProfileDetails = props => {
                             </View>
                           )}
                         </>
+                      ) : fetchingTopSongs ? (
+                        <View style={styles.loadingTopSongsContainer}>
+                          <ActivityIndicator color={'white'} />
+                          <Text style={styles.loadingTopSongsText}>
+                            getting top songs
+                          </Text>
+                        </View>
                       ) : hasSpotify ? (
                         <View style={styles.postContainer} key={index}>
                           <TouchableWithoutFeedback
@@ -323,6 +326,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: '5%',
   },
+  loadingTopSongsContainer: {
+    paddingVertical: 50,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingTopSongsText: {
+    color: 'white',
+  },
   postContainer: {
     marginTop: '1%',
     paddingHorizontal: '5%',
@@ -389,22 +401,5 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Medium',
     textAlign: 'center',
     fontSize: 15,
-  },
-  viewSongsBtn: {
-    marginTop: '8%',
-    paddingHorizontal: 25,
-    paddingVertical: 12,
-    borderRadius: 20,
-    backgroundColor: '#1F1F1F',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'center',
-  },
-  viewSongsText: {
-    color: 'white',
-    fontFamily: 'Inter-Bold',
-    fontSize: 16,
-    marginLeft: 10,
   },
 });

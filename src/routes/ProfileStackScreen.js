@@ -11,6 +11,7 @@ const ProfileStackScreen = () => {
   const dimensions = useWindowDimensions();
   let editTopValue = useSharedValue(dimensions.height);
   const [swiperIndex, setSwiperIndex] = useState(0);
+  const [fetchingTopSongs, setFetchingTopSongs] = useState(false);
   const swiperRef = useRef();
 
   const config = {
@@ -32,6 +33,8 @@ const ProfileStackScreen = () => {
         swiperRef,
         swiperIndex,
         setSwiperIndex,
+        fetchingTopSongs,
+        setFetchingTopSongs,
       }}>
       <ProfileStack.Navigator screenOptions={{headerShown: false}}>
         <ProfileStack.Screen
