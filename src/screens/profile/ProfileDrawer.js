@@ -17,7 +17,7 @@ import Discord from '../../assets/img/discord.svg';
 import Colors from '../../assets/utilities/Colors';
 import Spotify from '../../assets/img/spotify.svg';
 const ProfileDrawer = ({navigation}) => {
-  const {editTopValue} = useContext(DrawerContext);
+  const {editTopValue, setFetchingTopSongs} = useContext(DrawerContext);
   const {
     setHasSpotify,
     hasSpotify,
@@ -68,6 +68,7 @@ const ProfileDrawer = ({navigation}) => {
       const connectToSpotify = async () => {
         try {
           const authState = await authorize(spotConfig);
+          setFetchingTopSongs(true);
           await AsyncStorage.setItem('hasSpotify', 'true');
           firestore()
             .collection('users')

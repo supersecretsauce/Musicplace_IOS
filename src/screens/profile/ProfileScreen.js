@@ -21,9 +21,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import {SPRING_CONFIG} from '../../assets/utilities/reanimated-2';
 import FastImage from 'react-native-fast-image';
-
+import ProfileDetails from '../../components/ProfileDetails';
 const ProfileScreen = ({navigation}) => {
-  const {editTopValue} = useContext(DrawerContext);
+  const {editTopValue, swiperRef, swiperIndex} = useContext(DrawerContext);
   const [userProfile, setUserProfile] = useState();
   const [username, setUsername] = useState();
   const [UID, setUID] = useState();
@@ -37,6 +37,10 @@ const ProfileScreen = ({navigation}) => {
       top: withSpring(editTopValue.value, SPRING_CONFIG),
     };
   });
+
+  useEffect(() => {
+    console.log(swiperRef);
+  }, [swiperRef]);
 
   useEffect(() => {
     const checkforUID = async () => {
@@ -91,6 +95,18 @@ const ProfileScreen = ({navigation}) => {
     },
   });
 
+  function showLikes() {
+    if (swiperIndex === 1) {
+      swiperRef.current.scrollBy(-1);
+    }
+  }
+
+  function showMostPlayed() {
+    if (swiperIndex === 0) {
+      swiperRef.current.scrollBy(1);
+    }
+  }
+
   return (
     <>
       {userProfile ? (
@@ -139,14 +155,22 @@ const ProfileScreen = ({navigation}) => {
               <Text style={styles.statsText}>Following</Text>
             </View>
           </View>
-          <View style={styles.dividerContainer}>
-            <View style={styles.iconContainer}>
-              <Ionicons name={'albums'} color="white" size={28} />
-              <Text style={styles.postText}>Top Songs</Text>
-            </View>
+          <View style={styles.userContentContainer}>
+            <TouchableOpacity
+              activeOpacity={1}
+              style={styles.likesContainer}
+              onPress={showLikes}>
+              <Text style={styles.likes}>Likes</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={1}
+              style={styles.mostPlayedContainer}
+              onPress={showMostPlayed}>
+              <Text style={styles.mostPlayed}>Most Played</Text>
+            </TouchableOpacity>
           </View>
-          <MyPosts UID={UID} navigation={navigation} />
-
+          {/* <MyPosts UID={UID} navigation={navigation} /> */}
+          <ProfileDetails UID={UID} navigation={navigation} />
           <PanGestureHandler onGestureEvent={gestureHandler2}>
             <Animated.View
               style={[
@@ -259,7 +283,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: '10%',
   },
-  dividerContainer: {
+  userContentContainer: {
     position: 'absolute',
     alignItems: 'center',
     alignSelf: 'center',
@@ -269,18 +293,37 @@ const styles = StyleSheet.create({
     width: '88%',
     borderBottomColor: Colors.greyBtn,
     borderBottomWidth: 1,
-    paddingBottom: 13,
+    // paddingBottom: 13,
+    // paddingVertical: 13,
     // backgroundColor: 'red',
   },
-  iconContainer: {
-    flexDirection: 'row',
+  mostPlayedContainer: {
+    paddingVertical: 13,
+    // backgroundColor: 'blue',
+    width: '45%',
+    display: 'flex',
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  postText: {
+  mostPlayed: {
     color: 'white',
     fontSize: 18,
-    fontFamily: 'Inter-Bold',
-    marginLeft: 5,
+    fontFamily: 'Inter-Medium',
+    // marginLeft: 5,
+  },
+  likesContainer: {
+    // backgroundColor: 'red',
+    paddingVertical: 13,
+    width: '45%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  likes: {
+    color: 'white',
+    fontSize: 18,
+    fontFamily: 'Inter-Medium',
+    // marginLeft: '5%',
   },
   helpIcon: {
     left: 6,
