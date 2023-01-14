@@ -5,18 +5,17 @@ import {
   TouchableOpacity,
   useWindowDimensions,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
+import {DrawerContext} from '../../context/DrawerContext';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../assets/utilities/Colors';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import MyPosts from '../../components/MyPosts';
-import ProfileSettings from '../../components/ProfileSettings';
 import EditProfileSheet from '../../components/EditProfileSheet';
 import {PanGestureHandler} from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedGestureHandler,
-  useSharedValue,
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
@@ -24,6 +23,7 @@ import {SPRING_CONFIG} from '../../assets/utilities/reanimated-2';
 import FastImage from 'react-native-fast-image';
 
 const ProfileScreen = ({navigation}) => {
+  const {editTopValue} = useContext(DrawerContext);
   const [userProfile, setUserProfile] = useState();
   const [username, setUsername] = useState();
   const [UID, setUID] = useState();
@@ -32,16 +32,9 @@ const ProfileScreen = ({navigation}) => {
   const [PFP, setPFP] = useState(null);
   const [displayName, setDisplayName] = useState(null);
   const dimensions = useWindowDimensions();
-  const top = useSharedValue(dimensions.height);
-  const top2 = useSharedValue(dimensions.height);
-  const style = useAnimatedStyle(() => {
-    return {
-      top: withSpring(top.value, SPRING_CONFIG),
-    };
-  });
   const style2 = useAnimatedStyle(() => {
     return {
-      top: withSpring(top2.value, SPRING_CONFIG),
+      top: withSpring(editTopValue.value, SPRING_CONFIG),
     };
   });
 
@@ -77,46 +70,26 @@ const ProfileScreen = ({navigation}) => {
     }
   }, [UID]);
 
-  //animations for profile settings
-  const gestureHandler = useAnimatedGestureHandler({
-    onStart(_, context) {
-      context.startTop = top.value;
-    },
-    onActive(event, context) {
-      top.value = context.startTop + event.translationY;
-    },
-    onEnd() {
-      if (top.value > dimensions.height / 2.25 + 50) {
-        top.value = dimensions.height;
-      } else {
-        top.value = dimensions.height / 2.25;
-      }
-    },
-  });
-
   function handleSpring() {
-    top.value = withSpring(dimensions.height / 2.25, SPRING_CONFIG);
+    // top.value = withSpring(dimensions.height / 2.25, SPRING_CONFIG);
+    navigation.toggleDrawer();
   }
 
   const gestureHandler2 = useAnimatedGestureHandler({
     onStart(_, context) {
-      context.startTop = top2.value;
+      context.startTop = editTopValue.value;
     },
     onActive(event, context) {
-      top2.value = context.startTop + event.translationY;
+      editTopValue.value = context.startTop + event.translationY;
     },
     onEnd() {
-      if (top2.value > dimensions.height / 10 + 50) {
-        top2.value = dimensions.height;
+      if (editTopValue.value > dimensions.height / 10 + 50) {
+        editTopValue.value = dimensions.height;
       } else {
-        top2.value = dimensions.height / 10;
+        editTopValue.value = dimensions.height / 10;
       }
     },
   });
-
-  function handleSpring2() {
-    top2.value = withSpring(dimensions.height / 10, SPRING_CONFIG);
-  }
 
   return (
     <>
@@ -171,11 +144,6 @@ const ProfileScreen = ({navigation}) => {
               <Ionicons name={'albums'} color="white" size={28} />
               <Text style={styles.postText}>Top Songs</Text>
             </View>
-            <TouchableOpacity
-              onPress={handleSpring2}
-              style={styles.editProfileContainer}>
-              <Text style={styles.editProfileText}>Edit profile</Text>
-            </TouchableOpacity>
           </View>
           <MyPosts UID={UID} navigation={navigation} />
 
@@ -196,7 +164,7 @@ const ProfileScreen = ({navigation}) => {
                 style2,
               ]}>
               <EditProfileSheet
-                top2={top2}
+                editTopValue={editTopValue}
                 userProfile={userProfile}
                 UID={UID}
                 setPFP={setPFP}
@@ -208,25 +176,6 @@ const ProfileScreen = ({navigation}) => {
                 bio={bio}
                 setBio={setBio}
               />
-            </Animated.View>
-          </PanGestureHandler>
-          <PanGestureHandler onGestureEvent={gestureHandler}>
-            <Animated.View
-              style={[
-                // eslint-disable-next-line react-native/no-inline-styles
-                {
-                  position: 'absolute',
-                  backgroundColor: '#1C1C1C',
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  borderTopLeftRadius: 20,
-                  borderTopRightRadius: 20,
-                  alignItems: 'center',
-                },
-                style,
-              ]}>
-              <ProfileSettings top={top} UID={UID} />
             </Animated.View>
           </PanGestureHandler>
         </View>
@@ -335,19 +284,5 @@ const styles = StyleSheet.create({
   },
   helpIcon: {
     left: 6,
-  },
-  editProfileContainer: {
-    borderColor: Colors.greyBtn,
-    borderWidth: 0.5,
-    paddingVertical: 6,
-    paddingHorizontal: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 9,
-  },
-  editProfileText: {
-    color: 'white',
-    fontSize: 12,
-    fontFamily: 'Inter-Medium',
   },
 });

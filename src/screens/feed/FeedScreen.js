@@ -4,6 +4,7 @@ import {
   View,
   SafeAreaView,
   TouchableOpacity,
+  RefreshControl,
 } from 'react-native';
 import React, {useEffect, useContext, useState, useCallback} from 'react';
 import {Context} from '../../context/Context';
@@ -20,6 +21,7 @@ const FeedScreen = ({navigation}) => {
   const [myUser, setMyUser] = useState(null);
   const [followingList, setFollowingList] = useState(null);
   const [likes, setLikes] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     if (UID) {
@@ -47,7 +49,6 @@ const FeedScreen = ({navigation}) => {
     if (followingList && followingList.length > 0) {
       let likesArr = [];
       for (let i = 0; i < followingList.length; i += 10) {
-        console.log(i);
         await firestore()
           .collection('feed')
           .where('user', 'in', followingList.slice(i, i + 10))
@@ -59,7 +60,6 @@ const FeedScreen = ({navigation}) => {
             } else {
               console.log(resp);
               resp.docs.forEach(doc => {
-                console.log(doc);
                 likesArr.push(doc.data());
               });
             }
@@ -89,6 +89,18 @@ const FeedScreen = ({navigation}) => {
     }, [followingList]),
   );
 
+  useEffect(() => {
+    if (refreshing) {
+      fetchDocs();
+      console.log('refreshing');
+      setRefreshing(false);
+    }
+  }, [refreshing]);
+
+  function handleRefresh() {
+    setRefreshing(true);
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.feedContainer}>
@@ -109,6 +121,15 @@ const FeedScreen = ({navigation}) => {
           {likes ? (
             <View style={styles.flatListContainer}>
               <FlatList
+                refreshControl={
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={handleRefresh}
+                    tintColor={Colors.greyOut}
+                    title="looking for new likes"
+                    titleColor="#fff"
+                  />
+                }
                 data={likes}
                 showsVerticalScrollIndicator={false}
                 renderItem={({item, index}) => {
@@ -168,7 +189,7 @@ const FeedScreen = ({navigation}) => {
                               <Text numberOfLines={1} style={styles.songName}>
                                 {item.songName}
                               </Text>
-                              <Text style={styles.artists}>
+                              <Text numberOfLines={1} style={styles.artists}>
                                 {item.artists
                                   .map(artist => {
                                     return artist.name;

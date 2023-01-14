@@ -1,11 +1,16 @@
-import {StyleSheet} from 'react-native';
+import {StyleSheet, useWindowDimensions} from 'react-native';
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import ProfileScreen from '../screens/profile/ProfileScreen';
 import ViewPostsScreen from '../screens/profile/ViewPostsScreen';
+import ProfileDrawerRoute from './ProfileDrawerRoute';
+import {DrawerContext} from '../context/DrawerContext';
+import {useSharedValue} from 'react-native-reanimated';
+const ProfileStack = createNativeStackNavigator();
 
 const ProfileStackScreen = () => {
-  const ProfileStack = createNativeStackNavigator();
+  const dimensions = useWindowDimensions();
+  let editTopValue = useSharedValue(dimensions.height);
+
   const config = {
     animation: 'spring',
     config: {
@@ -19,19 +24,27 @@ const ProfileStackScreen = () => {
   };
 
   return (
-    <ProfileStack.Navigator screenOptions={{headerShown: false}}>
-      <ProfileStack.Screen name="ProfileScreen" component={ProfileScreen} />
-      <ProfileStack.Screen
-        name="ViewPostsScreen"
-        component={ViewPostsScreen}
-        options={{
-          transitionSpec: {
-            open: config,
-            close: config,
-          },
-        }}
-      />
-    </ProfileStack.Navigator>
+    <DrawerContext.Provider
+      value={{
+        editTopValue,
+      }}>
+      <ProfileStack.Navigator screenOptions={{headerShown: false}}>
+        <ProfileStack.Screen
+          name="ProfileDrawer"
+          component={ProfileDrawerRoute}
+        />
+        <ProfileStack.Screen
+          name="ViewPostsScreen"
+          component={ViewPostsScreen}
+          options={{
+            transitionSpec: {
+              open: config,
+              close: config,
+            },
+          }}
+        />
+      </ProfileStack.Navigator>
+    </DrawerContext.Provider>
   );
 };
 

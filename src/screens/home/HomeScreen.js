@@ -26,6 +26,7 @@ import LoadingPost from '../../components/LoadingPost';
 import appCheck from '@react-native-firebase/app-check';
 import DeviceInfo from 'react-native-device-info';
 import {simKey} from '../../../simKey';
+import {Toast} from 'react-native-toast-message/lib/src/Toast';
 
 const HomeScreen = () => {
   Sound.setCategory('Playback');
@@ -127,7 +128,7 @@ const HomeScreen = () => {
                 accept: 'application/json',
                 Authorization: isEmulator
                   ? 'Bearer ' + simKey
-                  : 'Bearer ' + authToken,
+                  : 'Bearer ' + authToken.token,
               },
             })
             .then(resp => {
@@ -251,67 +252,96 @@ const HomeScreen = () => {
     if (!isEmulator) {
       authToken = await appCheck().getToken();
     }
-    if (hasSpotify) {
-      if (post.liked) {
-        let updatedFeed = feed.map(track => {
-          if (track.id === post.id) {
-            track.liked = false;
-            return track;
-          } else {
-            return track;
-          }
-        });
-        setFeed(updatedFeed);
-        // remove song from liked songs
-        axios
-          .get(
-            `http://167.99.22.22/update/remove-track?userId=${UID}&trackId=${feed[currentIndex].id}`,
-            {
-              headers: {
-                accept: 'application/json',
-                Authorization: isEmulator
-                  ? 'Bearer ' + simKey
-                  : 'Bearer ' + authToken.token,
-              },
+    if (post.liked) {
+      let updatedFeed = feed.map(track => {
+        if (track.id === post.id) {
+          track.liked = false;
+          return track;
+        } else {
+          return track;
+        }
+      });
+      setFeed(updatedFeed);
+      // remove song from liked songs
+      axios
+        .get(
+          `http://167.99.22.22/update/remove-track?userId=${UID}&trackId=${feed[currentIndex].id}`,
+          {
+            headers: {
+              accept: 'application/json',
+              Authorization: isEmulator
+                ? 'Bearer ' + simKey
+                : 'Bearer ' + authToken.token,
             },
-          )
-          .then(resp => {
-            console.log(resp);
-            console.log('track removed');
-          })
-          .catch(e => {
-            console.log(e);
-          });
+          },
+        )
+        .then(resp => {
+          console.log(resp);
+          console.log('track removed');
+        })
+        .catch(e => {
+          console.log(e);
+        });
+
+      if (hasSpotify) {
+        Toast.show({
+          type: 'success',
+          text1: 'Removed from liked songs',
+          text2: "Don't believe us? Check your spotify library.",
+          visibilityTime: 2000,
+        });
       } else {
-        let updatedFeed = feed.map(track => {
-          if (track.id === post.id) {
-            track.liked = true;
-            return track;
-          } else {
-            return track;
-          }
+        Toast.show({
+          type: 'success',
+          text1: 'Removed from liked songs',
+          text2: "Don't believe us? Check your profile.",
+          visibilityTime: 2000,
         });
-        setFeed(updatedFeed);
-        // add to liked songs
-        axios
-          .get(
-            `http://167.99.22.22/update/save-track?userId=${UID}&trackId=${feed[currentIndex].id}`,
-            {
-              headers: {
-                accept: 'application/json',
-                Authorization: isEmulator
-                  ? 'Bearer ' + simKey
-                  : 'Bearer ' + authToken.token,
-              },
+      }
+    } else {
+      let updatedFeed = feed.map(track => {
+        if (track.id === post.id) {
+          track.liked = true;
+          return track;
+        } else {
+          return track;
+        }
+      });
+      setFeed(updatedFeed);
+      // add to liked songs
+      axios
+        .get(
+          `http://167.99.22.22/update/save-track?userId=${UID}&trackId=${feed[currentIndex].id}`,
+          {
+            headers: {
+              accept: 'application/json',
+              Authorization: isEmulator
+                ? 'Bearer ' + simKey
+                : 'Bearer ' + authToken.token,
             },
-          )
-          .then(resp => {
-            console.log(resp);
-            console.log('saved track');
-          })
-          .catch(e => {
-            console.log(e);
-          });
+          },
+        )
+        .then(resp => {
+          console.log(resp);
+          console.log('saved track');
+        })
+        .catch(e => {
+          console.log(e);
+        });
+      if (hasSpotify) {
+        Toast.show({
+          type: 'success',
+          text1: 'Added to liked songs',
+          text2: "Don't believe us? Check your spotify library.",
+          visibilityTime: 2000,
+        });
+      } else {
+        Toast.show({
+          type: 'success',
+          text1: 'Added to liked songs',
+          text2: "Don't believe us? Check your profile.",
+          visibilityTime: 2000,
+        });
       }
     }
   }
