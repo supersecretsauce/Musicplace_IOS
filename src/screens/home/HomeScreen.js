@@ -128,7 +128,7 @@ const HomeScreen = () => {
                 accept: 'application/json',
                 Authorization: isEmulator
                   ? 'Bearer ' + simKey
-                  : 'Bearer ' + authToken,
+                  : 'Bearer ' + authToken.token,
               },
             })
             .then(resp => {
