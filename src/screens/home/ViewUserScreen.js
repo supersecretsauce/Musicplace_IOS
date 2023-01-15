@@ -182,13 +182,18 @@ const ViewUserScreen = ({route, navigation}) => {
           </View>
           <View style={styles.middleContainer}>
             <View style={styles.middleSection}>
-              <TouchableOpacity style={styles.middleBtn}>
-                <Text style={styles.middleText}>Follow</Text>
+              <TouchableOpacity
+                style={styles.middleBtn}
+                onPress={followHandler}>
+                <Text style={styles.middleText}>
+                  {followersList?.includes(UID) ? 'Unfollow' : 'Follow'}
+                </Text>
               </TouchableOpacity>
               <TouchableWithoutFeedback>
                 <View style={styles.contentContainer}>
-                  <Ionicons name={'heart'} color="white" size={24} />
-                  <Text style={styles.contentText}>Likes</Text>
+                  <Ionicons name={'headset'} color="grey" size={24} />
+
+                  {/* <Text style={styles.contentText}>Likes</Text> */}
                 </View>
               </TouchableWithoutFeedback>
             </View>
@@ -198,8 +203,8 @@ const ViewUserScreen = ({route, navigation}) => {
               </TouchableOpacity>
               <TouchableWithoutFeedback>
                 <View style={styles.contentContainer}>
-                  <Ionicons name={'analytics'} color="white" size={24} />
-                  <Text style={styles.contentText}>Most played</Text>
+                  {/* <Text style={styles.contentText}>Most played</Text> */}
+                  <Ionicons name={'heart'} color="white" size={24} />
                 </View>
               </TouchableWithoutFeedback>
             </View>
@@ -331,15 +336,15 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.25,
     width: '50%',
     position: 'absolute',
-    top: 360,
+    top: 358,
     left: 0,
   },
   rightLine: {
-    borderBottomColor: 'white',
+    borderBottomColor: 'grey',
     borderBottomWidth: 0.25,
     width: '50%',
     position: 'absolute',
-    top: 360,
+    top: 358,
     right: 0,
   },
 });

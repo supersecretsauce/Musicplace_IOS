@@ -111,7 +111,7 @@ export default UserPosts;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 182,
+    marginTop: 198,
   },
   trackScrollContainer: {
     justifyContent: 'center',
