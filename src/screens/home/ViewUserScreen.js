@@ -1,4 +1,11 @@
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import Colors from '../../assets/utilities/Colors';
@@ -173,40 +180,32 @@ const ViewUserScreen = ({route, navigation}) => {
               <Text style={styles.statsText}>Following</Text>
             </View>
           </View>
-          <View style={styles.dividerContainer}>
-            <View style={styles.postHeader}>
-              <Ionicons
-                style={styles.albumIcon}
-                name={'albums'}
-                color="white"
-                size={28}
-              />
-              <Text style={styles.postText}>Top Songs</Text>
+          <View style={styles.middleContainer}>
+            <View style={styles.middleSection}>
+              <TouchableOpacity style={styles.middleBtn}>
+                <Text style={styles.middleText}>Follow</Text>
+              </TouchableOpacity>
+              <TouchableWithoutFeedback>
+                <View style={styles.contentContainer}>
+                  <Ionicons name={'heart'} color="white" size={24} />
+                  <Text style={styles.contentText}>Likes</Text>
+                </View>
+              </TouchableWithoutFeedback>
             </View>
-            {UID !== profileID && (
-              <View style={styles.btnRow}>
-                <TouchableOpacity
-                  style={styles.mailBtn}
-                  onPress={() => {
-                    navigation.navigate('DirectMessageScreen', {
-                      profileID: profileID,
-                      userProfile: userProfile,
-                      myUser: myUser,
-                      prevRoute: prevRoute,
-                    });
-                  }}>
-                  <Ionicons name={'mail-outline'} color="white" size={18} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.followBtn}
-                  onPress={followHandler}>
-                  <Text style={styles.followText}>
-                    {followersList?.includes(UID) ? 'Unfollow' : 'Follow'}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            )}
+            <View style={styles.middleSection}>
+              <TouchableOpacity style={styles.middleBtn}>
+                <Text style={styles.middleText}>Message</Text>
+              </TouchableOpacity>
+              <TouchableWithoutFeedback>
+                <View style={styles.contentContainer}>
+                  <Ionicons name={'analytics'} color="white" size={24} />
+                  <Text style={styles.contentText}>Most played</Text>
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
           </View>
+          <View style={styles.leftLine} />
+          <View style={styles.rightLine} />
           <UserPosts navigation={navigation} profileID={profileID} UID={UID} />
         </View>
       ) : (
@@ -246,6 +245,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 215,
     left: 28,
+    // backgroundColor: 'red',
   },
   displayName: {
     fontFamily: 'Inter-Bold',
@@ -289,51 +289,57 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: '10%',
   },
-  dividerContainer: {
+  middleContainer: {
     position: 'absolute',
-    alignItems: 'center',
-    alignSelf: 'center',
+    top: 280,
+    flexDirection: 'row',
     justifyContent: 'space-between',
-    flexDirection: 'row',
-    top: 325,
-    width: '88%',
-    borderBottomColor: Colors.greyBtn,
-    borderBottomWidth: 1,
-    paddingBottom: 13,
+    alignItems: 'center',
+    width: 335,
+    alignSelf: 'center',
+    // backgroundColor: 'red',
   },
-  postHeader: {
+  middleSection: {
+    height: 70,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+  },
+  middleBtn: {
+    backgroundColor: '#393939',
+    width: 162,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 6,
+    borderRadius: 9,
+  },
+  middleText: {
+    color: 'white',
+    fontFamily: 'Inter-Medium',
+  },
+  contentContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
   },
-  postText: {
+  contentText: {
+    fontFamily: 'Inter-Regular',
     color: 'white',
-    fontSize: 18,
-    fontFamily: 'Inter-Bold',
     marginLeft: 5,
   },
-  btnRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  leftLine: {
+    borderBottomColor: 'white',
+    borderBottomWidth: 0.25,
+    width: '50%',
+    position: 'absolute',
+    top: 360,
+    left: 0,
   },
-  mailBtn: {
-    padding: 6,
-    borderWidth: 0.5,
-    borderRadius: 20,
-    borderColor: Colors.greyBtn,
-  },
-  followBtn: {
-    borderColor: Colors.greyBtn,
-    borderWidth: 0.5,
-    paddingVertical: 7,
-    paddingHorizontal: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 9,
-    marginLeft: 10,
-  },
-  followText: {
-    color: 'white',
-    fontSize: 12,
-    fontFamily: 'Inter-Medium',
+  rightLine: {
+    borderBottomColor: 'white',
+    borderBottomWidth: 0.25,
+    width: '50%',
+    position: 'absolute',
+    top: 360,
+    right: 0,
   },
 });
