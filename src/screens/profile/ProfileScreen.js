@@ -29,7 +29,6 @@ const ProfileScreen = ({navigation}) => {
   const [userProfile, setUserProfile] = useState();
   const [username, setUsername] = useState();
   const [UID, setUID] = useState();
-  const [bio, setBio] = useState(null);
   const [header, setHeader] = useState(null);
   const [PFP, setPFP] = useState(null);
   const [displayName, setDisplayName] = useState(null);
@@ -66,7 +65,6 @@ const ProfileScreen = ({navigation}) => {
           if (documentSnapshot.exists) {
             setUserProfile(documentSnapshot.data());
             setDisplayName(documentSnapshot.data().displayName);
-            setBio(documentSnapshot.data().bio);
             setUsername(documentSnapshot.data().handle);
             setPFP(documentSnapshot.data().pfpURL);
             setHeader(documentSnapshot.data().headerURL);
@@ -145,9 +143,6 @@ const ProfileScreen = ({navigation}) => {
               {displayName ? displayName : userProfile.displayName}
             </Text>
             <Text style={styles.handle}>{username && `@${username}`}</Text>
-            <Text numberOfLines={2} style={styles.bio}>
-              {bio && bio}
-            </Text>
           </View>
           <View style={styles.userStatsContainer}>
             <View style={styles.statsContainer}>
@@ -250,8 +245,6 @@ const ProfileScreen = ({navigation}) => {
                 setHeader={setHeader}
                 setDisplayName={setDisplayName}
                 displayName={displayName}
-                bio={bio}
-                setBio={setBio}
               />
             </Animated.View>
           </PanGestureHandler>
@@ -305,15 +298,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 5,
   },
-  bio: {
-    fontFamily: 'Inter-Regular',
-    color: 'white',
-    fontSize: 14,
-    marginTop: 10,
-    lineHeight: 20,
-    minWidth: 320,
-    maxWidth: 320,
-  },
+
   userStatsContainer: {
     flexDirection: 'row',
     position: 'absolute',

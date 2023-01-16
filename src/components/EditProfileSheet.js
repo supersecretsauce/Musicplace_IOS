@@ -28,13 +28,10 @@ const EditProfileSheet = props => {
     setHeader,
     setDisplayName,
     displayName,
-    bio,
-    setBio,
   } = props;
   const [userSelectedPFP, setUserSelectedPFP] = useState(false);
   const [userSelectedHeader, setUserSelectedHeader] = useState(false);
   const [localDisplayName, setLocalDisplayName] = useState(false);
-  const [localBio, setLocalBio] = useState(false);
   const dimensions = useWindowDimensions();
 
   const selectPFP = () => {
@@ -85,19 +82,6 @@ const EditProfileSheet = props => {
         .then(() => {
           setDisplayName(localDisplayName);
           console.log('User updated!');
-        })
-        .catch(e => console.log(e));
-    }
-    if (localBio) {
-      firestore()
-        .collection('users')
-        .doc(UID)
-        .update({
-          bio: localBio,
-        })
-        .then(() => {
-          console.log('User updated!');
-          setBio(localBio);
         })
         .catch(e => console.log(e));
     }
@@ -206,17 +190,6 @@ const EditProfileSheet = props => {
                 returnKeyType="done"
               />
             </View>
-            <View style={styles.bioContainer}>
-              <Text style={styles.bioText}>Bio:</Text>
-              <TextInput
-                maxLength={90}
-                style={styles.input}
-                placeholder={bio ? bio : 'add bio'}
-                placeholderTextColor={'grey'}
-                onChangeText={text => setLocalBio(text)}
-                returnKeyType="done"
-              />
-            </View>
           </View>
           <TouchableOpacity onPress={saveChanges} style={styles.saveBtn}>
             <Text style={styles.saveText}>Save</Text>
@@ -304,18 +277,6 @@ const styles = StyleSheet.create({
     marginLeft: '8%',
     color: 'white',
     width: 150,
-  },
-  bioContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginTop: '10%',
-  },
-  bioText: {
-    color: 'white',
-    fontFamily: 'Inter-Bold',
-    fontSize: 17,
-    marginLeft: '5%',
-    width: 55,
   },
   input: {
     marginLeft: '8%',

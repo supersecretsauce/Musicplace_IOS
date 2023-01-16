@@ -178,9 +178,6 @@ const ViewUserScreen = ({route, navigation}) => {
             <Text style={styles.handle}>
               {userProfile?.handle ? `@${userProfile?.handle}` : 'n/a'}
             </Text>
-            <Text numberOfLines={2} style={styles.bio}>
-              {userProfile.bio && userProfile.bio}
-            </Text>
           </View>
           <View style={styles.userStatsContainer}>
             <View style={styles.statsContainer}>
@@ -316,15 +313,6 @@ const styles = StyleSheet.create({
     color: Colors.greyOut,
     fontSize: 14,
     marginTop: 5,
-  },
-  bio: {
-    fontFamily: 'Inter-Regular',
-    color: 'white',
-    fontSize: 14,
-    marginTop: 10,
-    lineHeight: 20,
-    minWidth: 320,
-    maxWidth: 320,
   },
   userStatsContainer: {
     flexDirection: 'row',
