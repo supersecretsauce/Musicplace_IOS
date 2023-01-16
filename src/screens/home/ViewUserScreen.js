@@ -198,7 +198,16 @@ const ViewUserScreen = ({route, navigation}) => {
               </TouchableWithoutFeedback>
             </View>
             <View style={styles.middleSection}>
-              <TouchableOpacity style={styles.middleBtn}>
+              <TouchableOpacity
+                style={styles.middleBtn}
+                onPress={() => {
+                  navigation.navigate('DirectMessageScreen', {
+                    profileID: profileID,
+                    userProfile: userProfile,
+                    myUser: myUser,
+                    prevRoute: prevRoute,
+                  });
+                }}>
                 <Text style={styles.middleText}>Message</Text>
               </TouchableOpacity>
               <TouchableWithoutFeedback>

@@ -191,12 +191,13 @@ const DirectMessageScreen = ({route, navigation}) => {
     } else if (prevRoute === 'ViewAllMessagesScreen') {
       navigation.goBack();
     } else {
-      navigation.navigate('ViewUserScreen', {
-        profileID: profileID,
-        myUser: myUser,
-        userProfile: userProfile,
-        prevRoute: prevRoute,
-      });
+      // navigation.navigate('ViewUserScreen', {
+      //   profileID: profileID,
+      //   myUser: myUser,
+      //   userProfile: userProfile,
+      //   prevRoute: prevRoute,
+      // });
+      navigation.goBack();
     }
   }
 
@@ -207,6 +208,7 @@ const DirectMessageScreen = ({route, navigation}) => {
       UID: UID,
       prevRoute: 'DirectMessageScreen',
     });
+    // navigation.goBack();
   }
 
   function handleSongNav(item) {
