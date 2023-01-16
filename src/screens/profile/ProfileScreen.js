@@ -12,7 +12,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../assets/utilities/Colors';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import MyPosts from '../../components/MyPosts';
 import EditProfileSheet from '../../components/EditProfileSheet';
 import {PanGestureHandler} from 'react-native-gesture-handler';
 import Animated, {
