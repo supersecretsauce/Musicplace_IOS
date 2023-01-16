@@ -16,9 +16,7 @@ import {simKey} from '../../simKey';
 import appCheck from '@react-native-firebase/app-check';
 import firestore from '@react-native-firebase/firestore';
 import Colors from '../assets/utilities/Colors';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {authorize} from 'react-native-app-auth';
-import {spotConfig} from '../../SpotifyConfig';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const ProfileDetails = props => {
   const {
@@ -29,8 +27,6 @@ const ProfileDetails = props => {
     setHighlightLikes,
   } = props;
   const {
-    hasSpotify,
-    setHasSpotify,
     viewingSwiperRef,
     setSwiperIndex,
     fetchingTopSongs,
@@ -41,12 +37,10 @@ const ProfileDetails = props => {
   const [allData, setAllData] = useState([]);
 
   useEffect(() => {
-    if (hasSpotify) {
+    if (profileID) {
       getTopSongs();
-    } else {
-      setTopSongs([]);
     }
-  }, [hasSpotify]);
+  }, [profileID]);
 
   useEffect(() => {
     if (!UID) {
@@ -167,56 +161,68 @@ const ProfileDetails = props => {
                     <>
                       {topIndex === 0 ? (
                         <>
-                          {fetchingTopSongs ? (
-                            <Text>fetching...</Text>
+                          {allData[0] === 'e' ? (
+                            <View style={styles.noLikeContainer}>
+                              <Ionicons
+                                color={'white'}
+                                name="musical-notes"
+                                size={80}
+                              />
+                              <Text style={styles.noLikeText}>
+                                No top songs yet.
+                              </Text>
+                            </View>
                           ) : (
-                            <>
-                              {topSongs === 'e' ? (
-                                <Text>this user does not have spotify</Text>
-                              ) : (
-                                <View style={styles.postContainer} key={index}>
-                                  <TouchableWithoutFeedback
-                                    onPress={() => {
-                                      navigation.navigate('ViewPostsScreen', {
-                                        //making the song an array so it works with swiper package
-                                        songInfo: [item],
-                                        UID: UID,
-                                      });
-                                    }}>
-                                    <View>
-                                      <Image
-                                        style={styles.songPhoto}
-                                        source={{
-                                          uri: item.songPhoto,
-                                        }}
-                                      />
-                                      <Text
-                                        numberOfLines={1}
-                                        style={styles.songName}>
-                                        {item.songName}
-                                      </Text>
-                                      <View>
-                                        <Text
-                                          numberOfLines={1}
-                                          style={styles.artistName}>
-                                          {item.artists
-                                            ?.map(artist => {
-                                              return artist.name;
-                                            })
-                                            .join(', ')}
-                                        </Text>
-                                      </View>
-                                    </View>
-                                  </TouchableWithoutFeedback>
+                            <View style={styles.postContainer} key={index}>
+                              <TouchableWithoutFeedback
+                                onPress={() => {
+                                  navigation.navigate('ViewPostsScreen', {
+                                    //making the song an array so it works with swiper package
+                                    songInfo: [item],
+                                    UID: UID,
+                                  });
+                                }}>
+                                <View>
+                                  <Image
+                                    style={styles.songPhoto}
+                                    source={{
+                                      uri: item.songPhoto,
+                                    }}
+                                  />
+                                  <Text
+                                    numberOfLines={1}
+                                    style={styles.songName}>
+                                    {item.songName}
+                                  </Text>
+                                  <View>
+                                    <Text
+                                      numberOfLines={1}
+                                      style={styles.artistName}>
+                                      {item.artists
+                                        ?.map(artist => {
+                                          return artist.name;
+                                        })
+                                        .join(', ')}
+                                    </Text>
+                                  </View>
                                 </View>
-                              )}
-                            </>
+                              </TouchableWithoutFeedback>
+                            </View>
                           )}
                         </>
                       ) : (
                         <>
                           {allData[1] === 'e' ? (
-                            <Text>no likes yet...</Text>
+                            <View style={styles.noLikeContainer}>
+                              <Ionicons
+                                color={'white'}
+                                name="musical-notes"
+                                size={80}
+                              />
+                              <Text style={styles.noLikeText}>
+                                No likes yet
+                              </Text>
+                            </View>
                           ) : (
                             <View style={styles.postContainer} key={index}>
                               <TouchableWithoutFeedback
@@ -285,10 +291,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   loadingContainer: {
-    flex: 1,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: '25%',
   },
   loadingText: {
     color: 'white',
@@ -340,5 +346,16 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Medium',
     textAlign: 'center',
     fontSize: 15,
+  },
+  fetchingContainer: {
+    justifyContent: 'center',
+    height: '100%',
+  },
+  fetchingText: {
+    color: 'white',
+    fontFamily: 'Inter-Medium',
+    textAlign: 'center',
+    fontSize: 15,
+    marginTop: '3%',
   },
 });
