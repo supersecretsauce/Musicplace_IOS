@@ -185,7 +185,7 @@ const ProfileDetails = props => {
                 showsVerticalScrollIndicator={false}
                 // eslint-disable-next-line react-native/no-inline-styles
                 contentContainerStyle={{
-                  paddingBottom: '40%',
+                  paddingBottom: '85%',
                   alignSelf: 'center',
                   flexDirection: 'column',
                   alignItems: 'center',
@@ -314,7 +314,7 @@ export default ProfileDetails;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 215,
+    marginTop: 198,
     alignSelf: 'center',
     // flex: 1,
   },
