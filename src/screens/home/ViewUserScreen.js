@@ -1,5 +1,4 @@
 import {
-  Image,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -41,7 +40,6 @@ const ViewUserScreen = ({route, navigation}) => {
     }
   }, [profileID]);
 
-  //follow a user logic
   async function followHandler() {
     HapticFeedback.trigger('impactSoft');
     const increment = firebase.firestore.FieldValue.increment(1);
@@ -115,13 +113,6 @@ const ViewUserScreen = ({route, navigation}) => {
         myUser: myUser,
       });
     } else if (prevRoute === 'DirectMessageScreen') {
-      // navigation.navigate('DirectMessageScreen', {
-      //   profileID: profileID,
-      //   UID: UID,
-      //   myUser: myUser,
-      //   userProfile: userProfile,
-      //   prevRoute: 'ViewUserScreen',
-      // });
       navigation.goBack();
     } else if (prevRoute === 'ActivityScreen') {
       navigation.navigate('ActivityScreen');
@@ -314,7 +305,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 215,
     left: 28,
-    // backgroundColor: 'red',
   },
   displayName: {
     fontFamily: 'Inter-Bold',
@@ -366,7 +356,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: 335,
     alignSelf: 'center',
-    // backgroundColor: 'red',
   },
   middleSection: {
     height: 70,
@@ -394,21 +383,5 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Regular',
     color: 'white',
     marginLeft: 5,
-  },
-  leftLine: {
-    borderBottomColor: 'white',
-    borderBottomWidth: 0.25,
-    width: '50%',
-    position: 'absolute',
-    top: 358,
-    left: 0,
-  },
-  rightLine: {
-    borderBottomColor: 'grey',
-    borderBottomWidth: 0.25,
-    width: '50%',
-    position: 'absolute',
-    top: 358,
-    right: 0,
   },
 });

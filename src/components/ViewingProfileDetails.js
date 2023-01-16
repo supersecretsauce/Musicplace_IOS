@@ -6,9 +6,8 @@ import {
   Text,
   TouchableWithoutFeedback,
   Image,
-  TouchableOpacity,
 } from 'react-native';
-import React, {useEffect, useContext, useState, useRef} from 'react';
+import React, {useEffect, useContext, useState} from 'react';
 import {Context} from '../context/Context';
 import Swiper from 'react-native-swiper';
 import axios from 'axios';
@@ -20,7 +19,6 @@ import Colors from '../assets/utilities/Colors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {authorize} from 'react-native-app-auth';
 import {spotConfig} from '../../SpotifyConfig';
-import Spotify from '../assets/img/spotify.svg';
 
 const ProfileDetails = props => {
   const {
@@ -41,7 +39,6 @@ const ProfileDetails = props => {
   const [topSongs, setTopSongs] = useState(null);
   const [likes, setLikes] = useState(null);
   const [allData, setAllData] = useState([]);
-  // const swiperRef = useRef();
 
   useEffect(() => {
     if (hasSpotify) {
@@ -101,7 +98,6 @@ const ProfileDetails = props => {
       )
       .then(resp => {
         console.log(resp);
-        // setTopSongs([]);
         setTopSongs(resp.data.data);
         setFetchingTopSongs(false);
       })
@@ -109,8 +105,6 @@ const ProfileDetails = props => {
         console.log(e);
       });
   }
-
-  // console.log(hasSpotify);
 
   useEffect(() => {
     console.log('likes', likes);
@@ -128,37 +122,6 @@ const ProfileDetails = props => {
       }
     }
   }, [topSongs, likes]);
-
-  const connectSpotify = async () => {
-    if (UID) {
-      const authState = await authorize(spotConfig);
-      setFetchingTopSongs(true);
-      firestore()
-        .collection('users')
-        .doc(UID)
-        .update({
-          spotifyAccessToken: authState.accessToken,
-          spotifyAccessTokenExpirationDate: authState.accessTokenExpirationDate,
-          spotifyRefreshToken: authState.refreshToken,
-          spotifyTokenType: authState.tokenType,
-          connectedWithSpotify: true,
-        })
-        .then(resp => {
-          console.log(resp);
-          setHasSpotify(true);
-          AsyncStorage.setItem('hasSpotify', 'true');
-          axios
-            .get(`http://167.99.22.22/update/top-tracks?userId=${UID}`)
-            .then(() => {
-              console.log('finished getting spotify library');
-              getTopSongs();
-            })
-            .catch(e => {
-              console.log(e);
-            });
-        });
-    }
-  };
 
   return (
     <View style={styles.container}>
@@ -316,7 +279,6 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 198,
     alignSelf: 'center',
-    // flex: 1,
   },
   flatListContainer: {
     width: '100%',
@@ -365,37 +327,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     maxWidth: 140,
     marginTop: '2%',
-  },
-  // if a user doesn't have spotify
-  noSpotifyContainer: {
-    alignSelf: 'center',
-    width: 280,
-    paddingVertical: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  noSpotText: {
-    color: 'white',
-    fontFamily: 'Inter-Medium',
-    textAlign: 'center',
-    fontSize: 15,
-  },
-  listenOnSpotifyBtn: {
-    marginTop: '8%',
-    paddingHorizontal: 25,
-    paddingVertical: 12,
-    borderRadius: 20,
-    backgroundColor: '#1F1F1F',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    alignSelf: 'center',
-  },
-  listenOnSpotifyText: {
-    color: 'white',
-    fontFamily: 'Inter-Bold',
-    fontSize: 16,
-    marginLeft: 10,
   },
   noLikeContainer: {
     alignSelf: 'center',
