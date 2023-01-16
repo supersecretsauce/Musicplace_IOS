@@ -6,19 +6,23 @@ import {
   View,
   TouchableWithoutFeedback,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import firestore from '@react-native-firebase/firestore';
 import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import UserPosts from '../../components/UserPosts';
+import ViewingProfileDetails from '../../components/ViewingProfileDetails';
 import {firebase} from '@react-native-firebase/firestore';
 import HapticFeedback from 'react-native-haptic-feedback';
 import FastImage from 'react-native-fast-image';
+import {Context} from '../../context/Context';
 
 const ViewUserScreen = ({route, navigation}) => {
   const {profileID, UID, prevRoute, myUser} = route.params;
+  const {viewingSwiperRef, swiperIndex} = useContext(Context);
   const [userProfile, setUserProfile] = useState(null);
   const [followersList, setFollowersList] = useState([]);
+  const [highlightMostPlayed, setHighlightMostPlayed] = useState(true);
+  const [highlightLikes, setHighlightLikes] = useState(false);
 
   useEffect(() => {
     if (profileID) {
@@ -130,6 +134,23 @@ const ViewUserScreen = ({route, navigation}) => {
     }
   }
 
+  function showLikes() {
+    if (swiperIndex === 1) {
+      viewingSwiperRef.current.scrollBy(-1);
+      setHighlightLikes(true);
+      setHighlightMostPlayed(false);
+      console.log('showing likes');
+    }
+  }
+
+  function showMostPlayed() {
+    if (swiperIndex === 0) {
+      viewingSwiperRef.current.scrollBy(1);
+      setHighlightLikes(false);
+      setHighlightMostPlayed(true);
+    }
+  }
+
   return (
     <View style={styles.container}>
       {userProfile ? (
@@ -189,9 +210,13 @@ const ViewUserScreen = ({route, navigation}) => {
                   {followersList?.includes(UID) ? 'Unfollow' : 'Follow'}
                 </Text>
               </TouchableOpacity>
-              <TouchableWithoutFeedback>
+              <TouchableWithoutFeedback onPress={showLikes}>
                 <View style={styles.contentContainer}>
-                  <Ionicons name={'headset'} color="white" size={24} />
+                  <Ionicons
+                    name={'headset'}
+                    color={highlightMostPlayed ? 'white' : 'grey'}
+                    size={24}
+                  />
 
                   {/* <Text style={styles.contentText}>Likes</Text> */}
                 </View>
@@ -210,17 +235,25 @@ const ViewUserScreen = ({route, navigation}) => {
                 }}>
                 <Text style={styles.middleText}>Message</Text>
               </TouchableOpacity>
-              <TouchableWithoutFeedback>
+              <TouchableWithoutFeedback onPress={showMostPlayed}>
                 <View style={styles.contentContainer}>
                   {/* <Text style={styles.contentText}>Most played</Text> */}
-                  <Ionicons name={'heart'} color="grey" size={24} />
+                  <Ionicons
+                    name={'heart'}
+                    color={highlightLikes ? 'white' : 'grey'}
+                    size={24}
+                  />
                 </View>
               </TouchableWithoutFeedback>
             </View>
           </View>
           <View style={styles.leftLine} />
           <View style={styles.rightLine} />
-          <UserPosts navigation={navigation} profileID={profileID} UID={UID} />
+          <ViewingProfileDetails
+            navigation={navigation}
+            profileID={profileID}
+            UID={UID}
+          />
         </View>
       ) : (
         <></>

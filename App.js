@@ -26,6 +26,9 @@ export default function App() {
   const [invitesRemaining, setInvitesRemaining] = useState(null);
   const appState = useRef(AppState.currentState);
   const navigationRef = useRef();
+  const viewingSwiperRef = useRef();
+  const [swiperIndex, setSwiperIndex] = useState(0);
+  const [fetchingTopSongs, setFetchingTopSongs] = useState(false);
 
   // AsyncStorage.clear();
 
@@ -114,6 +117,11 @@ export default function App() {
             setIsNewUser,
             invitesRemaining,
             setInvitesRemaining,
+            viewingSwiperRef,
+            swiperIndex,
+            setSwiperIndex,
+            fetchingTopSongs,
+            setFetchingTopSongs,
           }}>
           {userLogin ? (
             <Stack.Navigator

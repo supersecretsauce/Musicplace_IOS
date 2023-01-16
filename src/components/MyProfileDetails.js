@@ -23,7 +23,7 @@ import {spotConfig} from '../../SpotifyConfig';
 import Spotify from '../assets/img/spotify.svg';
 import {DrawerContext} from '../context/DrawerContext';
 
-const ProfileDetails = props => {
+const MyProfileDetails = props => {
   const {UID, navigation} = props;
   const {swiperRef, setSwiperIndex, fetchingTopSongs, setFetchingTopSongs} =
     useContext(DrawerContext);
@@ -302,7 +302,7 @@ const ProfileDetails = props => {
   );
 };
 
-export default ProfileDetails;
+export default MyProfileDetails;
 
 const styles = StyleSheet.create({
   container: {
