@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import {
   StyleSheet,
   View,
@@ -22,9 +23,10 @@ import {authorize} from 'react-native-app-auth';
 import {spotConfig} from '../../SpotifyConfig';
 import Spotify from '../assets/img/spotify.svg';
 import {DrawerContext} from '../context/DrawerContext';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const MyProfileDetails = props => {
-  const {UID, navigation} = props;
+  const {UID, navigation, setHighlightLikes, setHighlightMostPlayed} = props;
   const {swiperRef, setSwiperIndex, fetchingTopSongs, setFetchingTopSongs} =
     useContext(DrawerContext);
   const {hasSpotify, setHasSpotify} = useContext(Context);
@@ -107,11 +109,12 @@ const MyProfileDetails = props => {
         console.log('both empty ');
         setAllData(['e', 'e']);
       } else if (topSongs.length > 0 && likes.length < 1) {
-        setAllData(['e', topSongs]);
+        console.log('ppopu');
+        setAllData([topSongs, 'e']);
       } else if (topSongs.length < 1 && likes.length > 0) {
-        setAllData([likes, 'e']);
+        setAllData(['e', likes]);
       } else {
-        setAllData([likes, topSongs]);
+        setAllData([topSongs, likes]);
       }
     }
   }, [topSongs, likes]);
@@ -152,7 +155,16 @@ const MyProfileDetails = props => {
       {allData.length > 1 ? (
         <Swiper
           ref={swiperRef}
-          onIndexChanged={index => setSwiperIndex(index)}
+          onIndexChanged={index => {
+            setSwiperIndex(index);
+            if (index === 0) {
+              setHighlightMostPlayed(true);
+              setHighlightLikes(false);
+            } else {
+              setHighlightMostPlayed(false);
+              setHighlightLikes(true);
+            }
+          }}
           showsPagination={false}
           showsButtons={false}
           loop={false}>
@@ -161,15 +173,13 @@ const MyProfileDetails = props => {
               <FlatList
                 numColumns={2}
                 showsVerticalScrollIndicator={false}
-                // eslint-disable-next-line react-native/no-inline-styles
                 contentContainerStyle={{
-                  paddingBottom: '40%',
+                  paddingBottom: '45%',
                   alignSelf: 'center',
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
-                // eslint-disable-next-line react-native/no-inline-styles
                 style={{
                   width: '100%',
                   height: '100%',
@@ -182,14 +192,78 @@ const MyProfileDetails = props => {
                     <>
                       {topIndex === 0 ? (
                         <>
-                          {allData[0] === 'e' ? (
+                          {fetchingTopSongs ? (
+                            <View style={styles.fetchingContainer}>
+                              <Text style={styles.fetchingText}>
+                                fetching...
+                              </Text>
+                            </View>
+                          ) : (
                             <>
-                              <View style={styles.noLikeContainer}>
-                                <Text style={styles.noLikeText}>
-                                  No likes just yet ☹️
-                                </Text>
-                              </View>
+                              {allData[0] === 'e' ? (
+                                <View style={styles.noLikeContainer}>
+                                  <Ionicons
+                                    color={'white'}
+                                    name="musical-notes"
+                                    size={80}
+                                  />
+                                  <Text style={styles.noLikeText}>
+                                    No top songs yet.
+                                  </Text>
+                                </View>
+                              ) : (
+                                <View style={styles.postContainer} key={index}>
+                                  <TouchableWithoutFeedback
+                                    onPress={() => {
+                                      navigation.navigate('ViewPostsScreen', {
+                                        //making the song an array so it works with swiper package
+                                        songInfo: [item],
+                                        UID: UID,
+                                      });
+                                    }}>
+                                    <View>
+                                      <Image
+                                        style={styles.songPhoto}
+                                        source={{
+                                          uri: item.songPhoto,
+                                        }}
+                                      />
+                                      <Text
+                                        numberOfLines={1}
+                                        style={styles.songName}>
+                                        {item.songName}
+                                      </Text>
+                                      <View>
+                                        <Text
+                                          numberOfLines={1}
+                                          style={styles.artistName}>
+                                          {item.artists
+                                            ?.map(artist => {
+                                              return artist.name;
+                                            })
+                                            .join(', ')}
+                                        </Text>
+                                      </View>
+                                    </View>
+                                  </TouchableWithoutFeedback>
+                                </View>
+                              )}
                             </>
+                          )}
+                        </>
+                      ) : (
+                        <>
+                          {allData[1] === 'e' ? (
+                            <View style={styles.noLikeContainer}>
+                              <Ionicons
+                                color={'white'}
+                                name="musical-notes"
+                                size={80}
+                              />
+                              <Text style={styles.noLikeText}>
+                                No likes yet
+                              </Text>
+                            </View>
                           ) : (
                             <View style={styles.postContainer} key={index}>
                               <TouchableWithoutFeedback
@@ -228,62 +302,6 @@ const MyProfileDetails = props => {
                             </View>
                           )}
                         </>
-                      ) : fetchingTopSongs ? (
-                        <View style={styles.loadingTopSongsContainer}>
-                          <ActivityIndicator color={'white'} />
-                          <Text style={styles.loadingTopSongsText}>
-                            getting top songs
-                          </Text>
-                        </View>
-                      ) : hasSpotify ? (
-                        <View style={styles.postContainer} key={index}>
-                          <TouchableWithoutFeedback
-                            onPress={() => {
-                              navigation.navigate('ViewPostsScreen', {
-                                //making the song an array so it works with swiper package
-                                songInfo: [item],
-                                UID: UID,
-                              });
-                            }}>
-                            <View>
-                              <Image
-                                style={styles.songPhoto}
-                                source={{
-                                  uri: item.songPhoto,
-                                }}
-                              />
-                              <Text numberOfLines={1} style={styles.songName}>
-                                {item.songName}
-                              </Text>
-                              <View>
-                                <Text
-                                  numberOfLines={1}
-                                  style={styles.artistName}>
-                                  {item.artists
-                                    ?.map(artist => {
-                                      return artist.name;
-                                    })
-                                    .join(', ')}
-                                </Text>
-                              </View>
-                            </View>
-                          </TouchableWithoutFeedback>
-                        </View>
-                      ) : (
-                        <View style={styles.noSpotifyContainer}>
-                          <Text style={styles.noSpotText}>
-                            Connect with Spotify to add your most played songs
-                            to your profile.
-                          </Text>
-                          <TouchableOpacity
-                            style={styles.listenOnSpotifyBtn}
-                            onPress={connectSpotify}>
-                            <Spotify />
-                            <Text style={styles.listenOnSpotifyText}>
-                              CONNECT WITH SPOTIFY
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
                       )}
                     </>
                   );
@@ -306,19 +324,18 @@ export default MyProfileDetails;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 215,
+    marginTop: 198,
     alignSelf: 'center',
-    flex: 1,
   },
   flatListContainer: {
     width: '100%',
     justifyContent: 'center',
   },
   loadingContainer: {
-    flex: 1,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: '25%',
   },
   loadingText: {
     color: 'white',
@@ -401,5 +418,17 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-Medium',
     textAlign: 'center',
     fontSize: 15,
+    marginTop: '3%',
+  },
+  fetchingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  fetchingText: {
+    color: 'white',
+    fontFamily: 'Inter-Medium',
+    textAlign: 'center',
+    fontSize: 15,
+    marginTop: '3%',
   },
 });
