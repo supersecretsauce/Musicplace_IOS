@@ -191,7 +191,7 @@ const ViewUserScreen = ({route, navigation}) => {
               </TouchableOpacity>
               <TouchableWithoutFeedback>
                 <View style={styles.contentContainer}>
-                  <Ionicons name={'headset'} color="grey" size={24} />
+                  <Ionicons name={'headset'} color="white" size={24} />
 
                   {/* <Text style={styles.contentText}>Likes</Text> */}
                 </View>
@@ -213,7 +213,7 @@ const ViewUserScreen = ({route, navigation}) => {
               <TouchableWithoutFeedback>
                 <View style={styles.contentContainer}>
                   {/* <Text style={styles.contentText}>Most played</Text> */}
-                  <Ionicons name={'heart'} color="white" size={24} />
+                  <Ionicons name={'heart'} color="grey" size={24} />
                 </View>
               </TouchableWithoutFeedback>
             </View>
