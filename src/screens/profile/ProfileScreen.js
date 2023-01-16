@@ -4,6 +4,7 @@ import {
   View,
   TouchableOpacity,
   useWindowDimensions,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import React, {useState, useEffect, useContext} from 'react';
 import {DrawerContext} from '../../context/DrawerContext';
@@ -32,6 +33,8 @@ const ProfileScreen = ({navigation}) => {
   const [header, setHeader] = useState(null);
   const [PFP, setPFP] = useState(null);
   const [displayName, setDisplayName] = useState(null);
+  const [highlightMostPlayed, setHighlightMostPlayed] = useState(true);
+  const [highlightLikes, setHighlightLikes] = useState(false);
   const dimensions = useWindowDimensions();
   const style2 = useAnimatedStyle(() => {
     return {
@@ -156,22 +159,71 @@ const ProfileScreen = ({navigation}) => {
               <Text style={styles.statsText}>Following</Text>
             </View>
           </View>
-          <View style={styles.userContentContainer}>
+          <View style={styles.middleContainer}>
             <TouchableOpacity
-              activeOpacity={1}
-              style={styles.likesContainer}
-              onPress={showLikes}>
-              <Text style={styles.likes}>Likes</Text>
+              style={styles.editProfileBtn}
+              onPress={() => {
+                editTopValue.value = withSpring(
+                  dimensions.height / 10,
+                  SPRING_CONFIG,
+                );
+              }}>
+              <Text style={styles.editProfileText}>Edit Profile</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              activeOpacity={1}
-              style={styles.mostPlayedContainer}
-              onPress={showMostPlayed}>
-              <Text style={styles.mostPlayed}>Most Played</Text>
-            </TouchableOpacity>
+            <View style={styles.middleIcons}>
+              <TouchableWithoutFeedback
+                style={styles.iconContainer}
+                onPress={showLikes}>
+                <View style={styles.iconContainer}>
+                  <Ionicons
+                    name={'headset'}
+                    color={highlightMostPlayed ? 'white' : 'grey'}
+                    size={24}
+                  />
+
+                  {/* <Text style={styles.contentText}>Likes</Text> */}
+                </View>
+              </TouchableWithoutFeedback>
+              <TouchableWithoutFeedback onPress={showMostPlayed}>
+                <View style={styles.iconContainer}>
+                  {/* <Text style={styles.contentText}>Most played</Text> */}
+                  <Ionicons
+                    name={'heart'}
+                    color={highlightLikes ? 'white' : 'grey'}
+                    size={24}
+                  />
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
           </View>
-          {/* <MyPosts UID={UID} navigation={navigation} /> */}
-          <MyProfileDetails UID={UID} navigation={navigation} />
+          <View
+            // eslint-disable-next-line react-native/no-inline-styles
+            style={{
+              borderBottomColor: highlightMostPlayed ? 'white' : 'grey',
+              borderBottomWidth: 0.25,
+              width: '50%',
+              position: 'absolute',
+              top: 358,
+              left: 0,
+            }}
+          />
+          <View
+            // eslint-disable-next-line react-native/no-inline-styles
+            style={{
+              borderBottomColor: highlightLikes ? 'white' : 'grey',
+              borderBottomWidth: 0.25,
+              width: '50%',
+              position: 'absolute',
+              top: 358,
+              right: 0,
+            }}
+          />
+          <MyProfileDetails
+            setHighlightMostPlayed={setHighlightMostPlayed}
+            setHighlightLikes={setHighlightLikes}
+            UID={UID}
+            navigation={navigation}
+          />
           <PanGestureHandler onGestureEvent={gestureHandler2}>
             <Animated.View
               style={[
@@ -328,5 +380,36 @@ const styles = StyleSheet.create({
   },
   helpIcon: {
     left: 6,
+  },
+  middleContainer: {
+    position: 'absolute',
+    top: 280,
+    width: 335,
+    alignSelf: 'center',
+  },
+
+  editProfileBtn: {
+    backgroundColor: '#393939',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 6,
+    borderRadius: 9,
+  },
+  editProfileText: {
+    color: 'white',
+  },
+  middleIcons: {
+    // backgroundColor: 'red',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  iconContainer: {
+    width: '50%',
+    paddingTop: 14,
+    // backgroundColor: 'red',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
