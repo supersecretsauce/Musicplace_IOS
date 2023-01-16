@@ -134,18 +134,18 @@ const ViewUserScreen = ({route, navigation}) => {
     }
   }
 
-  function showLikes() {
-    if (swiperIndex === 1) {
-      viewingSwiperRef.current.scrollBy(-1);
+  function showMostPlayed() {
+    if (swiperIndex === 0) {
+      viewingSwiperRef.current.scrollBy(1);
       setHighlightLikes(true);
       setHighlightMostPlayed(false);
       console.log('showing likes');
     }
   }
 
-  function showMostPlayed() {
-    if (swiperIndex === 0) {
-      viewingSwiperRef.current.scrollBy(1);
+  function showLikes() {
+    if (swiperIndex === 1) {
+      viewingSwiperRef.current.scrollBy(-1);
       setHighlightLikes(false);
       setHighlightMostPlayed(true);
     }
@@ -247,12 +247,34 @@ const ViewUserScreen = ({route, navigation}) => {
               </TouchableWithoutFeedback>
             </View>
           </View>
-          <View style={styles.leftLine} />
-          <View style={styles.rightLine} />
+          <View
+            // eslint-disable-next-line react-native/no-inline-styles
+            style={{
+              borderBottomColor: highlightMostPlayed ? 'white' : 'grey',
+              borderBottomWidth: 0.25,
+              width: '50%',
+              position: 'absolute',
+              top: 358,
+              left: 0,
+            }}
+          />
+          <View
+            // eslint-disable-next-line react-native/no-inline-styles
+            style={{
+              borderBottomColor: highlightLikes ? 'white' : 'grey',
+              borderBottomWidth: 0.25,
+              width: '50%',
+              position: 'absolute',
+              top: 358,
+              right: 0,
+            }}
+          />
           <ViewingProfileDetails
             navigation={navigation}
             profileID={profileID}
             UID={UID}
+            setHighlightMostPlayed={setHighlightMostPlayed}
+            setHighlightLikes={setHighlightLikes}
           />
         </View>
       ) : (

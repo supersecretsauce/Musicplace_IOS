@@ -23,7 +23,13 @@ import {spotConfig} from '../../SpotifyConfig';
 import Spotify from '../assets/img/spotify.svg';
 
 const ProfileDetails = props => {
-  const {UID, navigation, profileID} = props;
+  const {
+    UID,
+    navigation,
+    profileID,
+    setHighlightMostPlayed,
+    setHighlightLikes,
+  } = props;
   const {
     hasSpotify,
     setHasSpotify,
@@ -159,7 +165,16 @@ const ProfileDetails = props => {
       {allData.length > 1 ? (
         <Swiper
           ref={viewingSwiperRef}
-          onIndexChanged={index => setSwiperIndex(index)}
+          onIndexChanged={index => {
+            setSwiperIndex(index);
+            if (index === 0) {
+              setHighlightMostPlayed(true);
+              setHighlightLikes(false);
+            } else {
+              setHighlightMostPlayed(false);
+              setHighlightLikes(true);
+            }
+          }}
           showsPagination={false}
           showsButtons={false}
           loop={false}>
