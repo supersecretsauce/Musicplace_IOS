@@ -216,7 +216,8 @@ const InviteContactsScreen = ({route, navigation}) => {
             <View style={styles.previewBubble}>
               <Text style={styles.textPreview}>
                 {myName ? myName : myPhoneNumber} invited you to join
-                Musicplace. Your number is now eligible! Download the app here
+                Musicplace. Your number is now eligible! Download the app
+                <Text style={{textDecorationLine: 'underline'}}>here</Text>
               </Text>
             </View>
           </View>
