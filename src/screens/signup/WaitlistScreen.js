@@ -96,7 +96,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
-    // justifyContent: 'center',
   },
   touchContainer: {
     width: '15%',
@@ -159,39 +158,4 @@ const styles = StyleSheet.create({
     fontSize: 15,
     textAlign: 'center',
   },
-  // waitlistContainer: {
-  //   alignItems: 'center',
-  //   justifyContent: 'center',
-  // },
-  // desc: {
-  //   color: 'white',
-  //   fontFamily: 'Inter-Bold',
-  //   fontSize: 30,
-  //   width: 320,
-  //   textAlign: 'center',
-  //   alignSelf: 'center',
-  //   marginTop: '40%',
-  // },
-  // descInfo: {
-  //   // textAlign: 'center',
-  //   color: 'white',
-  //   fontFamily: 'Inter-Medium',
-  //   fontSize: 14,
-  //   width: 300,
-  //   marginTop: '3%',
-  //   lineHeight: 23,
-  // },
-  // btn: {
-  //   backgroundColor: '#7289da',
-  //   borderRadius: 9,
-  //   paddingVertical: 10,
-  //   marginTop: '10%',
-  //   width: '80%',
-  // },
-  // btnText: {
-  //   color: 'white',
-  //   fontFamily: 'Inter-Bold',
-  //   fontSize: 20,
-  //   textAlign: 'center',
-  // },
 });
