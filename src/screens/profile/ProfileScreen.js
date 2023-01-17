@@ -145,11 +145,11 @@ const ProfileScreen = ({navigation}) => {
           </View>
           <View style={styles.userStatsContainer}>
             <View style={styles.statsContainer}>
-              <Text style={styles.stats}>{userProfile.followers}</Text>
+              <Text style={styles.stats}>{userProfile?.followers}</Text>
               <Text style={styles.statsText}>Followers</Text>
             </View>
             <View style={styles.statsContainer}>
-              <Text style={styles.stats}>{userProfile.following}</Text>
+              <Text style={styles.stats}>{userProfile?.following}</Text>
               <Text style={styles.statsText}>Following</Text>
             </View>
           </View>
