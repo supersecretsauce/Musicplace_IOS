@@ -27,6 +27,7 @@ import Toast from 'react-native-toast-message';
 import {firebase} from '@react-native-firebase/firestore';
 import {useNavigation} from '@react-navigation/native';
 import HapticFeedback from 'react-native-haptic-feedback';
+import MusicplaceIcon from '../assets/img/musicplace-icon.svg';
 
 const BottomSheet = props => {
   const {currentIndex, feed, UID, showShareSheet} = props;
@@ -468,11 +469,10 @@ const BottomSheet = props => {
             ) : (
               <>
                 <View style={styles.defaultCommentContainer}>
-                  <Image
+                  <MusicplaceIcon
+                    height={32}
+                    width={32}
                     style={styles.defaultProfilePic}
-                    source={{
-                      uri: 'https://firebasestorage.googleapis.com/v0/b/musicplace-66f20.appspot.com/o/circle.png?alt=media&token=4d44b252-e89d-4887-8a07-14e4c596de60',
-                    }}
                   />
                   <View style={styles.defaultCommentMiddle}>
                     <Text style={styles.displayName}>Musicplace</Text>
