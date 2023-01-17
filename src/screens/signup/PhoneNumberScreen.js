@@ -80,6 +80,11 @@ const PhoneNumber = ({navigation}) => {
   };
 
   async function doesNumberExist() {
+    Toast.show({
+      type: 'info',
+      text1: 'Checking waitlist...',
+      visibilityTime: 1500,
+    });
     functions()
       .httpsCallable('checkNumber')(firebaseNumberFormat)
       .then(resp => {
