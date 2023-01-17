@@ -99,7 +99,9 @@ const PhoneNumber = ({navigation}) => {
         } else if (resp.data.exists === false) {
           signInWithPhoneNumber();
         } else if (resp.data.exists === 'waitlist error') {
-          navigation.navigate('WaitlistScreen');
+          navigation.navigate('WaitlistScreen', {
+            firebaseNumberFormat: firebaseNumberFormat,
+          });
           functions()
             .httpsCallable('addWaitlist')(firebaseNumberFormat)
             .then(resp => console.log(resp))
