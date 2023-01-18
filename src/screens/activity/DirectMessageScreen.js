@@ -317,7 +317,7 @@ const DirectMessageScreen = ({route, navigation}) => {
             onBackdropPress={() => setShowBlockModal(false)}
             isVisible={showBlockModal}>
             <View style={styles.reportModalContainer}>
-              <Text style={styles.reportTitle}>
+              <Text style={styles.blockTitle}>
                 Are you sure you want to block this user?
               </Text>
               <View style={styles.reportButtonsContainer}>
@@ -602,6 +602,14 @@ const styles = StyleSheet.create({
     fontSize: 15,
     textAlign: 'center',
     lineHeight: 20,
+  },
+  blockTitle: {
+    color: 'white',
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 15,
+    textAlign: 'center',
+    lineHeight: 20,
+    width: '70%',
   },
   reportButtonsContainer: {
     flexDirection: 'row',
