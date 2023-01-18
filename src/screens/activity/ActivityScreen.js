@@ -12,7 +12,7 @@ import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as Contacts from 'expo-contacts';
 import firestore from '@react-native-firebase/firestore';
-
+import MusicplaceIcon from '../../assets/img/musicplace-icon.svg';
 import {Context} from '../../context/Context';
 
 const ActivityScreen = ({navigation}) => {
@@ -247,7 +247,11 @@ const ActivityScreen = ({navigation}) => {
                         style={styles.itemContainer}
                         onPress={() => handleNav(item.nav)}>
                         <View style={styles.itemLeft}>
-                          <View style={styles.musicplaceLogo} />
+                          <MusicplaceIcon
+                            height={40}
+                            width={40}
+                            style={styles.MusicplaceIcon}
+                          />
                           <View style={styles.itemMiddle}>
                             <Text style={styles.topText}>{item.top}</Text>
                             <Text style={styles.bottomText}>
@@ -322,7 +326,7 @@ const ActivityScreen = ({navigation}) => {
                                   )}
                                   <View style={styles.itemMiddle}>
                                     <Text style={styles.topText}>
-                                      New Follow
+                                      New Follower
                                     </Text>
                                     <Text style={styles.bottomText}>
                                       {`${item?._data?.displayName} just followed you.`}
@@ -521,11 +525,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  MusicplaceIcon: {
+    borderRadius: 40,
+  },
   musicplaceLogo: {
-    height: 40,
-    width: 40,
     borderRadius: 40,
     backgroundColor: Colors.red,
+    height: 40,
+    width: 40,
   },
   itemMiddle: {
     marginLeft: 10,
