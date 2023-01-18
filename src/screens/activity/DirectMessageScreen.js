@@ -109,6 +109,7 @@ const DirectMessageScreen = ({route, navigation}) => {
           },
           createdAt: firestore.FieldValue.serverTimestamp(),
           lastMessageAt: firestore.FieldValue.serverTimestamp(),
+          reported: false,
           [profileID]: {
             UID: profileID,
             displayName: userProfile.displayName,
