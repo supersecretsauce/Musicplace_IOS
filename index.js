@@ -3,6 +3,8 @@
  */
 import 'react-native-gesture-handler';
 import {AppRegistry} from 'react-native';
+import {Text, TextInput} from 'react-native';
+
 import App from './App';
 import {name as appName} from './app.json';
 import messaging from '@react-native-firebase/messaging';
@@ -18,3 +20,14 @@ messaging().setBackgroundMessageHandler(onMessageReceived);
 messaging().onMessage(onMessageReceived);
 
 AppRegistry.registerComponent(appName, () => App);
+
+//ADD this
+if (Text.defaultProps == null) {
+  Text.defaultProps = {};
+  Text.defaultProps.allowFontScaling = false;
+}
+
+if (TextInput.defaultProps == null) {
+  TextInput.defaultProps = {};
+  TextInput.defaultProps.allowFontScaling = false;
+}
