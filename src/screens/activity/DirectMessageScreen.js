@@ -26,6 +26,7 @@ import EmptyChatUI from '../../components/EmptyChatUI';
 import Spotify from '../../assets/img/spotify.svg';
 import {DMDrawerContext} from '../../context/DMDrawerContext';
 import Modal from 'react-native-modal';
+import Toast from 'react-native-toast-message';
 
 const DirectMessageScreen = ({route, navigation}) => {
   const {UID} = useContext(Context);
@@ -233,6 +234,30 @@ const DirectMessageScreen = ({route, navigation}) => {
     await Linking.openURL(`http://open.spotify.com/track/${item}`);
   }
 
+  function handleReport() {
+    if (chatDoc.id) {
+      setShowReportModal(false);
+      firestore()
+        .collection('chats')
+        .doc(chatDoc.id)
+        .update({
+          reported: true,
+        })
+        .then(() => {
+          Toast.show({
+            type: 'info',
+            text1: 'This conversation has been reported.',
+          });
+        });
+    } else {
+      setShowReportModal(false);
+      Toast.show({
+        type: 'error',
+        text1: 'Nothing to report',
+      });
+    }
+  }
+
   return (
     <SafeAreaView
       style={styles.container}
@@ -254,7 +279,9 @@ const DirectMessageScreen = ({route, navigation}) => {
                   onPress={() => setShowReportModal(false)}>
                   <Text style={styles.reportText}>Cancel</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.reportBtn}>
+                <TouchableOpacity
+                  style={styles.reportBtn}
+                  onPress={handleReport}>
                   <Text style={styles.reportText}>Report</Text>
                 </TouchableOpacity>
               </View>
