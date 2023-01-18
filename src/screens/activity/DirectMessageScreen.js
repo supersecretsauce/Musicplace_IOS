@@ -317,7 +317,7 @@ const DirectMessageScreen = ({route, navigation}) => {
             </View>
             <TouchableOpacity
               onPress={() => {
-                navigation.openDrawer();
+                navigation.toggleDrawer();
               }}>
               <Ionicons
                 name={'information-circle-outline'}
