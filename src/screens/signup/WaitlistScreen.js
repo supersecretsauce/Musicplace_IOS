@@ -15,6 +15,7 @@ import Hourglass from '../../assets/img/hourglass.svg';
 import functions from '@react-native-firebase/functions';
 import Toast from 'react-native-toast-message';
 import auth from '@react-native-firebase/auth';
+import {mixpanel} from '../../../mixpanel';
 
 const WaitlistScreen = ({navigation, route}) => {
   const {firebaseNumberFormat} = route.params;
@@ -25,7 +26,7 @@ const WaitlistScreen = ({navigation, route}) => {
   }
 
   useEffect(() => {
-    console.log(firebaseNumberFormat);
+    mixpanel.track('Added to Waitlist');
   }, [firebaseNumberFormat]);
 
   async function checkEligibility() {

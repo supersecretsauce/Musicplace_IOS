@@ -18,7 +18,6 @@ import BottomSheet from '../../components/BottomSheet';
 import HapticFeedback from 'react-native-haptic-feedback';
 import {Context} from '../../context/Context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {mixpanel} from '../../../mixpanel';
 import messaging from '@react-native-firebase/messaging';
 import ShareSheet from '../../components/ShareSheet';
 import axios from 'axios';
@@ -195,7 +194,6 @@ const HomeScreen = () => {
     currentTrack.stop();
     playNextTrack(index);
     setCurrentIndex(index);
-    mixpanel.track('New Listen');
   }
 
   function playNextTrack(index) {
