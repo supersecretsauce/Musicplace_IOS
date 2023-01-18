@@ -22,6 +22,7 @@ const ViewAllMessagesScreen = ({navigation, route}) => {
       const subscriber = firestore()
         .collection('chats')
         .where(`members.${UID}`, '==', true)
+        .where('blocked', '==', false)
         .onSnapshot(snapshot => {
           let sortedMsgs = snapshot.docs.sort((a, z) => {
             return z.data().lastMessageAt - a.data().lastMessageAt;

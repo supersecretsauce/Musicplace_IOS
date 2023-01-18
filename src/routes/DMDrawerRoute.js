@@ -7,12 +7,15 @@ const Drawer = createDrawerNavigator();
 
 const DMDrawerRoute = () => {
   const [showReportModal, setShowReportModal] = useState(false);
+  const [showBlockModal, setShowBlockModal] = useState(false);
 
   return (
     <DMDrawerContext.Provider
       value={{
         showReportModal,
         setShowReportModal,
+        showBlockModal,
+        setShowBlockModal,
       }}>
       <Drawer.Navigator
         drawerContent={props => <DMDrawer {...props} />}

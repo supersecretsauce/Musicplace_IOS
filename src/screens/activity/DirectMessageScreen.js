@@ -30,16 +30,17 @@ import Toast from 'react-native-toast-message';
 
 const DirectMessageScreen = ({route, navigation}) => {
   const {UID} = useContext(Context);
-  const {showReportModal, setShowReportModal} = useContext(DMDrawerContext);
+  const {
+    showReportModal,
+    setShowReportModal,
+    showBlockModal,
+    setShowBlockModal,
+  } = useContext(DMDrawerContext);
   const {profileID, userProfile, myUser, prevRoute} = route.params ?? {};
   const [chatDoc, setChatDoc] = useState(null);
   const [messageDocs, setMessageDocs] = useState(null);
   const [messageText, setMessageText] = useState('');
   const flatlistRef = useRef();
-
-  useEffect(() => {
-    console.log(showReportModal);
-  }, [showReportModal]);
 
   useEffect(() => {
     if (UID) {
@@ -111,6 +112,7 @@ const DirectMessageScreen = ({route, navigation}) => {
           createdAt: firestore.FieldValue.serverTimestamp(),
           lastMessageAt: firestore.FieldValue.serverTimestamp(),
           reported: false,
+          blocked: false,
           [profileID]: {
             UID: profileID,
             displayName: userProfile.displayName,
@@ -258,6 +260,30 @@ const DirectMessageScreen = ({route, navigation}) => {
     }
   }
 
+  function handleBlock() {
+    setShowBlockModal(false);
+    if (chatDoc.id) {
+      firestore()
+        .collection('users')
+        .doc(UID)
+        .update({
+          blockList: firestore.FieldValue.arrayUnion(profileID),
+        });
+      firestore().collection('chats').doc(chatDoc.id).update({
+        blocked: true,
+      });
+      Toast.show({
+        type: 'info',
+        text1: 'User successfully blocked',
+      });
+    } else {
+      Toast.show({
+        type: 'error',
+        text1: 'Unable to block',
+      });
+    }
+  }
+
   return (
     <SafeAreaView
       style={styles.container}
@@ -283,6 +309,27 @@ const DirectMessageScreen = ({route, navigation}) => {
                   style={styles.reportBtn}
                   onPress={handleReport}>
                   <Text style={styles.reportText}>Report</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+          <Modal
+            onBackdropPress={() => setShowBlockModal(false)}
+            isVisible={showBlockModal}>
+            <View style={styles.reportModalContainer}>
+              <Text style={styles.reportTitle}>
+                Are you sure you want to block this user?
+              </Text>
+              <View style={styles.reportButtonsContainer}>
+                <TouchableOpacity
+                  style={styles.reportBtn}
+                  onPress={() => setShowBlockModal(false)}>
+                  <Text style={styles.reportText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.reportBtn}
+                  onPress={handleBlock}>
+                  <Text style={styles.reportText}>Block</Text>
                 </TouchableOpacity>
               </View>
             </View>

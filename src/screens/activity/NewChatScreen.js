@@ -12,6 +12,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {Context} from '../../context/Context';
 import Colors from '../../assets/utilities/Colors';
 import firestore from '@react-native-firebase/firestore';
+import {Toast} from 'react-native-toast-message/lib/src/Toast';
 
 const NewChatScreen = ({route, navigation}) => {
   const {myUser} = route.params;
@@ -57,15 +58,23 @@ const NewChatScreen = ({route, navigation}) => {
 
   function handleNav(item) {
     if (item && myUser) {
-      navigation.navigate('DMDrawerRoute', {
-        screen: 'DirectMessageScreen',
-        params: {
-          profileID: item.UID,
-          userProfile: item,
-          myUser: myUser,
-          prevRoute: 'IsFollowingScreen',
-        },
-      });
+      if (item.blockList.includes(UID) || myUser.blockList.includes(item.UID)) {
+        Toast.show({
+          type: 'error',
+          text1: 'Unable to message this user.',
+        });
+        return;
+      } else {
+        navigation.navigate('DMDrawerRoute', {
+          screen: 'DirectMessageScreen',
+          params: {
+            profileID: item.UID,
+            userProfile: item,
+            myUser: myUser,
+            prevRoute: 'IsFollowingScreen',
+          },
+        });
+      }
     } else {
       return;
     }

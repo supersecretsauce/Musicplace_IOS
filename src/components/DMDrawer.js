@@ -6,7 +6,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 // import {useNavigation} from '@react-navigation/native';
 const DMDrawer = props => {
   const {navigation} = props;
-  const {setShowReportModal} = useContext(DMDrawerContext);
+  const {setShowReportModal, setShowBlockModal} = useContext(DMDrawerContext);
   //   const navigation = useNavigation();
   return (
     <DrawerContentScrollView contentContainerStyle={styles.drawer}>
@@ -20,6 +20,10 @@ const DMDrawer = props => {
         labelStyle={styles.drawerItem}
       />
       <DrawerItem
+        onPress={() => {
+          navigation.toggleDrawer();
+          setShowBlockModal(true);
+        }}
         label="Block"
         icon={() => (
           <Ionicons color={'white'} size={24} name={'alert-circle'} />

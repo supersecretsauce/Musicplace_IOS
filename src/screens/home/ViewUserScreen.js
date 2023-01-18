@@ -14,6 +14,7 @@ import {firebase} from '@react-native-firebase/firestore';
 import HapticFeedback from 'react-native-haptic-feedback';
 import FastImage from 'react-native-fast-image';
 import {Context} from '../../context/Context';
+import {Toast} from 'react-native-toast-message/lib/src/Toast';
 
 const ViewUserScreen = ({route, navigation}) => {
   const {profileID, UID, prevRoute, myUser} = route.params;
@@ -142,6 +143,29 @@ const ViewUserScreen = ({route, navigation}) => {
     }
   }
 
+  function handleMessageNav() {
+    if (
+      userProfile.blockList.includes(UID) ||
+      myUser.blockList.includes(profileID)
+    ) {
+      Toast.show({
+        type: 'error',
+        text1: 'Unable to message this user.',
+      });
+      return;
+    } else {
+      navigation.navigate('DMDrawerRoute', {
+        screen: 'DirectMessageScreen',
+        params: {
+          profileID: profileID,
+          userProfile: userProfile,
+          myUser: myUser,
+          prevRoute: prevRoute,
+        },
+      });
+    }
+  }
+
   return (
     <View style={styles.container}>
       {userProfile ? (
@@ -213,17 +237,7 @@ const ViewUserScreen = ({route, navigation}) => {
             <View style={styles.middleSection}>
               <TouchableOpacity
                 style={styles.middleBtn}
-                onPress={() => {
-                  navigation.navigate('DMDrawerRoute', {
-                    screen: 'DirectMessageScreen',
-                    params: {
-                      profileID: profileID,
-                      userProfile: userProfile,
-                      myUser: myUser,
-                      prevRoute: prevRoute,
-                    },
-                  });
-                }}>
+                onPress={handleMessageNav}>
                 <Text style={styles.middleText}>Message</Text>
               </TouchableOpacity>
               <TouchableWithoutFeedback onPress={showMostPlayed}>
