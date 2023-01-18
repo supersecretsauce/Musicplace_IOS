@@ -73,11 +73,12 @@ const ActivityScreen = ({navigation}) => {
   }, [invitesRemaining]);
 
   useEffect(() => {
-    if (UID) {
+    if (UID && myUser) {
       // check if a user has messages
       const subscriber = firestore()
         .collection('chats')
         .where(`members.${UID}`, '==', true)
+        .where('blocked', '==', false)
         .onSnapshot(snapshot => {
           let sortedMsgs = snapshot.docs.sort((a, z) => {
             return z.data().lastMessageAt - a.data().lastMessageAt;
@@ -106,7 +107,7 @@ const ActivityScreen = ({navigation}) => {
       // Stop listening for updates when no longer required
       return () => subscriber();
     }
-  }, [UID]);
+  }, [UID, myUser]);
 
   useEffect(() => {
     if (UID) {
@@ -144,11 +145,14 @@ const ActivityScreen = ({navigation}) => {
 
   function handleMessageNav(item) {
     if (item && myUser) {
-      navigation.navigate('DirectMessageScreen', {
-        profileID: item.UID,
-        userProfile: item,
-        myUser: myUser,
-        prevRoute: 'ActivityScreen',
+      navigation.navigate('DMDrawerRoute', {
+        screen: 'DirectMessageScreen',
+        params: {
+          profileID: item.UID,
+          userProfile: item,
+          myUser: myUser,
+          prevRoute: 'ActivityScreen',
+        },
       });
     }
   }

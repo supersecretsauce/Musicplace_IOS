@@ -4,7 +4,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import ViewUserScreen from '../screens/home/ViewUserScreen';
 import HomeScreen from '../screens/home/HomeScreen';
 import ViewPostsScreen from '../screens/profile/ViewPostsScreen';
-import DirectMessageScreen from '../screens/activity/DirectMessageScreen';
+import DMDrawerRoute from './DMDrawerRoute';
 import AddFriends from '../screens/activity/AddFriends';
 const PostStack = createNativeStackNavigator();
 const HomeStackScreen = () => {
@@ -13,10 +13,7 @@ const HomeStackScreen = () => {
       <PostStack.Screen name="HomeScreen" component={HomeScreen} />
       <PostStack.Screen name="ViewUserScreen" component={ViewUserScreen} />
       <PostStack.Screen name="ViewPostsScreen" component={ViewPostsScreen} />
-      <PostStack.Screen
-        name="DirectMessageScreen"
-        component={DirectMessageScreen}
-      />
+      <PostStack.Screen name="DMDrawerRoute" component={DMDrawerRoute} />
       <PostStack.Screen name="AddFriends" component={AddFriends} />
     </PostStack.Navigator>
   );
