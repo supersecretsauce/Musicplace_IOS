@@ -55,6 +55,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
       handle: null,
       invitesRemaining: 2,
       blockList: [],
+      allowMessages: true,
     };
 
     const docRef = firestore().collection('users').doc(userInfo.uid);
@@ -150,6 +151,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
         spotifyTokenType: null,
         invitesRemaining: 2,
         blockList: [],
+        allowMessages: true,
       });
     } catch (error) {
       return;
