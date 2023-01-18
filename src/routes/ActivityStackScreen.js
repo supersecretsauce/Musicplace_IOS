@@ -6,7 +6,6 @@ import NoMessagesScreen from '../screens/activity/NoMessagesScreen';
 import InviteContactsScreen from '../screens/activity/InviteContactsScreen';
 import AddFriends from '../screens/activity/AddFriends';
 import ViewUserScreen from '../screens/home/ViewUserScreen';
-import DirectMessageScreen from '../screens/activity/DirectMessageScreen';
 import NewChatScreen from '../screens/activity/NewChatScreen';
 import ViewPostsScreen from '../screens/profile/ViewPostsScreen';
 import ViewAllActivityScreen from '../screens/activity/ViewAllActivityScreen';

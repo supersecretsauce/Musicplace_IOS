@@ -24,14 +24,21 @@ import firestore from '@react-native-firebase/firestore';
 import {Context} from '../../context/Context';
 import EmptyChatUI from '../../components/EmptyChatUI';
 import Spotify from '../../assets/img/spotify.svg';
+import {DMDrawerContext} from '../../context/DMDrawerContext';
+import Modal from 'react-native-modal';
 
 const DirectMessageScreen = ({route, navigation}) => {
   const {UID} = useContext(Context);
+  const {showReportModal, setShowReportModal} = useContext(DMDrawerContext);
   const {profileID, userProfile, myUser, prevRoute} = route.params ?? {};
   const [chatDoc, setChatDoc] = useState(null);
   const [messageDocs, setMessageDocs] = useState(null);
   const [messageText, setMessageText] = useState('');
   const flatlistRef = useRef();
+
+  useEffect(() => {
+    console.log(showReportModal);
+  }, [showReportModal]);
 
   useEffect(() => {
     if (UID) {
@@ -232,6 +239,26 @@ const DirectMessageScreen = ({route, navigation}) => {
     >
       {userProfile ? (
         <>
+          <Modal
+            onBackdropPress={() => setShowReportModal(false)}
+            isVisible={showReportModal}>
+            <View style={styles.reportModalContainer}>
+              <Text style={styles.reportTitle}>
+                Are you sure you want to report your conversation with this
+                user?
+              </Text>
+              <View style={styles.reportButtonsContainer}>
+                <TouchableOpacity
+                  style={styles.reportBtn}
+                  onPress={() => setShowReportModal(false)}>
+                  <Text style={styles.reportText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.reportBtn}>
+                  <Text style={styles.reportText}>Report</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
           <View style={styles.header}>
             <View style={styles.headerLeft}>
               <TouchableOpacity
@@ -484,6 +511,39 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: 'black',
     flex: 1,
+  },
+  reportModalContainer: {
+    height: 170,
+    width: '95%',
+    backgroundColor: '#1F1F1F',
+    alignSelf: 'center',
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  reportTitle: {
+    color: 'white',
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 15,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  reportButtonsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '70%',
+    justifyContent: 'space-between',
+    marginTop: '7%',
+  },
+  reportBtn: {
+    backgroundColor: Colors.red,
+    paddingVertical: 6,
+    paddingHorizontal: 30,
+    borderRadius: 9,
+  },
+  reportText: {
+    color: 'white',
+    fontFamily: 'Inter-Bold',
   },
   header: {
     flexDirection: 'row',

@@ -1,12 +1,20 @@
 import {StyleSheet} from 'react-native';
-import React from 'react';
+import React, {useContext} from 'react';
+import {DMDrawerContext} from '../context/DMDrawerContext';
 import {DrawerContentScrollView, DrawerItem} from '@react-navigation/drawer';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-
-const DMDrawer = ({navigation}) => {
+// import {useNavigation} from '@react-navigation/native';
+const DMDrawer = props => {
+  const {navigation} = props;
+  const {setShowReportModal} = useContext(DMDrawerContext);
+  //   const navigation = useNavigation();
   return (
     <DrawerContentScrollView contentContainerStyle={styles.drawer}>
       <DrawerItem
+        onPress={() => {
+          navigation.toggleDrawer();
+          setShowReportModal(true);
+        }}
         label="Report"
         icon={() => <Ionicons color={'white'} size={24} name={'flag'} />}
         labelStyle={styles.drawerItem}
