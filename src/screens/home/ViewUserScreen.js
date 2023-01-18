@@ -214,11 +214,14 @@ const ViewUserScreen = ({route, navigation}) => {
               <TouchableOpacity
                 style={styles.middleBtn}
                 onPress={() => {
-                  navigation.navigate('DirectMessageScreen', {
-                    profileID: profileID,
-                    userProfile: userProfile,
-                    myUser: myUser,
-                    prevRoute: prevRoute,
+                  navigation.navigate('DMDrawerRoute', {
+                    screen: 'DirectMessageScreen',
+                    params: {
+                      profileID: profileID,
+                      userProfile: userProfile,
+                      myUser: myUser,
+                      prevRoute: prevRoute,
+                    },
                   });
                 }}>
                 <Text style={styles.middleText}>Message</Text>

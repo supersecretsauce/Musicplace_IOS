@@ -235,7 +235,7 @@ const DirectMessageScreen = ({route, navigation}) => {
   }
 
   function handleReport() {
-    if (chatDoc.id) {
+    if (chatDoc?.id) {
       setShowReportModal(false);
       firestore()
         .collection('chats')

@@ -57,11 +57,14 @@ const NewChatScreen = ({route, navigation}) => {
 
   function handleNav(item) {
     if (item && myUser) {
-      navigation.navigate('DirectMessageScreen', {
-        profileID: item.UID,
-        userProfile: item,
-        myUser: myUser,
-        prevRoute: 'IsFollowingScreen',
+      navigation.navigate('DMDrawerRoute', {
+        screen: 'DirectMessageScreen',
+        params: {
+          profileID: item.UID,
+          userProfile: item,
+          myUser: myUser,
+          prevRoute: 'IsFollowingScreen',
+        },
       });
     } else {
       return;
