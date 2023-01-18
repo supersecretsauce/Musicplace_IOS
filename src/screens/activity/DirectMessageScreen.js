@@ -27,7 +27,7 @@ import Spotify from '../../assets/img/spotify.svg';
 
 const DirectMessageScreen = ({route, navigation}) => {
   const {UID} = useContext(Context);
-  const {profileID, userProfile, myUser, prevRoute} = route.params;
+  const {profileID, userProfile, myUser, prevRoute} = route.params ?? {};
   const [chatDoc, setChatDoc] = useState(null);
   const [messageDocs, setMessageDocs] = useState(null);
   const [messageText, setMessageText] = useState('');
@@ -260,7 +260,10 @@ const DirectMessageScreen = ({route, navigation}) => {
                 </View>
               </TouchableOpacity>
             </View>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.openDrawer();
+              }}>
               <Ionicons
                 name={'information-circle-outline'}
                 color="white"

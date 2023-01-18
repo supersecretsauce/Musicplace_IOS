@@ -11,6 +11,8 @@ import NewChatScreen from '../screens/activity/NewChatScreen';
 import ViewPostsScreen from '../screens/profile/ViewPostsScreen';
 import ViewAllActivityScreen from '../screens/activity/ViewAllActivityScreen';
 import ViewAllMessagesScreen from '../screens/activity/ViewAllMessagesScreen';
+import DMDrawerRoute from './DMDrawerRoute';
+
 const ActivityStackScreen = () => {
   const ActivityStack = createNativeStackNavigator();
 
@@ -36,10 +38,7 @@ const ActivityStackScreen = () => {
       />
       <ActivityStack.Screen name="AddFriends" component={AddFriends} />
       <ActivityStack.Screen name="ViewUserScreen" component={ViewUserScreen} />
-      <ActivityStack.Screen
-        name="DirectMessageScreen"
-        component={DirectMessageScreen}
-      />
+      <ActivityStack.Screen name="DMDrawerRoute" component={DMDrawerRoute} />
       <ActivityStack.Screen
         name="ViewPostsScreen"
         component={ViewPostsScreen}

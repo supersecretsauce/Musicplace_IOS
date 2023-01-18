@@ -144,11 +144,14 @@ const ActivityScreen = ({navigation}) => {
 
   function handleMessageNav(item) {
     if (item && myUser) {
-      navigation.navigate('DirectMessageScreen', {
-        profileID: item.UID,
-        userProfile: item,
-        myUser: myUser,
-        prevRoute: 'ActivityScreen',
+      navigation.navigate('DMDrawerRoute', {
+        screen: 'DirectMessageScreen',
+        params: {
+          profileID: item.UID,
+          userProfile: item,
+          myUser: myUser,
+          prevRoute: 'ActivityScreen',
+        },
       });
     }
   }
