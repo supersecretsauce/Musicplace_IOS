@@ -150,6 +150,8 @@ const ShareSheet = props => {
             },
             createdAt: firestore.FieldValue.serverTimestamp(),
             lastMessageAt: firestore.FieldValue.serverTimestamp(),
+            reported: false,
+            blocked: false,
             [userItemSelections[i].UID]: {
               UID: userItemSelections[i].UID,
               displayName: userItemSelections[i].displayName,
