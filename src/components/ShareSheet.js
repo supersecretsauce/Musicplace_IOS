@@ -25,6 +25,7 @@ import Colors from '../assets/utilities/Colors';
 import {useNavigation} from '@react-navigation/native';
 import ShareOptions from './ShareOptions';
 import Toast from 'react-native-toast-message';
+import HapticFeedback from 'react-native-haptic-feedback';
 
 const ShareSheet = props => {
   const {navigate} = useNavigation();
@@ -132,6 +133,7 @@ const ShareSheet = props => {
 
   async function handleShare(item) {
     // firestore().collection("chats")
+    HapticFeedback.trigger('impactHeavy');
     setShowShareSheet(false);
     top.value = withSpring(1000, SPRING_CONFIG);
     for (let i = 0; i < userItemSelections.length; i++) {
