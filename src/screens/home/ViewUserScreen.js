@@ -128,6 +128,7 @@ const ViewUserScreen = ({route, navigation}) => {
 
   function showMostPlayed() {
     if (swiperIndex === 0) {
+      HapticFeedback.trigger('selection');
       viewingSwiperRef.current.scrollBy(1);
       setHighlightLikes(true);
       setHighlightMostPlayed(false);
@@ -137,6 +138,7 @@ const ViewUserScreen = ({route, navigation}) => {
 
   function showLikes() {
     if (swiperIndex === 1) {
+      HapticFeedback.trigger('selection');
       viewingSwiperRef.current.scrollBy(-1);
       setHighlightLikes(false);
       setHighlightMostPlayed(true);
