@@ -477,7 +477,7 @@ const BottomSheet = props => {
                   <View style={styles.defaultCommentMiddle}>
                     <Text style={styles.displayName}>Musicplace</Text>
                     <Text style={styles.comment}>
-                      swipe up to add a comment
+                      swipe up to add a comment.
                     </Text>
                   </View>
                 </View>
