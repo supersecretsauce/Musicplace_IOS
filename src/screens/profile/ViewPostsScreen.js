@@ -7,7 +7,13 @@ import {
   Image,
   Linking,
 } from 'react-native';
-import React, {useEffect, useState, useCallback, useContext} from 'react';
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useContext,
+  useRef,
+} from 'react';
 import {Context} from '../../context/Context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Spotify from '../../assets/img/spotify.svg';
@@ -39,10 +45,11 @@ const ViewPostsScreen = ({route, navigation}) => {
   const {hasSpotify, trackDeepLink, setTrackDeepLink} = useContext(Context);
   const [trackInfo, setTrackInfo] = useState(songInfo);
   const [isLiked, setIsLiked] = useState(null);
+  const likeRef = useRef(isLiked);
   let playing = true;
   let startTime = new Date();
 
-  function recordTime() {
+  function recordTime(likeValue) {
     if (trackInfo) {
       let endTime = new Date();
       let timeDiff = endTime - startTime;
@@ -56,6 +63,7 @@ const ViewPostsScreen = ({route, navigation}) => {
           UID: UID,
           duration: timeDiff,
           date: new Date(),
+          liked: likeRef.current,
         })
         .then(() => {
           console.log('added watch document');
@@ -77,6 +85,7 @@ const ViewPostsScreen = ({route, navigation}) => {
       }
       return () => {
         if (currentTrack) {
+          console.log(currentTrack);
           currentTrack.pause();
           playing = false;
           recordTime();
@@ -120,8 +129,9 @@ const ViewPostsScreen = ({route, navigation}) => {
               },
             )
             .then(resp => {
-              console.log(resp);
+              likeRef.current = resp.data.data;
               setIsLiked(resp.data.data);
+              console.log(resp.data.data);
             })
             .catch(e => {
               console.log(e);
@@ -161,6 +171,7 @@ const ViewPostsScreen = ({route, navigation}) => {
     }
     if (isLiked) {
       setIsLiked(false);
+      likeRef.current = false;
       HapticFeedback.trigger('impactLight');
       let filteredTrackInfo = trackInfo.map(track => {
         track.liked = false;
@@ -203,6 +214,7 @@ const ViewPostsScreen = ({route, navigation}) => {
         });
       }
     } else {
+      likeRef.current = true;
       setIsLiked(true);
       HapticFeedback.trigger('impactHeavy');
       let filteredTrackInfo = trackInfo.map(track => {
