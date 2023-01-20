@@ -361,6 +361,7 @@ const ViewPostsScreen = ({route, navigation}) => {
               })}
             </Swiper>
             <SinglePostBottomSheet
+              prevScreen={prevScreen}
               UID={UID}
               songInfo={songInfo}
               openSheet={openSheet}

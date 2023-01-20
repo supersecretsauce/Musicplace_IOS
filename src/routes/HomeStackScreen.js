@@ -6,6 +6,7 @@ import HomeScreen from '../screens/home/HomeScreen';
 import ViewPostsScreen from '../screens/profile/ViewPostsScreen';
 import DMDrawerRoute from './DMDrawerRoute';
 import AddFriends from '../screens/activity/AddFriends';
+import ProfileStackScreen from './ProfileStackScreen';
 const PostStack = createNativeStackNavigator();
 const HomeStackScreen = () => {
   return (
@@ -15,6 +16,10 @@ const HomeStackScreen = () => {
       <PostStack.Screen name="ViewPostsScreen" component={ViewPostsScreen} />
       <PostStack.Screen name="DMDrawerRoute" component={DMDrawerRoute} />
       <PostStack.Screen name="AddFriends" component={AddFriends} />
+      <PostStack.Screen
+        name="ProfileStackScreen"
+        component={ProfileStackScreen}
+      />
     </PostStack.Navigator>
   );
 };

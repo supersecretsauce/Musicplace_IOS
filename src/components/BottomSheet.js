@@ -351,6 +351,18 @@ const BottomSheet = props => {
     }
   }
 
+  function handleCommentNav(item) {
+    if (item._data.UID == UID) {
+      navigate('ProfileStackScreen');
+    } else {
+      navigate('ViewUserScreen', {
+        profileID: item._data.UID,
+        UID: UID,
+        myUser: userDoc,
+      });
+    }
+  }
+
   return (
     <>
       <PanGestureHandler onGestureEvent={gestureHandler}>
@@ -372,13 +384,7 @@ const BottomSheet = props => {
                           <View style={styles.commentContainer}>
                             <View style={styles.commentLeft}>
                               <TouchableOpacity
-                                onPress={() => {
-                                  navigate('ViewUserScreen', {
-                                    profileID: item._data.UID,
-                                    UID: UID,
-                                    myUser: userDoc,
-                                  });
-                                }}>
+                                onPress={() => handleCommentNav(item)}>
                                 {item?._data?.pfpURL ? (
                                   <Image
                                     style={styles.profilePic}

@@ -30,7 +30,8 @@ import HapticFeedback from 'react-native-haptic-feedback';
 import MusicplaceIcon from '../assets/img/musicplace-icon.svg';
 
 const SinglePostBottomSheet = props => {
-  const {songInfo, UID, openSheet, commentDocID, showShareSheet} = props;
+  const {songInfo, UID, openSheet, commentDocID, showShareSheet, prevScreen} =
+    props;
   const [containerUp, setContainerUp] = useState(false);
   const [containerSmall, setContainerSmall] = useState(false);
   const [comments, setComments] = useState(false);
@@ -43,7 +44,7 @@ const SinglePostBottomSheet = props => {
   const [likedComments, setLikedComments] = useState([]);
   const inputRef = useRef();
   const flatListRef = useRef();
-  const {navigate} = useNavigation();
+  const navigation = useNavigation();
 
   useEffect(() => {
     if (openSheet && commentDocID && comments) {
@@ -364,6 +365,22 @@ const SinglePostBottomSheet = props => {
     }
   }
 
+  function handleCommentNav(item) {
+    if (item._data.UID === UID) {
+      console.log(prevScreen);
+      if (prevScreen === 'ProfileScreen') {
+        navigation.goBack();
+      } else {
+        navigation.navigate('ProfileStackScreen');
+      }
+    } else {
+      navigation.navigate('ViewUserScreen', {
+        profileID: item._data.UID,
+        UID: UID,
+      });
+    }
+  }
+
   return (
     <>
       <PanGestureHandler onGestureEvent={gestureHandler}>
@@ -399,10 +416,7 @@ const SinglePostBottomSheet = props => {
                             <View style={styles.commentLeft}>
                               <TouchableOpacity
                                 onPress={() => {
-                                  navigate('ViewUserScreen', {
-                                    profileID: item._data.UID,
-                                    UID: UID,
-                                  });
+                                  handleCommentNav(item);
                                 }}>
                                 {item?._data?.pfpURL ? (
                                   <Image
@@ -475,6 +489,8 @@ const SinglePostBottomSheet = props => {
                           parentCommentID.includes(item.id) &&
                           replies ? (
                             <ReplyComments
+                              prevScreen={prevScreen}
+                              parent={'SinglePostBottomSheet'}
                               userDoc={userDoc}
                               songInfo={songInfo[0]}
                               UID={UID}
