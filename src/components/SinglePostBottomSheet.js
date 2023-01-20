@@ -30,8 +30,15 @@ import HapticFeedback from 'react-native-haptic-feedback';
 import MusicplaceIcon from '../assets/img/musicplace-icon.svg';
 
 const SinglePostBottomSheet = props => {
-  const {songInfo, UID, openSheet, commentDocID, showShareSheet, prevScreen} =
-    props;
+  const {
+    songInfo,
+    UID,
+    openSheet,
+    commentDocID,
+    showShareSheet,
+    prevScreen,
+    replyRef,
+  } = props;
   const [containerUp, setContainerUp] = useState(false);
   const [containerSmall, setContainerSmall] = useState(false);
   const [comments, setComments] = useState(false);
@@ -50,9 +57,16 @@ const SinglePostBottomSheet = props => {
     if (openSheet && commentDocID && comments) {
       top.value = withSpring(200, SPRING_CONFIG);
       runOnJS(setContainerUp)(true);
-      let index = comments.findIndex(comment => comment.id === commentDocID);
-      console.log(index);
-      flatListRef?.current?.scrollToIndex({animated: true, index: index});
+      if (replyRef) {
+        let index = comments.findIndex(comment => comment.id === replyRef);
+        flatListRef?.current?.scrollToIndex({animated: true, index: index});
+        setShowReplies(true);
+        setParentCommentID([replyRef]);
+        getCommentReplies(replyRef);
+      } else {
+        let index = comments.findIndex(comment => comment.id === commentDocID);
+        flatListRef?.current?.scrollToIndex({animated: true, index: index});
+      }
     }
   }, [openSheet, commentDocID, comments]);
 
@@ -294,6 +308,7 @@ const SinglePostBottomSheet = props => {
 
   //handle liked comment logic
   async function likeComment(item) {
+    console.log(item);
     HapticFeedback.trigger('selection');
     const increment = firebase.firestore.FieldValue.increment(1);
     const decrement = firebase.firestore.FieldValue.increment(-1);
@@ -357,6 +372,7 @@ const SinglePostBottomSheet = props => {
           pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
           commentDocID: item.id,
           notificationRead: false,
+          replyRef: item._data.parent,
         })
         .then(() => {
           console.log('added doc to parent user');

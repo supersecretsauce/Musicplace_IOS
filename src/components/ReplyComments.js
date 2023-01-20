@@ -24,10 +24,6 @@ const ReplyComments = props => {
     }
   }, [replies, UID]);
 
-  useEffect(() => {
-    console.log(replyLikes);
-  }, [replyLikes]);
-
   function handleReplyLike(reply) {
     console.log(reply.id);
     if (replyLikes.includes(reply.id)) {
@@ -83,6 +79,7 @@ const ReplyComments = props => {
           pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
           commentDocID: reply.id,
           notificationRead: false,
+          replyRef: reply._data.parent,
         })
         .then(() => {
           console.log('added doc to parent user');

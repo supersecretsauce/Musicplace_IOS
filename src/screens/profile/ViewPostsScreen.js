@@ -38,7 +38,7 @@ import {simKey} from '../../../simKey';
 
 const ViewPostsScreen = ({route, navigation}) => {
   Sound.setCategory('Playback');
-  const {songInfo, UID, openSheet, commentDocID, prevScreen} =
+  const {songInfo, UID, openSheet, commentDocID, prevScreen, replyRef} =
     route.params ?? {};
   const [currentTrack, setCurrentTrack] = useState(null);
   const [showShareSheet, setShowShareSheet] = useState(false);
@@ -367,6 +367,7 @@ const ViewPostsScreen = ({route, navigation}) => {
               openSheet={openSheet}
               commentDocID={commentDocID}
               showShareSheet={showShareSheet}
+              replyRef={replyRef}
             />
             <ShareSheet
               post={songInfo[0]}
