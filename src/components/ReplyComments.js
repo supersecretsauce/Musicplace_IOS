@@ -3,11 +3,13 @@ import React, {useEffect, useState} from 'react';
 import Colors from '../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import firestore from '@react-native-firebase/firestore';
+import {useNavigation} from '@react-navigation/native';
 
 const ReplyComments = props => {
-  const {replies, UID, songInfo, userDoc} = props;
+  const {replies, UID, songInfo, userDoc, parent, prevScreen} = props;
   const [replyLikes, setReplyLikes] = useState([]);
   const [useReplies, setUserReplies] = useState(null);
+  const navigation = useNavigation();
 
   useEffect(() => {
     if (replies && UID) {
@@ -21,10 +23,6 @@ const ReplyComments = props => {
       setReplyLikes(likesArr);
     }
   }, [replies, UID]);
-
-  useEffect(() => {
-    console.log(replyLikes);
-  }, [replyLikes]);
 
   function handleReplyLike(reply) {
     console.log(reply.id);
@@ -81,10 +79,31 @@ const ReplyComments = props => {
           pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
           commentDocID: reply.id,
           notificationRead: false,
+          replyRef: reply._data.parent,
         })
         .then(() => {
           console.log('added doc to parent user');
         });
+    }
+  }
+
+  function handleReplyCommentNav(reply) {
+    if (reply._data.UID == UID) {
+      if (parent == 'SinglePostBottomSheet') {
+        if (prevScreen === 'ProfileScreen') {
+          navigation.goBack();
+        } else {
+          navigation.navigate('ProfileStackScreen');
+        }
+      } else {
+        navigation.navigate('ProfileStackScreen');
+      }
+    } else {
+      navigation.navigate('ViewUserScreen', {
+        profileID: reply._data.UID,
+        UID: UID,
+        myUser: userDoc,
+      });
     }
   }
 
@@ -94,7 +113,12 @@ const ReplyComments = props => {
         <>
           {replies.map((reply, index) => {
             return (
-              <View style={styles.replyCommentContainer} key={index}>
+              <TouchableOpacity
+                onPress={() => {
+                  handleReplyCommentNav(reply);
+                }}
+                style={styles.replyCommentContainer}
+                key={index}>
                 <View style={styles.replyCommentLeft}>
                   {reply?._data?.pfpURL ? (
                     <Image
@@ -134,7 +158,7 @@ const ReplyComments = props => {
                     {reply._data.likeAmount}
                   </Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             );
           })}
         </>

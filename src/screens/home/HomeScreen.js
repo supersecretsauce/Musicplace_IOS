@@ -222,6 +222,7 @@ const HomeScreen = () => {
         UID: UID,
         duration: timeDiff,
         date: new Date(),
+        liked: feed[currentIndex].liked,
       })
       .then(() => {
         console.log('added watch document');

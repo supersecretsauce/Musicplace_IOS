@@ -22,6 +22,7 @@ import Animated, {
 import {SPRING_CONFIG} from '../../assets/utilities/reanimated-2';
 import FastImage from 'react-native-fast-image';
 import MyProfileDetails from '../../components/MyProfileDetails';
+import HapticFeedback from 'react-native-haptic-feedback';
 
 const ProfileScreen = ({navigation}) => {
   const {editTopValue, swiperRef, swiperIndex} = useContext(DrawerContext);
@@ -98,12 +99,14 @@ const ProfileScreen = ({navigation}) => {
 
   function showLikes() {
     if (swiperIndex === 1) {
+      HapticFeedback.trigger('selection');
       swiperRef.current.scrollBy(-1);
     }
   }
 
   function showMostPlayed() {
     if (swiperIndex === 0) {
+      HapticFeedback.trigger('selection');
       swiperRef.current.scrollBy(1);
     }
   }

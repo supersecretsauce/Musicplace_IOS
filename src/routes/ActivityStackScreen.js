@@ -11,7 +11,7 @@ import ViewPostsScreen from '../screens/profile/ViewPostsScreen';
 import ViewAllActivityScreen from '../screens/activity/ViewAllActivityScreen';
 import ViewAllMessagesScreen from '../screens/activity/ViewAllMessagesScreen';
 import DMDrawerRoute from './DMDrawerRoute';
-
+import ProfileStackScreen from './ProfileStackScreen';
 const ActivityStackScreen = () => {
   const ActivityStack = createNativeStackNavigator();
 
@@ -41,6 +41,10 @@ const ActivityStackScreen = () => {
       <ActivityStack.Screen
         name="ViewPostsScreen"
         component={ViewPostsScreen}
+      />
+      <ActivityStack.Screen
+        name="ProfileStackScreen"
+        component={ProfileStackScreen}
       />
     </ActivityStack.Navigator>
   );

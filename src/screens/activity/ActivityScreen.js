@@ -172,6 +172,7 @@ const ActivityScreen = ({navigation}) => {
       UID: UID,
       openSheet: true,
       commentDocID: item?._data?.commentDocID,
+      replyRef: item?._data.replyRef,
     });
 
     firestore()

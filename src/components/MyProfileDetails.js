@@ -219,6 +219,7 @@ const MyProfileDetails = props => {
                                         //making the song an array so it works with swiper package
                                         songInfo: [item],
                                         UID: UID,
+                                        prevScreen: 'ProfileScreen',
                                       });
                                     }}>
                                     <View>
@@ -272,6 +273,7 @@ const MyProfileDetails = props => {
                                     //making the song an array so it works with swiper package
                                     songInfo: [item._data],
                                     UID: UID,
+                                    prevScreen: 'ProfileScreen',
                                   });
                                 }}>
                                 <View>

@@ -80,10 +80,11 @@ const PhoneNumber = ({navigation}) => {
   };
 
   async function doesNumberExist() {
+    HapticFeedback.trigger('impactHeavy');
     Toast.show({
       type: 'info',
       text1: 'Checking waitlist...',
-      visibilityTime: 1500,
+      visibilityTime: 2000,
     });
     functions()
       .httpsCallable('checkNumber')(firebaseNumberFormat)
@@ -123,7 +124,6 @@ const PhoneNumber = ({navigation}) => {
   }
 
   async function signInWithPhoneNumber() {
-    HapticFeedback.trigger('impactHeavy');
     try {
       const confirmation = await auth().signInWithPhoneNumber(
         firebaseNumberFormat,

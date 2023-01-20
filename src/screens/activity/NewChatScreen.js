@@ -26,8 +26,7 @@ const NewChatScreen = ({route, navigation}) => {
       firestore()
         .collection('users')
         .doc(UID)
-        .get()
-        .then(resp => {
+        .onSnapshot(resp => {
           console.log(resp._data.followingList);
           setFollowingList(resp._data.followingList);
         });

@@ -344,10 +344,23 @@ const BottomSheet = props => {
           pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
           commentDocID: item.id,
           notificationRead: false,
+          replyRef: item._data.parent,
         })
         .then(() => {
           console.log('added doc to parent user');
         });
+    }
+  }
+
+  function handleCommentNav(item) {
+    if (item._data.UID == UID) {
+      navigate('ProfileStackScreen');
+    } else {
+      navigate('ViewUserScreen', {
+        profileID: item._data.UID,
+        UID: UID,
+        myUser: userDoc,
+      });
     }
   }
 
@@ -372,13 +385,7 @@ const BottomSheet = props => {
                           <View style={styles.commentContainer}>
                             <View style={styles.commentLeft}>
                               <TouchableOpacity
-                                onPress={() => {
-                                  navigate('ViewUserScreen', {
-                                    profileID: item._data.UID,
-                                    UID: UID,
-                                    myUser: userDoc,
-                                  });
-                                }}>
+                                onPress={() => handleCommentNav(item)}>
                                 {item?._data?.pfpURL ? (
                                   <Image
                                     style={styles.profilePic}
@@ -477,7 +484,7 @@ const BottomSheet = props => {
                   <View style={styles.defaultCommentMiddle}>
                     <Text style={styles.displayName}>Musicplace</Text>
                     <Text style={styles.comment}>
-                      swipe up to add a comment
+                      swipe up to add a comment.
                     </Text>
                   </View>
                 </View>
