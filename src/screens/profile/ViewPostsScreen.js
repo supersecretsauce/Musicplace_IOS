@@ -24,7 +24,6 @@ import firestore from '@react-native-firebase/firestore';
 import {useFocusEffect} from '@react-navigation/native';
 import HapticFeedback from 'react-native-haptic-feedback';
 import Toast from 'react-native-toast-message';
-import {mixpanel} from '../../../mixpanel';
 import ShareSheet from '../../components/ShareSheet';
 import axios from 'axios';
 import {PanGestureHandler} from 'react-native-gesture-handler';
@@ -89,7 +88,6 @@ const ViewPostsScreen = ({route, navigation}) => {
           currentTrack.pause();
           playing = false;
           recordTime();
-          mixpanel.track('New Listen');
           // console.log('user left screen');
         }
       };

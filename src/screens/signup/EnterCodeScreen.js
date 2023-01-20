@@ -49,7 +49,6 @@ const EnterCodeScreen = ({navigation}) => {
   let enterCode = async () => {
     try {
       HapticFeedback.trigger('impactHeavy');
-      mixpanel.track('New Signup');
       await confirm.confirm(verificationCode);
       setIsNewUser(true);
       navigation.navigate('ConnectSpotifyScreen');
