@@ -84,7 +84,7 @@ const PhoneNumber = ({navigation}) => {
     Toast.show({
       type: 'info',
       text1: 'Checking waitlist...',
-      visibilityTime: 1500,
+      visibilityTime: 2000,
     });
     functions()
       .httpsCallable('checkNumber')(firebaseNumberFormat)
