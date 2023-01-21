@@ -26,6 +26,7 @@ import appCheck from '@react-native-firebase/app-check';
 import DeviceInfo from 'react-native-device-info';
 import {simKey} from '../../../simKey';
 import {Toast} from 'react-native-toast-message/lib/src/Toast';
+import {mixpanel} from '../../../mixpanel';
 
 const HomeScreen = () => {
   Sound.setCategory('Playback');
@@ -298,6 +299,7 @@ const HomeScreen = () => {
         });
       }
     } else {
+      mixpanel.track('Liked Song');
       let updatedFeed = feed.map(track => {
         if (track.id === post.id) {
           track.liked = true;

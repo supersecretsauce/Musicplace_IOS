@@ -34,7 +34,7 @@ import Animated, {
 import appCheck from '@react-native-firebase/app-check';
 import DeviceInfo from 'react-native-device-info';
 import {simKey} from '../../../simKey';
-
+import {mixpanel} from '../../../mixpanel';
 const ViewPostsScreen = ({route, navigation}) => {
   Sound.setCategory('Playback');
   const {songInfo, UID, openSheet, commentDocID, prevScreen, replyRef} =
@@ -212,6 +212,8 @@ const ViewPostsScreen = ({route, navigation}) => {
         });
       }
     } else {
+      mixpanel.track('Liked Song');
+
       likeRef.current = true;
       setIsLiked(true);
       HapticFeedback.trigger('impactHeavy');

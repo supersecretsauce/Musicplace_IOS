@@ -28,6 +28,7 @@ import {firebase} from '@react-native-firebase/firestore';
 import {useNavigation} from '@react-navigation/native';
 import HapticFeedback from 'react-native-haptic-feedback';
 import MusicplaceIcon from '../assets/img/musicplace-icon.svg';
+import {mixpanel} from '../../mixpanel';
 
 const SinglePostBottomSheet = props => {
   const {
@@ -180,6 +181,7 @@ const SinglePostBottomSheet = props => {
   // handle logic when a user posts a comment
   function handleCommentSubmit() {
     console.log(replyInfo);
+    mixpanel.track('Comment');
     if (userText === '') {
       return;
     }
