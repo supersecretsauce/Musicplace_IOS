@@ -32,6 +32,7 @@
     "expo-constants": "~13.2.4",
     "expo-contacts": "~10.3.0",
     "firebase": "^9.8.4",
+    "jail-monkey": "^2.8.0",
     "lodash": "^4.17.21",
     "mixpanel-react-native": "^2.1.0",
     "moment": "^2.29.4",

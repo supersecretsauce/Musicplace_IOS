@@ -14,10 +14,11 @@ import auth from '@react-native-firebase/auth';
 import functions from '@react-native-firebase/functions';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Discord from '../../assets/img/discord.svg';
-import Colors from '../../assets/utilities/Colors';
 import Spotify from '../../assets/img/spotify.svg';
+import {mixpanel} from '../../../mixpanel';
+
 const ProfileDrawer = ({navigation}) => {
-  const {editTopValue} = useContext(DrawerContext);
+  const {editTopValue, setFetchingTopSongs} = useContext(DrawerContext);
   const {
     setHasSpotify,
     hasSpotify,
@@ -65,10 +66,14 @@ const ProfileDrawer = ({navigation}) => {
 
   const handleSpotify = () => {
     if (hasSpotify === false) {
+      mixpanel.track('Switched to Spotify');
       const connectToSpotify = async () => {
         try {
           const authState = await authorize(spotConfig);
+          setFetchingTopSongs(true);
           await AsyncStorage.setItem('hasSpotify', 'true');
+          mixpanel.removeGroup('Streaming-Service', 'None');
+          mixpanel.setGroup('Streaming-Service', 'Spotify');
           firestore()
             .collection('users')
             .doc(UID)
@@ -98,6 +103,8 @@ const ProfileDrawer = ({navigation}) => {
       connectToSpotify();
     } else {
       const disconnectFromSpotify = async () => {
+        mixpanel.removeGroup('Streaming-Service', 'Spotify');
+        mixpanel.setGroup('Streaming-Service', 'None');
         try {
           await Linking.openURL('https://www.spotify.com/us/account/apps/');
           await AsyncStorage.setItem('hasSpotify', 'false');
@@ -118,6 +125,7 @@ const ProfileDrawer = ({navigation}) => {
   };
 
   const deleteAccount = async () => {
+    mixpanel.removeGroup('Streaming-Service', hasSpotify ? 'Spotify' : 'None');
     try {
       firestore()
         .collection('usernames')

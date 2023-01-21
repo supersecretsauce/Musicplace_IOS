@@ -23,6 +23,7 @@ import functions from '@react-native-firebase/functions';
 import HapticFeedback from 'react-native-haptic-feedback';
 import Toast from 'react-native-toast-message';
 import firestore from '@react-native-firebase/firestore';
+import {mixpanel} from '../../../mixpanel';
 
 const InviteContactsScreen = ({route, navigation}) => {
   const {contacts, myPhoneNumber, phoneNumbers, UID} = route.params;
@@ -74,6 +75,7 @@ const InviteContactsScreen = ({route, navigation}) => {
   };
 
   function handleSend() {
+    mixpanel.track('Invite');
     HapticFeedback.trigger('impactHeavy');
     if (invitesRemaining === 0) {
       Toast.show({
@@ -216,7 +218,8 @@ const InviteContactsScreen = ({route, navigation}) => {
             <View style={styles.previewBubble}>
               <Text style={styles.textPreview}>
                 {myName ? myName : myPhoneNumber} invited you to join
-                Musicplace. Your number is now eligible! Download the app here
+                Musicplace. Your number is now eligible! Download the app{' '}
+                <Text style={{textDecorationLine: 'underline'}}>here</Text>
               </Text>
             </View>
           </View>

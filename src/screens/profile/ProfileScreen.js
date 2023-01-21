@@ -4,6 +4,7 @@ import {
   View,
   TouchableOpacity,
   useWindowDimensions,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import React, {useState, useEffect, useContext} from 'react';
 import {DrawerContext} from '../../context/DrawerContext';
@@ -11,7 +12,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../assets/utilities/Colors';
 import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import MyPosts from '../../components/MyPosts';
 import EditProfileSheet from '../../components/EditProfileSheet';
 import {PanGestureHandler} from 'react-native-gesture-handler';
 import Animated, {
@@ -21,22 +21,29 @@ import Animated, {
 } from 'react-native-reanimated';
 import {SPRING_CONFIG} from '../../assets/utilities/reanimated-2';
 import FastImage from 'react-native-fast-image';
+import MyProfileDetails from '../../components/MyProfileDetails';
+import HapticFeedback from 'react-native-haptic-feedback';
 
 const ProfileScreen = ({navigation}) => {
-  const {editTopValue} = useContext(DrawerContext);
+  const {editTopValue, swiperRef, swiperIndex} = useContext(DrawerContext);
   const [userProfile, setUserProfile] = useState();
   const [username, setUsername] = useState();
   const [UID, setUID] = useState();
-  const [bio, setBio] = useState(null);
   const [header, setHeader] = useState(null);
   const [PFP, setPFP] = useState(null);
   const [displayName, setDisplayName] = useState(null);
+  const [highlightMostPlayed, setHighlightMostPlayed] = useState(true);
+  const [highlightLikes, setHighlightLikes] = useState(false);
   const dimensions = useWindowDimensions();
   const style2 = useAnimatedStyle(() => {
     return {
       top: withSpring(editTopValue.value, SPRING_CONFIG),
     };
   });
+
+  useEffect(() => {
+    console.log(swiperRef);
+  }, [swiperRef]);
 
   useEffect(() => {
     const checkforUID = async () => {
@@ -58,7 +65,6 @@ const ProfileScreen = ({navigation}) => {
           if (documentSnapshot.exists) {
             setUserProfile(documentSnapshot.data());
             setDisplayName(documentSnapshot.data().displayName);
-            setBio(documentSnapshot.data().bio);
             setUsername(documentSnapshot.data().handle);
             setPFP(documentSnapshot.data().pfpURL);
             setHeader(documentSnapshot.data().headerURL);
@@ -90,6 +96,20 @@ const ProfileScreen = ({navigation}) => {
       }
     },
   });
+
+  function showLikes() {
+    if (swiperIndex === 1) {
+      HapticFeedback.trigger('selection');
+      swiperRef.current.scrollBy(-1);
+    }
+  }
+
+  function showMostPlayed() {
+    if (swiperIndex === 0) {
+      HapticFeedback.trigger('selection');
+      swiperRef.current.scrollBy(1);
+    }
+  }
 
   return (
     <>
@@ -125,28 +145,82 @@ const ProfileScreen = ({navigation}) => {
               {displayName ? displayName : userProfile.displayName}
             </Text>
             <Text style={styles.handle}>{username && `@${username}`}</Text>
-            <Text numberOfLines={2} style={styles.bio}>
-              {bio && bio}
-            </Text>
           </View>
           <View style={styles.userStatsContainer}>
             <View style={styles.statsContainer}>
-              <Text style={styles.stats}>{userProfile.followers}</Text>
+              <Text style={styles.stats}>{userProfile?.followers}</Text>
               <Text style={styles.statsText}>Followers</Text>
             </View>
             <View style={styles.statsContainer}>
-              <Text style={styles.stats}>{userProfile.following}</Text>
+              <Text style={styles.stats}>{userProfile?.following}</Text>
               <Text style={styles.statsText}>Following</Text>
             </View>
           </View>
-          <View style={styles.dividerContainer}>
-            <View style={styles.iconContainer}>
-              <Ionicons name={'albums'} color="white" size={28} />
-              <Text style={styles.postText}>Top Songs</Text>
+          <View style={styles.middleContainer}>
+            <TouchableOpacity
+              style={styles.editProfileBtn}
+              onPress={() => {
+                editTopValue.value = withSpring(
+                  dimensions.height / 10,
+                  SPRING_CONFIG,
+                );
+              }}>
+              <Text style={styles.editProfileText}>Edit Profile</Text>
+            </TouchableOpacity>
+            <View style={styles.middleIcons}>
+              <TouchableWithoutFeedback
+                style={styles.iconContainer}
+                onPress={showLikes}>
+                <View style={styles.iconContainer}>
+                  <Ionicons
+                    name={'headset'}
+                    color={highlightMostPlayed ? 'white' : 'grey'}
+                    size={24}
+                  />
+
+                  {/* <Text style={styles.contentText}>Likes</Text> */}
+                </View>
+              </TouchableWithoutFeedback>
+              <TouchableWithoutFeedback onPress={showMostPlayed}>
+                <View style={styles.iconContainer}>
+                  {/* <Text style={styles.contentText}>Most played</Text> */}
+                  <Ionicons
+                    name={'heart'}
+                    color={highlightLikes ? 'white' : 'grey'}
+                    size={24}
+                  />
+                </View>
+              </TouchableWithoutFeedback>
             </View>
           </View>
-          <MyPosts UID={UID} navigation={navigation} />
-
+          <View
+            // eslint-disable-next-line react-native/no-inline-styles
+            style={{
+              borderBottomColor: highlightMostPlayed ? 'white' : 'grey',
+              borderBottomWidth: 0.25,
+              width: '50%',
+              position: 'absolute',
+              top: 358,
+              left: 0,
+            }}
+          />
+          <View
+            // eslint-disable-next-line react-native/no-inline-styles
+            style={{
+              borderBottomColor: highlightLikes ? 'white' : 'grey',
+              borderBottomWidth: 0.25,
+              width: '50%',
+              position: 'absolute',
+              top: 358,
+              right: 0,
+            }}
+          />
+          <MyProfileDetails
+            setHighlightMostPlayed={setHighlightMostPlayed}
+            setHighlightLikes={setHighlightLikes}
+            UID={UID}
+            navigation={navigation}
+          />
           <PanGestureHandler onGestureEvent={gestureHandler2}>
             <Animated.View
               style={[
@@ -173,8 +247,6 @@ const ProfileScreen = ({navigation}) => {
                 setHeader={setHeader}
                 setDisplayName={setDisplayName}
                 displayName={displayName}
-                bio={bio}
-                setBio={setBio}
               />
             </Animated.View>
           </PanGestureHandler>
@@ -228,15 +300,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 5,
   },
-  bio: {
-    fontFamily: 'Inter-Regular',
-    color: 'white',
-    fontSize: 14,
-    marginTop: 10,
-    lineHeight: 20,
-    minWidth: 320,
-    maxWidth: 320,
-  },
+
   userStatsContainer: {
     flexDirection: 'row',
     position: 'absolute',
@@ -259,7 +323,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: '10%',
   },
-  dividerContainer: {
+  userContentContainer: {
     position: 'absolute',
     alignItems: 'center',
     alignSelf: 'center',
@@ -269,20 +333,70 @@ const styles = StyleSheet.create({
     width: '88%',
     borderBottomColor: Colors.greyBtn,
     borderBottomWidth: 1,
-    paddingBottom: 13,
+    // paddingBottom: 13,
+    // paddingVertical: 13,
     // backgroundColor: 'red',
   },
-  iconContainer: {
-    flexDirection: 'row',
+  mostPlayedContainer: {
+    paddingVertical: 13,
+    // backgroundColor: 'blue',
+    width: '45%',
+    display: 'flex',
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  postText: {
+  mostPlayed: {
     color: 'white',
     fontSize: 18,
-    fontFamily: 'Inter-Bold',
-    marginLeft: 5,
+    fontFamily: 'Inter-Medium',
+    // marginLeft: 5,
+  },
+  likesContainer: {
+    // backgroundColor: 'red',
+    paddingVertical: 13,
+    width: '45%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  likes: {
+    color: 'white',
+    fontSize: 18,
+    fontFamily: 'Inter-Medium',
+    // marginLeft: '5%',
   },
   helpIcon: {
     left: 6,
+  },
+  middleContainer: {
+    position: 'absolute',
+    top: 280,
+    width: 335,
+    alignSelf: 'center',
+  },
+
+  editProfileBtn: {
+    backgroundColor: '#393939',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 6,
+    borderRadius: 9,
+  },
+  editProfileText: {
+    color: 'white',
+  },
+  middleIcons: {
+    // backgroundColor: 'red',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  iconContainer: {
+    width: '50%',
+    paddingTop: 14,
+    // backgroundColor: 'red',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

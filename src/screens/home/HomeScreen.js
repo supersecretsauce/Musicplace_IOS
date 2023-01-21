@@ -18,7 +18,6 @@ import BottomSheet from '../../components/BottomSheet';
 import HapticFeedback from 'react-native-haptic-feedback';
 import {Context} from '../../context/Context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {mixpanel} from '../../../mixpanel';
 import messaging from '@react-native-firebase/messaging';
 import ShareSheet from '../../components/ShareSheet';
 import axios from 'axios';
@@ -27,6 +26,7 @@ import appCheck from '@react-native-firebase/app-check';
 import DeviceInfo from 'react-native-device-info';
 import {simKey} from '../../../simKey';
 import {Toast} from 'react-native-toast-message/lib/src/Toast';
+import {mixpanel} from '../../../mixpanel';
 
 const HomeScreen = () => {
   Sound.setCategory('Playback');
@@ -195,7 +195,6 @@ const HomeScreen = () => {
     currentTrack.stop();
     playNextTrack(index);
     setCurrentIndex(index);
-    mixpanel.track('New Listen');
   }
 
   function playNextTrack(index) {
@@ -224,6 +223,7 @@ const HomeScreen = () => {
         UID: UID,
         duration: timeDiff,
         date: new Date(),
+        liked: feed[currentIndex].liked,
       })
       .then(() => {
         console.log('added watch document');
@@ -299,6 +299,7 @@ const HomeScreen = () => {
         });
       }
     } else {
+      mixpanel.track('Liked Song');
       let updatedFeed = feed.map(track => {
         if (track.id === post.id) {
           track.liked = true;
@@ -357,6 +358,7 @@ const HomeScreen = () => {
       {feed ? (
         <>
           <Swiper
+            showsPagination={false}
             loadMinimal={true}
             onIndexChanged={index => handleIndexChange(index)}
             loop={false}

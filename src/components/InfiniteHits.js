@@ -12,6 +12,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../assets/utilities/Colors';
 import {Context} from '../context/Context';
 import firestore from '@react-native-firebase/firestore';
+import HapticFeedback from 'react-native-haptic-feedback';
 
 const InfiniteHits = ({...props}) => {
   const {hits, isLastPage, showMore} = useInfiniteHits(props);
@@ -117,7 +118,11 @@ const InfiniteHits = ({...props}) => {
                     </View>
                   </View>
                   {prevRoute == 'ShareSheet' ? (
-                    <TouchableOpacity onPress={() => followHandler(item)}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        HapticFeedback.trigger('selection');
+                        followHandler(item);
+                      }}>
                       <Text style={styles.followText}>
                         {followingList.includes(item.objectID)
                           ? 'unfollow'

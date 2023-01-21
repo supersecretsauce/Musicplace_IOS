@@ -7,7 +7,13 @@ import {
   Image,
   Linking,
 } from 'react-native';
-import React, {useEffect, useState, useCallback, useContext} from 'react';
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useContext,
+  useRef,
+} from 'react';
 import {Context} from '../../context/Context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Spotify from '../../assets/img/spotify.svg';
@@ -18,7 +24,6 @@ import firestore from '@react-native-firebase/firestore';
 import {useFocusEffect} from '@react-navigation/native';
 import HapticFeedback from 'react-native-haptic-feedback';
 import Toast from 'react-native-toast-message';
-import {mixpanel} from '../../../mixpanel';
 import ShareSheet from '../../components/ShareSheet';
 import axios from 'axios';
 import {PanGestureHandler} from 'react-native-gesture-handler';
@@ -29,20 +34,21 @@ import Animated, {
 import appCheck from '@react-native-firebase/app-check';
 import DeviceInfo from 'react-native-device-info';
 import {simKey} from '../../../simKey';
-
+import {mixpanel} from '../../../mixpanel';
 const ViewPostsScreen = ({route, navigation}) => {
   Sound.setCategory('Playback');
-  const {songInfo, UID, openSheet, commentDocID, prevScreen} =
+  const {songInfo, UID, openSheet, commentDocID, prevScreen, replyRef} =
     route.params ?? {};
   const [currentTrack, setCurrentTrack] = useState(null);
   const [showShareSheet, setShowShareSheet] = useState(false);
   const {hasSpotify, trackDeepLink, setTrackDeepLink} = useContext(Context);
   const [trackInfo, setTrackInfo] = useState(songInfo);
   const [isLiked, setIsLiked] = useState(null);
+  const likeRef = useRef(isLiked);
   let playing = true;
   let startTime = new Date();
 
-  function recordTime() {
+  function recordTime(likeValue) {
     if (trackInfo) {
       let endTime = new Date();
       let timeDiff = endTime - startTime;
@@ -56,6 +62,7 @@ const ViewPostsScreen = ({route, navigation}) => {
           UID: UID,
           duration: timeDiff,
           date: new Date(),
+          liked: likeRef.current,
         })
         .then(() => {
           console.log('added watch document');
@@ -77,10 +84,10 @@ const ViewPostsScreen = ({route, navigation}) => {
       }
       return () => {
         if (currentTrack) {
+          console.log(currentTrack);
           currentTrack.pause();
           playing = false;
           recordTime();
-          mixpanel.track('New Listen');
           // console.log('user left screen');
         }
       };
@@ -120,8 +127,9 @@ const ViewPostsScreen = ({route, navigation}) => {
               },
             )
             .then(resp => {
-              console.log(resp);
+              likeRef.current = resp.data.data;
               setIsLiked(resp.data.data);
+              console.log(resp.data.data);
             })
             .catch(e => {
               console.log(e);
@@ -161,6 +169,7 @@ const ViewPostsScreen = ({route, navigation}) => {
     }
     if (isLiked) {
       setIsLiked(false);
+      likeRef.current = false;
       HapticFeedback.trigger('impactLight');
       let filteredTrackInfo = trackInfo.map(track => {
         track.liked = false;
@@ -203,6 +212,9 @@ const ViewPostsScreen = ({route, navigation}) => {
         });
       }
     } else {
+      mixpanel.track('Liked Song');
+
+      likeRef.current = true;
       setIsLiked(true);
       HapticFeedback.trigger('impactHeavy');
       let filteredTrackInfo = trackInfo.map(track => {
@@ -349,11 +361,13 @@ const ViewPostsScreen = ({route, navigation}) => {
               })}
             </Swiper>
             <SinglePostBottomSheet
+              prevScreen={prevScreen}
               UID={UID}
               songInfo={songInfo}
               openSheet={openSheet}
               commentDocID={commentDocID}
               showShareSheet={showShareSheet}
+              replyRef={replyRef}
             />
             <ShareSheet
               post={songInfo[0]}

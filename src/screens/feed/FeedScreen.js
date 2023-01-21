@@ -101,6 +101,20 @@ const FeedScreen = ({navigation}) => {
     setRefreshing(true);
   }
 
+  function handleFeedNav(item) {
+    console.log(item);
+    if (item.user == UID) {
+      navigation.navigate('ProfileStackScreen');
+    } else {
+      navigation.navigate('ViewUserScreen', {
+        profileID: item.user,
+        UID: UID,
+        prevRoute: 'FeedScreen',
+        myUser: myUser,
+      });
+    }
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.feedContainer}>
@@ -137,14 +151,7 @@ const FeedScreen = ({navigation}) => {
                     <View key={index} style={styles.itemContainer}>
                       <TouchableOpacity
                         style={styles.userContainer}
-                        onPress={() =>
-                          navigation.navigate('ViewUserScreen', {
-                            profileID: item.user,
-                            UID: UID,
-                            prevRoute: 'FeedScreen',
-                            myUser: myUser,
-                          })
-                        }>
+                        onPress={() => handleFeedNav(item)}>
                         {item.pfpURL ? (
                           <FastImage
                             style={styles.pfp}

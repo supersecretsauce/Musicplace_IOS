@@ -21,6 +21,8 @@ import {spotConfig} from '../../../SpotifyConfig';
 import appCheck from '@react-native-firebase/app-check';
 import DeviceInfo from 'react-native-device-info';
 import {simKey} from '../../../simKey';
+import {mixpanel} from '../../../mixpanel';
+
 const ConnectSpotifyScreen = ({navigation}) => {
   const userInfo = firebase.auth().currentUser;
   const {setFeed} = useContext(Context);
@@ -30,6 +32,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
   };
 
   const connectSpotify = async () => {
+    mixpanel.setGroup('Streaming-Service', 'Spotify');
     HapticFeedback.trigger('impactHeavy');
     const authState = await authorize(spotConfig);
 
@@ -54,6 +57,8 @@ const ConnectSpotifyScreen = ({navigation}) => {
       autoPost: true,
       handle: null,
       invitesRemaining: 2,
+      blockList: [],
+      allowMessages: true,
     };
 
     const docRef = firestore().collection('users').doc(userInfo.uid);
@@ -125,6 +130,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
   };
 
   const maybeLater = async () => {
+    mixpanel.setGroup('Streaming-Service', 'None');
     HapticFeedback.trigger('impactHeavy');
     try {
       await firestore().collection('users').doc(userInfo.uid).set({
@@ -148,6 +154,8 @@ const ConnectSpotifyScreen = ({navigation}) => {
         spotifyRefreshToken: null,
         spotifyTokenType: null,
         invitesRemaining: 2,
+        blockList: [],
+        allowMessages: true,
       });
     } catch (error) {
       return;

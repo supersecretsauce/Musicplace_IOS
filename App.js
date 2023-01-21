@@ -1,3 +1,4 @@
+import {View, Text} from 'react-native';
 import React, {useState, useEffect, useRef} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
@@ -11,6 +12,7 @@ import {mixpanel} from './mixpanel';
 import notifee, {EventType} from '@notifee/react-native';
 import {AppState} from 'react-native';
 import TabNavigator from './src/routes/TabNavigator';
+import JailMonkey from 'jail-monkey';
 
 mixpanel.init();
 const Stack = createNativeStackNavigator();
@@ -26,6 +28,9 @@ export default function App() {
   const [invitesRemaining, setInvitesRemaining] = useState(null);
   const appState = useRef(AppState.currentState);
   const navigationRef = useRef();
+  const viewingSwiperRef = useRef();
+  const [swiperIndex, setSwiperIndex] = useState(0);
+  const [fetchingTopSongs, setFetchingTopSongs] = useState(false);
 
   // AsyncStorage.clear();
 
@@ -114,25 +119,50 @@ export default function App() {
             setIsNewUser,
             invitesRemaining,
             setInvitesRemaining,
+            viewingSwiperRef,
+            swiperIndex,
+            setSwiperIndex,
+            fetchingTopSongs,
+            setFetchingTopSongs,
           }}>
-          {userLogin ? (
-            <Stack.Navigator
-              screenOptions={{
-                headerShown: false,
-              }}>
-              <Stack.Screen name="TabNavigator" component={TabNavigator} />
-            </Stack.Navigator>
+          {JailMonkey.isJailBroken() ? (
+            <>
+              <View
+                // eslint-disable-next-line react-native/no-inline-styles
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: 'black',
+                }}>
+                <Text style={{color: 'white'}}>
+                  Musicplace does not support jailbroken devices
+                </Text>
+              </View>
+            </>
           ) : (
-            <Stack.Navigator
-              screenOptions={{
-                headerShown: false,
-              }}>
-              <Stack.Screen
-                name="WelcomeStackScreen"
-                component={WelcomeStackScreen}
-              />
-            </Stack.Navigator>
+            <>
+              {userLogin ? (
+                <Stack.Navigator
+                  screenOptions={{
+                    headerShown: false,
+                  }}>
+                  <Stack.Screen name="TabNavigator" component={TabNavigator} />
+                </Stack.Navigator>
+              ) : (
+                <Stack.Navigator
+                  screenOptions={{
+                    headerShown: false,
+                  }}>
+                  <Stack.Screen
+                    name="WelcomeStackScreen"
+                    component={WelcomeStackScreen}
+                  />
+                </Stack.Navigator>
+              )}
+            </>
           )}
+
           <Toast />
         </Context.Provider>
       </NavigationContainer>

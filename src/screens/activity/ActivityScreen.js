@@ -12,7 +12,7 @@ import Colors from '../../assets/utilities/Colors';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as Contacts from 'expo-contacts';
 import firestore from '@react-native-firebase/firestore';
-
+import MusicplaceIcon from '../../assets/img/musicplace-icon.svg';
 import {Context} from '../../context/Context';
 
 const ActivityScreen = ({navigation}) => {
@@ -73,11 +73,12 @@ const ActivityScreen = ({navigation}) => {
   }, [invitesRemaining]);
 
   useEffect(() => {
-    if (UID) {
+    if (UID && myUser) {
       // check if a user has messages
       const subscriber = firestore()
         .collection('chats')
         .where(`members.${UID}`, '==', true)
+        .where('blocked', '==', false)
         .onSnapshot(snapshot => {
           let sortedMsgs = snapshot.docs.sort((a, z) => {
             return z.data().lastMessageAt - a.data().lastMessageAt;
@@ -106,7 +107,7 @@ const ActivityScreen = ({navigation}) => {
       // Stop listening for updates when no longer required
       return () => subscriber();
     }
-  }, [UID]);
+  }, [UID, myUser]);
 
   useEffect(() => {
     if (UID) {
@@ -144,11 +145,14 @@ const ActivityScreen = ({navigation}) => {
 
   function handleMessageNav(item) {
     if (item && myUser) {
-      navigation.navigate('DirectMessageScreen', {
-        profileID: item.UID,
-        userProfile: item,
-        myUser: myUser,
-        prevRoute: 'ActivityScreen',
+      navigation.navigate('DMDrawerRoute', {
+        screen: 'DirectMessageScreen',
+        params: {
+          profileID: item.UID,
+          userProfile: item,
+          myUser: myUser,
+          prevRoute: 'ActivityScreen',
+        },
       });
     }
   }
@@ -168,6 +172,7 @@ const ActivityScreen = ({navigation}) => {
       UID: UID,
       openSheet: true,
       commentDocID: item?._data?.commentDocID,
+      replyRef: item?._data.replyRef,
     });
 
     firestore()
@@ -243,7 +248,11 @@ const ActivityScreen = ({navigation}) => {
                         style={styles.itemContainer}
                         onPress={() => handleNav(item.nav)}>
                         <View style={styles.itemLeft}>
-                          <View style={styles.musicplaceLogo} />
+                          <MusicplaceIcon
+                            height={40}
+                            width={40}
+                            style={styles.MusicplaceIcon}
+                          />
                           <View style={styles.itemMiddle}>
                             <Text style={styles.topText}>{item.top}</Text>
                             <Text style={styles.bottomText}>
@@ -318,7 +327,7 @@ const ActivityScreen = ({navigation}) => {
                                   )}
                                   <View style={styles.itemMiddle}>
                                     <Text style={styles.topText}>
-                                      New Follow
+                                      New Follower
                                     </Text>
                                     <Text style={styles.bottomText}>
                                       {`${item?._data?.displayName} just followed you.`}
@@ -517,11 +526,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+  MusicplaceIcon: {
+    borderRadius: 40,
+  },
   musicplaceLogo: {
-    height: 40,
-    width: 40,
     borderRadius: 40,
     backgroundColor: Colors.red,
+    height: 40,
+    width: 40,
   },
   itemMiddle: {
     marginLeft: 10,

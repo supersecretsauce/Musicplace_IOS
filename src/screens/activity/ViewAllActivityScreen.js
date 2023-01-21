@@ -12,6 +12,7 @@ import {Context} from '../../context/Context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../assets/utilities/Colors';
 import firestore from '@react-native-firebase/firestore';
+import MusicplaceIcon from '../../assets/img/musicplace-icon.svg';
 
 const ViewAllActivityScreen = ({navigation, route}) => {
   const {invitesRemaining, setInvitesRemaining} = useContext(Context);
@@ -111,7 +112,11 @@ const ViewAllActivityScreen = ({navigation, route}) => {
                       style={styles.itemContainer}
                       onPress={() => handleNav(item.nav)}>
                       <View style={styles.itemLeft}>
-                        <View style={styles.musicplaceLogo} />
+                        <MusicplaceIcon
+                          height={40}
+                          width={40}
+                          style={styles.musicplaceIcon}
+                        />
                         <View style={styles.itemMiddle}>
                           <Text style={styles.topText}>{item.top}</Text>
                           <Text style={styles.bottomText}>
@@ -185,7 +190,9 @@ const ViewAllActivityScreen = ({navigation, route}) => {
                                   <View style={styles.musicplaceLogo} />
                                 )}
                                 <View style={styles.itemMiddle}>
-                                  <Text style={styles.topText}>New Follow</Text>
+                                  <Text style={styles.topText}>
+                                    New Follower
+                                  </Text>
                                   <Text style={styles.bottomText}>
                                     {`${item?._data?.displayName} just followed you.`}
                                   </Text>
@@ -303,6 +310,9 @@ const styles = StyleSheet.create({
   itemLeft: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  musicplaceIcon: {
+    borderRadius: 40,
   },
   musicplaceLogo: {
     height: 40,

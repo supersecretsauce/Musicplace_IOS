@@ -10,6 +10,7 @@ import Colors from '../../assets/utilities/Colors';
 import {Context} from '../../context/Context';
 import HapticFeedback from 'react-native-haptic-feedback';
 import FastImage from 'react-native-fast-image';
+import {mixpanel} from '../../../mixpanel';
 
 const SwipeRightScreen = () => {
   const {setUserLogin} = useContext(Context);
@@ -31,6 +32,7 @@ const SwipeRightScreen = () => {
         <TouchableOpacity
           onPress={() => {
             HapticFeedback.trigger('impactHeavy');
+            mixpanel.track('Signup Completion');
             setUserLogin(true);
           }}
           style={styles.nextBtn}>

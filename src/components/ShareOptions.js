@@ -46,7 +46,7 @@ const ShareOptions = props => {
   return (
     <View style={styles.container}>
       <View style={styles.tab} />
-      <Text style={styles.shareText}>Share Song</Text>
+      {/* <Text style={styles.shareText}>Share Song</Text> */}
       <View style={styles.middleContainer}>
         <View style={styles.iconRow}>
           <TouchableOpacity style={styles.iconContainer} onPress={sendText}>
@@ -110,22 +110,20 @@ const styles = StyleSheet.create({
     marginTop: '2%',
   },
   middleContainer: {
-    position: 'absolute',
     justifyContent: 'center',
+    alignItems: 'center',
     alignSelf: 'center',
     paddingVertical: '5%',
-    marginTop: 35,
+    marginTop: '3%',
   },
   iconRow: {
     flexDirection: 'row',
-    width: '93%',
     alignSelf: 'center',
     justifyContent: 'space-between',
   },
   iconContainer: {
     alignItems: 'center',
-    // backgroundColor: 'green',
-    width: 105,
+    width: 125,
   },
   iconCircle: {
     backgroundColor: Colors.red,

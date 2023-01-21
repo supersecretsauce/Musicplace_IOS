@@ -806,6 +806,8 @@ PODS:
     - Libuv-gRPC (= 0.0.10)
   - gRPC-Core/Interface (1.44.0)
   - GTMSessionFetcher/Core (3.0.0)
+  - jail-monkey (2.8.0):
+    - React-Core
   - leveldb-library (1.22.1)
   - Libuv-gRPC (0.0.10):
     - Libuv-gRPC/Implementation (= 0.0.10)
@@ -1183,7 +1185,7 @@ PODS:
     - React-Core
   - RNReactNativeHapticFeedback (1.14.0):
     - React-Core
-  - RNReanimated (2.12.0):
+  - RNReanimated (2.13.0):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -1245,6 +1247,7 @@ DEPENDENCIES:
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
+  - jail-monkey (from `../node_modules/jail-monkey`)
   - MixpanelReactNative (from `../node_modules/mixpanel-react-native`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -1368,6 +1371,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/React/FBReactNativeSpec"
   glog:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
+  jail-monkey:
+    :path: "../node_modules/jail-monkey"
   MixpanelReactNative:
     :path: "../node_modules/mixpanel-react-native"
   RCT-Folly:
@@ -1513,6 +1518,7 @@ SPEC CHECKSUMS:
   "gRPC-C++": 9675f953ace2b3de7c506039d77be1f2e77a8db2
   gRPC-Core: 943e491cb0d45598b0b0eb9e910c88080369290b
   GTMSessionFetcher: c1edebe64e9fb4e8f6415d018edf1fd3eac074a1
+  jail-monkey: a71b35d482a70ecba844a90f002994012cf12a5d
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
   Libuv-gRPC: 55e51798e14ef436ad9bc45d12d43b77b49df378
   libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef
@@ -1565,7 +1571,7 @@ SPEC CHECKSUMS:
   RNImageCropPicker: ffbba608264885c241cbf3a8f78eb7aeeb978241
   RNNotifee: 8527a2b9ffc6d0abfd907027e22962a809e39eee
   RNReactNativeHapticFeedback: 1e3efeca9628ff9876ee7cdd9edec1b336913f8c
-  RNReanimated: c3e58924b9418883b0bde9e78c4c957302f02435
+  RNReanimated: f0d66bda3d074c43c72a18f4fd4f4c26687bc1fd
   RNScreens: 4a1af06327774490d97342c00aee0c2bafb497b7
   RNSound: 6c156f925295bdc83e8e422e7d8b38d33bc71852
   RNSVG: ecd661f380a07ba690c9c5929c475a44f432d674

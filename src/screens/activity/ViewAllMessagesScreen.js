@@ -22,6 +22,7 @@ const ViewAllMessagesScreen = ({navigation, route}) => {
       const subscriber = firestore()
         .collection('chats')
         .where(`members.${UID}`, '==', true)
+        .where('blocked', '==', false)
         .onSnapshot(snapshot => {
           let sortedMsgs = snapshot.docs.sort((a, z) => {
             return z.data().lastMessageAt - a.data().lastMessageAt;
@@ -54,11 +55,14 @@ const ViewAllMessagesScreen = ({navigation, route}) => {
 
   function handleMessageNav(item) {
     if (item && myUser) {
-      navigation.navigate('DirectMessageScreen', {
-        profileID: item.UID,
-        userProfile: item,
-        myUser: myUser,
-        prevRoute: 'ViewAllMessagesScreen',
+      navigation.navigate('DMDrawerRoute', {
+        screen: 'DirectMessageScreen',
+        params: {
+          profileID: item.UID,
+          userProfile: item,
+          myUser: myUser,
+          prevRoute: 'ViewAllMessagesScreen',
+        },
       });
     }
   }

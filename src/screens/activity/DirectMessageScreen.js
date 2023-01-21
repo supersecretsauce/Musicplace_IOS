@@ -24,10 +24,19 @@ import firestore from '@react-native-firebase/firestore';
 import {Context} from '../../context/Context';
 import EmptyChatUI from '../../components/EmptyChatUI';
 import Spotify from '../../assets/img/spotify.svg';
+import {DMDrawerContext} from '../../context/DMDrawerContext';
+import Modal from 'react-native-modal';
+import Toast from 'react-native-toast-message';
 
 const DirectMessageScreen = ({route, navigation}) => {
   const {UID} = useContext(Context);
-  const {profileID, userProfile, myUser, prevRoute} = route.params;
+  const {
+    showReportModal,
+    setShowReportModal,
+    showBlockModal,
+    setShowBlockModal,
+  } = useContext(DMDrawerContext);
+  const {profileID, userProfile, myUser, prevRoute} = route.params ?? {};
   const [chatDoc, setChatDoc] = useState(null);
   const [messageDocs, setMessageDocs] = useState(null);
   const [messageText, setMessageText] = useState('');
@@ -102,6 +111,8 @@ const DirectMessageScreen = ({route, navigation}) => {
           },
           createdAt: firestore.FieldValue.serverTimestamp(),
           lastMessageAt: firestore.FieldValue.serverTimestamp(),
+          reported: false,
+          blocked: false,
           [profileID]: {
             UID: profileID,
             displayName: userProfile.displayName,
@@ -191,12 +202,13 @@ const DirectMessageScreen = ({route, navigation}) => {
     } else if (prevRoute === 'ViewAllMessagesScreen') {
       navigation.goBack();
     } else {
-      navigation.navigate('ViewUserScreen', {
-        profileID: profileID,
-        myUser: myUser,
-        userProfile: userProfile,
-        prevRoute: prevRoute,
-      });
+      // navigation.navigate('ViewUserScreen', {
+      //   profileID: profileID,
+      //   myUser: myUser,
+      //   userProfile: userProfile,
+      //   prevRoute: prevRoute,
+      // });
+      navigation.goBack();
     }
   }
 
@@ -207,6 +219,7 @@ const DirectMessageScreen = ({route, navigation}) => {
       UID: UID,
       prevRoute: 'DirectMessageScreen',
     });
+    // navigation.goBack();
   }
 
   function handleSongNav(item) {
@@ -223,6 +236,54 @@ const DirectMessageScreen = ({route, navigation}) => {
     await Linking.openURL(`http://open.spotify.com/track/${item}`);
   }
 
+  function handleReport() {
+    if (chatDoc?.id) {
+      setShowReportModal(false);
+      firestore()
+        .collection('chats')
+        .doc(chatDoc.id)
+        .update({
+          reported: true,
+        })
+        .then(() => {
+          Toast.show({
+            type: 'info',
+            text1: 'This conversation has been reported.',
+          });
+        });
+    } else {
+      setShowReportModal(false);
+      Toast.show({
+        type: 'error',
+        text1: 'Nothing to report',
+      });
+    }
+  }
+
+  function handleBlock() {
+    setShowBlockModal(false);
+    if (chatDoc.id) {
+      firestore()
+        .collection('users')
+        .doc(UID)
+        .update({
+          blockList: firestore.FieldValue.arrayUnion(profileID),
+        });
+      firestore().collection('chats').doc(chatDoc.id).update({
+        blocked: true,
+      });
+      Toast.show({
+        type: 'info',
+        text1: 'User successfully blocked',
+      });
+    } else {
+      Toast.show({
+        type: 'error',
+        text1: 'Unable to block',
+      });
+    }
+  }
+
   return (
     <SafeAreaView
       style={styles.container}
@@ -230,6 +291,49 @@ const DirectMessageScreen = ({route, navigation}) => {
     >
       {userProfile ? (
         <>
+          <Modal
+            onBackdropPress={() => setShowReportModal(false)}
+            isVisible={showReportModal}>
+            <View style={styles.reportModalContainer}>
+              <Text style={styles.reportTitle}>
+                Are you sure you want to report your conversation with this
+                user?
+              </Text>
+              <View style={styles.reportButtonsContainer}>
+                <TouchableOpacity
+                  style={styles.reportBtn}
+                  onPress={() => setShowReportModal(false)}>
+                  <Text style={styles.reportText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.reportBtn}
+                  onPress={handleReport}>
+                  <Text style={styles.reportText}>Report</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+          <Modal
+            onBackdropPress={() => setShowBlockModal(false)}
+            isVisible={showBlockModal}>
+            <View style={styles.reportModalContainer}>
+              <Text style={styles.blockTitle}>
+                Are you sure you want to block this user?
+              </Text>
+              <View style={styles.reportButtonsContainer}>
+                <TouchableOpacity
+                  style={styles.reportBtn}
+                  onPress={() => setShowBlockModal(false)}>
+                  <Text style={styles.reportText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.reportBtn}
+                  onPress={handleBlock}>
+                  <Text style={styles.reportText}>Block</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
           <View style={styles.header}>
             <View style={styles.headerLeft}>
               <TouchableOpacity
@@ -258,7 +362,10 @@ const DirectMessageScreen = ({route, navigation}) => {
                 </View>
               </TouchableOpacity>
             </View>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                navigation.toggleDrawer();
+              }}>
               <Ionicons
                 name={'information-circle-outline'}
                 color="white"
@@ -479,6 +586,47 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: 'black',
     flex: 1,
+  },
+  reportModalContainer: {
+    height: 170,
+    width: '95%',
+    backgroundColor: '#1F1F1F',
+    alignSelf: 'center',
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  reportTitle: {
+    color: 'white',
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 15,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  blockTitle: {
+    color: 'white',
+    fontFamily: 'Inter-SemiBold',
+    fontSize: 15,
+    textAlign: 'center',
+    lineHeight: 20,
+    width: '70%',
+  },
+  reportButtonsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '70%',
+    justifyContent: 'space-between',
+    marginTop: '7%',
+  },
+  reportBtn: {
+    backgroundColor: Colors.red,
+    paddingVertical: 6,
+    paddingHorizontal: 30,
+    borderRadius: 9,
+  },
+  reportText: {
+    color: 'white',
+    fontFamily: 'Inter-Bold',
   },
   header: {
     flexDirection: 'row',

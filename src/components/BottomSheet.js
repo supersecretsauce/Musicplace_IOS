@@ -27,6 +27,8 @@ import Toast from 'react-native-toast-message';
 import {firebase} from '@react-native-firebase/firestore';
 import {useNavigation} from '@react-navigation/native';
 import HapticFeedback from 'react-native-haptic-feedback';
+import MusicplaceIcon from '../assets/img/musicplace-icon.svg';
+import {mixpanel} from '../../mixpanel';
 
 const BottomSheet = props => {
   const {currentIndex, feed, UID, showShareSheet} = props;
@@ -150,6 +152,7 @@ const BottomSheet = props => {
   // handle logic when a user posts a comment
   function handleCommentSubmit() {
     console.log(userText);
+    mixpanel.track('Comment');
     if (userText === '') {
       return;
     }
@@ -343,10 +346,23 @@ const BottomSheet = props => {
           pfpURL: userDoc?.pfpURL ? userDoc?.pfpURL : null,
           commentDocID: item.id,
           notificationRead: false,
+          replyRef: item._data.parent,
         })
         .then(() => {
           console.log('added doc to parent user');
         });
+    }
+  }
+
+  function handleCommentNav(item) {
+    if (item._data.UID == UID) {
+      navigate('ProfileStackScreen');
+    } else {
+      navigate('ViewUserScreen', {
+        profileID: item._data.UID,
+        UID: UID,
+        myUser: userDoc,
+      });
     }
   }
 
@@ -371,13 +387,7 @@ const BottomSheet = props => {
                           <View style={styles.commentContainer}>
                             <View style={styles.commentLeft}>
                               <TouchableOpacity
-                                onPress={() => {
-                                  navigate('ViewUserScreen', {
-                                    profileID: item._data.UID,
-                                    UID: UID,
-                                    myUser: userDoc,
-                                  });
-                                }}>
+                                onPress={() => handleCommentNav(item)}>
                                 {item?._data?.pfpURL ? (
                                   <Image
                                     style={styles.profilePic}
@@ -468,16 +478,15 @@ const BottomSheet = props => {
             ) : (
               <>
                 <View style={styles.defaultCommentContainer}>
-                  <Image
+                  <MusicplaceIcon
+                    height={32}
+                    width={32}
                     style={styles.defaultProfilePic}
-                    source={{
-                      uri: 'https://firebasestorage.googleapis.com/v0/b/musicplace-66f20.appspot.com/o/circle.png?alt=media&token=4d44b252-e89d-4887-8a07-14e4c596de60',
-                    }}
                   />
                   <View style={styles.defaultCommentMiddle}>
                     <Text style={styles.displayName}>Musicplace</Text>
                     <Text style={styles.comment}>
-                      swipe up to add a comment
+                      swipe up to add a comment.
                     </Text>
                   </View>
                 </View>
