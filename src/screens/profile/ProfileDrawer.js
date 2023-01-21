@@ -14,7 +14,6 @@ import auth from '@react-native-firebase/auth';
 import functions from '@react-native-firebase/functions';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Discord from '../../assets/img/discord.svg';
-import Colors from '../../assets/utilities/Colors';
 import Spotify from '../../assets/img/spotify.svg';
 import {mixpanel} from '../../../mixpanel';
 
@@ -67,6 +66,7 @@ const ProfileDrawer = ({navigation}) => {
 
   const handleSpotify = () => {
     if (hasSpotify === false) {
+      mixpanel.track('Switched to Spotify');
       const connectToSpotify = async () => {
         try {
           const authState = await authorize(spotConfig);

@@ -75,7 +75,7 @@ const InviteContactsScreen = ({route, navigation}) => {
   };
 
   function handleSend() {
-    mixpanel.track('Invite Sent');
+    mixpanel.track('Invite');
     HapticFeedback.trigger('impactHeavy');
     if (invitesRemaining === 0) {
       Toast.show({
