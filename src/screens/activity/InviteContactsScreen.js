@@ -23,6 +23,7 @@ import functions from '@react-native-firebase/functions';
 import HapticFeedback from 'react-native-haptic-feedback';
 import Toast from 'react-native-toast-message';
 import firestore from '@react-native-firebase/firestore';
+import {mixpanel} from '../../../mixpanel';
 
 const InviteContactsScreen = ({route, navigation}) => {
   const {contacts, myPhoneNumber, phoneNumbers, UID} = route.params;
@@ -74,6 +75,7 @@ const InviteContactsScreen = ({route, navigation}) => {
   };
 
   function handleSend() {
+    mixpanel.track('Invite Sent');
     HapticFeedback.trigger('impactHeavy');
     if (invitesRemaining === 0) {
       Toast.show({

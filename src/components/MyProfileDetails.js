@@ -7,9 +7,8 @@ import {
   Text,
   TouchableWithoutFeedback,
   Image,
-  TouchableOpacity,
 } from 'react-native';
-import React, {useEffect, useContext, useState, useRef} from 'react';
+import React, {useEffect, useContext, useState} from 'react';
 import {Context} from '../context/Context';
 import Swiper from 'react-native-swiper';
 import axios from 'axios';
@@ -18,10 +17,6 @@ import {simKey} from '../../simKey';
 import appCheck from '@react-native-firebase/app-check';
 import firestore from '@react-native-firebase/firestore';
 import Colors from '../assets/utilities/Colors';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {authorize} from 'react-native-app-auth';
-import {spotConfig} from '../../SpotifyConfig';
-import Spotify from '../assets/img/spotify.svg';
 import {DrawerContext} from '../context/DrawerContext';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -109,7 +104,6 @@ const MyProfileDetails = props => {
         console.log('both empty ');
         setAllData(['e', 'e']);
       } else if (topSongs.length > 0 && likes.length < 1) {
-        console.log('ppopu');
         setAllData([topSongs, 'e']);
       } else if (topSongs.length < 1 && likes.length > 0) {
         setAllData(['e', likes]);
@@ -118,37 +112,6 @@ const MyProfileDetails = props => {
       }
     }
   }, [topSongs, likes]);
-
-  const connectSpotify = async () => {
-    if (UID) {
-      const authState = await authorize(spotConfig);
-      setFetchingTopSongs(true);
-      firestore()
-        .collection('users')
-        .doc(UID)
-        .update({
-          spotifyAccessToken: authState.accessToken,
-          spotifyAccessTokenExpirationDate: authState.accessTokenExpirationDate,
-          spotifyRefreshToken: authState.refreshToken,
-          spotifyTokenType: authState.tokenType,
-          connectedWithSpotify: true,
-        })
-        .then(resp => {
-          console.log(resp);
-          setHasSpotify(true);
-          AsyncStorage.setItem('hasSpotify', 'true');
-          axios
-            .get(`http://167.99.22.22/update/top-tracks?userId=${UID}`)
-            .then(() => {
-              console.log('finished getting spotify library');
-              getTopSongs();
-            })
-            .catch(e => {
-              console.log(e);
-            });
-        });
-    }
-  };
 
   return (
     <View style={styles.container}>

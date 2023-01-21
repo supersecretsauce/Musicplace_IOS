@@ -22,6 +22,7 @@ import appCheck from '@react-native-firebase/app-check';
 import DeviceInfo from 'react-native-device-info';
 import {simKey} from '../../../simKey';
 import {mixpanel} from '../../../mixpanel';
+
 const ConnectSpotifyScreen = ({navigation}) => {
   const userInfo = firebase.auth().currentUser;
   const {setFeed} = useContext(Context);
