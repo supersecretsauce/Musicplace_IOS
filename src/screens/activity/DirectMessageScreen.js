@@ -184,7 +184,7 @@ const DirectMessageScreen = ({route, navigation}) => {
     };
   });
   function handleAnimation() {
-    flex.value = withSpring(0.5, SPRING_CONFIG);
+    flex.value = withSpring(0.47, SPRING_CONFIG);
   }
   function handleAnimationDown() {
     flex.value = withSpring(0.86, SPRING_CONFIG);
