@@ -168,24 +168,33 @@ const HomeScreen = () => {
     if (feed && isOnHomeScreen) {
       if (currentIndex == Math.floor(feed.length / 2)) {
         console.log('halfway!');
-        appCheck()
-          .getToken()
-          .then(resp => {
-            axios
-              .get(`http://167.99.22.22/recommendation/user?userId=${UID}`, {
-                headers: {
-                  accept: 'application/json',
-                  Authorization: 'Bearer ' + resp.token,
-                },
-              })
-              .then(response => {
-                console.log(response);
-                setFeed(current => [...current, ...response.data.data]);
-              })
-              .catch(e => {
-                console.log(e);
-              });
-          });
+
+        async function fetchMoreSongs() {
+          let isEmulator = await DeviceInfo.isEmulator();
+          console.log(isEmulator);
+          let authToken;
+          if (!isEmulator) {
+            authToken = await appCheck().getToken();
+          }
+          axios
+            .get(`http://167.99.22.22/recommendation/user?userId=${UID}`, {
+              headers: {
+                accept: 'application/json',
+                Authorization: isEmulator
+                  ? 'Bearer ' + simKey
+                  : 'Bearer ' + authToken.token,
+              },
+            })
+            .then(response => {
+              console.log(response);
+              setFeed(current => [...current, ...response.data.data]);
+            })
+            .catch(e => {
+              console.log(e);
+            });
+        }
+
+        fetchMoreSongs();
       }
     }
   }, [currentIndex, isOnHomeScreen]);
@@ -362,7 +371,8 @@ const HomeScreen = () => {
             loadMinimal={true}
             onIndexChanged={index => handleIndexChange(index)}
             loop={false}
-            showsButtons={false}>
+            showsButtons={false}
+            end>
             {feed.map((post, index) => {
               return (
                 <View key={index}>
