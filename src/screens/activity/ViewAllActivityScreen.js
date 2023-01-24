@@ -27,6 +27,9 @@ const ViewAllActivityScreen = ({navigation, route}) => {
         .collection('activity')
         .orderBy('timestamp', 'desc')
         .onSnapshot(snapshot => {
+          if (snapshot == null) {
+            return;
+          }
           let docArr = [];
           snapshot.docs.forEach(doc => {
             docArr.push(doc);

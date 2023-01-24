@@ -50,6 +50,9 @@ const DirectMessageScreen = ({route, navigation}) => {
         .where(`members.${profileID}`, '==', true)
         .where(`members.${UID}`, '==', true)
         .onSnapshot(documentSnapshot => {
+          if (documentSnapshot == null) {
+            return;
+          }
           console.log('User data: ', documentSnapshot);
           if (documentSnapshot.empty) {
             return;
@@ -83,6 +86,9 @@ const DirectMessageScreen = ({route, navigation}) => {
         .collection('messages')
         .orderBy('sentAt', 'desc')
         .onSnapshot(documentSnapshot => {
+          if (documentSnapshot == null) {
+            return;
+          }
           if (documentSnapshot.empty) {
             console.log('no messages');
           } else {

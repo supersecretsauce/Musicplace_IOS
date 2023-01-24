@@ -29,6 +29,9 @@ const FeedScreen = ({navigation}) => {
         .collection('users')
         .doc(UID)
         .onSnapshot(documentSnapshot => {
+          if (documentSnapshot == null) {
+            return;
+          }
           setMyUser(documentSnapshot.data());
           console.log('changes');
           let followingArr = [];

@@ -30,6 +30,9 @@ const ViewUserScreen = ({route, navigation}) => {
         .collection('users')
         .doc(profileID)
         .onSnapshot(documentSnapshot => {
+          if (documentSnapshot == null) {
+            return;
+          }
           console.log('User data: ', documentSnapshot.data());
           setUserProfile(documentSnapshot.data());
           console.log(documentSnapshot.data().followersList);

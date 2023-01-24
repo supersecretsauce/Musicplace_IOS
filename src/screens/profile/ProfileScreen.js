@@ -61,7 +61,9 @@ const ProfileScreen = ({navigation}) => {
         .collection('users')
         .doc(UID)
         .onSnapshot(documentSnapshot => {
-          console.log(documentSnapshot);
+          if (documentSnapshot == null) {
+            return;
+          }
           if (documentSnapshot.exists) {
             setUserProfile(documentSnapshot.data());
             setDisplayName(documentSnapshot.data().displayName);

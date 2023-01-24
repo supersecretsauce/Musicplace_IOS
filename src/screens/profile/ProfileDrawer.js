@@ -47,21 +47,22 @@ const ProfileDrawer = ({navigation}) => {
   };
 
   const logout = () => {
-    auth()
-      .signOut()
-      .then(() => {
-        console.log('User signed out!');
-        try {
-          setUserLogin(false);
-          setCurrentTrack(null);
-          AsyncStorage.clear();
-        } catch (error) {
-          console.log(error);
-        }
-      })
-      .catch(e => {
-        console.log(e);
-      });
+    // auth()
+    //   .signOut()
+    //   .then(() => {
+    console.log('User signed out!');
+    // try {
+    setUserLogin(false);
+    //   setCurrentTrack(null);
+    setFeed(null);
+    AsyncStorage.clear();
+    // } catch (error) {
+    //   console.log(error);
+    // }
+    // })
+    // .catch(e => {
+    //   console.log(e);
+    // });
   };
 
   const handleSpotify = () => {

@@ -80,6 +80,9 @@ const BottomSheet = props => {
         .collection('users')
         .doc(UID)
         .onSnapshot(snapshot => {
+          if (snapshot == null) {
+            return;
+          }
           console.log('snapy', snapshot.data());
           setUserDoc(snapshot.data());
         });

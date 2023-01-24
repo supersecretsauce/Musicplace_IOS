@@ -45,6 +45,9 @@ const ShareSheet = props => {
       .collection('users')
       .doc(UID)
       .onSnapshot(documentSnapshot => {
+        if (documentSnapshot == null) {
+          return;
+        }
         console.log('User data: ', documentSnapshot.data());
         setMyUser(documentSnapshot.data());
         let followingList = documentSnapshot.data().followingList;

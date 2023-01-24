@@ -58,6 +58,9 @@ const ActivityScreen = ({navigation}) => {
         .collection('users')
         .doc(UID)
         .onSnapshot(resp => {
+          if (resp == null) {
+            return;
+          }
           console.log(resp.data());
           setMyUser(resp._data);
           setMyPhoneNumber(resp.data().phoneNumber);
@@ -117,6 +120,9 @@ const ActivityScreen = ({navigation}) => {
         .collection('activity')
         .orderBy('timestamp', 'desc')
         .onSnapshot(snapshot => {
+          if (snapshot == null) {
+            return;
+          }
           let docArr = [];
           snapshot.docs.forEach(doc => {
             docArr.push(doc);

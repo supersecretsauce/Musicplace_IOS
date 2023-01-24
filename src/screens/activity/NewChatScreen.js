@@ -27,6 +27,9 @@ const NewChatScreen = ({route, navigation}) => {
         .collection('users')
         .doc(UID)
         .onSnapshot(resp => {
+          if (resp == null) {
+            return;
+          }
           console.log(resp._data.followingList);
           setFollowingList(resp._data.followingList);
         });
