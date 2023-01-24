@@ -371,8 +371,7 @@ const HomeScreen = () => {
             loadMinimal={true}
             onIndexChanged={index => handleIndexChange(index)}
             loop={false}
-            showsButtons={false}
-            end>
+            showsButtons={false}>
             {feed.map((post, index) => {
               return (
                 <View key={index}>
