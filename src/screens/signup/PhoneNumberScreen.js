@@ -17,6 +17,7 @@ import HapticFeedback from 'react-native-haptic-feedback';
 import Toast from 'react-native-toast-message';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import functions from '@react-native-firebase/functions';
+import axios from 'axios';
 
 const PhoneNumber = ({navigation}) => {
   const [inputValue, setInputValue] = useState('');
@@ -86,8 +87,15 @@ const PhoneNumber = ({navigation}) => {
       text1: 'Checking waitlist...',
       visibilityTime: 2000,
     });
-    functions()
-      .httpsCallable('checkNumber')(firebaseNumberFormat)
+    axios
+      .get(
+        'https://musicplacewaitlist-production.up.railway.app/check-waitlist',
+        {
+          params: {
+            number: firebaseNumberFormat,
+          },
+        },
+      )
       .then(resp => {
         console.log(resp);
         if (resp.data.exists === true) {
@@ -118,9 +126,7 @@ const PhoneNumber = ({navigation}) => {
           });
         }
       })
-      .catch(e => {
-        console.log(e);
-      });
+      .catch(e => console.log(e));
   }
 
   async function signInWithPhoneNumber() {
