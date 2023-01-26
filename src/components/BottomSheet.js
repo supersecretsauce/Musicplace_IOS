@@ -513,6 +513,7 @@ const BottomSheet = props => {
             )}
             <View style={styles.inputBackground}>
               <TextInput
+                multiline={true}
                 ref={inputRef}
                 onSubmitEditing={handleCommentSubmit}
                 onEndEditing={() => setReplyInfo(null)}
