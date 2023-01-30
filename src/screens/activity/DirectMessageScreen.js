@@ -565,6 +565,7 @@ const DirectMessageScreen = ({route, navigation}) => {
                 onSubmitEditing={handleSendMessage}
                 onChangeText={text => setMessageText(text)}
                 value={messageText}
+                multiline={true}
                 keyboardAppearance="dark"
                 returnKeyType="send"
               />
