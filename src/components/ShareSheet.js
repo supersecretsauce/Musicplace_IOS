@@ -334,6 +334,9 @@ const ShareSheet = props => {
               {followingData ? (
                 <View style={styles.flatListContainer}>
                   <FlatList
+                    contentContainerStyle={{
+                      paddingBottom: '12%',
+                    }}
                     data={followingData}
                     renderItem={({item, index}) => {
                       return (
