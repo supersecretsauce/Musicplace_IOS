@@ -85,7 +85,7 @@ const ExistingPhoneNumberScreen = ({navigation}) => {
       .httpsCallable('checkNumber')(firebaseNumberFormat)
       .then(resp => {
         console.log(resp);
-        if (resp.data.exists) {
+        if (resp.data.exists === true) {
           try {
             async function signInMethod() {
               const confirmation = await auth().signInWithPhoneNumber(
