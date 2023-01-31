@@ -7,11 +7,15 @@ import ViewPostsScreen from '../screens/profile/ViewPostsScreen';
 import DMDrawerRoute from './DMDrawerRoute';
 import AddFriends from '../screens/activity/AddFriends';
 import ProfileStackScreen from './ProfileStackScreen';
+import HomeScreenDrawerRoute from './HomeScreenDrawerRoute';
 const PostStack = createNativeStackNavigator();
 const HomeStackScreen = () => {
   return (
     <PostStack.Navigator screenOptions={{headerShown: false}}>
-      <PostStack.Screen name="HomeScreen" component={HomeScreen} />
+      <PostStack.Screen
+        name="HomeScreenDrawerRoute"
+        component={HomeScreenDrawerRoute}
+      />
       <PostStack.Screen name="ViewUserScreen" component={ViewUserScreen} />
       <PostStack.Screen name="ViewPostsScreen" component={ViewPostsScreen} />
       <PostStack.Screen name="DMDrawerRoute" component={DMDrawerRoute} />

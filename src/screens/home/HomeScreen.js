@@ -28,7 +28,7 @@ import {simKey} from '../../../simKey';
 import {Toast} from 'react-native-toast-message/lib/src/Toast';
 import {mixpanel} from '../../../mixpanel';
 
-const HomeScreen = () => {
+const HomeScreen = ({navigation}) => {
   Sound.setCategory('Playback');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentTrack, setCurrentTrack] = useState(null);
@@ -397,14 +397,13 @@ const HomeScreen = () => {
                         onPress={() => setShowShareSheet(true)}>
                         <Ionicons name="share-outline" color="grey" size={28} />
                       </TouchableOpacity>
-                      <TouchableOpacity onPress={() => likeHandler(post)}>
+                      <TouchableOpacity
+                        //  onPress={() => likeHandler(post)}
+                        onPress={() => navigation.toggleDrawer()}>
                         <Ionicons
                           style={styles.likeIcon}
-                          name={post.liked ? 'heart' : 'heart-outline'}
-                          // color={
-                          //   likedTracks.includes(post.id) ? '#1DB954' : 'grey'
-                          // }
-                          color={post.liked ? '#1DB954' : 'grey'}
+                          name={'add-circle'}
+                          color={'grey'}
                           size={28}
                         />
                       </TouchableOpacity>
