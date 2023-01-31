@@ -55,21 +55,22 @@ const FeedScreen = ({navigation}) => {
         await firestore()
           .collection('feed')
           .where('user', 'in', followingList.slice(i, i + 10))
-          .orderBy('date', 'desc')
           .get()
           .then(resp => {
             if (resp.empty) {
               return;
             } else {
-              console.log(resp);
               resp.docs.forEach(doc => {
-                likesArr.push(doc.data());
+                likesArr.push(doc);
               });
             }
           });
       }
       if (likesArr.length > 0) {
-        setLikes(likesArr);
+        let sortedLikes = likesArr.sort((a, z) => {
+          return z._data.date - a._data.date;
+        });
+        setLikes(sortedLikes);
       } else {
         setLikes(null);
       }
@@ -106,11 +107,11 @@ const FeedScreen = ({navigation}) => {
 
   function handleFeedNav(item) {
     console.log(item);
-    if (item.user == UID) {
+    if (item._data.user == UID) {
       navigation.navigate('ProfileStackScreen');
     } else {
       navigation.navigate('ViewUserScreen', {
-        profileID: item.user,
+        profileID: item._data.user,
         UID: UID,
         prevRoute: 'FeedScreen',
         myUser: myUser,
@@ -149,17 +150,17 @@ const FeedScreen = ({navigation}) => {
                 }
                 data={likes}
                 showsVerticalScrollIndicator={false}
-                renderItem={({item, index}) => {
+                renderItem={({item}) => {
                   return (
-                    <View key={index} style={styles.itemContainer}>
+                    <View key={item.id} style={styles.itemContainer}>
                       <TouchableOpacity
                         style={styles.userContainer}
                         onPress={() => handleFeedNav(item)}>
-                        {item.pfpURL ? (
+                        {item?._data?.pfpURL ? (
                           <FastImage
                             style={styles.pfp}
                             source={{
-                              uri: item.pfpURL,
+                              uri: item?._data?.pfpURL,
                               priority: FastImage.priority.high,
                             }}
                           />
@@ -169,20 +170,20 @@ const FeedScreen = ({navigation}) => {
 
                         <View style={styles.textContainer}>
                           <Text style={styles.displayName}>
-                            {item.displayName}
+                            {item?._data.displayName}
                           </Text>
                           <Text style={styles.likeText}>liked a track</Text>
                         </View>
                         <Text style={styles.dot}>•</Text>
                         <Text style={styles.date}>
-                          {moment(item.date.toDate()).fromNow()}
+                          {moment(item?._data?.date.toDate()).fromNow()}
                         </Text>
                       </TouchableOpacity>
                       <TouchableOpacity
                         style={styles.songContainer}
                         onPress={() =>
                           navigation.navigate('ViewPostsScreen', {
-                            songInfo: [item],
+                            songInfo: [item?._data],
                             UID: UID,
                           })
                         }>
@@ -191,16 +192,16 @@ const FeedScreen = ({navigation}) => {
                             <FastImage
                               style={styles.songPhoto}
                               source={{
-                                uri: item.songPhoto,
+                                uri: item?._data?.songPhoto,
                                 priority: FastImage.priority.high,
                               }}
                             />
                             <View style={styles.songDetails}>
                               <Text numberOfLines={1} style={styles.songName}>
-                                {item.songName}
+                                {item?._data?.songName}
                               </Text>
                               <Text numberOfLines={1} style={styles.artists}>
-                                {item.artists
+                                {item?._data?.artists
                                   .map(artist => {
                                     return artist.name;
                                   })
