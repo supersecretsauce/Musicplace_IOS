@@ -26,6 +26,7 @@ import {useNavigation} from '@react-navigation/native';
 import ShareOptions from './ShareOptions';
 import Toast from 'react-native-toast-message';
 import HapticFeedback from 'react-native-haptic-feedback';
+import {mixpanel} from '../../mixpanel';
 
 const ShareSheet = props => {
   const {navigate} = useNavigation();
@@ -136,6 +137,7 @@ const ShareSheet = props => {
 
   async function handleShare(item) {
     // firestore().collection("chats")
+    mixpanel.track('New Song Message');
     HapticFeedback.trigger('impactHeavy');
     setShowShareSheet(false);
     top.value = withSpring(1000, SPRING_CONFIG);
