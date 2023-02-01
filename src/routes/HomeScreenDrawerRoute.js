@@ -12,7 +12,7 @@ const HomeScreenDrawerRoute = () => {
         headerShown: false,
         drawerPosition: 'right',
         drawerStyle: {
-          width: '90%',
+          width: '84%',
         },
         swipeEnabled: false,
       }}>
