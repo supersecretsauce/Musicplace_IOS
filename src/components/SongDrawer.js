@@ -1,5 +1,12 @@
 import React, {useState, useEffect, useContext} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  TouchableOpacity,
+  SafeAreaView,
+} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {DrawerContentScrollView, DrawerItem} from '@react-navigation/drawer';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -22,7 +29,6 @@ const SongDrawer = () => {
         if (!isEmulator) {
           authToken = await appCheck().getToken();
         }
-        return;
         axios
           .get(`http://localhost:3000/get-user-playlists/user?UID=${UID}`, {
             headers: {
@@ -34,7 +40,22 @@ const SongDrawer = () => {
           })
           .then(resp => {
             console.log(resp.data.items);
-            setPlaylists(resp.data.items);
+            let likeObject = [
+              {
+                images: [
+                  {
+                    url: 'https://firebasestorage.googleapis.com/v0/b/musicplace-66f20.appspot.com/o/spotifyLikedSongs.webp?alt=media&token=c1998298-594b-4be3-912f-a86e3cd60403',
+                  },
+                ],
+                owner: {
+                  display_name: 'You',
+                },
+                name: 'Liked Songs',
+                type: 'likes',
+              },
+            ];
+            console.log([...likeObject, ...resp.data.items]);
+            setPlaylists([...likeObject, ...resp.data.items]);
           })
           .catch(e => console.log(e));
       }
@@ -43,38 +64,84 @@ const SongDrawer = () => {
     }
   }, [UID]);
 
+  function handleLike() {}
+
   return (
-    <DrawerContentScrollView contentContainerStyle={styles.drawer}>
+    <SafeAreaView style={styles.drawer}>
       {playlists ? (
-        playlists.map((playlist, index) => {
-          return (
-            <View key={index} style={styles.itemContainer}>
-              <View style={styles.leftContainer}>
-                <FastImage
-                  style={styles.playlistImage}
-                  source={{
-                    uri: playlist?.images[0]?.url,
-                    priority: FastImage.priority.high,
-                  }}
-                />
-                <View style={styles.middleContainer}>
-                  <Text numberOfLines={1} style={styles.playlistName}>
-                    {playlist?.name}
-                  </Text>
-                  <View style={styles.playlistInfoContainer}>
-                    <Text style={styles.playlistInfo}>
-                      by {playlist?.owner?.display_name}
-                    </Text>
-                    <Text style={styles.playlistInfo}> · </Text>
-                    <Text style={styles.playlistInfo}>
-                      {playlist?.tracks?.total} tracks
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            </View>
-          );
-        })
+        <FlatList
+          // eslint-disable-next-line react-native/no-inline-styles
+          contentContainerStyle={{
+            paddingTop: '5%',
+            paddingBottom: '5%',
+          }}
+          data={playlists}
+          renderItem={({item, index}) => {
+            return (
+              <>
+                {item?.type === 'likes' ? (
+                  <TouchableOpacity key={index} style={styles.itemContainer}>
+                    <View style={styles.leftContainer}>
+                      <FastImage
+                        style={styles.playlistImage}
+                        source={{
+                          uri: item?.images[0]?.url,
+                          priority: FastImage.priority.high,
+                        }}
+                      />
+                      <View style={styles.middleContainer}>
+                        <Text numberOfLines={1} style={styles.playlistName}>
+                          {item?.name}
+                        </Text>
+                        <View style={styles.playlistInfoContainer}>
+                          <Text style={styles.playlistInfo}>
+                            by {item?.owner?.display_name}
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                    <Ionicons
+                      name={'radio-button-off'}
+                      color={'grey'}
+                      size={24}
+                    />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity key={index} style={styles.itemContainer}>
+                    <View style={styles.leftContainer}>
+                      <FastImage
+                        style={styles.playlistImage}
+                        source={{
+                          uri: item?.images[0]?.url,
+                          priority: FastImage.priority.high,
+                        }}
+                      />
+                      <View style={styles.middleContainer}>
+                        <Text numberOfLines={1} style={styles.playlistName}>
+                          {item?.name}
+                        </Text>
+                        <View style={styles.playlistInfoContainer}>
+                          <Text style={styles.playlistInfo}>
+                            by {item?.owner?.display_name}
+                          </Text>
+                          <Text style={styles.playlistInfo}> · </Text>
+                          <Text style={styles.playlistInfo}>
+                            {item?.tracks?.total} tracks
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                    <Ionicons
+                      name={'radio-button-off'}
+                      color={'grey'}
+                      size={24}
+                    />
+                  </TouchableOpacity>
+                )}
+              </>
+            );
+          }}
+        />
       ) : (
         <DrawerItem
           icon={() => (
@@ -102,7 +169,7 @@ const SongDrawer = () => {
           />
         );
       })} */}
-    </DrawerContentScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -111,7 +178,7 @@ export default SongDrawer;
 const styles = StyleSheet.create({
   drawer: {
     backgroundColor: 'black',
-    height: '100%',
+    flex: 1,
   },
   drawerItem: {
     color: 'white',
@@ -122,8 +189,9 @@ const styles = StyleSheet.create({
   itemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     marginVertical: 12,
-    paddingLeft: 25,
+    paddingHorizontal: 12,
   },
   leftContainer: {
     flexDirection: 'row',
@@ -141,7 +209,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Inter-Medium',
     maxWidth: 200,
-    backgroundColor: 'red',
   },
   playlistInfoContainer: {
     flexDirection: 'row',
