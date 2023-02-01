@@ -26,6 +26,7 @@ import {useNavigation} from '@react-navigation/native';
 import ShareOptions from './ShareOptions';
 import Toast from 'react-native-toast-message';
 import HapticFeedback from 'react-native-haptic-feedback';
+import {mixpanel} from '../../mixpanel';
 
 const ShareSheet = props => {
   const {navigate} = useNavigation();
@@ -136,6 +137,7 @@ const ShareSheet = props => {
 
   async function handleShare(item) {
     // firestore().collection("chats")
+    mixpanel.track('New Song Message');
     HapticFeedback.trigger('impactHeavy');
     setShowShareSheet(false);
     top.value = withSpring(1000, SPRING_CONFIG);
@@ -334,6 +336,9 @@ const ShareSheet = props => {
               {followingData ? (
                 <View style={styles.flatListContainer}>
                   <FlatList
+                    contentContainerStyle={{
+                      paddingBottom: '12%',
+                    }}
                     data={followingData}
                     renderItem={({item, index}) => {
                       return (
@@ -411,6 +416,8 @@ const ShareSheet = props => {
           <View style={styles.btnsContainer}>
             <TextInput
               style={styles.textInput}
+              multiline={true}
+              blurOnSubmit={true}
               placeholder="add a comment..."
               placeholderTextColor={Colors.greyOut}
               keyboardAppearance="dark"
@@ -568,9 +575,10 @@ const styles = StyleSheet.create({
   textInput: {
     backgroundColor: '#1F1F1F',
     width: 350,
-    paddingVertical: 10,
+    height: 40,
     borderRadius: 20,
-    paddingLeft: 15,
+    paddingHorizontal: 12,
+    paddingTop: 10,
     color: 'white',
   },
   sendBtn: {

@@ -27,7 +27,7 @@ import Spotify from '../../assets/img/spotify.svg';
 import {DMDrawerContext} from '../../context/DMDrawerContext';
 import Modal from 'react-native-modal';
 import Toast from 'react-native-toast-message';
-
+import {mixpanel} from '../../../mixpanel';
 const DirectMessageScreen = ({route, navigation}) => {
   const {UID} = useContext(Context);
   const {
@@ -102,11 +102,11 @@ const DirectMessageScreen = ({route, navigation}) => {
   }, [chatDoc]);
 
   function handleSendMessage() {
+    mixpanel.track('New Text Message');
     Keyboard.dismiss();
     if (messageText === '') {
       return;
     }
-    setMessageText('');
     if (!chatDoc) {
       firestore()
         .collection('chats')
@@ -180,6 +180,7 @@ const DirectMessageScreen = ({route, navigation}) => {
           console.log('updated lastMessageAt!');
         });
     }
+    setMessageText('');
   }
 
   //animation work
@@ -559,6 +560,7 @@ const DirectMessageScreen = ({route, navigation}) => {
               <TextInput
                 onFocus={handleAnimation}
                 onBlur={handleAnimationDown}
+                blurOnSubmit={true}
                 placeholder="send a message"
                 placeholderTextColor={Colors.greyOut}
                 style={styles.textInput}
