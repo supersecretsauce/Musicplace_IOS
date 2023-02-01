@@ -15,7 +15,7 @@ import HapticFeedback from 'react-native-haptic-feedback';
 import FastImage from 'react-native-fast-image';
 import {Context} from '../../context/Context';
 import {Toast} from 'react-native-toast-message/lib/src/Toast';
-
+import {mixpanel} from '../../../mixpanel';
 const ViewUserScreen = ({route, navigation}) => {
   const {profileID, UID, prevRoute, myUser} = route.params;
   const {viewingSwiperRef, swiperIndex} = useContext(Context);
@@ -70,6 +70,7 @@ const ViewUserScreen = ({route, navigation}) => {
           console.log('unfollowed user!');
         });
     } else {
+      mixpanel.track('New Follow');
       firestore()
         .collection('users')
         .doc(profileID)

@@ -13,6 +13,7 @@ import Colors from '../assets/utilities/Colors';
 import {Context} from '../context/Context';
 import firestore from '@react-native-firebase/firestore';
 import HapticFeedback from 'react-native-haptic-feedback';
+import {mixpanel} from '../../mixpanel';
 
 const InfiniteHits = ({...props}) => {
   const {hits, isLastPage, showMore} = useInfiniteHits(props);
@@ -48,6 +49,7 @@ const InfiniteHits = ({...props}) => {
           followers: firestore.FieldValue.increment(-1),
         });
     } else {
+      mixpanel.track('New Follow');
       setFollowingList(current => [...current, item.objectID]);
       firestore()
         .collection('users')
