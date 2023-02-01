@@ -334,6 +334,9 @@ const ShareSheet = props => {
               {followingData ? (
                 <View style={styles.flatListContainer}>
                   <FlatList
+                    contentContainerStyle={{
+                      paddingBottom: '12%',
+                    }}
                     data={followingData}
                     renderItem={({item, index}) => {
                       return (
@@ -411,6 +414,8 @@ const ShareSheet = props => {
           <View style={styles.btnsContainer}>
             <TextInput
               style={styles.textInput}
+              multiline={true}
+              blurOnSubmit={true}
               placeholder="add a comment..."
               placeholderTextColor={Colors.greyOut}
               keyboardAppearance="dark"
@@ -568,9 +573,10 @@ const styles = StyleSheet.create({
   textInput: {
     backgroundColor: '#1F1F1F',
     width: 350,
-    paddingVertical: 10,
+    height: 40,
     borderRadius: 20,
-    paddingLeft: 15,
+    paddingHorizontal: 12,
+    paddingTop: 10,
     color: 'white',
   },
   sendBtn: {

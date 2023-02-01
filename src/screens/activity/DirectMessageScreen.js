@@ -106,7 +106,6 @@ const DirectMessageScreen = ({route, navigation}) => {
     if (messageText === '') {
       return;
     }
-    setMessageText('');
     if (!chatDoc) {
       firestore()
         .collection('chats')
@@ -180,6 +179,7 @@ const DirectMessageScreen = ({route, navigation}) => {
           console.log('updated lastMessageAt!');
         });
     }
+    setMessageText('');
   }
 
   //animation work
@@ -559,6 +559,7 @@ const DirectMessageScreen = ({route, navigation}) => {
               <TextInput
                 onFocus={handleAnimation}
                 onBlur={handleAnimationDown}
+                blurOnSubmit={true}
                 placeholder="send a message"
                 placeholderTextColor={Colors.greyOut}
                 style={styles.textInput}

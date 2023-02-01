@@ -563,6 +563,7 @@ const SinglePostBottomSheet = props => {
               <TextInput
                 multiline={true}
                 ref={inputRef}
+                blurOnSubmit={true}
                 onSubmitEditing={handleCommentSubmit}
                 onEndEditing={() => setReplyInfo(null)}
                 onChangeText={text => setUserText(text)}

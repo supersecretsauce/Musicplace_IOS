@@ -244,6 +244,7 @@ const ActivityScreen = ({navigation}) => {
         <View style={styles.activityFlatListContainer}>
           {activity && (
             <FlatList
+              showsVerticalScrollIndicator={false}
               data={activity}
               renderItem={({item, index}) => {
                 return (
@@ -422,6 +423,7 @@ const ActivityScreen = ({navigation}) => {
         <View style={styles.messagesFlatListContainer}>
           <FlatList
             data={memberInfo}
+            showsVerticalScrollIndicator={false}
             renderItem={({item, index}) => {
               return (
                 <TouchableOpacity
