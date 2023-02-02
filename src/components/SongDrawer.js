@@ -27,14 +27,13 @@ const SongDrawer = () => {
   const {UID, hasSpotify} = useContext(Context);
 
   useEffect(() => {
-    if (UID && feedTrack) {
+    if (UID && feedTrack && hasSpotify) {
       async function getPlaylists() {
         let isEmulator = await DeviceInfo.isEmulator();
         let authToken;
         if (!isEmulator) {
           authToken = await appCheck().getToken();
         }
-
         axios
           .get(`http://localhost:3000/get-user-playlists`, {
             params: {
@@ -64,7 +63,6 @@ const SongDrawer = () => {
                 },
                 name: 'Liked Songs',
                 type: 'likes',
-                liked: resp.isLiked,
               },
             ];
             setAllPlaylists([...likeObject, ...playlistData]);
@@ -73,8 +71,54 @@ const SongDrawer = () => {
       }
 
       getPlaylists();
+    } else if (!hasSpotify && feedTrack && UID) {
+      console.log('non spot');
+      async function checkNonSpotLike() {
+        let isEmulator = await DeviceInfo.isEmulator();
+        let authToken;
+        if (!isEmulator) {
+          authToken = await appCheck().getToken();
+        }
+        axios
+          .get('http://localhost:3000/check-non-spotify-likes', {
+            params: {
+              UID: UID,
+              songID: feedTrack.id,
+            },
+            headers: {
+              accept: 'application/json',
+              Authorization: isEmulator
+                ? 'Bearer ' + simKey
+                : 'Bearer ' + authToken.token,
+            },
+          })
+          .then(resp => {
+            console.log(resp);
+            setTrackLiked(resp.data);
+          })
+          .catch(e => {
+            console.log(e);
+          });
+      }
+      checkNonSpotLike();
+
+      let likeObject = [
+        {
+          images: [
+            {
+              url: 'https://firebasestorage.googleapis.com/v0/b/musicplace-66f20.appspot.com/o/spotifyLikedSongs.webp?alt=media&token=c1998298-594b-4be3-912f-a86e3cd60403',
+            },
+          ],
+          owner: {
+            display_name: 'You',
+          },
+          name: 'Liked Songs',
+          type: 'likes',
+        },
+      ];
+      setAllPlaylists(likeObject);
     }
-  }, [UID, feedTrack]);
+  }, [UID, feedTrack, hasSpotify]);
 
   async function likeHandler() {
     HapticFeedback.trigger('impactLight');
@@ -118,7 +162,7 @@ const SongDrawer = () => {
         Toast.show({
           type: 'success',
           text1: 'Removed from liked songs',
-          text2: "Don't believe us? Check your profile.",
+          text2: "Don't believe us? Check your feed.",
           visibilityTime: 2000,
         });
       }
@@ -155,7 +199,7 @@ const SongDrawer = () => {
         Toast.show({
           type: 'success',
           text1: 'Added to liked songs',
-          text2: "Don't believe us? Check your profile.",
+          text2: "Don't believe us? Check your feed.",
           visibilityTime: 2000,
         });
       }

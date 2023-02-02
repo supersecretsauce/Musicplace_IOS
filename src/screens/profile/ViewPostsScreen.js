@@ -207,7 +207,7 @@ const ViewPostsScreen = ({route, navigation}) => {
         Toast.show({
           type: 'success',
           text1: 'Removed from liked songs',
-          text2: "Don't believe us? Check your profile.",
+          text2: "Don't believe us? Check your feed.",
           visibilityTime: 2000,
         });
       }
@@ -258,7 +258,7 @@ const ViewPostsScreen = ({route, navigation}) => {
         Toast.show({
           type: 'success',
           text1: 'Added to liked songs',
-          text2: "Don't believe us? Check your profile.",
+          text2: "Don't believe us? Check your feed.",
           visibilityTime: 2000,
         });
       }
