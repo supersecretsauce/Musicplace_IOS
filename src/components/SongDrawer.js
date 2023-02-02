@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from 'react-native';
+import {HomeScreenContext} from '../context/HomeScreenContext';
 import FastImage from 'react-native-fast-image';
 import {DrawerContentScrollView, DrawerItem} from '@react-navigation/drawer';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -15,13 +16,23 @@ import {Context} from '../context/Context';
 import appCheck from '@react-native-firebase/app-check';
 import DeviceInfo from 'react-native-device-info';
 import {simKey} from '../../simKey';
+import {Toast} from 'react-native-toast-message/lib/src/Toast';
+import HapticFeedback from 'react-native-haptic-feedback';
+import {mixpanel} from '../../mixpanel';
 
 const SongDrawer = () => {
   const [playlists, setPlaylists] = useState(null);
-  const {UID} = useContext(Context);
+  const [allPlaylists, setAllPlaylists] = useState(null);
+  const [trackLiked, setTrackLiked] = useState(null);
+  const {feedTrack} = useContext(HomeScreenContext);
+  const {UID, hasSpotify, feed, setFeed} = useContext(Context);
 
   useEffect(() => {
-    if (UID) {
+    console.log(feedTrack);
+  }, [feedTrack]);
+
+  useEffect(() => {
+    if (UID && feedTrack) {
       console.log(UID);
       async function getPlaylists() {
         let isEmulator = await DeviceInfo.isEmulator();
@@ -29,8 +40,13 @@ const SongDrawer = () => {
         if (!isEmulator) {
           authToken = await appCheck().getToken();
         }
+
         axios
-          .get(`http://localhost:3000/get-user-playlists/user?UID=${UID}`, {
+          .get(`http://localhost:3000/get-user-playlists`, {
+            params: {
+              UID: UID,
+              songID: feedTrack.id,
+            },
             headers: {
               accept: 'application/json',
               Authorization: isEmulator
@@ -39,7 +55,9 @@ const SongDrawer = () => {
             },
           })
           .then(resp => {
-            console.log(resp.data.items);
+            let playlistData = resp.data.playlistData.items;
+            console.log(resp.data.isLiked[0]);
+            setTrackLiked(resp.data.isLiked[0]);
             let likeObject = [
               {
                 images: [
@@ -52,35 +70,126 @@ const SongDrawer = () => {
                 },
                 name: 'Liked Songs',
                 type: 'likes',
+                liked: resp.isLiked,
               },
             ];
-            console.log([...likeObject, ...resp.data.items]);
-            setPlaylists([...likeObject, ...resp.data.items]);
+            console.log([...likeObject, ...playlistData]);
+            setPlaylists(playlistData);
+            setAllPlaylists([...likeObject, ...playlistData]);
           })
           .catch(e => console.log(e));
       }
 
       getPlaylists();
     }
-  }, [UID]);
+  }, [UID, feedTrack]);
 
-  function handleLike() {}
+  async function likeHandler() {
+    HapticFeedback.trigger('impactLight');
+    let isEmulator = await DeviceInfo.isEmulator();
+    let authToken;
+    if (!isEmulator) {
+      authToken = await appCheck().getToken();
+    }
+    if (trackLiked) {
+      // remove song from liked songs
+      setTrackLiked(false);
+
+      axios
+        .get(
+          `http://167.99.22.22/update/remove-track?userId=${UID}&trackId=${feedTrack.id}`,
+          {
+            headers: {
+              accept: 'application/json',
+              Authorization: isEmulator
+                ? 'Bearer ' + simKey
+                : 'Bearer ' + authToken.token,
+            },
+          },
+        )
+        .then(resp => {
+          console.log(resp);
+          console.log('track removed');
+        })
+        .catch(e => {
+          console.log(e);
+        });
+
+      if (hasSpotify) {
+        Toast.show({
+          type: 'success',
+          text1: 'Removed from liked songs',
+          text2: "Don't believe us? Check your spotify library.",
+          visibilityTime: 2000,
+        });
+      } else {
+        Toast.show({
+          type: 'success',
+          text1: 'Removed from liked songs',
+          text2: "Don't believe us? Check your profile.",
+          visibilityTime: 2000,
+        });
+      }
+    } else {
+      mixpanel.track('Liked Song');
+      // add to liked songs
+      setTrackLiked(true);
+
+      axios
+        .get(
+          `http://167.99.22.22/update/save-track?userId=${UID}&trackId=${feedTrack.id}`,
+          {
+            headers: {
+              accept: 'application/json',
+              Authorization: isEmulator
+                ? 'Bearer ' + simKey
+                : 'Bearer ' + authToken.token,
+            },
+          },
+        )
+        .then(resp => {
+          console.log(resp);
+          console.log('saved track');
+        })
+        .catch(e => {
+          console.log(e);
+        });
+      if (hasSpotify) {
+        Toast.show({
+          type: 'success',
+          text1: 'Added to liked songs',
+          text2: "Don't believe us? Check your spotify library.",
+          visibilityTime: 2000,
+        });
+      } else {
+        Toast.show({
+          type: 'success',
+          text1: 'Added to liked songs',
+          text2: "Don't believe us? Check your profile.",
+          visibilityTime: 2000,
+        });
+      }
+    }
+  }
 
   return (
     <SafeAreaView style={styles.drawer}>
-      {playlists ? (
+      {allPlaylists ? (
         <FlatList
           // eslint-disable-next-line react-native/no-inline-styles
           contentContainerStyle={{
             paddingTop: '5%',
             paddingBottom: '5%',
           }}
-          data={playlists}
+          data={allPlaylists}
           renderItem={({item, index}) => {
             return (
               <>
                 {item?.type === 'likes' ? (
-                  <TouchableOpacity key={index} style={styles.itemContainer}>
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.itemContainer}
+                    onPress={likeHandler}>
                     <View style={styles.leftContainer}>
                       <FastImage
                         style={styles.playlistImage}
@@ -101,8 +210,8 @@ const SongDrawer = () => {
                       </View>
                     </View>
                     <Ionicons
-                      name={'radio-button-off'}
-                      color={'grey'}
+                      name={trackLiked ? 'radio-button-on' : 'radio-button-off'}
+                      color={trackLiked ? 'white' : 'grey'}
                       size={24}
                     />
                   </TouchableOpacity>
@@ -143,32 +252,8 @@ const SongDrawer = () => {
           }}
         />
       ) : (
-        <DrawerItem
-          icon={() => (
-            <Ionicons name={'heart-outline'} color={'grey'} size={24} />
-          )}
-          labelStyle={styles.drawerItem}
-          label="Edit Profile"
-        />
+        <></>
       )}
-      {/* <DrawerItem
-        icon={() => (
-          <Ionicons name={'heart-outline'} color={'grey'} size={24} />
-        )}
-        labelStyle={styles.drawerItem}
-        label="Edit Profile"
-      />
-      {testArr.map(n => {
-        return (
-          <DrawerItem
-            icon={() => (
-              <Ionicons name={'heart-outline'} color={'grey'} size={24} />
-            )}
-            labelStyle={styles.drawerItem}
-            label="Edit Profile"
-          />
-        );
-      })} */}
     </SafeAreaView>
   );
 };
