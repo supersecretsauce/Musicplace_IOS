@@ -19,7 +19,7 @@ import {Toast} from 'react-native-toast-message/lib/src/Toast';
 import HapticFeedback from 'react-native-haptic-feedback';
 import {mixpanel} from '../../mixpanel';
 
-const SongDrawer = () => {
+const SongDrawer = ({navigation}) => {
   const [allPlaylists, setAllPlaylists] = useState(null);
   const [trackLiked, setTrackLiked] = useState(null);
   const [existingPlaylists, setExistingPlaylists] = useState([]);
@@ -279,11 +279,19 @@ const SongDrawer = () => {
 
   return (
     <SafeAreaView style={styles.drawer}>
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.chevronContainer}
+          onPress={() => navigation.closeDrawer()}>
+          <Ionicons name={'chevron-back'} color={'white'} size={28} />
+        </TouchableOpacity>
+        <Text style={styles.headerText}>Add to library</Text>
+      </View>
       {allPlaylists ? (
         <FlatList
           // eslint-disable-next-line react-native/no-inline-styles
           contentContainerStyle={{
-            paddingTop: '5%',
+            paddingTop: '1%',
             paddingBottom: '5%',
           }}
           data={allPlaylists}
@@ -381,11 +389,23 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     flex: 1,
   },
-  drawerItem: {
+  header: {
+    // backgroundColor: '#191919',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    borderBottomColor: '#191919',
+    borderBottomWidth: 1,
+  },
+  chevronContainer: {
+    position: 'absolute',
+    left: 0,
+  },
+  headerText: {
     color: 'white',
     fontFamily: 'SFProRounded-Bold',
     fontSize: 17,
-    marginLeft: -20,
   },
   itemContainer: {
     flexDirection: 'row',
