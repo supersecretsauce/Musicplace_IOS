@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from 'react-native';
-import {HomeScreenContext} from '../context/HomeScreenContext';
 import FastImage from 'react-native-fast-image';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
@@ -23,8 +22,7 @@ const SongDrawer = ({navigation}) => {
   const [allPlaylists, setAllPlaylists] = useState(null);
   const [trackLiked, setTrackLiked] = useState(null);
   const [existingPlaylists, setExistingPlaylists] = useState([]);
-  const {feedTrack} = useContext(HomeScreenContext);
-  const {UID, hasSpotify} = useContext(Context);
+  const {UID, hasSpotify, feedTrack} = useContext(Context);
 
   useEffect(() => {
     if (UID && feedTrack && hasSpotify) {

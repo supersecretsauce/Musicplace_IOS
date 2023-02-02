@@ -27,7 +27,6 @@ import DeviceInfo from 'react-native-device-info';
 import {simKey} from '../../../simKey';
 import {Toast} from 'react-native-toast-message/lib/src/Toast';
 import {mixpanel} from '../../../mixpanel';
-import {HomeScreenContext} from '../../context/HomeScreenContext';
 const HomeScreen = ({navigation}) => {
   Sound.setCategory('Playback');
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -36,9 +35,16 @@ const HomeScreen = ({navigation}) => {
   const [initialFeed, setInitialFeed] = useState(true);
   const [startTime, setStartTime] = useState(new Date());
   const [isOnHomeScreen, setIsOnHomeScreen] = useState(true);
-  const {setFeedTrack} = useContext(HomeScreenContext);
-  const {setHasSpotify, hasSpotify, setUID, UID, feed, setFeed, isNewUser} =
-    useContext(Context);
+  const {
+    setHasSpotify,
+    hasSpotify,
+    setUID,
+    UID,
+    feed,
+    setFeed,
+    isNewUser,
+    setFeedTrack,
+  } = useContext(Context);
 
   useFocusEffect(
     useCallback(() => {

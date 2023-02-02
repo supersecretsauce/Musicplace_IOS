@@ -176,7 +176,7 @@ const ProfileDetails = props => {
                             <View style={styles.postContainer} key={index}>
                               <TouchableWithoutFeedback
                                 onPress={() => {
-                                  navigation.navigate('ViewPostsScreen', {
+                                  navigation.navigate('SinglePostDrawerRoute', {
                                     //making the song an array so it works with swiper package
                                     songInfo: [item],
                                     UID: UID,
@@ -227,7 +227,7 @@ const ProfileDetails = props => {
                             <View style={styles.postContainer} key={index}>
                               <TouchableWithoutFeedback
                                 onPress={() => {
-                                  navigation.navigate('ViewPostsScreen', {
+                                  navigation.navigate('SinglePostDrawerRoute', {
                                     //making the song an array so it works with swiper package
                                     songInfo: [item._data],
                                     UID: UID,

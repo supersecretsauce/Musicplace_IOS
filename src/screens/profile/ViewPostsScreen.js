@@ -35,13 +35,15 @@ import appCheck from '@react-native-firebase/app-check';
 import DeviceInfo from 'react-native-device-info';
 import {simKey} from '../../../simKey';
 import {mixpanel} from '../../../mixpanel';
+
 const ViewPostsScreen = ({route, navigation}) => {
   Sound.setCategory('Playback');
   const {songInfo, UID, openSheet, commentDocID, prevScreen, replyRef} =
     route.params ?? {};
   const [currentTrack, setCurrentTrack] = useState(null);
   const [showShareSheet, setShowShareSheet] = useState(false);
-  const {hasSpotify, trackDeepLink, setTrackDeepLink} = useContext(Context);
+  const {hasSpotify, trackDeepLink, setTrackDeepLink, setFeedTrack} =
+    useContext(Context);
   const [trackInfo, setTrackInfo] = useState(songInfo);
   const [isLiked, setIsLiked] = useState(null);
   const likeRef = useRef(isLiked);
@@ -320,11 +322,15 @@ const ViewPostsScreen = ({route, navigation}) => {
                             size={28}
                           />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={likeHandler}>
+                        <TouchableOpacity
+                          onPress={() => {
+                            navigation.toggleDrawer();
+                            setFeedTrack(post);
+                          }}>
                           <Ionicons
                             style={styles.likeIcon}
-                            name={isLiked ? 'heart' : 'heart-outline'}
-                            color={isLiked ? '#1DB954' : 'grey'}
+                            name={'add-circle'}
+                            color={'grey'}
                             size={28}
                           />
                         </TouchableOpacity>
