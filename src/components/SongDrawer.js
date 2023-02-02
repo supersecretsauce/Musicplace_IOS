@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import {HomeScreenContext} from '../context/HomeScreenContext';
 import FastImage from 'react-native-fast-image';
-import {DrawerContentScrollView, DrawerItem} from '@react-navigation/drawer';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 import {Context} from '../context/Context';
@@ -21,19 +20,14 @@ import HapticFeedback from 'react-native-haptic-feedback';
 import {mixpanel} from '../../mixpanel';
 
 const SongDrawer = () => {
-  const [playlists, setPlaylists] = useState(null);
   const [allPlaylists, setAllPlaylists] = useState(null);
   const [trackLiked, setTrackLiked] = useState(null);
+  const [existingPlaylists, setExistingPlaylists] = useState([]);
   const {feedTrack} = useContext(HomeScreenContext);
-  const {UID, hasSpotify, feed, setFeed} = useContext(Context);
-
-  useEffect(() => {
-    console.log(feedTrack);
-  }, [feedTrack]);
+  const {UID, hasSpotify} = useContext(Context);
 
   useEffect(() => {
     if (UID && feedTrack) {
-      console.log(UID);
       async function getPlaylists() {
         let isEmulator = await DeviceInfo.isEmulator();
         let authToken;
@@ -56,7 +50,7 @@ const SongDrawer = () => {
           })
           .then(resp => {
             let playlistData = resp.data.playlistData.items;
-            console.log(resp.data.isLiked[0]);
+            setExistingPlaylists(resp.data.existingPlaylists);
             setTrackLiked(resp.data.isLiked[0]);
             let likeObject = [
               {
@@ -73,8 +67,6 @@ const SongDrawer = () => {
                 liked: resp.isLiked,
               },
             ];
-            console.log([...likeObject, ...playlistData]);
-            setPlaylists(playlistData);
             setAllPlaylists([...likeObject, ...playlistData]);
           })
           .catch(e => console.log(e));
@@ -134,7 +126,6 @@ const SongDrawer = () => {
       mixpanel.track('Liked Song');
       // add to liked songs
       setTrackLiked(true);
-
       axios
         .get(
           `http://167.99.22.22/update/save-track?userId=${UID}&trackId=${feedTrack.id}`,
@@ -149,7 +140,6 @@ const SongDrawer = () => {
         )
         .then(resp => {
           console.log(resp);
-          console.log('saved track');
         })
         .catch(e => {
           console.log(e);
@@ -169,6 +159,77 @@ const SongDrawer = () => {
           visibilityTime: 2000,
         });
       }
+    }
+  }
+
+  async function playlistHandler(playlist) {
+    let isEmulator = await DeviceInfo.isEmulator();
+    let authToken;
+    if (!isEmulator) {
+      authToken = await appCheck().getToken();
+    }
+    // remove song from playlist
+    if (existingPlaylists.includes(playlist.id)) {
+      let existingPlaylistUpdate = existingPlaylists.filter(item => {
+        return item !== playlist.id;
+      });
+      setExistingPlaylists(existingPlaylistUpdate);
+
+      Toast.show({
+        type: 'success',
+        text1: `Removed from ${playlist.name}`,
+        text2: "Don't believe us? Check your spotify library.",
+        visibilityTime: 2000,
+      });
+      axios
+        .get('http://localhost:3000/remove-from-playlist', {
+          params: {
+            UID: UID,
+            songID: feedTrack.id,
+            playlistID: playlist.id,
+          },
+          headers: {
+            accept: 'application/json',
+            Authorization: isEmulator
+              ? 'Bearer ' + simKey
+              : 'Bearer ' + authToken.token,
+          },
+        })
+        .then(resp => {
+          console.log(resp);
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    } else {
+      // add song to playlist
+      setExistingPlaylists([...existingPlaylists, playlist.id]);
+      Toast.show({
+        type: 'success',
+        text1: `Added to ${playlist.name}`,
+        text2: "Don't believe us? Check your spotify library.",
+        visibilityTime: 2000,
+      });
+      axios
+        .get('http://localhost:3000/add-to-playlist', {
+          params: {
+            UID: UID,
+            songID: feedTrack.id,
+            playlistID: playlist.id,
+          },
+          headers: {
+            accept: 'application/json',
+            Authorization: isEmulator
+              ? 'Bearer ' + simKey
+              : 'Bearer ' + authToken.token,
+          },
+        })
+        .then(resp => {
+          console.log(resp);
+        })
+        .catch(e => {
+          console.log(e);
+        });
     }
   }
 
@@ -210,13 +271,18 @@ const SongDrawer = () => {
                       </View>
                     </View>
                     <Ionicons
-                      name={trackLiked ? 'radio-button-on' : 'radio-button-off'}
+                      name={trackLiked ? 'checkmark-done' : 'radio-button-off'}
                       color={trackLiked ? 'white' : 'grey'}
                       size={24}
                     />
                   </TouchableOpacity>
                 ) : (
-                  <TouchableOpacity key={index} style={styles.itemContainer}>
+                  <TouchableOpacity
+                    key={index}
+                    style={styles.itemContainer}
+                    onPress={() => {
+                      playlistHandler(item);
+                    }}>
                     <View style={styles.leftContainer}>
                       <FastImage
                         style={styles.playlistImage}
@@ -241,8 +307,14 @@ const SongDrawer = () => {
                       </View>
                     </View>
                     <Ionicons
-                      name={'radio-button-off'}
-                      color={'grey'}
+                      name={
+                        existingPlaylists.includes(item.id)
+                          ? 'checkmark-done'
+                          : 'radio-button-off'
+                      }
+                      color={
+                        existingPlaylists.includes(item.id) ? 'white' : 'grey'
+                      }
                       size={24}
                     />
                   </TouchableOpacity>
