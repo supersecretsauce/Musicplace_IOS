@@ -2,9 +2,9 @@ import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import FeedScreen from '../screens/feed/FeedScreen';
 import ViewUserScreen from '../screens/home/ViewUserScreen';
-import ViewPostsScreen from '../screens/profile/ViewPostsScreen';
 import AddFriends from '../screens/activity/AddFriends';
 import ProfileStackScreen from './ProfileStackScreen';
+import SinglePostDrawerRoute from './SinglePostDrawerRoute';
 const FeedStackScreen = () => {
   const FeedStack = createNativeStackNavigator();
 
@@ -12,7 +12,10 @@ const FeedStackScreen = () => {
     <FeedStack.Navigator screenOptions={{headerShown: false}}>
       <FeedStack.Screen name="FeedScreen" component={FeedScreen} />
       <FeedStack.Screen name="ViewUserScreen" component={ViewUserScreen} />
-      <FeedStack.Screen name="ViewPostsScreen" component={ViewPostsScreen} />
+      <FeedStack.Screen
+        name="SinglePostDrawerRoute"
+        component={SinglePostDrawerRoute}
+      />
       <FeedStack.Screen name="AddFriends" component={AddFriends} />
       <FeedStack.Screen
         name="ProfileStackScreen"

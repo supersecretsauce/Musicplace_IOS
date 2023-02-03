@@ -31,6 +31,7 @@ export default function App() {
   const viewingSwiperRef = useRef();
   const [swiperIndex, setSwiperIndex] = useState(0);
   const [fetchingTopSongs, setFetchingTopSongs] = useState(false);
+  const [feedTrack, setFeedTrack] = useState(null);
 
   // AsyncStorage.clear();
 
@@ -124,6 +125,8 @@ export default function App() {
             setSwiperIndex,
             fetchingTopSongs,
             setFetchingTopSongs,
+            feedTrack,
+            setFeedTrack,
           }}>
           {JailMonkey.isJailBroken() ? (
             <>

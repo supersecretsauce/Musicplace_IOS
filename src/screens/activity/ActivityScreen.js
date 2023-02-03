@@ -173,7 +173,7 @@ const ActivityScreen = ({navigation}) => {
 
   function viewLikeNav(item) {
     console.log(item);
-    navigation.navigate('ViewPostsScreen', {
+    navigation.navigate('SinglePostDrawerRoute', {
       songInfo: [item?._data?.songInfo],
       UID: UID,
       openSheet: true,

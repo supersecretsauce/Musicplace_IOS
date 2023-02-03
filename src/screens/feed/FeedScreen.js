@@ -182,7 +182,7 @@ const FeedScreen = ({navigation}) => {
                       <TouchableOpacity
                         style={styles.songContainer}
                         onPress={() =>
-                          navigation.navigate('ViewPostsScreen', {
+                          navigation.navigate('SinglePostDrawerRoute', {
                             songInfo: [item?._data],
                             UID: UID,
                           })

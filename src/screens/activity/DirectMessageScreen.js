@@ -233,7 +233,7 @@ const DirectMessageScreen = ({route, navigation}) => {
     let songArr = [];
     songArr.push(item);
     console.log(songArr);
-    navigation.navigate('ViewPostsScreen', {
+    navigation.navigate('SinglePostDrawerRoute', {
       UID: UID,
       songInfo: songArr,
     });

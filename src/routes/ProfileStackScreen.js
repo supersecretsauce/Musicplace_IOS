@@ -5,6 +5,7 @@ import ViewPostsScreen from '../screens/profile/ViewPostsScreen';
 import ProfileDrawerRoute from './ProfileDrawerRoute';
 import {DrawerContext} from '../context/DrawerContext';
 import {useSharedValue} from 'react-native-reanimated';
+import SinglePostDrawerRoute from './SinglePostDrawerRoute';
 const ProfileStack = createNativeStackNavigator();
 
 const ProfileStackScreen = () => {
@@ -42,8 +43,8 @@ const ProfileStackScreen = () => {
           component={ProfileDrawerRoute}
         />
         <ProfileStack.Screen
-          name="ViewPostsScreen"
-          component={ViewPostsScreen}
+          name="SinglePostDrawerRoute"
+          component={SinglePostDrawerRoute}
           options={{
             transitionSpec: {
               open: config,
