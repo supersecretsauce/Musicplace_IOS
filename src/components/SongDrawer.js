@@ -33,19 +33,23 @@ const SongDrawer = ({navigation}) => {
           authToken = await appCheck().getToken();
         }
         axios
-          .get(`http://localhost:3000/get-user-playlists`, {
-            params: {
-              UID: UID,
-              songID: feedTrack.id,
+          .get(
+            `https://musicplacewaitlist-production.up.railway.app/get-user-playlists`,
+            {
+              params: {
+                UID: UID,
+                songID: feedTrack.id,
+              },
+              headers: {
+                accept: 'application/json',
+                Authorization: isEmulator
+                  ? 'Bearer ' + simKey
+                  : 'Bearer ' + authToken.token,
+              },
             },
-            headers: {
-              accept: 'application/json',
-              Authorization: isEmulator
-                ? 'Bearer ' + simKey
-                : 'Bearer ' + authToken.token,
-            },
-          })
+          )
           .then(resp => {
+            console.log(resp);
             let playlistData = resp.data.playlistData.items;
             setExistingPlaylists(resp.data.existingPlaylists);
             setTrackLiked(resp.data.isLiked[0]);
@@ -78,18 +82,21 @@ const SongDrawer = ({navigation}) => {
           authToken = await appCheck().getToken();
         }
         axios
-          .get('http://localhost:3000/check-non-spotify-likes', {
-            params: {
-              UID: UID,
-              songID: feedTrack.id,
+          .get(
+            'https://musicplacewaitlist-production.up.railway.app/check-non-spotify-likes',
+            {
+              params: {
+                UID: UID,
+                songID: feedTrack.id,
+              },
+              headers: {
+                accept: 'application/json',
+                Authorization: isEmulator
+                  ? 'Bearer ' + simKey
+                  : 'Bearer ' + authToken.token,
+              },
             },
-            headers: {
-              accept: 'application/json',
-              Authorization: isEmulator
-                ? 'Bearer ' + simKey
-                : 'Bearer ' + authToken.token,
-            },
-          })
+          )
           .then(resp => {
             console.log(resp);
             setTrackLiked(resp.data);
@@ -224,19 +231,22 @@ const SongDrawer = ({navigation}) => {
         visibilityTime: 2000,
       });
       axios
-        .get('http://localhost:3000/remove-from-playlist', {
-          params: {
-            UID: UID,
-            songID: feedTrack.id,
-            playlistID: playlist.id,
+        .get(
+          'https://musicplacewaitlist-production.up.railway.app/remove-from-playlist',
+          {
+            params: {
+              UID: UID,
+              songID: feedTrack.id,
+              playlistID: playlist.id,
+            },
+            headers: {
+              accept: 'application/json',
+              Authorization: isEmulator
+                ? 'Bearer ' + simKey
+                : 'Bearer ' + authToken.token,
+            },
           },
-          headers: {
-            accept: 'application/json',
-            Authorization: isEmulator
-              ? 'Bearer ' + simKey
-              : 'Bearer ' + authToken.token,
-          },
-        })
+        )
         .then(resp => {
           console.log(resp);
         })
@@ -253,19 +263,22 @@ const SongDrawer = ({navigation}) => {
         visibilityTime: 2000,
       });
       axios
-        .get('http://localhost:3000/add-to-playlist', {
-          params: {
-            UID: UID,
-            songID: feedTrack.id,
-            playlistID: playlist.id,
+        .get(
+          'https://musicplacewaitlist-production.up.railway.app/add-to-playlist',
+          {
+            params: {
+              UID: UID,
+              songID: feedTrack.id,
+              playlistID: playlist.id,
+            },
+            headers: {
+              accept: 'application/json',
+              Authorization: isEmulator
+                ? 'Bearer ' + simKey
+                : 'Bearer ' + authToken.token,
+            },
           },
-          headers: {
-            accept: 'application/json',
-            Authorization: isEmulator
-              ? 'Bearer ' + simKey
-              : 'Bearer ' + authToken.token,
-          },
-        })
+        )
         .then(resp => {
           console.log(resp);
         })
