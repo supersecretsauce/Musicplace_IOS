@@ -172,7 +172,11 @@ const FeedScreen = ({navigation}) => {
                           <Text style={styles.displayName}>
                             {item?._data.displayName}
                           </Text>
-                          <Text style={styles.likeText}>liked a track</Text>
+                          <Text style={styles.likeText}>
+                            {item?._data?.type === 'playlist'
+                              ? 'added to playlist'
+                              : 'liked a track'}
+                          </Text>
                         </View>
                         <Text style={styles.dot}>•</Text>
                         <Text style={styles.date}>
