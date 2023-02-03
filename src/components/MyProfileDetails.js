@@ -86,7 +86,11 @@ const MyProfileDetails = props => {
       .then(resp => {
         console.log(resp);
         // setTopSongs([]);
-        setTopSongs(resp.data.data);
+        if (!resp.data.data) {
+          setTopSongs([]);
+        } else {
+          setTopSongs(resp.data.data);
+        }
         setFetchingTopSongs(false);
       })
       .catch(e => {
