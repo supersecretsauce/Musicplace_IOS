@@ -5,7 +5,6 @@ import {
   SafeAreaView,
   TouchableOpacity,
   FlatList,
-  Image,
 } from 'react-native';
 import React, {useState, useEffect, useContext} from 'react';
 import {Context} from '../../context/Context';
@@ -13,6 +12,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../assets/utilities/Colors';
 import firestore from '@react-native-firebase/firestore';
 import MusicplaceIcon from '../../assets/img/musicplace-icon.svg';
+import FastImage from 'react-native-fast-image';
 
 const ViewAllActivityScreen = ({navigation, route}) => {
   const {invitesRemaining, setInvitesRemaining} = useContext(Context);
@@ -145,10 +145,11 @@ const ViewAllActivityScreen = ({navigation, route}) => {
                           onPress={() => viewLikeNav(item)}>
                           <View style={styles.itemLeft}>
                             {item?._data?.pfpURL ? (
-                              <Image
+                              <FastImage
                                 style={styles.musicplaceLogo}
                                 source={{
                                   uri: item?._data?.pfpURL,
+                                  priority: FastImage.priority.high,
                                 }}
                               />
                             ) : (
@@ -183,10 +184,11 @@ const ViewAllActivityScreen = ({navigation, route}) => {
                               onPress={() => viewFollowNav(item)}>
                               <View style={styles.itemLeft}>
                                 {item?._data?.pfpURL ? (
-                                  <Image
+                                  <FastImage
                                     style={styles.musicplaceLogo}
                                     source={{
                                       uri: item?._data?.pfpURL,
+                                      priority: FastImage.priority.high,
                                     }}
                                   />
                                 ) : (
@@ -221,10 +223,11 @@ const ViewAllActivityScreen = ({navigation, route}) => {
                               onPress={() => viewLikeNav(item)}>
                               <View style={styles.itemLeft}>
                                 {item?._data?.pfpURL ? (
-                                  <Image
+                                  <FastImage
                                     style={styles.musicplaceLogo}
                                     source={{
                                       uri: item?._data?.pfpURL,
+                                      priority: FastImage.priority.high,
                                     }}
                                   />
                                 ) : (

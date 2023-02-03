@@ -5,7 +5,6 @@ import {
   SafeAreaView,
   FlatList,
   TouchableOpacity,
-  Image,
 } from 'react-native';
 import React, {useEffect, useState, useContext} from 'react';
 import Colors from '../../assets/utilities/Colors';
@@ -14,6 +13,7 @@ import * as Contacts from 'expo-contacts';
 import firestore from '@react-native-firebase/firestore';
 import MusicplaceIcon from '../../assets/img/musicplace-icon.svg';
 import {Context} from '../../context/Context';
+import FastImage from 'react-native-fast-image';
 
 const ActivityScreen = ({navigation}) => {
   const [contacts, setContacts] = useState(null);
@@ -285,10 +285,11 @@ const ActivityScreen = ({navigation}) => {
                             onPress={() => viewLikeNav(item)}>
                             <View style={styles.itemLeft}>
                               {item?._data?.pfpURL ? (
-                                <Image
+                                <FastImage
                                   style={styles.musicplaceLogo}
                                   source={{
                                     uri: item?._data?.pfpURL,
+                                    priority: FastImage.priority.high,
                                   }}
                                 />
                               ) : (
@@ -323,10 +324,11 @@ const ActivityScreen = ({navigation}) => {
                                 onPress={() => viewFollowNav(item)}>
                                 <View style={styles.itemLeft}>
                                   {item?._data?.pfpURL ? (
-                                    <Image
+                                    <FastImage
                                       style={styles.musicplaceLogo}
                                       source={{
                                         uri: item?._data?.pfpURL,
+                                        priority: FastImage.priority.high,
                                       }}
                                     />
                                   ) : (
@@ -361,10 +363,11 @@ const ActivityScreen = ({navigation}) => {
                                 onPress={() => viewLikeNav(item)}>
                                 <View style={styles.itemLeft}>
                                   {item?._data?.pfpURL ? (
-                                    <Image
+                                    <FastImage
                                       style={styles.musicplaceLogo}
                                       source={{
                                         uri: item?._data?.pfpURL,
+                                        priority: FastImage.priority.high,
                                       }}
                                     />
                                   ) : (
@@ -432,10 +435,11 @@ const ActivityScreen = ({navigation}) => {
                   onPress={() => handleMessageNav(item)}>
                   <View style={styles.itemLeft}>
                     {item?.pfpURL ? (
-                      <Image
+                      <FastImage
                         style={styles.musicplaceLogo}
                         source={{
                           uri: item.pfpURL,
+                          priority: FastImage.priority.high,
                         }}
                       />
                     ) : (

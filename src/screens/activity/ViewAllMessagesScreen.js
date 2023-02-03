@@ -5,13 +5,12 @@ import {
   SafeAreaView,
   TouchableOpacity,
   FlatList,
-  Image,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Colors from '../../assets/utilities/Colors';
 import firestore from '@react-native-firebase/firestore';
-
+import FastImage from 'react-native-fast-image';
 const ViewAllMessagesScreen = ({navigation, route}) => {
   const {UID, myUser} = route.params;
   const [memberInfo, setMemberInfo] = useState(null);
@@ -91,10 +90,11 @@ const ViewAllMessagesScreen = ({navigation, route}) => {
                 onPress={() => handleMessageNav(item)}>
                 <View style={styles.itemLeft}>
                   {item?.pfpURL ? (
-                    <Image
+                    <FastImage
                       style={styles.musicplaceLogo}
                       source={{
                         uri: item.pfpURL,
+                        priority: FastImage.priority.high,
                       }}
                     />
                   ) : (
