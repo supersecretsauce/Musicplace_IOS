@@ -35,8 +35,8 @@ const SongDrawer = ({navigation}) => {
         }
         axios
           .get(
-            // `https://musicplacewaitlist-production.up.railway.app/get-user-playlists`,
-            'http://localhost:3000/get-user-playlists',
+            `https://musicplacewaitlist-production.up.railway.app/get-user-playlists`,
+            // 'http://localhost:3000/get-user-playlists',
 
             {
               params: {
@@ -235,8 +235,8 @@ const SongDrawer = ({navigation}) => {
       });
       axios
         .get(
-          // 'https://musicplacewaitlist-production.up.railway.app/remove-from-playlist',
-          'http://localhost:3000/remove-from-playlist',
+          'https://musicplacewaitlist-production.up.railway.app/remove-from-playlist',
+          // 'http://localhost:3000/remove-from-playlist',
 
           {
             params: {
@@ -269,8 +269,8 @@ const SongDrawer = ({navigation}) => {
       });
       axios
         .get(
-          // 'https://musicplacewaitlist-production.up.railway.app/add-to-playlist',
-          'http://localhost:3000/add-to-playlist',
+          'https://musicplacewaitlist-production.up.railway.app/add-to-playlist',
+          // 'http://localhost:3000/add-to-playlist',
           {
             params: {
               UID: UID,
