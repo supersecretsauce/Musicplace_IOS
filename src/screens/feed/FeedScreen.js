@@ -23,6 +23,17 @@ const FeedScreen = ({navigation}) => {
   const [likes, setLikes] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
 
+  moment.updateLocale('en', {
+    relativeTime: {
+      s: function (number, withoutSuffix, key, isFuture) {
+        return withoutSuffix ? 'just now' : 'just now';
+      },
+      ss: function (number, withoutSuffix, key, isFuture) {
+        return withoutSuffix ? 'just now' : 'just now';
+      },
+    },
+  });
+
   useEffect(() => {
     if (UID) {
       const subscriber = firestore()
@@ -180,7 +191,10 @@ const FeedScreen = ({navigation}) => {
                         </View>
                         <Text style={styles.dot}>•</Text>
                         <Text style={styles.date}>
-                          {moment(item?._data?.date.toDate()).fromNow()}
+                          {moment(item?._data?.date.toDate()).fromNow() ===
+                          'just now ago'
+                            ? moment(item?._data?.date.toDate()).fromNow(true)
+                            : moment(item?._data?.date.toDate()).fromNow()}
                         </Text>
                       </TouchableOpacity>
                       <TouchableOpacity
