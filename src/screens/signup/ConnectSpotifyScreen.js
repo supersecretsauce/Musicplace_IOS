@@ -36,6 +36,8 @@ const ConnectSpotifyScreen = ({navigation}) => {
     HapticFeedback.trigger('impactHeavy');
     const authState = await authorize(spotConfig);
 
+    let expirationTime = new Date(authState.accessTokenExpirationDate);
+
     let data = {
       UID: userInfo.uid,
       pfpURL: null,
@@ -45,7 +47,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
       lastSignIn: userInfo.metadata.lastSignInTime,
       connectedWithSpotify: true,
       spotifyAccessToken: authState.accessToken,
-      spotifyAccessTokenExpirationDate: authState.accessTokenExpirationDate,
+      spotifyAccessTokenExpirationDate: expirationTime,
       spotifyRefreshToken: authState.refreshToken,
       spotifyTokenType: authState.tokenType,
       bio: null,
