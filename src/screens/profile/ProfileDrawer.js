@@ -71,17 +71,18 @@ const ProfileDrawer = ({navigation}) => {
       const connectToSpotify = async () => {
         try {
           const authState = await authorize(spotConfig);
+          let expirationTime = new Date(authState.accessTokenExpirationDate);
           setFetchingTopSongs(true);
           await AsyncStorage.setItem('hasSpotify', 'true');
           mixpanel.removeGroup('Streaming-Service', 'None');
           mixpanel.setGroup('Streaming-Service', 'Spotify');
+
           firestore()
             .collection('users')
             .doc(UID)
             .update({
               spotifyAccessToken: authState.accessToken,
-              spotifyAccessTokenExpirationDate:
-                authState.accessTokenExpirationDate,
+              spotifyAccessTokenExpirationDate: expirationTime,
               spotifyRefreshToken: authState.refreshToken,
               spotifyTokenType: authState.tokenType,
               connectedWithSpotify: true,
