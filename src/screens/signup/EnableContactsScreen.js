@@ -36,7 +36,7 @@ const EnableContactsScreen = ({navigation}) => {
         axios
           .post(
             // 'https://musicplace-friendfinder-production.up.railway.app/find-friends',
-            'http://max.local:3000/find-friends',
+            'http://max.local:3001/find-friends',
             axiosData,
             {
               headers: {

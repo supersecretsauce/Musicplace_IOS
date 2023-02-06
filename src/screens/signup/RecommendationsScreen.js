@@ -19,15 +19,34 @@ import functions from '@react-native-firebase/functions';
 import {firebase} from '@react-native-firebase/firestore';
 import {Toast} from 'react-native-toast-message/lib/src/Toast';
 import HapticFeedback from 'react-native-haptic-feedback';
-
+import FastImage from 'react-native-fast-image';
+import firestore from '@react-native-firebase/firestore';
+import {mixpanel} from '../../../mixpanel';
+import {Context} from '../../context/Context';
 const RecommendationsScreen = ({navigation}) => {
-  const [myUser, setMyUser] = useState(firebase.auth().currentUser);
+  const {setUserLogin} = useContext(Context);
+  const currentUser = firebase.auth().currentUser;
+  const [myUser, setMyUser] = useState(null);
   const [myName, setMyName] = useState(null);
   const {recommendations} = useContext(WelcomeContext);
   const [contacts, setContacts] = useState(null);
   const [updatedContacts, setUpdatedContacts] = useState(null);
   const [search, setSearch] = useState('');
   const [invitedUsers, setInvitedUsers] = useState([]);
+  const [followingList, setFollowingList] = useState([]);
+
+  useEffect(() => {
+    if (currentUser) {
+      console.log(currentUser);
+      firestore()
+        .collection('users')
+        .doc(currentUser.uid)
+        .get()
+        .then(resp => {
+          setMyUser(resp.data());
+        });
+    }
+  }, [currentUser]);
 
   useEffect(() => {
     console.log(recommendations);
@@ -94,6 +113,63 @@ const RecommendationsScreen = ({navigation}) => {
     }
   }
 
+  async function handleFollow(contact) {
+    if (myUser) {
+      if (followingList.includes(contact.phoneNumber)) {
+        console.log('aleady following');
+        return;
+      } else {
+        // mixpanel.track('New Follow');
+        HapticFeedback.trigger('selection');
+        setFollowingList(prev => [...prev, contact.phoneNumber]);
+        firestore()
+          .collection('users')
+          .doc(contact.UID)
+          .update({
+            followersList: firestore.FieldValue.arrayUnion(myUser.UID),
+            followers: firestore.FieldValue.increment(1),
+          })
+          .catch(e => {
+            console.log(e);
+          });
+        firestore()
+          .collection('users')
+          .doc(myUser.UID)
+          .update({
+            followingList: firestore.FieldValue.arrayUnion(contact.UID),
+            following: firestore.FieldValue.increment(1),
+          })
+          .catch(e => {
+            console.log(e);
+          });
+        firestore()
+          .collection('users')
+          .doc(contact.UID)
+          .collection('activity')
+          .add({
+            UID: myUser.UID,
+            from: 'user',
+            type: 'follow',
+            timestamp: firestore.FieldValue.serverTimestamp(),
+            songInfo: null,
+            handle: myUser.handle,
+            displayName: myUser.displayName,
+            pfpURL: myUser?.pfpURL ? myUser?.pfpURL : null,
+            notificationRead: false,
+          })
+          .catch(e => {
+            console.log(e);
+          });
+      }
+    }
+  }
+
+  function handleNav() {
+    HapticFeedback.trigger('selection');
+    mixpanel.track('Signup Completion');
+    setUserLogin(true);
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topContainer}>
@@ -108,9 +184,54 @@ const RecommendationsScreen = ({navigation}) => {
           />
         </TouchableWithoutFeedback>
         <Musicplace style={styles.musicplace} />
+        <TouchableOpacity style={styles.nextBtn} onPress={handleNav}>
+          <Text style={styles.nextText}>Next</Text>
+        </TouchableOpacity>
       </View>
       {recommendations ? (
-        <View></View>
+        <View>
+          <View style={styles.contactBanner}>
+            <Text style={styles.bannerText}>
+              {recommendations.length === 1
+                ? recommendations.length + ' FRIEND FOUND'
+                : recommendations.length + ' FRIENDS FOUND'}
+              {/* {recommendations.length + ' FRIEND FOUND'} */}
+            </Text>
+          </View>
+          <FlatList
+            contentContainerStyle={{
+              height: '100%',
+            }}
+            data={recommendations}
+            renderItem={({item, index}) => {
+              return (
+                <View style={styles.contactItem}>
+                  <View style={styles.contactLeft}>
+                    <FastImage
+                      style={styles.pfpURL}
+                      source={{
+                        uri: item.pfpURL,
+                      }}
+                    />
+                    <View style={styles.recMiddle}>
+                      <Text style={styles.displayName}>{item.displayName}</Text>
+                      <Text style={styles.contactName}>
+                        {item?.contactName}
+                      </Text>
+                    </View>
+                  </View>
+                  <TouchableOpacity onPress={() => handleFollow(item)}>
+                    <Text style={styles.followText}>
+                      {followingList.includes(item.phoneNumber)
+                        ? 'followed'
+                        : 'follow'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              );
+            }}
+          />
+        </View>
       ) : (
         <View style={styles.noRecsContainer}>
           <Text style={styles.noContactHeader}>
@@ -202,10 +323,65 @@ const styles = StyleSheet.create({
   chevron: {
     position: 'absolute',
     left: 20,
+    fontFamily: 'Inter-Bold',
   },
   musicplace: {
     alignSelf: 'center',
   },
+  nextBtn: {
+    position: 'absolute',
+    right: 20,
+    padding: 14,
+    paddingRight: 0,
+  },
+  nextText: {
+    color: 'white',
+    fontFamily: 'Inter-Bold',
+    fontSize: 15,
+  },
+  contactBanner: {
+    backgroundColor: '#191919',
+    width: '100%',
+    paddingVertical: 10,
+  },
+  bannerText: {
+    color: 'white',
+    fontFamily: 'Inter-Medium',
+    fontSize: 12,
+    paddingLeft: '7%',
+  },
+  contactItem: {
+    width: '90%',
+    alignSelf: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  pfpURL: {
+    height: 40,
+    width: 40,
+    borderRadius: 40,
+  },
+  recMiddle: {
+    marginLeft: 15,
+    flexDirection: 'column',
+  },
+  displayName: {
+    color: 'white',
+    fontSize: 17,
+    fontFamily: 'Inter-Bold',
+  },
+  contactName: {
+    color: 'grey',
+    fontFamily: 'Inter-Regular',
+  },
+  followText: {
+    color: 'grey',
+    fontSize: 15,
+    fontFamily: 'Inter-Bold',
+  },
+  //no recs
   noRecsContainer: {
     flex: 1,
     alignItems: 'center',
