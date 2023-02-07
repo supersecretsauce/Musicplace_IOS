@@ -199,8 +199,10 @@ const RecommendationsScreen = ({navigation}) => {
             </Text>
           </View>
           <FlatList
+            showsVerticalScrollIndicator={false}
             contentContainerStyle={{
-              height: '100%',
+              // height: '100%',
+              paddingBottom: '30%',
             }}
             data={recommendations}
             renderItem={({item, index}) => {
@@ -362,6 +364,7 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
     borderRadius: 40,
+    backgroundColor: Colors.red,
   },
   recMiddle: {
     marginLeft: 15,
