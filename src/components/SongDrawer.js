@@ -306,6 +306,7 @@ const SongDrawer = ({navigation}) => {
       </View>
       {allPlaylists ? (
         <FlatList
+          showsVerticalScrollIndicator={false}
           // eslint-disable-next-line react-native/no-inline-styles
           contentContainerStyle={{
             paddingTop: '1%',
