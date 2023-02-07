@@ -86,6 +86,7 @@ const ProfileDrawer = ({navigation}) => {
               spotifyRefreshToken: authState.refreshToken,
               spotifyTokenType: authState.tokenType,
               connectedWithSpotify: true,
+              autoPost: true,
             })
             .then(() => {
               axios
@@ -117,6 +118,7 @@ const ProfileDrawer = ({navigation}) => {
             spotifyRefreshToken: null,
             spotifyTokenType: null,
             connectedWithSpotify: false,
+            autoPost: false,
           });
         } catch (error) {
           console.log(error);
