@@ -18,7 +18,6 @@ import BottomSheet from '../../components/BottomSheet';
 import HapticFeedback from 'react-native-haptic-feedback';
 import {Context} from '../../context/Context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import messaging from '@react-native-firebase/messaging';
 import ShareSheet from '../../components/ShareSheet';
 import axios from 'axios';
 import LoadingPost from '../../components/LoadingPost';
@@ -81,40 +80,6 @@ const HomeScreen = ({navigation}) => {
     }
     checkSpotifyConnection();
   }, []);
-
-  //get notification token
-  useEffect(() => {
-    if (UID) {
-      //get noti token
-      async function requestUserPermission() {
-        const authStatus = await messaging().requestPermission();
-        const enabled =
-          authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-          authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-        if (enabled) {
-          messaging()
-            .getToken()
-            .then(token => {
-              firestore()
-                .collection('users')
-                .doc(UID)
-                .update({
-                  notificationToken: token,
-                })
-                .then(() => {
-                  console.log('token pushed!');
-                });
-            })
-            .catch(e => {
-              console.log(e);
-            });
-        } else {
-          console.log(authStatus);
-        }
-      }
-      requestUserPermission();
-    }
-  }, [UID]);
 
   useEffect(() => {
     if (UID) {

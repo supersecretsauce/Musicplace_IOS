@@ -23,6 +23,9 @@ import FastImage from 'react-native-fast-image';
 import firestore from '@react-native-firebase/firestore';
 import {mixpanel} from '../../../mixpanel';
 import {Context} from '../../context/Context';
+import {BlurView} from '@react-native-community/blur';
+import messaging from '@react-native-firebase/messaging';
+
 const RecommendationsScreen = ({navigation}) => {
   const {setUserLogin} = useContext(Context);
   const currentUser = firebase.auth().currentUser;
@@ -34,6 +37,7 @@ const RecommendationsScreen = ({navigation}) => {
   const [search, setSearch] = useState('');
   const [invitedUsers, setInvitedUsers] = useState([]);
   const [followingList, setFollowingList] = useState([]);
+  const [blur, setBlur] = useState(false);
 
   useEffect(() => {
     if (currentUser) {
@@ -164,145 +168,194 @@ const RecommendationsScreen = ({navigation}) => {
     }
   }
 
-  function handleNav() {
+  async function handleNav() {
     HapticFeedback.trigger('selection');
+    setBlur(true);
+    const authStatus = await messaging().requestPermission();
     mixpanel.track('Signup Completion');
     setUserLogin(true);
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+    if (enabled) {
+      messaging()
+        .getToken()
+        .then(token => {
+          firestore()
+            .collection('users')
+            .doc(myUser.UID)
+            .update({
+              notificationToken: token,
+            })
+            .then(() => {
+              console.log('token pushed!');
+            });
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    } else {
+      console.log(authStatus);
+    }
+    return;
   }
 
+  //get notification token
+  // useEffect(() => {
+  //   if (UID) {
+  //     //get noti token
+  //     async function requestUserPermission() {}
+  //     requestUserPermission();
+  //   }
+  // }, [UID]);
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.topContainer}>
-        <TouchableWithoutFeedback
-          onPress={() => navigation.goBack()}
-          style={styles.touchContainer}>
-          <Ionicons
-            style={styles.chevron}
-            name="chevron-back"
-            color="white"
-            size={40}
-          />
-        </TouchableWithoutFeedback>
-        <Musicplace style={styles.musicplace} />
-        <TouchableOpacity style={styles.nextBtn} onPress={handleNav}>
-          <Text style={styles.nextText}>Next</Text>
-        </TouchableOpacity>
-      </View>
-      {recommendations ? (
-        <View>
-          <View style={styles.contactBanner}>
-            <Text style={styles.bannerText}>
-              {recommendations.length === 1
-                ? recommendations.length + ' FRIEND FOUND'
-                : recommendations.length + ' FRIENDS FOUND'}
-              {/* {recommendations.length + ' FRIEND FOUND'} */}
+    <>
+      <SafeAreaView style={styles.container}>
+        {blur && (
+          <>
+            <Text style={styles.blurText}>
+              Musicplace works best with notifications on.
             </Text>
-          </View>
-          <FlatList
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{
-              // height: '100%',
-              paddingBottom: '30%',
-            }}
-            data={recommendations}
-            renderItem={({item, index}) => {
-              return (
-                <View style={styles.contactItem}>
-                  <View style={styles.contactLeft}>
-                    <FastImage
-                      style={styles.pfpURL}
-                      source={{
-                        uri: item.pfpURL,
-                      }}
-                    />
-                    <View style={styles.recMiddle}>
-                      <Text style={styles.displayName}>{item.displayName}</Text>
-                      <Text style={styles.contactName}>
-                        {item?.contactName}
-                      </Text>
-                    </View>
-                  </View>
-                  <TouchableOpacity onPress={() => handleFollow(item)}>
-                    <Text style={styles.followText}>
-                      {followingList.includes(item.phoneNumber)
-                        ? 'followed'
-                        : 'follow'}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              );
-            }}
-          />
-        </View>
-      ) : (
-        <View style={styles.noRecsContainer}>
-          <Text style={styles.noContactHeader}>
-            None of your contacts are on Musicplace... yet 😏
-          </Text>
-          <View style={styles.searchContainer}>
-            <TextInput
-              value={search}
-              onChangeText={e => setSearch(e)}
-              placeholder="search contacts to invite"
-              placeholderTextColor="grey"
-              style={styles.searchInput}
-              autoCapitalize={false}
+            <BlurView style={styles.blur} blurAmount={5} blurType="dark" />
+          </>
+        )}
+        <View style={styles.topContainer}>
+          <TouchableWithoutFeedback
+            onPress={() => navigation.goBack()}
+            style={styles.touchContainer}>
+            <Ionicons
+              style={styles.chevron}
+              name="chevron-back"
+              color="white"
+              size={40}
             />
-          </View>
-          <FlatList
-            contentContainerStyle={{
-              //   backgroundColor: 'red',
-              width: '65%',
-              paddingTop: '5%',
-            }}
-            showsVerticalScrollIndicator={false}
-            data={updatedContacts}
-            renderItem={({item, index}) => {
-              return (
-                <View key={index} style={styles.localContactContainer}>
-                  <View style={styles.contactLeft}>
-                    {item.imageAvailable ? (
-                      <Image
-                        style={styles.localUserImage}
+          </TouchableWithoutFeedback>
+          <Musicplace style={styles.musicplace} />
+          <TouchableOpacity style={styles.nextBtn} onPress={handleNav}>
+            <Text style={styles.nextText}>Next</Text>
+          </TouchableOpacity>
+        </View>
+        {recommendations ? (
+          <View>
+            <View style={styles.contactBanner}>
+              <Text style={styles.bannerText}>
+                {recommendations.length === 1
+                  ? recommendations.length + ' FRIEND FOUND'
+                  : recommendations.length + ' FRIENDS FOUND'}
+                {/* {recommendations.length + ' FRIEND FOUND'} */}
+              </Text>
+            </View>
+            <FlatList
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{
+                // height: '100%',
+                paddingBottom: '30%',
+              }}
+              data={recommendations}
+              renderItem={({item, index}) => {
+                return (
+                  <View style={styles.contactItem}>
+                    <View style={styles.contactLeft}>
+                      <FastImage
+                        style={styles.pfpURL}
                         source={{
-                          uri: item?.image?.uri,
+                          uri: item.pfpURL,
                         }}
                       />
-                    ) : (
-                      <View style={styles.defaultImage}>
-                        {typeof item.firstName === 'string' ? (
-                          <Text style={styles.defaultName}>
-                            {item?.firstName?.slice(0, 1)}
-                          </Text>
-                        ) : (
-                          <></>
-                        )}
+                      <View style={styles.recMiddle}>
+                        <Text style={styles.displayName}>
+                          {item.displayName}
+                        </Text>
+                        <Text style={styles.contactName}>
+                          {item?.contactName}
+                        </Text>
                       </View>
-                    )}
-                    <View style={styles.contactMiddle}>
-                      <Text numberOfLines={1} style={styles.localFirstName}>
-                        {item?.firstName}
-                      </Text>
-                      <Text numberOfLines={1} style={styles.localLastName}>
-                        {item?.lastName}
-                      </Text>
                     </View>
+                    <TouchableOpacity onPress={() => handleFollow(item)}>
+                      <Text style={styles.followText}>
+                        {followingList.includes(item.phoneNumber)
+                          ? 'followed'
+                          : 'follow'}
+                      </Text>
+                    </TouchableOpacity>
                   </View>
-                  <TouchableOpacity
-                    onPress={() => handleInvite(item?.phoneNumbers[0]?.number)}>
-                    <Text style={styles.inviteContactText}>
-                      {invitedUsers.includes(item?.phoneNumbers[0]?.number)
-                        ? 'invited'
-                        : 'invite'}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              );
-            }}
-          />
-        </View>
-      )}
-    </SafeAreaView>
+                );
+              }}
+            />
+          </View>
+        ) : (
+          <View style={styles.noRecsContainer}>
+            <Text style={styles.noContactHeader}>
+              None of your contacts are on Musicplace... yet 😏
+            </Text>
+            <View style={styles.searchContainer}>
+              <TextInput
+                value={search}
+                onChangeText={e => setSearch(e)}
+                placeholder="search contacts to invite"
+                placeholderTextColor="grey"
+                style={styles.searchInput}
+                autoCapitalize={false}
+              />
+            </View>
+            <FlatList
+              contentContainerStyle={{
+                //   backgroundColor: 'red',
+                width: '65%',
+                paddingTop: '5%',
+              }}
+              showsVerticalScrollIndicator={false}
+              data={updatedContacts}
+              renderItem={({item, index}) => {
+                return (
+                  <View key={index} style={styles.localContactContainer}>
+                    <View style={styles.contactLeft}>
+                      {item.imageAvailable ? (
+                        <Image
+                          style={styles.localUserImage}
+                          source={{
+                            uri: item?.image?.uri,
+                          }}
+                        />
+                      ) : (
+                        <View style={styles.defaultImage}>
+                          {typeof item.firstName === 'string' ? (
+                            <Text style={styles.defaultName}>
+                              {item?.firstName?.slice(0, 1)}
+                            </Text>
+                          ) : (
+                            <></>
+                          )}
+                        </View>
+                      )}
+                      <View style={styles.contactMiddle}>
+                        <Text numberOfLines={1} style={styles.localFirstName}>
+                          {item?.firstName}
+                        </Text>
+                        <Text numberOfLines={1} style={styles.localLastName}>
+                          {item?.lastName}
+                        </Text>
+                      </View>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() =>
+                        handleInvite(item?.phoneNumbers[0]?.number)
+                      }>
+                      <Text style={styles.inviteContactText}>
+                        {invitedUsers.includes(item?.phoneNumbers[0]?.number)
+                          ? 'invited'
+                          : 'invite'}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                );
+              }}
+            />
+          </View>
+        )}
+      </SafeAreaView>
+    </>
   );
 };
 
@@ -312,6 +365,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
+  },
+  blurText: {
+    color: 'white',
+    zIndex: 10002,
+    fontFamily: 'Inter-Bold',
+    alignSelf: 'center',
+    fontSize: 25,
+    width: '80%',
+    textAlign: 'center',
+    position: 'absolute',
+    top: '30%',
+  },
+  blur: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
   },
   touchContainer: {
     width: '15%',
