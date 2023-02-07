@@ -6,12 +6,12 @@ import Musicplace from '../../assets/img/musicplace-welcome.svg';
 import HapticFeedback from 'react-native-haptic-feedback';
 const WelcomeScreen = ({navigation}) => {
   const signupHandler = () => {
-    navigation.navigate('PhoneNumberScreen');
     HapticFeedback.trigger('impactHeavy');
+    navigation.navigate('EnableContactsScreen');
   };
   const loginHandler = () => {
-    navigation.navigate('ExistingPhoneNumberScreen');
     HapticFeedback.trigger('impactHeavy');
+    navigation.navigate('ExistingPhoneNumberScreen');
   };
 
   return (

@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "8": "npx react-native run-ios --simulator='iPhone 8'",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
@@ -14,6 +15,7 @@
     "@notifee/react-native": "^7.1.0",
     "@react-native-async-storage/async-storage": "^1.17.7",
     "@react-native-clipboard/clipboard": "^1.11.1",
+    "@react-native-community/blur": "^4.3.0",
     "@react-native-firebase/app": "^16.4.6",
     "@react-native-firebase/app-check": "^16.4.6",
     "@react-native-firebase/auth": "^16.4.6",
