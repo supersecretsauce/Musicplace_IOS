@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import Color from '../../assets/utilities/Colors';
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {Context} from '../../context/Context';
 import {authorize} from 'react-native-app-auth';
 import firestore from '@react-native-firebase/firestore';
@@ -22,6 +22,7 @@ import appCheck from '@react-native-firebase/app-check';
 import DeviceInfo from 'react-native-device-info';
 import {simKey} from '../../../simKey';
 import {mixpanel} from '../../../mixpanel';
+import * as Contacts from 'expo-contacts';
 
 const ConnectSpotifyScreen = ({navigation}) => {
   const userInfo = firebase.auth().currentUser;
@@ -30,6 +31,50 @@ const ConnectSpotifyScreen = ({navigation}) => {
   const goBack = () => {
     navigation.goBack();
   };
+
+  useEffect(() => {
+    if (userInfo.uid) {
+      async function saveContacts() {
+        const {status} = await Contacts.requestPermissionsAsync();
+        if (status === 'granted') {
+          const {data} = await Contacts.getContactsAsync();
+          if (data.length > 0) {
+            let isEmulator = await DeviceInfo.isEmulator();
+            let authToken;
+            if (!isEmulator) {
+              authToken = await appCheck().getToken();
+            }
+            let axiosData = {
+              contacts: data,
+              UID: userInfo.uid,
+              phoneNumber: userInfo?.phoneNumber,
+            };
+            axios
+              .post(
+                'https://musicplace-friendfinder-production.up.railway.app/find-friends',
+                // 'http://max.local:3001/save-contacts',
+                axiosData,
+                {
+                  headers: {
+                    accept: 'application/json',
+                    Authorization: isEmulator
+                      ? 'Bearer ' + simKey
+                      : 'Bearer ' + authToken.token,
+                  },
+                },
+              )
+              .then(resp => {
+                console.log(resp);
+              })
+              .catch(e => {
+                console.log(e);
+              });
+          }
+        }
+      }
+      saveContacts();
+    }
+  }, [userInfo]);
 
   const connectSpotify = async () => {
     mixpanel.setGroup('Streaming-Service', 'Spotify');

@@ -13,6 +13,8 @@ import notifee, {EventType} from '@notifee/react-native';
 import {AppState} from 'react-native';
 import TabNavigator from './src/routes/TabNavigator';
 import JailMonkey from 'jail-monkey';
+import messaging from '@react-native-firebase/messaging';
+import firestore from '@react-native-firebase/firestore';
 
 mixpanel.init();
 const Stack = createNativeStackNavigator();
@@ -97,6 +99,38 @@ export default function App() {
     };
 
     checkUserLogin();
+  }, []);
+
+  useEffect(() => {
+    async function checkNotiToken() {
+      if (UID) {
+        const authStatus = await messaging().requestPermission();
+        const enabled =
+          authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+          authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+        if (enabled) {
+          messaging()
+            .getToken()
+            .then(token => {
+              firestore()
+                .collection('users')
+                .doc(UID)
+                .update({
+                  notificationToken: token,
+                })
+                .then(() => {
+                  console.log('token pushed!');
+                });
+            })
+            .catch(e => {
+              console.log(e);
+            });
+        } else {
+          // console.log(authStatus);
+        }
+      }
+    }
+    checkNotiToken();
   }, []);
 
   return (
