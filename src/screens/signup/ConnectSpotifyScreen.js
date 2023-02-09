@@ -51,7 +51,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
             };
             axios
               .post(
-                'https://musicplace-friendfinder-production.up.railway.app/find-friends',
+                'https://musicplace-friendfinder-production.up.railway.app/save-contacts',
                 // 'http://max.local:3001/save-contacts',
                 axiosData,
                 {
