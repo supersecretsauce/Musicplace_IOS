@@ -116,7 +116,7 @@ const ViewPostsScreen = ({route, navigation}) => {
           }
           axios
             .get(
-              `http://167.99.22.22/fetch/like?userId=${UID}&trackId=${songInfo[0].id}`,
+              `http://143.198.188.66/fetch/like?userId=${UID}&trackId=${songInfo[0].id}`,
               {
                 headers: {
                   accept: 'application/json',
@@ -180,7 +180,7 @@ const ViewPostsScreen = ({route, navigation}) => {
 
       axios
         .get(
-          `http://167.99.22.22/update/remove-track?userId=${UID}&trackId=${trackInfo[0].id}`,
+          `http://143.198.188.66/update/remove-track?userId=${UID}&trackId=${trackInfo[0].id}`,
           {
             headers: {
               accept: 'application/json',
@@ -231,7 +231,7 @@ const ViewPostsScreen = ({route, navigation}) => {
       });
       axios
         .get(
-          `http://167.99.22.22/update/save-track?userId=${UID}&trackId=${trackInfo[0].id}`,
+          `http://143.198.188.66/update/save-track?userId=${UID}&trackId=${trackInfo[0].id}`,
           {
             headers: {
               accept: 'application/json',

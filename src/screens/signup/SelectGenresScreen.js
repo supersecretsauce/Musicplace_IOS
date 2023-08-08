@@ -48,7 +48,7 @@ const SelectGenresScreen = ({navigation, route}) => {
         authToken = await appCheck().getToken();
       }
       axios
-        .get('http://167.99.22.22/fetch/genres', {
+        .get('http://143.198.188.66/fetch/genres', {
           headers: {
             accept: 'application/json',
             Authorization: isEmulator
@@ -96,7 +96,7 @@ const SelectGenresScreen = ({navigation, route}) => {
       }
       axios
         .get(
-          `http://167.99.22.22/recommendation/user?userId=${UID}&genres=${encodedGenres}`,
+          `http://143.198.188.66/recommendation/user?userId=${UID}&genres=${encodedGenres}`,
           {
             headers: {
               accept: 'application/json',

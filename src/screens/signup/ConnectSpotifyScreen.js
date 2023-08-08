@@ -64,7 +64,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
     const docRef = firestore().collection('users').doc(userInfo.uid);
     docRef.set(data, {merge: true}).then(async () => {
       axios
-        .get(`http://167.99.22.22/update/top-tracks?userId=${userInfo.uid}`)
+        .get(`http://143.198.188.66/update/top-tracks?userId=${userInfo.uid}`)
         .then(async resp => {
           if (resp.status === 200) {
             console.log('finished fetching top songs');
@@ -72,7 +72,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
               if (resp) {
                 axios
                   .get(
-                    `http://167.99.22.22/recommendation/user?userId=${userInfo.uid}`,
+                    `http://143.198.188.66/recommendation/user?userId=${userInfo.uid}`,
                     {
                       headers: {
                         accept: 'application/json',
@@ -93,7 +93,7 @@ const ConnectSpotifyScreen = ({navigation}) => {
                 let authToken = await appCheck().getToken();
                 axios
                   .get(
-                    `http://167.99.22.22/recommendation/user?userId=${userInfo.uid}`,
+                    `http://143.198.188.66/recommendation/user?userId=${userInfo.uid}`,
                     {
                       headers: {
                         accept: 'application/json',

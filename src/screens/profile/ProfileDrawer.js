@@ -88,7 +88,7 @@ const ProfileDrawer = ({navigation}) => {
             })
             .then(() => {
               axios
-                .get(`http://167.99.22.22/update/top-tracks?userId=${UID}`)
+                .get(`http://143.198.188.66/update/top-tracks?userId=${UID}`)
                 .then(() => {
                   console.log('finished getting spotify library');
                   setHasSpotify(true);

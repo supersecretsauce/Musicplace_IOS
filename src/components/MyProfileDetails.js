@@ -75,14 +75,17 @@ const MyProfileDetails = props => {
       authToken = await appCheck().getToken();
     }
     axios
-      .get(`http://167.99.22.22/fetch/library?userId=${UID}&viewerId=${UID}`, {
-        headers: {
-          accept: 'application/json',
-          Authorization: isEmulator
-            ? 'Bearer ' + simKey
-            : 'Bearer ' + authToken.token,
+      .get(
+        `http://143.198.188.66/fetch/library?userId=${UID}&viewerId=${UID}`,
+        {
+          headers: {
+            accept: 'application/json',
+            Authorization: isEmulator
+              ? 'Bearer ' + simKey
+              : 'Bearer ' + authToken.token,
+          },
         },
-      })
+      )
       .then(resp => {
         console.log(resp);
         // setTopSongs([]);

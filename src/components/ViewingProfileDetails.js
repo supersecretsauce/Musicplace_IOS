@@ -80,7 +80,7 @@ const ProfileDetails = props => {
     }
     axios
       .get(
-        `http://167.99.22.22/fetch/library?userId=${profileID}&viewerId=${UID}`,
+        `http://143.198.188.66/fetch/library?userId=${profileID}&viewerId=${UID}`,
         {
           headers: {
             accept: 'application/json',

@@ -123,7 +123,7 @@ const HomeScreen = () => {
             authToken = await appCheck().getToken();
           }
           axios
-            .get(`http://167.99.22.22/recommendation/user?userId=${UID}`, {
+            .get(`http://143.198.188.66/recommendation/user?userId=${UID}`, {
               headers: {
                 accept: 'application/json',
                 Authorization: isEmulator
@@ -177,7 +177,7 @@ const HomeScreen = () => {
             authToken = await appCheck().getToken();
           }
           axios
-            .get(`http://167.99.22.22/recommendation/user?userId=${UID}`, {
+            .get(`http://143.198.188.66/recommendation/user?userId=${UID}`, {
               headers: {
                 accept: 'application/json',
                 Authorization: isEmulator
@@ -274,7 +274,7 @@ const HomeScreen = () => {
       // remove song from liked songs
       axios
         .get(
-          `http://167.99.22.22/update/remove-track?userId=${UID}&trackId=${feed[currentIndex].id}`,
+          `http://143.198.188.66/update/remove-track?userId=${UID}&trackId=${feed[currentIndex].id}`,
           {
             headers: {
               accept: 'application/json',
@@ -321,7 +321,7 @@ const HomeScreen = () => {
       // add to liked songs
       axios
         .get(
-          `http://167.99.22.22/update/save-track?userId=${UID}&trackId=${feed[currentIndex].id}`,
+          `http://143.198.188.66/update/save-track?userId=${UID}&trackId=${feed[currentIndex].id}`,
           {
             headers: {
               accept: 'application/json',
